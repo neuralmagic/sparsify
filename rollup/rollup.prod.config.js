@@ -43,7 +43,8 @@ export default {
                 'react-dom': Object.keys(reactDom),
                 'react-is': Object.keys(reactIs),
                 'prop-types': Object.keys(propTypes),
-                'node_modules/react-redux/node_modules/react-is/index.js': ['isValidElementType', 'isContextConsumer']
+                'node_modules/react-redux/node_modules/react-is/index.js': ['isValidElementType', 'isContextConsumer'],
+                'node_modules/react-router/node_modules/react-is/index.js': ['isValidElementType', 'isContextConsumer']
             }
         }),
         builtins(),

@@ -108,7 +108,7 @@ export const newProjectDialog = Component(props => compose(
   useState('formState', 'setFormState', 'fileSelect'),
   useState('file', 'setFile', null),
   useState('projectName', 'setProjectName', null),
-  useDialog({ title: props => isAnalysing(props) ? 'Analysing' : 'New Project' }),
+  useDialog({ title: props => isAnalysing(props) ? 'Analyzing' : 'New Project' }),
   reduce(concat, nothing()))([
     nothingWhenAnalysing(fileSelector),
     buttons]))

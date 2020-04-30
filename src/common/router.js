@@ -1,25 +1,27 @@
-import { mergeAll, when, is, of as Rof, reduce, concat, map, compose } from 'ramda'
+import { mergeAll, when, is, of, reduce, concat, map, compose, merge } from 'ramda'
 import React from 'react';
-import { Route } from 'react-router-dom'
-import { ConnectedRouter } from 'connected-react-router'
-import { Component, nothing } from './component'
+import { Route, BrowserRouter, HashRouter } from 'react-router-dom'
+import { Component, nothing, fromClass } from './component'
 import queryString from 'query-string'
-import { history } from '../store/index'
 
-const toRouteContainer = paths => c => compose(
-    reduce(concat, nothing()),
-    map(path => Component(props =>
-        <Route path={path}>
-            {({ match, location }) =>
-                match ? c.fold(mergeAll([props, match.params, queryString.parse(location.search)])) : null}
-        </Route>)),
-    when(is(String), Rof))(
-    paths)
+const useRoute = paths => c => compose(
+  reduce(concat, nothing()),
+  map(path => Component(props =>
+    <Route path={path}>
+        {({ match, location }) =>
+            match ? c.fold(mergeAll([props, match.params, queryString.parse(location.search)])) : null}
+    </Route>)),
+  when(is(String), of))(
+  paths)
 
-const toConnectedRouterContainer = c =>
-    Component(props => <ConnectedRouter history={history}>{ c.fold(props) }</ConnectedRouter>)
+const useBrowserRouter = c => fromClass(BrowserRouter).contramap(props =>
+  merge(props, { children: c.fold(props) }))
+
+const useHashRouter = c => fromClass(HashRouter).contramap(props =>
+  merge(props, { children: c.fold(props) }))
 
 export {
-    toRouteContainer,
-    toConnectedRouterContainer
+  useRoute,
+  useBrowserRouter,
+  useHashRouter
 }

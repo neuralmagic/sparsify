@@ -1,14 +1,16 @@
 import React from 'react'
 import { render } from 'react-dom'
 import { Component, fold, toContainer, nothing,
-  useStyles, useState, useSelector, useDispatch, useJssProvider, useStoreProvider } from './common/component'
+  useStyles, useState, useSelector, useDispatch, useJssProvider, useStoreProvider, fromClass } from './common/component'
 import { compose, reduce, concat, merge, map, __, prop,
   curry, always, omit, repeat } from 'ramda'
 import { neuralMagicLogo, neuralMagicLogoText, image } from './components'
 import { useHover } from './common/hooks'
+import { useHashRouter, useRoute } from './common/router'
 import { useAsDropdownContent, useAsDropdown, useDropdownState, dropdownMenu } from './common/dropdown'
 import { useModal } from './common/modal'
 import { newProjectDialog } from './projects/import'
+import { Form } from 'react-bootstrap'
 import store from './store'
 import { changeTheme } from './store/actions/theme'
 import './common/styles/reset.css'
@@ -290,9 +292,8 @@ const withSideMenu = curry((items, c) => Component(props => compose(
     sideMenu.contramap(merge({ items })),
     sideMenuLockButton])))
 
-const themeCheckbox = Component(props =>
-  <input type='checkbox' checked={props.theme === 'dark'}
-    onChange={() => props.dispatch(changeTheme(props.theme === 'dark' ? 'light' : 'dark'))}></input>)
+const themeCheckbox = fromClass(Form.Check).contramap(props => merge(props, {
+  type: 'switch', checked: props.theme === 'dark', label: '', id: 'themeCheck' }))
 
 const userMenu = Component(props => compose(
   fold(props),
@@ -305,7 +306,8 @@ const userMenu = Component(props => compose(
   useAsDropdownContent)(
   dropdownMenu.contramap(props => merge(props, { items: [
     { label: 'Profile', icon: 'assets/user_icon.svg', iconWidth: 11, iconHeight: 14 },
-    { label: 'Dark mode', icon: 'assets/moon_icon.svg', iconWidth: 14, iconHeight: 14, extraContent: themeCheckbox },
+    { label: 'Dark mode', icon: 'assets/moon_icon.svg', iconWidth: 14, iconHeight: 14, extraContent: themeCheckbox,
+      onClick: props => props.dispatch(changeTheme(props.theme === 'dark' ? 'light' : 'dark')) },
     { label: 'Log out', icon: 'assets/exit_icon.svg', iconWidth: 14, iconHeight: 14 } ] }))))
 
 const helpMenu = Component(props => compose(
@@ -341,10 +343,12 @@ const mainContent = Component(props => compose(
 
 const App = Component(props => compose(
   fold(props),
+  useHashRouter,
   useJssProvider({ id: { minify: !isDevelopment() } }),
   useSelector('theme', state => state.theme.selectedTheme),
   useStyles(appStyles),
   withSideMenu(sideMenuItems),
+  useRoute('/'),
   map(toContainer({ className: prop('mainContainer') })),
   reduce(concat, nothing()))([
     header,

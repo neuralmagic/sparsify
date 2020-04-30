@@ -19,11 +19,14 @@ export const dropdownMenuStyles = {
     minHeight: 42,
     fontSize: 14,
     paddingLeft: 5,
-    paddingRight: 15,
+    paddingRight: 5,
     color: 'white',
     '&:hover': {
       backgroundColor: '#3E4146'
     }
+  },
+  dropdownMenuItemLabel: {
+    paddingRight: 40
   },
   dropdownMenuItemImageContainer: {
     minWidth: 30,
@@ -51,9 +54,9 @@ export const nothingIfNoExtraContent = branch(propEq('extraContent', undefined),
 
 export const dropdownMenuItem = Component(props => compose(
   fold(props),
-  map(toContainer({ className: prop('dropdownMenuItem') })),
+  map(toContainer({ className: prop('dropdownMenuItem'), onClick: props.onClick })),
   concat(__, nothingIfNoExtraContent(props.extraContent)),
-  concat(__, Component(props => <span>{props.label}</span>)),
+  concat(__, Component(props => <span className={props.classes.dropdownMenuItemLabel}>{props.label}</span>)),
   map(toContainer({ className: prop('dropdownMenuItemImageContainer') })))(
   image.contramap(always({ src: props.icon, width: props.iconWidth, height: props.iconHeight }))
   ))

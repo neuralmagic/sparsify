@@ -1,7 +1,7 @@
 import React, {
   createElement, useState as reactUseState,
   useContext as reactUseContext, useReducer,
-  useEffect as reactUseEffect
+  useEffect as reactUseEffect, useRef as reactUseRef
 } from 'react'
 import {
   compose, curry, reject, isNil, always,
@@ -104,6 +104,14 @@ export const useEffect = (updateFn, dependants) => c => Component(props => {
   return c.fold(props)
 })
 
+export const useRef = curry((name, c) => {
+  const ref = reactUseRef(null)
+
+  return c.contramap(mergeRight({
+    [name]: ref
+  }))
+})
+
 export const useStyles = curry((styles, c) =>
   c.contramap(props => mergeDeepRight(props, { classes: createUseStyles(styles)(props) })))
 
@@ -150,6 +158,7 @@ export const contramap = curry((f, c) => c.contramap(f))
 Component.of = compose(Component, always)
 
 export const fromClass   = compose(Component, classToFn)
+export const fromElement = type => Component(props => React.createElement(type, props))
 export const nothing     = () => Component.of(null)
 export const toContainer = compose(
   s => (c, props) =>

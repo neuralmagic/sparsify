@@ -1,18 +1,18 @@
-import { mergeAll, when, is, of, reduce, concat, map, compose, merge } from 'ramda'
-import React from 'react';
+import { mergeAll, when, is, of, reduce, concat, map, compose, merge, curry } from 'ramda'
+import React from 'react'
 import { Route, BrowserRouter, HashRouter } from 'react-router-dom'
 import { Component, nothing, fromClass } from './component'
 import queryString from 'query-string'
 
-const useRoute = paths => c => compose(
+const useRoute = curry((paths, c) => compose(
   reduce(concat, nothing()),
   map(path => Component(props =>
-    <Route path={path}>
+    <Route path={path} exact>
         {({ match, location }) =>
             match ? c.fold(mergeAll([props, match.params, queryString.parse(location.search)])) : null}
     </Route>)),
   when(is(String), of))(
-  paths)
+  paths))
 
 const useBrowserRouter = c => fromClass(BrowserRouter).contramap(props =>
   merge(props, { children: c.fold(props) }))

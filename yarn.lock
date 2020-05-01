@@ -4725,6 +4725,18 @@ util-deprecate@^1.0.1, util-deprecate@~1.0.1:
   resolved "https://registry.yarnpkg.com/util-deprecate/-/util-deprecate-1.0.2.tgz#450d4dc9fa70de732762fbd2d4a28981419a0ccf"
   integrity sha1-RQ1Nyfpw3nMnYvvS1KKJgUGaDM8=
 
+uuid@8.0.0:
+  version "8.0.0"
+  resolved "https://registry.yarnpkg.com/uuid/-/uuid-8.0.0.tgz#bc6ccf91b5ff0ac07bbcdbf1c7c4e150db4dbb6c"
+  integrity sha512-jOXGuXZAWdsTH7eZLtyXMqUb9EcWMGZNbL9YcGBJl4MH4nrxHmZJhEHvyLFrkxo+28uLb/NYRcStH48fnD0Vzw==
+
+uuidv4@^6.0.8:
+  version "6.0.8"
+  resolved "https://registry.yarnpkg.com/uuidv4/-/uuidv4-6.0.8.tgz#4e0e698abdd62d5d43743837182dc42de1a7f9bb"
+  integrity sha512-d9nfWXtmCoAKVCEj5agRSyDa7S2rsHGtp/E9e/fJGrxoLKkXu6cFpXxJvWKHC5oBO69Jzwq/bXlK92JidXOcQQ==
+  dependencies:
+    uuid "8.0.0"
+
 v8-compile-cache@^2.0.3:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/v8-compile-cache/-/v8-compile-cache-2.1.0.tgz#e14de37b31a6d194f5690d67efc4e7f6fc6ab30e"

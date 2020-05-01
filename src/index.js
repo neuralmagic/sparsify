@@ -1,20 +1,22 @@
-import React from 'react'
 import { render } from 'react-dom'
 import { Component, fold, toContainer, nothing,
-  useStyles, useState, useSelector, useDispatch, useJssProvider, useStoreProvider, fromClass } from './common/component'
+  useStyles, useState, useSelector, useDispatch, useJssProvider, useStoreProvider, fromClass, fromElement } from './common/component'
 import { compose, reduce, concat, merge, map, __, prop,
-  curry, always, omit, repeat } from 'ramda'
+  curry, always, omit } from 'ramda'
 import { neuralMagicLogo, neuralMagicLogoText, image } from './components'
 import { useHover } from './common/hooks'
 import { useHashRouter, useRoute } from './common/router'
 import { useAsDropdownContent, useAsDropdown, useDropdownState, dropdownMenu } from './common/dropdown'
 import { useModal } from './common/modal'
+import store from './store'
+import { selectedTheme } from './store/selectors/theme'
+import { selectedProject } from './store/selectors/projects'
+import { changeTheme } from './store/actions/theme'
+import { isDevelopment } from './common/environment'
 import { newProjectDialog } from './projects/import'
 import { Form } from 'react-bootstrap'
-import store from './store'
-import { changeTheme } from './store/actions/theme'
+import projectSettings from './projects/projectSettings'
 import './common/styles/reset.css'
-import { isDevelopment } from './common/environment'
 import 'bootstrap/dist/css/bootstrap.min.css'
 
 const appStyles = {
@@ -28,14 +30,26 @@ const appStyles = {
       whiteSpace: 'nowrap'
     }
   },
-  mainContainer: {
+  mainContainer: props => ({
     display: 'flex',
     width: '100%',
     height: '100%',
     flexDirection: 'column',
     overflowX: 'hidden',
     overflowY: 'scroll',
-  }
+    ...(props.theme === 'dark' && ({
+      backgroundColor: '#1c1f22',
+      backgroundImage: "url('assets/bg.png')",
+      backgroundPosition: 'left top',
+      backgroundRepeat: 'repeat',
+      backgroundAttachment: 'scroll',
+      backgroundSize: '46px 23px',
+      backgroundOrigin: 'border-box'
+    })),
+    ...(props.theme === 'light' && ({
+      backgroundColor: 'white'
+    }))
+  })
 }
 
 const sideMenuStyles = {
@@ -216,25 +230,12 @@ const helpStyles = {
 }
 
 const mainContentStyles = {
-  mainContent: props => ({
+  mainContent: {
     display: 'flex',
     flexDirection: 'column',
-    paddingTop: 20,
-    paddingLeft: 20,
-    transition: 'all 0.2s linear',
-    ...(props.theme === 'dark' && ({
-      backgroundColor: '#1c1f22',
-      backgroundImage: "url('assets/bg.png')",
-      backgroundPosition: 'left top',
-      backgroundRepeat: 'repeat',
-      backgroundAttachment: 'scroll',
-      backgroundSize: '46px 23px',
-      backgroundOrigin: 'border-box'
-    })),
-    ...(props.theme === 'light' && ({
-      backgroundColor: 'white'
-    }))
-  })
+    paddingTop: 100,
+    paddingLeft: 100,
+  }
 }
 
 const sideMenuItems = [
@@ -250,7 +251,7 @@ const sideMenuItem = Component(props => compose(
   useStyles(sideMenuItemStyles),
   map(toContainer({ className: prop('sideMenuItem'), onClick: props.onClick })),
   reduce(concat, nothing()))([
-    Component(props => <span className={props.classes.sideMenuItemText}>{props.text}</span>),
+    fromElement('span').contramap(props => ({ className: props.classes.sideMenuItemText, children: props.text })),
     image.contramap(props => ({
       src: props.srcNormal,
       className: props.classes.sideMenuItemImage,
@@ -284,7 +285,7 @@ const withSideMenu = curry((items, c) => Component(props => compose(
   useState('isLocked', 'setLocked', false),
   useHover('isMenuHovered'),
   useStyles(sideMenuStyles),
-  concat(__, Component(props => <div className={props.classes.sideMenuPlaceholder}></div>)),
+  concat(__, fromElement('div').contramap(props => ({ className: props.classes.sideMenuPlaceholder }))),
   map(toContainer({ className: prop('sideMenuContainer') })),
   reduce(concat, nothing()))([
     neuralMagicLogo.contramap(merge({ width: 32.7, height: 30 })),
@@ -301,7 +302,7 @@ const userMenu = Component(props => compose(
   useDropdownState,
   useStyles(userMenuStyles),
   useAsDropdown,
-  concat(Component(props => <div className={props.classes.userIcon}>AO</div>)),
+  concat(fromElement('div').contramap(props => ({ className: props.classes.userIcon, children: 'AO' }))),
   concat(image.contramap(always({ src: 'assets/arrow_down.svg', width: 7, height: 4 }))),
   useAsDropdownContent)(
   dropdownMenu.contramap(props => merge(props, { items: [
@@ -326,32 +327,33 @@ const helpMenu = Component(props => compose(
 
 const header = Component(props => compose(
   fold(props),
+  useSelector('selectedProject', selectedProject),
   useStyles(headerStyles),
   map(toContainer({ className: prop('header') })),
   reduce(concat, nothing()))([
-  Component(props => <span className={props.classes.headerTitle}>Resnet50</span>),
+  fromElement('span').contramap(props => ({
+    className: props.classes.headerTitle,
+    children: props.selectedProject ? `${props.selectedProject.name}: Resnet50` : '' })),
   helpMenu,
   userMenu]))
 
 const mainContent = Component(props => compose(
   fold(props),
   useStyles(mainContentStyles),
-  map(toContainer({ className: prop('mainContent') })),
-  reduce(concat, nothing()),
-  repeat(__, 5))(
-  image.contramap(always({ src: 'assets/main_content_stub.png', width: 805, height: 500 }))))
+  map(toContainer({ className: prop('mainContent') })))(
+  image.contramap(always({ src: `assets/main_content_stub${props.theme === 'light' ? '_light' : ''}.png`, width: 1178, height: 631 }))))
 
-const App = Component(props => compose(
+const app = Component(props => compose(
   fold(props),
   useHashRouter,
   useJssProvider({ id: { minify: !isDevelopment() } }),
-  useSelector('theme', state => state.theme.selectedTheme),
+  useSelector('theme', selectedTheme),
   useStyles(appStyles),
   withSideMenu(sideMenuItems),
-  useRoute('/'),
   map(toContainer({ className: prop('mainContainer') })),
   reduce(concat, nothing()))([
     header,
-    mainContent]))
+    useRoute('/', mainContent),
+    useRoute('/project/:id', projectSettings)]))
 
-render(useStoreProvider(store, App.fold({})), document.body)
+render(useStoreProvider(store, app.fold({})), document.body)

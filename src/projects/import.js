@@ -1,9 +1,12 @@
-import React from 'react'
-import { compose, reduce, concat, map, prop, merge, propEq } from 'ramda'
-import { Component, fold, nothing, useStyles, useState, toContainer, fromClass, branch } from '../common/component'
+import { compose, reduce, concat, map, prop, merge, propEq, always,
+  tap, head, path, join, dropLast, split } from 'ramda'
+import { Component, fold, nothing, useStyles, useState, toContainer,
+  fromClass, branch, fromElement, useRef, useDispatch } from '../common/component'
+import { createProject } from '../store/actions/projects'
 import { useDialog } from '../common/modal'
 import { inputStyle } from '../common/styles/components'
 import { Button } from 'react-bootstrap'
+import { formatBytes } from '../common/utilities'
 
 const styles = {
   inputContainer: {
@@ -17,7 +20,10 @@ const styles = {
     marginBottom: 8
   }),
   fileName: props => ({
-    ...inputStyle(props),
+    display: 'flex',
+    alignItems: 'center',
+    color: props.theme === 'light' ? 'black' : 'white',
+    marginLeft: 15,
     flexGrow: 1,
     height: 30,
   }),
@@ -30,8 +36,8 @@ const styles = {
     zIndex: -1
   },
   browseButton: {
+    display: 'flex',
     height: 30,
-    marginLeft: 15,
     width: 80,
     padding: 0,
     '& > label': {
@@ -54,6 +60,9 @@ const styles = {
     justifyContent: 'flex-end',
     '& > button:first-child': {
       marginRight: 13
+    },
+    '& > button:focus': {
+      boxShadow: 'none !important'
     }
   }
 }
@@ -61,24 +70,32 @@ const styles = {
 const isNextEnabled = props => props.file && props.projectName
 const isAnalysing = props => props.formState === 'analysing'
 const nothingWhenAnalysing = branch(propEq('formState', 'analysing'), nothing())
+const nothingWhenNoFile = branch(propEq('file', null), nothing())
 
-const inputLabel = Component(props => <div className={props.classes.inputLabel}>{ props.label }</div>)
-
-const fileName = Component(props => compose(
-  fold(props),
-  map(toContainer({ className: prop('fileName') })))(
-  Component.of(<div>{ props.file && props.file.name }</div>)))
+const inputLabel = fromElement('div').contramap(props => ({ className: props.classes.inputLabel, children: props.label }))
+const fileName = fromElement('div').contramap(props => ({ className: props.classes.fileName, children: `${props.file.name} (${formatBytes(props.file.size)})` }))
 
 const fileInput = Component(props => compose(
   fold(props),
   map(toContainer({ className: prop('inputContainer') })),
   reduce(concat, nothing()))([
-  fileName,
-  Component(props => <input id="file" type="file" className={props.classes.fileInput} onChange={e => props.setFile(e.target.files[0])}/>),
-  fromClass(Button).contramap(merge({
-    children: <label for="file">Browse</label>,
+  fromElement('input').contramap(always({
+    id: 'file', type: 'file', accept: '.onnx', className: props.classes.fileInput,
+    onChange: compose(
+      tap(() => { props.projectNameInput.current.focus(); props.projectNameInput.current.select(); }),
+      tap(props.setProjectName),
+      join('.'),
+      dropLast(1),
+      split('.'),
+      prop('name'),
+      tap(props.setFile),
+      head,
+      path(['target', 'files'])) })),
+  fromClass(Button).contramap(always({
+    children: fromElement('label').contramap(always({ for: 'file', children: 'Browse' })).fold({}),
     className: props.classes.browseButton,
-    variant: props.theme === 'light' ? 'outline-primary' : 'secondary' })) ]))
+    variant: props.theme === 'light' ? 'outline-primary' : 'secondary' })),
+    nothingWhenNoFile(fileName) ]))
 
 const buttons = Component(props => compose(
   fold(props),
@@ -92,22 +109,30 @@ const buttons = Component(props => compose(
       children: 'Next',
       variant: 'primary',
       disabled: !isNextEnabled(props),
-      onClick: () => props.setFormState('analysing') })) ]))
+      onClick: () => props.formState === 'fileSelect' ?
+        props.setFormState('analysing') : (props.closeModal(), props.dispatch(createProject(props.projectName))) })) ]))
 
 const fileSelector = Component(props => compose(
   fold(props),
-  concat(inputLabel.contramap(merge({ label: 'Select an ONNX model to start a project' }))),
+  concat(inputLabel.contramap(merge({ label: 'A ONNX model is required to start' }))),
   reduce(concat, nothing()))([
     fileInput,
     inputLabel.contramap(merge({ label: 'Name this project' })),
-    Component(props => <input className={props.classes.projectInput} onChange={e => props.setProjectName(e.target.value)}/>)]))
+    fromElement('input').contramap(always({
+      ref: props.projectNameInput,
+      className: props.classes.projectInput,
+      value: props.projectName,
+      onChange: e => props.setProjectName(e.target.value)
+    }))]))
 
 export const newProjectDialog = Component(props => compose(
   fold(props),
+  useDispatch,
   useStyles(styles),
   useState('formState', 'setFormState', 'fileSelect'),
   useState('file', 'setFile', null),
   useState('projectName', 'setProjectName', null),
+  useRef('projectNameInput'),
   useDialog({ title: props => isAnalysing(props) ? 'Analyzing' : 'New Project' }),
   reduce(concat, nothing()))([
     nothingWhenAnalysing(fileSelector),

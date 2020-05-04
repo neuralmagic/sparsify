@@ -16,6 +16,7 @@ import { isDevelopment } from './common/environment'
 import { newProjectDialog } from './projects/import'
 import { Form } from 'react-bootstrap'
 import projectSettings from './projects/projectSettings'
+import profileSelector from './profiles/selector'
 import './common/styles/reset.css'
 import 'bootstrap/dist/css/bootstrap.min.css'
 
@@ -354,6 +355,7 @@ const app = Component(props => compose(
   reduce(concat, nothing()))([
     header,
     useRoute('/', mainContent),
+    useRoute('/project/:id', profileSelector),
     useRoute('/project/:id', projectSettings)]))
 
 render(useStoreProvider(store, app.fold({})), document.body)

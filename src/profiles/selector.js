@@ -19,6 +19,7 @@ const styles = {
   addProfileContainer: props => ({
     cursor: 'pointer',
     background: props.theme === 'dark' ? '#2A2C2F' : 'rgba(217, 225, 232, 1)',
+    transition: 'background 0.2s ease-in, color 0.2s ease-in',
     width: 75,
     marginTop: 11,
     marginBottom: 8,
@@ -59,6 +60,7 @@ const profileContainerStyle = {
   profileContainer: props => ({
     height: '100%',
     position: 'relative',
+    transition: 'background 0.2s ease-in, color 0.2s ease-in',
     display: 'flex',
     flexDirection: 'column',
     paddingLeft: props.selected ? 10 : 10,

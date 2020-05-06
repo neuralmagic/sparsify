@@ -2,11 +2,11 @@ import { render } from 'react-dom'
 import { Component, fold, toContainer, nothing,
   useStyles, useState, useSelector, useDispatch, useJssProvider,
   useStoreProvider, fromClass, fromElement, branch } from './common/component'
-import { compose, reduce, concat, merge, map, __, prop,
+import { compose, reduce, concat, merge, map, __, prop, isNil,
   curry, always, omit, evolve, applyTo, head, path, propEq, not, when } from 'ramda'
 import { neuralMagicLogo, neuralMagicLogoText, image } from './components'
 import { useHover } from './common/hooks'
-import { useHashRouter, useRoute } from './common/router'
+import { useHashRouter, useRoute, useRedirect } from './common/router'
 import { useAsDropdownContent, useAsDropdown, useDropdownState, dropdownMenu } from './common/dropdown'
 import { useModal } from './common/modal'
 import store from './store'
@@ -129,7 +129,7 @@ const sideMenuItemStyles = {
     paddingLeft: 10,
     flexGrow: 1,
     opacity: props.isMenuHovered || props.isLocked ? 1 : 0,
-    transition: 'opacity 0.2s ease-in-out'
+    transition: 'opacity 0.2s ease-in-out, color 0.2s ease-in'
   }),
   sideMenuItemImage: {
     position: 'absolute',
@@ -271,6 +271,7 @@ const sideMenuItems = [
 
 const isFileSelectItem = propEq('fileSelect', true)
 const nothingIfNoFileSelect = branch(compose(not, isFileSelectItem), nothing())
+const redirectToRootIfNoSelectedProject = useRedirect('/', compose(isNil, prop('selectedProject')))
 
 const sideMenuItem = Component(props => compose(
   fold(props),
@@ -309,7 +310,6 @@ const sideMenuLockButton = Component(props => compose(
 const sideMenu = Component(props => compose(
   fold(omit(['ref'], props)),
   useDispatch,
-  useModal('NewProject', newProjectDialog),
   map(toContainer({ className: prop('sideMenu') })),
   reduce(concat, nothing()),
   map(compose(sideMenuItem.contramap, merge, evolve({ disabled: applyTo(props) }))))(
@@ -317,6 +317,7 @@ const sideMenu = Component(props => compose(
 
 const withSideMenu = curry((items, c) => Component(props => compose(
   fold(props),
+  useModal('NewProject', newProjectDialog),
   concat(__, c),
   useState('isLocked', 'setLocked', false),
   useHover('isMenuHovered'),
@@ -390,7 +391,7 @@ const app = Component(props => compose(
   reduce(concat, nothing()))([
     header,
     useRoute('/', mainContent),
-    useRoute('/project/:id', profileSelector),
-    useRoute('/project/:id', projectSettings)]))
+    redirectToRootIfNoSelectedProject(useRoute('/project/:id', profileSelector)),
+    redirectToRootIfNoSelectedProject(useRoute('/project/:id', projectSettings))]))
 
 render(useStoreProvider(store, app.fold({})), document.body)

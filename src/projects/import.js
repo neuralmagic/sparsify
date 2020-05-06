@@ -80,7 +80,7 @@ const fileInput = Component(props => compose(
   map(toContainer({ className: prop('inputContainer') })),
   reduce(concat, nothing()))([
   fromElement('input').contramap(always({
-    id: 'file', type: 'file', accept: '.onnx', className: props.classes.fileInput,
+    id: 'newProjectFileInput', type: 'file', accept: '.onnx', className: props.classes.fileInput,
     onChange: compose(
       tap(() => { props.projectNameInput.current.focus(); props.projectNameInput.current.select(); }),
       tap(props.setProjectName),
@@ -92,7 +92,7 @@ const fileInput = Component(props => compose(
       head,
       path(['target', 'files'])) })),
   fromClass(Button).contramap(always({
-    children: fromElement('label').contramap(always({ for: 'file', children: 'Browse' })).fold({}),
+    children: fromElement('label').contramap(always({ for: 'newProjectFileInput', children: 'Browse' })).fold({}),
     className: props.classes.browseButton,
     variant: props.theme === 'light' ? 'outline-primary' : 'secondary' })),
     nothingWhenNoFile(fileName) ]))
@@ -110,7 +110,7 @@ const buttons = Component(props => compose(
       variant: 'primary',
       disabled: !isNextEnabled(props),
       onClick: () => props.formState === 'fileSelect' ?
-        props.setFormState('analysing') : (props.closeModal(), props.dispatch(createProject(props.projectName))) })) ]))
+        props.setFormState('analysing') : (props.closeModal(), props.dispatch(createProject({ name: props.projectName }))) })) ]))
 
 const fileSelector = Component(props => compose(
   fold(props),

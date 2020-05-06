@@ -11,4 +11,4 @@ const styles = {
 export default Component(props => compose(
   fold(props),
   reduce(concat, nothing()))([
-    image.contramap(always({ src: `assets/project_settings${props.theme === 'light' ? '_light' : ''}.png`, width: 1350, height: 879 }))]))
+    image.contramap(always({ src: `assets/project_settings${props.theme === 'light' ? '_light' : ''}.png`, width: 1351, height: 781 }))]))

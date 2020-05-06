@@ -1,8 +1,9 @@
 import { render } from 'react-dom'
 import { Component, fold, toContainer, nothing,
-  useStyles, useState, useSelector, useDispatch, useJssProvider, useStoreProvider, fromClass, fromElement } from './common/component'
+  useStyles, useState, useSelector, useDispatch, useJssProvider,
+  useStoreProvider, fromClass, fromElement, branch } from './common/component'
 import { compose, reduce, concat, merge, map, __, prop,
-  curry, always, omit } from 'ramda'
+  curry, always, omit, evolve, applyTo, head, path, propEq, not, when } from 'ramda'
 import { neuralMagicLogo, neuralMagicLogoText, image } from './components'
 import { useHover } from './common/hooks'
 import { useHashRouter, useRoute } from './common/router'
@@ -12,6 +13,7 @@ import store from './store'
 import { selectedTheme } from './store/selectors/theme'
 import { selectedProject } from './store/selectors/projects'
 import { changeTheme } from './store/actions/theme'
+import { saveProjectToLocal, createProjectFromFile } from './store/actions/projects'
 import { isDevelopment } from './common/environment'
 import { newProjectDialog } from './projects/import'
 import { Form } from 'react-bootstrap'
@@ -115,6 +117,8 @@ const sideMenuItemStyles = {
     alignItems: 'center',
     cursor: 'pointer',
     userSelect: 'none',
+    pointerEvents: props.disabled ? 'none' : 'inherit',
+    opacity: props.disabled ? 0.5 : 1,
     background: props.isHovered ? '#CDD2D8' : 'transparent',
     transition: 'all 0.2s ease-in'
   }),
@@ -140,7 +144,23 @@ const sideMenuItemStyles = {
     marginRight: 11,
     opacity: props.isHovered ? 1 : 0,
     transition: 'opacity 0.2s ease-in-out'
-  })
+  }),
+  fileInput: {
+    width: 0.1,
+    height: 0.1,
+    opacity: 0,
+    overflow: 'hidden',
+    position: 'absolute',
+    zIndex: -1
+  },
+  fileInputLabel: {
+    display: 'flex',
+    width: '100%',
+    height: '100%',
+    alignItems: 'center',
+    marginBottom: 0,
+    cursor: 'pointer'
+  }
 }
 
 const headerStyles = {
@@ -242,16 +262,30 @@ const mainContentStyles = {
 const sideMenuItems = [
   { onClick: props => { props.setNewProjectModalShow(true); props.setIsMenuHovered(false); },
     srcNormal: 'assets/new_project.svg', srcHover: 'assets/new_project_hover.svg', text: 'New Project' },
-  { srcNormal: 'assets/open_model.svg', srcHover: 'assets/open_model_hover.svg', text: 'Open Project' },
-  { srcNormal: 'assets/visualizer.svg', srcHover: 'assets/visualizer_hover.svg', text: 'Visualizer' },
-  { srcNormal: 'assets/save_model.svg', srcHover: 'assets/save_model_hover.svg', text: 'Save Project' }]
+  { srcNormal: 'assets/open_model.svg', srcHover: 'assets/open_model_hover.svg', text: 'Open Project',
+    fileSelect: true, accept: '.nmprj', onFileSelect: curry((props, file) => props.dispatch(createProjectFromFile(file))) },
+  { srcNormal: 'assets/visualizer.svg', srcHover: 'assets/visualizer_hover.svg', text: 'Visualizer',
+    disabled: props => !props.selectedProject },
+  { srcNormal: 'assets/save_model.svg', srcHover: 'assets/save_model_hover.svg', text: 'Save Project',
+    disabled: props => !props.selectedProject, onClick: props => props.dispatch(saveProjectToLocal()) }]
+
+const isFileSelectItem = propEq('fileSelect', true)
+const nothingIfNoFileSelect = branch(compose(not, isFileSelectItem), nothing())
 
 const sideMenuItem = Component(props => compose(
   fold(props),
   useHover('isHovered'),
   useStyles(sideMenuItemStyles),
   map(toContainer({ className: prop('sideMenuItem'), onClick: props.onClick })),
+  when(always(isFileSelectItem(props)), c =>
+    fromElement('label').contramap(props => ({ for: 'openProjectInput', className: props.classes.fileInputLabel, children: c.fold(props) }))),
   reduce(concat, nothing()))([
+    nothingIfNoFileSelect(fromElement('input').contramap(props => ({
+      id: 'openProjectInput', type: 'file', accept: props.accept, className: props.classes.fileInput,
+      onChange: compose(
+        props.onFileSelect(props),
+        head,
+        path(['target', 'files'])) }))),
     fromElement('span').contramap(props => ({ className: props.classes.sideMenuItemText, children: props.text })),
     image.contramap(props => ({
       src: props.srcNormal,
@@ -274,10 +308,11 @@ const sideMenuLockButton = Component(props => compose(
 
 const sideMenu = Component(props => compose(
   fold(omit(['ref'], props)),
+  useDispatch,
   useModal('NewProject', newProjectDialog),
   map(toContainer({ className: prop('sideMenu') })),
   reduce(concat, nothing()),
-  map(compose(sideMenuItem.contramap, merge, merge({ width: 30, height: 30 }))))(
+  map(compose(sideMenuItem.contramap, merge, evolve({ disabled: applyTo(props) }))))(
   props.items))
 
 const withSideMenu = curry((items, c) => Component(props => compose(
@@ -328,7 +363,6 @@ const helpMenu = Component(props => compose(
 
 const header = Component(props => compose(
   fold(props),
-  useSelector('selectedProject', selectedProject),
   useStyles(headerStyles),
   map(toContainer({ className: prop('header') })),
   reduce(concat, nothing()))([
@@ -349,6 +383,7 @@ const app = Component(props => compose(
   useHashRouter,
   useJssProvider({ id: { minify: !isDevelopment() } }),
   useSelector('theme', selectedTheme),
+  useSelector('selectedProject', selectedProject),
   useStyles(appStyles),
   withSideMenu(sideMenuItems),
   map(toContainer({ className: prop('mainContainer') })),

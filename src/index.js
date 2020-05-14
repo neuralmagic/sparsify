@@ -19,6 +19,9 @@ import { newProjectDialog } from './projects/import'
 import { Form } from 'react-bootstrap'
 import projectSettings from './projects/projectSettings'
 import profileSelector from './profiles/selector'
+import epochScheduler from './modifiers/epochScheduler'
+import activeProfile from './profiles/activeProfile'
+import modifiersList from './modifiers/modifiersList'
 import './common/styles/reset.css'
 import 'bootstrap/dist/css/bootstrap.min.css'
 
@@ -31,7 +34,9 @@ const appStyles = {
       display: 'flex',
       fontFamily: "'Open Sans Regular', 'Open Sans', sans-serif",
       whiteSpace: 'nowrap'
-    }
+    },
+    '.vega-embed.has-actions': { paddingRight: '0!important', width: '100%!important' },
+    '.vega-embed.has-actions details': { display: "none" }
   },
   mainContainer: props => ({
     display: 'flex',
@@ -52,6 +57,13 @@ const appStyles = {
     ...(props.theme === 'light' && ({
       backgroundColor: 'white'
     }))
+  }),
+  layerControls: props => ({
+    background: props.theme === 'dark' ? '#1d2022' : '#f8f9fa',
+    display: 'flex',
+    paddingTop: 40,
+    paddingLeft: 85,
+    paddingBottom: 30
   })
 }
 
@@ -62,7 +74,7 @@ const sideMenuStyles = {
     maxWidth: 200,
     position: 'fixed',
     top: 0,
-    zIndex: 1,
+    zIndex: 3,
     display: 'flex',
     overflow: 'hidden',
     flexDirection: 'column',
@@ -81,7 +93,7 @@ const sideMenuStyles = {
     paddingTop: 30
   },
   sideMenuPlaceholder: props => ({
-    width: props.isLocked ? 200 : 53,
+    width: props.isLocked ? 214 : 53,
     transition: 'width 0.2s ease-in'
   }),
   logoText: props => ({
@@ -173,7 +185,8 @@ const headerStyles = {
     paddingLeft: 50,
     flexShrink: 0,
     position: 'sticky',
-    top: 0
+    top: 0,
+    zIndex: 2
   },
   headerTitle: {
     color: 'white',
@@ -379,6 +392,13 @@ const mainContent = Component(props => compose(
   map(toContainer({ className: prop('mainContent') })))(
   image.contramap(always({ src: `assets/main_content_stub${props.theme === 'light' ? '_light' : ''}.png`, width: 1178, height: 631 }))))
 
+const layerControls = Component(props => compose(
+  fold(props),
+  map(toContainer({ className: prop('layerControls') })),
+  reduce(concat, nothing()))([
+    activeProfile,
+    modifiersList ]))
+
 const app = Component(props => compose(
   fold(props),
   useHashRouter,
@@ -392,6 +412,8 @@ const app = Component(props => compose(
     header,
     useRoute('/', mainContent),
     redirectToRootIfNoSelectedProject(useRoute('/project/:id', profileSelector)),
-    redirectToRootIfNoSelectedProject(useRoute('/project/:id', projectSettings))]))
+    useRoute('/project/:id', epochScheduler),
+    useRoute('/project/:id', layerControls),
+    useRoute('/project/:id', projectSettings)]))
 
 render(useStoreProvider(store, app.fold({})), document.body)

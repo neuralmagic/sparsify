@@ -10,7 +10,8 @@ const image = fromClass(Image).contramap(merge({ alt: 'image' }))
 export const dropdownMenuStyles = {
   dropdownMenu: {
     display: 'flex',
-    flexDirection: 'column'
+    flexDirection: 'column',
+    zIndex: 9999
   },
   dropdownMenuItem: {
     display: 'flex',

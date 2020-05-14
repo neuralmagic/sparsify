@@ -5,13 +5,15 @@ import builtins from 'rollup-plugin-node-builtins'
 import { terser } from 'rollup-plugin-terser'
 import cleanup from 'rollup-plugin-cleanup'
 import replace from 'rollup-plugin-replace'
-import nodeResolve from 'rollup-plugin-node-resolve'
+import resolve from '@rollup/plugin-node-resolve'
 import json from 'rollup-plugin-json'
 import * as react from 'react'
 import * as reactDom from 'react-dom'
 import * as reactIs from 'react-is'
 import * as propTypes from 'prop-types'
 import css from 'rollup-plugin-css-only'
+import * as vega from 'vega'
+import * as vegaLite from 'vega-lite'
 
 export default {
     input:  'src/index.js',
@@ -29,10 +31,8 @@ export default {
             filename: 'index.html'
         }),
         css({ output: 'public/built/bundle.css' }),
-        nodeResolve({
-            jsnext:  true,
-            main:    true,
-            browser: true
+        resolve({
+          mainFields: ['browser', 'jsnext', 'main']
         }),
         json(),
         commonJS({
@@ -44,7 +44,10 @@ export default {
                 'react-is': Object.keys(reactIs),
                 'prop-types': Object.keys(propTypes),
                 'node_modules/react-redux/node_modules/react-is/index.js': ['isValidElementType', 'isContextConsumer'],
-                'node_modules/react-router/node_modules/react-is/index.js': ['isValidElementType', 'isContextConsumer']
+                'node_modules/react-router/node_modules/react-is/index.js': ['isValidElementType', 'isContextConsumer'],
+                'node_modules/react-router-dom/index.js': ['Route', 'Redirect', 'BrowserRouter', 'HashRouter'],
+                'vegaImport': Object.keys(vega),
+                'vegaLiteImport': Object.keys(vegaLite)
             }
         }),
         builtins(),
@@ -56,6 +59,6 @@ export default {
             ]
         }),
         terser(),
-        cleanup({ comments: 'none' })
+        //cleanup({ comments: 'none' })
     ]
 }

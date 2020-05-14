@@ -2,7 +2,7 @@ import babel from 'rollup-plugin-babel'
 import html from 'rollup-plugin-bundle-html'
 import commonJS from 'rollup-plugin-commonjs'
 import replace from 'rollup-plugin-replace'
-import nodeResolve from 'rollup-plugin-node-resolve'
+import resolve from '@rollup/plugin-node-resolve'
 import livereload from 'rollup-plugin-livereload'
 import serve from 'rollup-plugin-serve'
 import builtins from 'rollup-plugin-node-builtins'
@@ -12,6 +12,8 @@ import * as react from 'react'
 import * as reactDom from 'react-dom'
 import * as reactIs from 'react-is'
 import * as propTypes from 'prop-types'
+import * as vega from 'vega'
+import * as vegaLite from 'vega-lite'
 
 export default {
     input:  'src/index.js',
@@ -35,10 +37,8 @@ export default {
             filename: 'index.html'
         }),
         css({ output: 'public/built/bundle.css' }),
-        nodeResolve({
-            jsnext:  true,
-            main:    true,
-            browser: true
+        resolve({
+            mainFields: ['browser', 'jsnext', 'main']
         }),
         replace({
             'process.env.NODE_ENV': JSON.stringify('development')
@@ -52,7 +52,10 @@ export default {
                 'react-is': Object.keys(reactIs),
                 'prop-types': Object.keys(propTypes),
                 'node_modules/react-redux/node_modules/react-is/index.js': ['isValidElementType', 'isContextConsumer'],
-                'node_modules/react-router/node_modules/react-is/index.js': ['isValidElementType', 'isContextConsumer']
+                'node_modules/react-router/node_modules/react-is/index.js': ['isValidElementType', 'isContextConsumer'],
+                'node_modules/react-router-dom/index.js': ['Route', 'Redirect', 'BrowserRouter', 'HashRouter'],
+                'vegaImport': Object.keys(vega),
+                'vegaLiteImport': Object.keys(vegaLite)
             }
         }),
         livereload({

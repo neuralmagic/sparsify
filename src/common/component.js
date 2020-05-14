@@ -168,7 +168,7 @@ export const toContainer = compose(
       when(always(s.onMouseEnter), merge({ onMouseEnter: e => s.onMouseEnter(props, e) })),
       when(always(s.onClick),      merge({ onClick: e => s.onClick(props, e) })))({
       className: unless(either(is(String), isNil), classFn => classFn(props.classes))(s.className),
-      ref: s.ref || props.ref,
+      ref: s.ref || (props && props.ref),
       style: s.style
     }),
     c),

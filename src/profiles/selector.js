@@ -11,10 +11,12 @@ const styles = {
     background: props.theme === 'dark' ? 'linear-gradient(rgb(28, 31, 34) 22%, rgb(0, 0, 0) 100%)' : 'rgba(149, 167, 183, 1)',
     height: 105,
     flexShrink: 0,
+    zIndex: 1,
     display: 'flex',
     flexDirection: 'row',
     paddingLeft: 65,
-    borderBottom: `7px solid ${props.theme === 'dark' ? '#61676D' : 'white'}`
+    borderBottom: `7px solid ${props.theme === 'dark' ? '#61676D' : 'white'}`,
+    boxShadow: props.theme === 'dark' ? 'rgba(0, 0, 0, 0.498) 0px 2px 2px' : 'rgba(0, 0, 0, 0.247) 0px 2px 2px'
   }),
   addProfileContainer: props => ({
     cursor: 'pointer',

@@ -38,6 +38,7 @@ export const createProject = ({ name, profiles }) => dispatch => {
 
 export const createProjectFromFile = file => dispatch => {
   const reader = new FileReader()
+
   reader.addEventListener('load', () => {
     const { name, profiles } = JSON.parse(reader.result)
 
@@ -47,12 +48,12 @@ export const createProjectFromFile = file => dispatch => {
 }
 
 const saveFile = (data, filename, type) => {
-  const file = new Blob([data], {type: type})
+  const file = new Blob([data], { type })
 
   if (window.navigator.msSaveOrOpenBlob) // IE10+
     window.navigator.msSaveOrOpenBlob(file, filename)
   else {
-    const a = document.createElement("a")
+    const a = document.createElement('a')
     const url = URL.createObjectURL(file)
 
     a.href = url

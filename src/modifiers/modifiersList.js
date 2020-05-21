@@ -6,7 +6,7 @@ import { allModifiers, selectedModifier } from '../store/selectors/modifiers'
 import { selectModifier, addModifier, removeSelectedModifier } from '../store/actions/modifiers'
 
 const styles = {
-  container: props => ({
+  container: () => ({
     display: 'flex',
     flexDirection: 'column',
     paddingLeft: 60
@@ -42,7 +42,7 @@ const modifierStyles = {
     textAlign: 'center',
     fontSize: 10,
     color: 'white',
-    background: props.theme === 'dark' ? (props.selected ? '#5C93E3' : '#2E4777') : (props.selected ? 'rgba(112, 176, 234, 1)' : 'rgba(193, 216, 238, 1)'),
+    background: props.theme === 'dark' ? props.selected ? '#5C93E3' : '#2E4777' : props.selected ? 'rgba(112, 176, 234, 1)' : 'rgba(193, 216, 238, 1)',
     borderRadius: 2,
     lineHeight: '18px'
   })
@@ -92,5 +92,5 @@ export default Component(props => compose(
   useStyles(styles),
   map(toContainer({ className: prop('container') })),
   reduce(concat, nothing()))([
-    fromElement('span').contramap(props => merge(props, { children: 'Modifiers', className: props.classes.title })),
-    list ]))
+  fromElement('span').contramap(props => merge(props, { children: 'Modifiers', className: props.classes.title })),
+  list ]))

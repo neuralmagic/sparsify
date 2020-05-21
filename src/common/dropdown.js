@@ -59,8 +59,7 @@ export const dropdownMenuItem = Component(props => compose(
   concat(__, nothingIfNoExtraContent(props.extraContent)),
   concat(__, Component(props => <span className={props.classes.dropdownMenuItemLabel}>{props.label}</span>)),
   map(toContainer({ className: prop('dropdownMenuItemImageContainer') })))(
-  image.contramap(always({ src: props.icon, width: props.iconWidth, height: props.iconHeight }))
-  ))
+  image.contramap(always({ src: props.icon, width: props.iconWidth, height: props.iconHeight }))))
 
 export const dropdownMenu = Component(props => compose(
   fold(props),

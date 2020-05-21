@@ -4,8 +4,8 @@ import { combineReducers } from 'redux'
 import { createReducer } from './util'
 
 const defaultModifiers = [
-  {id: uuid(), label: "LRM", min: 0, max: 100, range: [{ start: 20, end: 55 }]},
-  {id: uuid(), label: "LM1", min: 0, max: 100, range: [{ start: 34, end: 55 }, { start: 10, end: 25 }, { start: 80, end: 90 }]}]
+  { id: uuid(), label: 'LRM', min: 0, max: 100, range: [{ start: 20, end: 55 }] },
+  { id: uuid(), label: 'LM1', min: 0, max: 100, range: [{ start: 34, end: 55 }, { start: 10, end: 25 }, { start: 80, end: 90 }] }]
 
 const all = createReducer(defaultModifiers, {
   'CREATE_PROJECT': always(defaultModifiers),

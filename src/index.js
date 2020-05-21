@@ -32,11 +32,11 @@ const appStyles = {
       height: '100%',
       position: 'fixed',
       display: 'flex',
-      fontFamily: "'Open Sans Regular', 'Open Sans', sans-serif",
+      fontFamily: '"Open Sans Regular", "Open Sans", "sans-serif"',
       whiteSpace: 'nowrap'
     },
     '.vega-embed.has-actions': { paddingRight: '0!important', width: '100%!important' },
-    '.vega-embed.has-actions details': { display: "none" }
+    '.vega-embed.has-actions details': { display: 'none' }
   },
   mainContainer: props => ({
     display: 'flex',
@@ -45,18 +45,18 @@ const appStyles = {
     flexDirection: 'column',
     overflowX: 'hidden',
     overflowY: 'scroll',
-    ...(props.theme === 'dark' && ({
+    ...props.theme === 'dark' && {
       backgroundColor: '#1c1f22',
-      backgroundImage: "url('assets/bg.png')",
+      backgroundImage: 'url("assets/bg.png")',
       backgroundPosition: 'left top',
       backgroundRepeat: 'repeat',
       backgroundAttachment: 'scroll',
       backgroundSize: '46px 23px',
       backgroundOrigin: 'border-box'
-    })),
-    ...(props.theme === 'light' && ({
+    },
+    ...props.theme === 'light' && {
       backgroundColor: 'white'
-    }))
+    }
   }),
   layerControls: props => ({
     background: props.theme === 'dark' ? '#1d2022' : '#f8f9fa',
@@ -70,7 +70,7 @@ const appStyles = {
 const sideMenuStyles = {
   sideMenuContainer: props => ({
     background: props.theme === 'dark' ? '#E9ECEF' : 'white',
-    width: (props.isMenuHovered || props.isLocked) ? 185 : 53,
+    width: props.isMenuHovered || props.isLocked ? 185 : 53,
     maxWidth: 200,
     position: 'fixed',
     top: 0,
@@ -85,9 +85,7 @@ const sideMenuStyles = {
     '& > img': {
       marginLeft: 10
     },
-    ...(props.theme === 'light' && ({
-      boxShadow: '1px 0px 8px rgba(0, 0, 0, 0.196078431372549)'
-    }))
+    ...props.theme === 'light' && { boxShadow: '1px 0px 8px rgba(0, 0, 0, 0.196078431372549)' }
   }),
   sideMenu: {
     paddingTop: 30
@@ -244,8 +242,7 @@ const userMenuStyles = {
     marginRight: 5,
     flexShrink: 0,
     userSelect: 'none'
-  },
-  
+  }
 }
 
 const helpStyles = {
@@ -294,21 +291,21 @@ const sideMenuItem = Component(props => compose(
   when(always(isFileSelectItem(props)), c =>
     fromElement('label').contramap(props => ({ for: 'openProjectInput', className: props.classes.fileInputLabel, children: c.fold(props) }))),
   reduce(concat, nothing()))([
-    nothingIfNoFileSelect(fromElement('input').contramap(props => ({
-      id: 'openProjectInput', type: 'file', accept: props.accept, className: props.classes.fileInput,
-      onChange: compose(
-        props.onFileSelect(props),
-        head,
-        path(['target', 'files'])) }))),
-    fromElement('span').contramap(props => ({ className: props.classes.sideMenuItemText, children: props.text })),
-    image.contramap(props => ({
-      src: props.srcNormal,
-      className: props.classes.sideMenuItemImage,
-      width: 30, height: 30 })),
-    image.contramap(props => ({
-      src: props.srcHover,
-      className: props.classes.sideMenuItemImageHover,
-      width: 30, height: 30 }))]))
+  nothingIfNoFileSelect(fromElement('input').contramap(props => ({
+    id: 'openProjectInput', type: 'file', accept: props.accept, className: props.classes.fileInput,
+    onChange: compose(
+      props.onFileSelect(props),
+      head,
+      path(['target', 'files'])) }))),
+  fromElement('span').contramap(props => ({ className: props.classes.sideMenuItemText, children: props.text })),
+  image.contramap(props => ({
+    src: props.srcNormal,
+    className: props.classes.sideMenuItemImage,
+    width: 30, height: 30 })),
+  image.contramap(props => ({
+    src: props.srcHover,
+    className: props.classes.sideMenuItemImageHover,
+    width: 30, height: 30 }))]))
 
 const sideMenuLockButton = Component(props => compose(
   fold(omit(['ref'], props)),
@@ -337,11 +334,12 @@ const withSideMenu = curry((items, c) => Component(props => compose(
   useStyles(sideMenuStyles),
   concat(__, fromElement('div').contramap(props => ({ className: props.classes.sideMenuPlaceholder }))),
   map(toContainer({ className: prop('sideMenuContainer') })),
-  reduce(concat, nothing()))([
+  reduce(concat, nothing()))(
+  [
     neuralMagicLogo.contramap(merge({ width: 32.7, height: 30 })),
     neuralMagicLogoText.contramap(props => merge(props, { className: props.classes.logoText, width: 86.5, height: 30 })),
     sideMenu.contramap(merge({ items })),
-    sideMenuLockButton])))
+    sideMenuLockButton ])))
 
 const themeCheckbox = fromClass(Form.Check).contramap(props => merge(props, {
   type: 'switch', checked: props.theme === 'dark', label: '', id: 'themeCheck' }))
@@ -395,7 +393,8 @@ const mainContent = Component(props => compose(
 const layerControls = Component(props => compose(
   fold(props),
   map(toContainer({ className: prop('layerControls') })),
-  reduce(concat, nothing()))([
+  reduce(concat, nothing()))(
+  [
     activeProfile,
     modifiersList ]))
 
@@ -408,7 +407,8 @@ const app = Component(props => compose(
   useStyles(appStyles),
   withSideMenu(sideMenuItems),
   map(toContainer({ className: prop('mainContainer') })),
-  reduce(concat, nothing()))([
+  reduce(concat, nothing()))(
+  [
     header,
     useRoute('/', mainContent),
     redirectToRootIfNoSelectedProject(useRoute('/project/:id', profileSelector)),

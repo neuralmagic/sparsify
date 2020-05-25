@@ -95,35 +95,35 @@ const fileInput = Component(props => compose(
     children: fromElement('label').contramap(always({ for: 'newProjectFileInput', children: 'Browse' })).fold({}),
     className: props.classes.browseButton,
     variant: props.theme === 'light' ? 'outline-primary' : 'secondary' })),
-    nothingWhenNoFile(fileName) ]))
+  nothingWhenNoFile(fileName) ]))
 
 const buttons = Component(props => compose(
   fold(props),
   map(toContainer({ className: prop('buttonsContainer') })),
   reduce(concat, nothing()))([
-    fromClass(Button).contramap(merge({
-      children: 'Cancel',
-      variant: props.theme === 'light' ? 'outline-primary' : 'secondary',
-      onClick: props.closeModal })),
-    fromClass(Button).contramap(merge({
-      children: 'Next',
-      variant: 'primary',
-      disabled: !isNextEnabled(props),
-      onClick: () => props.formState === 'fileSelect' ?
-        props.setFormState('analysing') : (props.closeModal(), props.dispatch(createProject({ name: props.projectName }))) })) ]))
+  fromClass(Button).contramap(merge({
+    children: 'Cancel',
+    variant: props.theme === 'light' ? 'outline-primary' : 'secondary',
+    onClick: props.closeModal })),
+  fromClass(Button).contramap(merge({
+    children: 'Next',
+    variant: 'primary',
+    disabled: !isNextEnabled(props),
+    onClick: () => props.formState === 'fileSelect' ?
+      props.setFormState('analysing') : (props.closeModal(), props.dispatch(createProject({ name: props.projectName }))) })) ]))
 
 const fileSelector = Component(props => compose(
   fold(props),
   concat(inputLabel.contramap(merge({ label: 'A ONNX model is required to start' }))),
   reduce(concat, nothing()))([
-    fileInput,
-    inputLabel.contramap(merge({ label: 'Name this project' })),
-    fromElement('input').contramap(always({
-      ref: props.projectNameInput,
-      className: props.classes.projectInput,
-      value: props.projectName,
-      onChange: e => props.setProjectName(e.target.value)
-    }))]))
+  fileInput,
+  inputLabel.contramap(merge({ label: 'Name this project' })),
+  fromElement('input').contramap(always({
+    ref: props.projectNameInput,
+    className: props.classes.projectInput,
+    value: props.projectName,
+    onChange: e => props.setProjectName(e.target.value)
+  }))]))
 
 export const newProjectDialog = Component(props => compose(
   fold(props),
@@ -135,5 +135,5 @@ export const newProjectDialog = Component(props => compose(
   useRef('projectNameInput'),
   useDialog({ title: props => isAnalysing(props) ? 'Analyzing' : 'New Project' }),
   reduce(concat, nothing()))([
-    nothingWhenAnalysing(fileSelector),
-    buttons]))
+  nothingWhenAnalysing(fileSelector),
+  buttons]))

@@ -56,7 +56,7 @@ const image = fromClass(Image).contramap(merge({ alt: 'image' }))
 
 const overlay = modal => Component(props => compose(
   fold(props),
-  map(toContainer({ className: prop('overlay' )})))(
+  map(toContainer({ className: prop('overlay') })))(
   modal))
 
 export const useModal = curry((name, modal, c) => {

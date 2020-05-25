@@ -17,7 +17,7 @@ const asArray = x => Array.isArray(x) ? x : Array.of(x)
 export { fold }
 export const classToFn = C => props => <C {...props}/>
 
-export const buildComponentWithChildren = curry((Comp, settings, c) =>	
+export const buildComponentWithChildren = curry((Comp, settings, c) =>
   Component(props => compose(
     fold(props),
     fromClass(Comp).contramap,
@@ -50,7 +50,7 @@ export const useThunkReducer = (reducer, initialState) => {
 
   const thunkDispatch = action => {
     if (typeof action === 'function') {
-        return action(thunkDispatch, state)
+      return action(thunkDispatch, state)
     }
 
     return dispatch(action)
@@ -133,6 +133,7 @@ export const useJssProvider = curry((settings, c) => Component(props => compose(
 
 export const useTheme = c => Component(props => {
   const theme = jssUseTheme()
+
   return c.fold(merge(props, { theme }))
 })
 
@@ -168,7 +169,7 @@ export const toContainer = compose(
       when(always(s.onMouseEnter), merge({ onMouseEnter: e => s.onMouseEnter(props, e) })),
       when(always(s.onClick),      merge({ onClick: e => s.onClick(props, e) })))({
       className: unless(either(is(String), isNil), classFn => classFn(props.classes))(s.className),
-      ref: s.ref || (props && props.ref),
+      ref: s.ref || props && props.ref,
       style: s.style
     }),
     c),

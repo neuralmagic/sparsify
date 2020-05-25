@@ -4,7 +4,7 @@ import { allModifiers, selectedModifier } from '../selectors/modifiers'
 export const addModifier = () => (dispatch, getState) => {
   const numModifiers = allModifiers(getState()).length
 
-  dispatch({ type: 'ADD_MODIFIER', modifier: { id: uuid(), label: `LM${numModifiers}`, min: 0, max: 100, range: [{ start: 1, end: 44}] } })
+  dispatch({ type: 'ADD_MODIFIER', modifier: { id: uuid(), label: `LM${numModifiers}`, min: 0, max: 100, range: [{ start: 1, end: 44 }] } })
 }
 
 export const selectModifier = modifier => dispatch =>

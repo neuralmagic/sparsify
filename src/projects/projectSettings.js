@@ -13,4 +13,7 @@ export default Component(props => compose(
   useStyles(styles),
   map(toContainer({ className: prop('container') })),
   reduce(concat, nothing()))([
-  image.contramap(always({ src: `assets/project_settings${props.theme === 'light' ? '_light' : ''}.png`, width: 1344, height: 614 }))]))
+  image.contramap(always({
+    src: `assets/project_settings${props.theme === 'light' ? '_light' : ''}.png`,
+    width: 1349,
+    height: 76 }))]))

@@ -11,5 +11,5 @@ export const tryCatch = f => {
   }
 }
 
-export const fromNullable = x => x != null ? Right(x) : Left(null)
+export const fromNullable = x => x !== null ? Right(x) : Left(null)
 export const fold = curry((props, v) => v.fold(props))

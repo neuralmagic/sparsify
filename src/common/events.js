@@ -19,13 +19,13 @@ const stopEventThen = next => compose(
 const path = e => e.path || e.composedPath && e.composedPath()
 
 export {
-    getEventTarget,
-    getEventValue,
-    preventDefault,
-    stopPropagation,
-    stopEvent,
-    stopEventThen,
-    getEventKey,
-    getEventKeyCode,
-    path
+  getEventTarget,
+  getEventValue,
+  preventDefault,
+  stopPropagation,
+  stopEvent,
+  stopEventThen,
+  getEventKey,
+  getEventKeyCode,
+  path
 }

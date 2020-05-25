@@ -16,54 +16,54 @@ import * as vega from 'vega'
 import * as vegaLite from 'vega-lite'
 
 export default {
-    input:  'src/index.js',
-    output: {
-        file:   'public/built/main.min.js',
-        format: 'iife'
-    },
-    plugins: [
-        json(),
-        builtins(),
-        babel({
-            babelrc: false,
-            exclude: 'node_modules/**',
-            presets: [
-                '@babel/preset-react'
-            ]
-        }),
-        html({
-            template: 'src/template.html',
-            dest:     'public/built',
-            filename: 'index.html'
-        }),
-        css({ output: 'public/built/bundle.css' }),
-        resolve({
-            mainFields: ['browser', 'jsnext', 'main']
-        }),
-        replace({
-            'process.env.NODE_ENV': JSON.stringify('development')
-        }),
-        commonJS({
-            include:      ['node_modules/**'],
-            exclude:      ['node_modules/process-es6/**'],
-            namedExports: {
-                react: Object.keys(react),
-                'react-dom': Object.keys(reactDom),
-                'react-is': Object.keys(reactIs),
-                'prop-types': Object.keys(propTypes),
-                'node_modules/react-redux/node_modules/react-is/index.js': ['isValidElementType', 'isContextConsumer'],
-                'node_modules/react-router/node_modules/react-is/index.js': ['isValidElementType', 'isContextConsumer'],
-                'node_modules/react-router-dom/index.js': ['Route', 'Redirect', 'BrowserRouter', 'HashRouter'],
-                'vegaImport': Object.keys(vega),
-                'vegaLiteImport': Object.keys(vegaLite)
-            }
-        }),
-        livereload({
-            watch: 'public'
-        }),
-        serve({
-            open:        true,
-            contentBase: 'public/built'
-        })
-    ]
+  input:  'src/index.js',
+  output: {
+    file:   'public/built/main.min.js',
+    format: 'iife'
+  },
+  plugins: [
+    json(),
+    builtins(),
+    babel({
+      babelrc: false,
+      exclude: 'node_modules/**',
+      presets: [
+        '@babel/preset-react'
+      ]
+    }),
+    html({
+      template: 'src/template.html',
+      dest:     'public/built',
+      filename: 'index.html'
+    }),
+    css({ output: 'public/built/bundle.css' }),
+    resolve({
+      mainFields: ['browser', 'jsnext', 'main']
+    }),
+    replace({
+      'process.env.NODE_ENV': JSON.stringify('development')
+    }),
+    commonJS({
+      include:      ['node_modules/**'],
+      exclude:      ['node_modules/process-es6/**'],
+      namedExports: {
+        react: Object.keys(react),
+        'react-dom': Object.keys(reactDom),
+        'react-is': Object.keys(reactIs),
+        'prop-types': Object.keys(propTypes),
+        'node_modules/react-redux/node_modules/react-is/index.js': ['isValidElementType', 'isContextConsumer'],
+        'node_modules/react-router/node_modules/react-is/index.js': ['isValidElementType', 'isContextConsumer'],
+        'node_modules/react-router-dom/index.js': ['Route', 'Redirect', 'BrowserRouter', 'HashRouter'],
+        'vegaImport': Object.keys(vega),
+        'vegaLiteImport': Object.keys(vegaLite)
+      }
+    }),
+    livereload({
+      watch: 'public'
+    }),
+    serve({
+      open:        true,
+      contentBase: 'public/built'
+    })
+  ]
 }

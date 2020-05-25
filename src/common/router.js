@@ -8,8 +8,8 @@ export const useRoute = curry((paths, c) => compose(
   reduce(concat, nothing()),
   map(path => Component(props =>
     <Route path={path} exact>
-        {({ match, location }) =>
-            match ? c.fold(mergeAll([props, match.params, queryString.parse(location.search)])) : null}
+      {({ match, location }) =>
+        match ? c.fold(mergeAll([props, match.params, queryString.parse(location.search)])) : null}
     </Route>)),
   when(is(String), of))(
   paths))

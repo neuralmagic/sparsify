@@ -66,13 +66,13 @@ const profileContainerStyle = {
     display: 'flex',
     flexDirection: 'column',
     paddingLeft: props.selected ? 10 : 10,
-    background: props.theme === 'dark' ? (props.selected ? '#61676D' : '#3E4146') : (props.selected ? 'white' : 'rgba(217, 225, 232, 1)'),
+    background: props.theme === 'dark' ? props.selected ? '#61676D' : '#3E4146' : props.selected ? 'white' : 'rgba(217, 225, 232, 1)',
     width: 120,
     borderTopLeftRadius: 5,
     borderTopRightRadius: 5,
     borderBottomLeftRadius: props.selected ? 0 : 5,
     borderBottomRightRadius: props.selected ? 0 : 5,
-    color: props.theme === 'dark' ? (props.selected ? 'white' : '#AAAAAA') : (props.selected ? '#495057' : '#868E96'),
+    color: props.theme === 'dark' ? props.selected ? 'white' : '#AAAAAA' : props.selected ? '#495057' : '#868E96',
     marginBottom: props.selected ? 0 : 7,
     paddingBottom: props.selected ? 7 : 0,
     '&:hover': {
@@ -80,8 +80,8 @@ const profileContainerStyle = {
       color: props.theme === 'dark' ? 'white' : '#495057'
     },
     boxShadow: props.theme === 'dark' ?
-      (props.selected ? 'none' : '2px 2px 3px rgba(0, 0, 0, 0.501960784313725)') :
-      (props.selected ? 'none' : '2px 2px 3px rgba(0, 0, 0, 0.250980392156863)')
+      props.selected ? 'none' : '2px 2px 3px rgba(0, 0, 0, 0.501960784313725)' :
+      props.selected ? 'none' : '2px 2px 3px rgba(0, 0, 0, 0.250980392156863)'
   }),
   name: props => ({
     paddingTop: props.selected ? 9 : 6,
@@ -118,9 +118,11 @@ const profile = Component(props => compose(
   concat(nothingIfNotSelected(inverseCornerLeft)),
   concat(__, nothingIfNotSelected(inverseCornerRight)),
   map(toContainer({ className: prop('profileContainer') })),
-  reduce(concat, nothing()))([
+  reduce(concat, nothing()))(
+  [
     fromElement('div').contramap(props => ({ className: props.classes.name, children: props.profile.name })),
-    nothingIfNoSpeedup(fromElement('div').contramap(props => ({ className: props.classes.speedupFactor,
+    nothingIfNoSpeedup(fromElement('div').contramap(props => ({
+      className: props.classes.speedupFactor,
       children: [
         props.profile.speedupFactor + 'X',
         image.contramap(props => ({ className: props.classes.speedupFactorImage, src: 'assets/go_up.svg', width: 15, height: 17 })).fold(props)] }))),
@@ -136,11 +138,11 @@ const addProfileButton = Component(props => compose(
   fold(props),
   map(toContainer({
     className: prop('addProfileContainer'),
-    onClick: () => props.dispatch(addProfile())})),
-  reduce(concat, nothing()))([
+    onClick: () => props.dispatch(addProfile()) })),
+  reduce(concat, nothing()))(
+  [
     fromElement('span').contramap(always({ className: props.classes.addProfileText, children: 'Add custom profile' })),
-    image.contramap(always({ className: props.classes.addProfileIcon, src: 'assets/add_profile.svg', width: 16, height: 16 }))
-  ]))
+    image.contramap(always({ className: props.classes.addProfileIcon, src: 'assets/add_profile.svg', width: 16, height: 16 })) ]))
 
 export default Component(props => compose(
   fold(props),
@@ -149,6 +151,7 @@ export default Component(props => compose(
   useSelector('selectedProfile', selectedProfile),
   useStyles(styles),
   map(toContainer({ className: prop('container') })),
-  reduce(concat, nothing()))([
+  reduce(concat, nothing()))(
+  [
     profileList,
     addProfileButton ]))

@@ -4,11 +4,11 @@ import { Component, fold, nothing, useStyles, toContainer, useSelector,
 import { selectedProfile } from '../store/selectors/profiles'
 
 const styles = {
-  container: props => ({
+  container: {
     display: 'flex',
     flexDirection: 'column',
     minWidth: 250
-  }),
+  },
   title: props => ({
     fontSize: 10,
     color: props.theme === 'dark' ? '#AAAAAA' : '#868E96'
@@ -24,6 +24,7 @@ export default Component(props => compose(
   useSelector('selectedProfile', selectedProfile),
   useStyles(styles),
   map(toContainer({ className: prop('container') })),
-  reduce(concat, nothing()))([
+  reduce(concat, nothing()))(
+  [
     fromElement('span').contramap(props => merge(props, { children: 'Active Profile', className: props.classes.title })),
     fromElement('span').contramap(props => merge(props, { children: props.selectedProfile && props.selectedProfile.name, className: props.classes.profileName })) ]))

@@ -5,8 +5,9 @@ export const allModifiersExpanded = compose(
   flatten,
   map(m => {
     const mProps = pick(['label', 'min', 'max', 'id'], m)
+
     return m.range.map(merge(mProps))
   }),
   path(['modifiers', 'all']))
-  
+
 export const selectedModifier = state => state.modifiers.all.find(propEq('id', state.modifiers.selected))

@@ -22,6 +22,7 @@ import profileSelector from './profiles/selector'
 import epochScheduler from './modifiers/epochScheduler'
 import activeProfile from './profiles/activeProfile'
 import modifiersList from './modifiers/modifiersList'
+import layerIndexChart from './layers/indexChart'
 import './common/styles/reset.css'
 import 'bootstrap/dist/css/bootstrap.min.css'
 
@@ -414,6 +415,7 @@ const app = Component(props => compose(
     redirectToRootIfNoSelectedProject(useRoute('/project/:id', profileSelector)),
     useRoute('/project/:id', epochScheduler),
     useRoute('/project/:id', layerControls),
-    useRoute('/project/:id', projectSettings)]))
+    useRoute('/project/:id', projectSettings),
+    useRoute('/project/:id', layerIndexChart)]))
 
 render(useStoreProvider(store, app.fold({})), document.body)

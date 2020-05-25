@@ -10,6 +10,7 @@ export const useHover = curry((name, c) => {
   useEffect(
     () => {
       const node = ref.current
+
       if (node) {
         node.addEventListener('mouseenter', handleMouseOver)
         node.addEventListener('mouseleave', handleMouseOut)
@@ -31,7 +32,7 @@ export const useHover = curry((name, c) => {
 
 export const useOutsideClick = curry((fn, c) => {
   const ref = useRef(null)
-  
+
   const handleClick = e => {
     if (ref.current && !ref.current.contains(e.target)) {
       fn()
@@ -39,10 +40,10 @@ export const useOutsideClick = curry((fn, c) => {
   }
 
   useEffect(() => {
-    document.addEventListener("click", handleClick)
+    document.addEventListener('click', handleClick)
 
     return () => {
-      document.removeEventListener("click", handleClick)
+      document.removeEventListener('click', handleClick)
     }
   }, [ref.current])
 

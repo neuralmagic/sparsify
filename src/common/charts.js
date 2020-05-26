@@ -368,115 +368,181 @@ export const epochSchedulerSpec = ({
   ]
 })
 
-export const layerIndexChartSpec = ({ data, backgroundColor }) => ({
-  data: { name: 'layers', values: data },
-  background: backgroundColor,
-  scales: [
-    {
-      name: 'sparsityScale',
-      type: 'linear',
-      range: 'height',
-      domain: { data: 'layers', field: 'sparsity' }
-    },
-    {
-      name: 'executionTimeScale',
-      type: 'linear',
-      range: 'height',
-      domain: { data: 'layers', fields: ['denseExecTime', 'sparseExecTime'] }
-    },
-    {
-      name: 'layerScale',
-      type: 'linear',
-      range: 'width',
-      domain: { data: 'layers', field: 'layer' },
-      domainMin: 1,
-      round: true
-    }
-  ],
-  axes: [
-    {
-      orient: 'bottom',
-      scale: 'layerScale',
-      title: 'Layer Index',
-      tickMinStep: 1,
-      labelColor: 'white',
-      titleColor: 'white',
-      grid: true
-    },
-    {
-      orient: 'left',
-      scale: 'sparsityScale',
-      title: 'Layer Sparsity',
-      labelColor: 'white',
-      titleColor: 'white',
-      grid: true,
-      tickCount: 10
-    },
-    {
-      orient: 'right',
-      scale: 'executionTimeScale',
-      title: 'Dense vs Sparse Execution Time',
-      labelColor: 'white',
-      titleColor: 'white',
-      tickCount: 10
-    }
-  ],
-  marks: [{
-    type: 'area',
-    from: { data: 'layers' },
-    encode: {
-      enter: {
-        x: { scale: 'layerScale', field: 'layer' },
-        y: { scale: 'executionTimeScale', field: 'denseExecTime' },
-        y2: { scale: 'executionTimeScale', value: 0 },
-        fill: { value: '#A3C9FB' },
-        fillOpacity: { value: 0.3 }
+export const layerIndexChartSpec =
+  ({ data, backgroundColor, axesColor, labelColor, gridColor, titleColor }) => ({
+    data: { name: 'layers', values: data },
+    background: backgroundColor,
+    scales: [
+      {
+        name: 'sparsityScale',
+        type: 'linear',
+        range: 'height',
+        domain: { data: 'layers', field: 'sparsity' }
+      },
+      {
+        name: 'executionTimeScale',
+        type: 'linear',
+        range: 'height',
+        domain: { data: 'layers', fields: ['denseExecTime', 'sparseExecTime'] }
+      },
+      {
+        name: 'layerScale',
+        type: 'linear',
+        range: 'width',
+        domain: { data: 'layers', field: 'layer' },
+        domainMin: 1,
+        round: true
       }
-    }
-  }, {
-    type: 'area',
-    from: { data: 'layers' },
-    encode: {
-      enter: {
-        x: { scale: 'layerScale', field: 'layer' },
-        y: { scale: 'executionTimeScale', field: 'sparseExecTime' },
-        y2: { scale: 'executionTimeScale', value: 0 },
-        fill: { value: '#7485FB' },
-        fillOpacity: { value: 0.3 }
+    ],
+    axes: [
+      {
+        orient: 'bottom',
+        scale: 'layerScale',
+        title: 'Layer Index',
+        tickMinStep: 1,
+        titleColor,
+        titlePadding: 15,
+        grid: true,
+        tickSize: 0,
+        tickCount: data.length,
+        labelPadding: 5,
+        labelFontSize: 9,
+        labelColor,
+        encode: {
+          grid: {
+            enter: { stroke: { value: gridColor } }
+          },
+          ticks: {
+            enter: {
+              stroke: { value: axesColor }
+            }
+          }
+        }
+      },
+      {
+        orient: 'left',
+        scale: 'sparsityScale',
+        title: 'Layer Sparsity',
+        titleColor,
+        grid: true,
+        tickCount: 10,
+        tickSize: 0,
+        labelPadding: 10,
+        titlePadding: 15,
+        labelFontSize: 9,
+        labelColor,
+        encode: {
+          grid: {
+            enter: { stroke: { value: gridColor } }
+          },
+          domain: {
+            enter: {
+              stroke: { value: axesColor }
+            }
+          },
+          ticks: {
+            enter: {
+              stroke: { value: axesColor }
+            }
+          }
+        }
+      },
+      {
+        orient: 'right',
+        scale: 'executionTimeScale',
+        title: 'Dense vs Sparse Execution Time',
+        titleColor,
+        tickCount: 10,
+        tickSize: 0,
+        labelPadding: 10,
+        titlePadding: 15,
+        labelFontSize: 9,
+        labelColor,
+        encode: {
+          grid: {
+            enter: { stroke: { value: gridColor } }
+          },
+          domain: {
+            enter: {
+              stroke: { value: axesColor }
+            }
+          },
+          ticks: {
+            enter: {
+              stroke: { value: axesColor }
+            }
+          }
+        }
       }
-    }
-  }, {
-    type: 'line',
-    from: { data: 'layers' },
-    encode: {
-      enter: {
-        x: { scale: 'layerScale', field: 'layer' },
-        y: { scale: 'executionTimeScale', field: 'sparseExecTime' },
-        stroke: { value: '#7485FB' }
+    ],
+    marks: [{
+      type: 'area',
+      from: { data: 'layers' },
+      encode: {
+        enter: {
+          x: { scale: 'layerScale', field: 'layer' },
+          y: { scale: 'executionTimeScale', field: 'denseExecTime' },
+          y2: { scale: 'executionTimeScale', value: 0 },
+          fill: { value: '#A3C9FB' },
+          fillOpacity: { value: 0.3 }
+        }
       }
-    }
-  }, {
-    type: 'line',
-    from: { data: 'layers' },
-    encode: {
-      enter: {
-        x: { scale: 'layerScale', field: 'layer' },
-        y: { scale: 'executionTimeScale', field: 'denseExecTime' },
-        stroke: { value: '#A3C9FB' }
+    }, {
+      type: 'area',
+      from: { data: 'layers' },
+      encode: {
+        enter: {
+          x: { scale: 'layerScale', field: 'layer' },
+          y: { scale: 'executionTimeScale', field: 'sparseExecTime' },
+          y2: { scale: 'executionTimeScale', value: 0 },
+          fill: { value: '#6994E3' },
+          fillOpacity: { value: 0.6 }
+        }
       }
-    }
-  }, {
-    type: 'line',
-    from: { data: 'layers' },
-    encode: {
-      enter: {
-        x: { scale: 'layerScale', field: 'layer' },
-        y: { scale: 'sparsityScale', field: 'sparsity' },
-        stroke: { value: '#E19325' }
+    }, {
+      type: 'line',
+      from: { data: 'layers' },
+      encode: {
+        enter: {
+          x: { scale: 'layerScale', field: 'layer' },
+          y: { scale: 'executionTimeScale', field: 'sparseExecTime' },
+          stroke: { value: '#6994E3' }
+        }
       }
-    }
-  }]
-})
+    }, {
+      type: 'line',
+      from: { data: 'layers' },
+      encode: {
+        enter: {
+          x: { scale: 'layerScale', field: 'layer' },
+          y: { scale: 'executionTimeScale', field: 'denseExecTime' },
+          stroke: { value: '#A3C9FB' }
+        }
+      }
+    }, {
+      type: 'line',
+      from: { data: 'layers' },
+      encode: {
+        enter: {
+          x: { scale: 'layerScale', field: 'layer' },
+          y: { scale: 'sparsityScale', field: 'sparsity' },
+          stroke: { value: '#E19325' }
+        }
+      }
+    }, {
+      type: 'symbol',
+      from: { data: 'layers' },
+      encode: {
+        enter: {
+          x: { scale: 'layerScale', field: 'layer' },
+          y: { scale: 'sparsityScale', field: 'sparsity' },
+          stroke: { value: '#E19325' },
+          fill: { value: 'white' },
+          size: { value: 20 }
+        }
+      }
+    }]
+  })
 
 const ChartLabel = Component(props =>
   <div className={props.classes.title}>{ props.title }</div>);

@@ -46,6 +46,7 @@ export default {
         'node_modules/react-redux/node_modules/react-is/index.js': ['isValidElementType', 'isContextConsumer'],
         'node_modules/react-router/node_modules/react-is/index.js': ['isValidElementType', 'isContextConsumer'],
         'node_modules/react-router-dom/index.js': ['Route', 'Redirect', 'BrowserRouter', 'HashRouter'],
+        'node_modules/d3-format/dist/d3-format.js': ['format'],
         'vegaImport': Object.keys(vega),
         'vegaLiteImport': Object.keys(vegaLite)
       }

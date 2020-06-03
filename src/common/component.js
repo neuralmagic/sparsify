@@ -5,7 +5,7 @@ import React, {
 } from 'react'
 import {
   compose, curry, reject, isNil, always,
-  when, is, mergeDeepRight,
+  when, is, mergeDeepRight, evolve,
   objOf, unless, either, merge, __, mergeRight, has
 } from 'ramda';
 import { createUseStyles, ThemeProvider, useTheme as jssUseTheme, JssProvider } from 'react-jss'
@@ -159,7 +159,10 @@ export const contramap = curry((f, c) => c.contramap(f))
 Component.of = compose(Component, always)
 
 export const fromClass   = compose(Component, classToFn)
-export const fromElement = type => Component(props => React.createElement(type, props))
+export const fromElement = type => Component(props =>
+  React.createElement(type, evolve({
+    className: unless(either(is(String), isNil), classFn => classFn(props.classes))
+  }, props)))
 export const nothing     = () => Component.of(null)
 export const toContainer = compose(
   s => (c, props) =>

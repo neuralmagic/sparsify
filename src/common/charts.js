@@ -369,7 +369,8 @@ export const epochSchedulerSpec = ({
 })
 
 export const layerIndexChartSpec =
-  ({ data, backgroundColor, axesColor, labelColor, gridColor, titleColor }) => ({
+  ({ data, backgroundColor, axesColor, labelColor, gridColor, titleColor,
+    denseAreaColors, denseLineColor, sparseAreaColors, sparseLineColor }) => ({
     data: { name: 'layers', values: data },
     background: backgroundColor,
     scales: [
@@ -377,6 +378,7 @@ export const layerIndexChartSpec =
         name: 'sparsityScale',
         type: 'linear',
         range: 'height',
+        nice: true,
         domain: { data: 'layers', field: 'sparsity' }
       },
       {
@@ -425,7 +427,7 @@ export const layerIndexChartSpec =
         title: 'Layer Sparsity',
         titleColor,
         grid: true,
-        tickCount: 10,
+        tickCount: 11,
         tickSize: 0,
         labelPadding: 10,
         titlePadding: 15,
@@ -452,7 +454,7 @@ export const layerIndexChartSpec =
         scale: 'executionTimeScale',
         title: 'Dense vs Sparse Execution Time',
         titleColor,
-        tickCount: 10,
+        tickCount: 11,
         tickSize: 0,
         labelPadding: 10,
         titlePadding: 15,
@@ -483,7 +485,7 @@ export const layerIndexChartSpec =
           x: { scale: 'layerScale', field: 'layer' },
           y: { scale: 'executionTimeScale', field: 'denseExecTime' },
           y2: { scale: 'executionTimeScale', value: 0 },
-          fill: { value: '#A3C9FB' },
+          fill: { value: verticalLinearGradient(denseAreaColors) },
           fillOpacity: { value: 0.3 }
         }
       }
@@ -495,8 +497,8 @@ export const layerIndexChartSpec =
           x: { scale: 'layerScale', field: 'layer' },
           y: { scale: 'executionTimeScale', field: 'sparseExecTime' },
           y2: { scale: 'executionTimeScale', value: 0 },
-          fill: { value: '#6994E3' },
-          fillOpacity: { value: 0.6 }
+          fill: { value: sparseAreaColors[0] },
+          fillOpacity: { value: 0.5 }
         }
       }
     }, {
@@ -506,7 +508,8 @@ export const layerIndexChartSpec =
         enter: {
           x: { scale: 'layerScale', field: 'layer' },
           y: { scale: 'executionTimeScale', field: 'sparseExecTime' },
-          stroke: { value: '#6994E3' }
+          stroke: { value: sparseLineColor },
+          strokeWidth: 1
         }
       }
     }, {
@@ -516,7 +519,8 @@ export const layerIndexChartSpec =
         enter: {
           x: { scale: 'layerScale', field: 'layer' },
           y: { scale: 'executionTimeScale', field: 'denseExecTime' },
-          stroke: { value: '#A3C9FB' }
+          stroke: { value: denseLineColor },
+          strokeWidth: 1
         }
       }
     }, {
@@ -532,15 +536,26 @@ export const layerIndexChartSpec =
     }, {
       type: 'symbol',
       from: { data: 'layers' },
+      interactive: true,
       encode: {
-        enter: {
+        update: {
           x: { scale: 'layerScale', field: 'layer' },
           y: { scale: 'sparsityScale', field: 'sparsity' },
           stroke: { value: '#E19325' },
           fill: { value: 'white' },
           size: { value: 20 }
+        },
+        hover: {
+          size: { value: 90 }
         }
       }
+    }],
+    signals: [{
+      name: 'tooltip',
+      value: {},
+      on: [
+        { events: 'symbol:click', update: 'datum' }
+      ]
     }]
   })
 

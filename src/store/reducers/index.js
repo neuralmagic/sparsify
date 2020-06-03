@@ -1,12 +1,14 @@
 import { combineReducers } from 'redux'
-import themeReducer from './theme'
-import projectsReducer from './projects'
-import profilesReducer from './profiles'
-import modifiersReducer from './modifiers'
+import theme from './theme'
+import projects from './projects'
+import profiles from './profiles'
+import modifiers from './modifiers'
+import metrics from './metrics'
 
 export default combineReducers({
-  theme: themeReducer,
-  projects: projectsReducer,
-  profiles: profilesReducer,
-  modifiers: modifiersReducer
+  theme,
+  projects,
+  profiles,
+  modifiers,
+  metrics
 })

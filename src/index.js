@@ -17,12 +17,12 @@ import { saveProjectToLocal, createProjectFromFile } from './store/actions/proje
 import { isDevelopment } from './common/environment'
 import { newProjectDialog } from './projects/import'
 import { Form } from 'react-bootstrap'
-import projectSettings from './projects/projectSettings'
 import profileSelector from './profiles/selector'
 import epochScheduler from './modifiers/epochScheduler'
 import activeProfile from './profiles/activeProfile'
 import modifiersList from './modifiers/modifiersList'
 import layerIndexChart from './layers/indexChart'
+import metricsList from './metrics/metricsList'
 import './common/styles/reset.css'
 import 'bootstrap/dist/css/bootstrap.min.css'
 
@@ -394,10 +394,9 @@ const mainContent = Component(props => compose(
 const layerControls = Component(props => compose(
   fold(props),
   map(toContainer({ className: prop('layerControls') })),
-  reduce(concat, nothing()))(
-  [
-    activeProfile,
-    modifiersList ]))
+  reduce(concat, nothing()))([
+  activeProfile,
+  modifiersList ]))
 
 const app = Component(props => compose(
   fold(props),
@@ -415,7 +414,7 @@ const app = Component(props => compose(
     redirectToRootIfNoSelectedProject(useRoute('/project/:id', profileSelector)),
     useRoute('/project/:id', epochScheduler),
     useRoute('/project/:id', layerControls),
-    useRoute('/project/:id', projectSettings),
+    useRoute('/project/:id', metricsList),
     useRoute('/project/:id', layerIndexChart)]))
 
 render(useStoreProvider(store, app.fold({})), document.body)

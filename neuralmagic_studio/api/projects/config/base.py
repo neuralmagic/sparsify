@@ -14,15 +14,10 @@ CONFIG_FILE = "recal.config.yaml"
 
 
 @config_api_bp.route("/", methods=["GET"])
-<<<<<<< HEAD:neuralmagic_studio/api/projects/config/base.py
 def get_recal_config(project_id: str):
     config_path = os.path.join(
         current_app.config["PROJECT_ROOT"], project_id, CONFIG_FILE
     )
-=======
-def get_recal_config(model_id):
-    config_path = os.path.join(current_app.config["MODEL_ROOT"], model_id, CONFIG_FILE)
->>>>>>> rename config files:server/blueprints/config_api_blueprint.py
     if not os.path.isfile(config_path):
         return {"message": f"Config file for {project_id} does not exist"}, 404
 

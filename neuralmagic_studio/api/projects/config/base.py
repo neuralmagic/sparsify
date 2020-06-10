@@ -4,42 +4,25 @@ import yaml
 
 from flask import Blueprint, request, current_app
 
+from neuralmagic_studio.utils import get_path, ProjectConfig, RecalProject
+
 __all__ = ["config_api_bp"]
 
 config_api_bp = Blueprint(
-    "config_api", __name__, url_prefix="/api/projects/<project_id>/config"
+    "config_api", __name__, url_prefix="/api/projects/<project_id>/config/export"
 )
 
-CONFIG_FILE = "recal.config.yaml"
 
-
-@config_api_bp.route("/", methods=["GET"])
+@config_api_bp.route("/", methods=["GET", "POST"])
 def get_recal_config(project_id: str):
-    config_path = os.path.join(
-        current_app.config["PROJECT_ROOT"], project_id, CONFIG_FILE
-    )
-    if not os.path.isfile(config_path):
-        return {"message": f"Config file for {project_id} does not exist"}, 404
+    if request.method == "GET":
+        return RecalProject(get_path(project_id)).config.yaml
 
-    with open(config_path, "r") as yml_file:
-        yml_object = yaml.safe_load(yml_file)
-        yml_json = json.dumps(yml_object)
+    elif request.method == "POST":
+        missing_fields_message = get_missing_fields_message(["config"])
+        if missing_fields_message:
+            return missing_fields_message, 400
+        config = request.json()["config"]
 
-    return yml_json
-
-
-@config_api_bp.route("export", methods=["POST"])
-def export_recal_config(project_id: str):
-    request_body = request.get_json()
-
-    target_directory = os.path.join(current_app.config["PROJECT_ROOT"], project_id)
-
-    if not os.path.exists(target_directory):
-        return {"message": f"Path {target_directory} does not exist"}, 404
-
-    target_file = os.path.join(target_directory, CONFIG_FILE)
-
-    with open(target_file, "w") as yml_file:
-        yml_file.write(yaml.dump(request_body))
-
-    return {"configPath": target_file}
+        ProjectConfig(project_id).overwrite(config)
+        return RecalProject(get_path(project_id)).config.yaml

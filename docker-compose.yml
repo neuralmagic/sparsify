@@ -12,7 +12,7 @@ services:
       - "7890"
   server:
     build: .
-    command: python3 server/main.py
+    command: python3 neuralmagic_studio/main.py
     volumes: 
       - type: "bind"
         source: .

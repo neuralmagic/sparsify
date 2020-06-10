@@ -10,7 +10,41 @@ from onnx import numpy_helper
 from onnx.helper import get_attribute_value, ValueInfoProto
 import onnxruntime as rt
 
-__all__ = ["Model", "PrunableNode"]
+try:
+    from neuralmagic.model import benchmark_model
+except OSError:
+    benchmark_model = None
+except ModuleNotFoundError:
+    benchmark_model = None
+
+DEFAULT_LOSS_SPARSITY_LEVELS = [
+    0,
+    0.05,
+    0.2,
+    0.4,
+    0.6,
+    0.7,
+    0.8,
+    0.9,
+    0.95,
+    0.975,
+    0.99,
+]
+DEFAULT_PERF_SPARSITY_LEVELS = [
+    None,
+    0.4,
+    0.6,
+    0.7,
+    0.8,
+    0.85,
+    0.875,
+    0.9,
+    0.925,
+    0.95,
+    0.975,
+    0.99,
+]
+__all__ = ["RecalModel"]
 
 
 def _is_prunable(node) -> bool:
@@ -42,10 +76,10 @@ def _node_name(node) -> str:
     return node.name if node.name else node.output[0]
 
 
-class Model:
-    def __init__(self, path: str):
+class RecalModel:
+    def __init__(self, path):
+        self._path = path
         self._model = onnx.load_model(path)
-        self._path = "/".join(path.split("/")[:-1])
         onnx.checker.check_model(self._model)
 
         prunable_nodes = [node for node in self._model.graph.node if _is_prunable(node)]
@@ -59,6 +93,8 @@ class Model:
             self._model.graph.output.append(intermediate_layer_value_info)
 
         sess = rt.InferenceSession(self._model.SerializeToString())
+
+        self._input_shapes = [inp.shape for inp in sess.get_inputs()]
         node_to_shape = reduce(
             lambda accum, current: (
                 accum.update({output_to_node[current.name]: current.shape}) or accum
@@ -95,6 +131,10 @@ class Model:
         ]
 
     @property
+    def prunable_nodes(self) -> List:
+        return self._prunable_nodes
+
+    @property
     def prunable_layers(self) -> List[Dict]:
         return [node.layer_info for node in self._prunable_nodes]
 
@@ -106,9 +146,51 @@ class Model:
     def sparse_analysis_perf_approx(self) -> List[Dict]:
         return [node.sparse_analysis_perf_approx for node in self._prunable_nodes]
 
+    @property
+    def input_shapes(self) -> List:
+        return self._input_shapes
+
+    @property
+    def model_path(self) -> str:
+        return self._path
+
+    def run_sparse_analysis_perf(
+        self, perf_file: str, sparsity_levels: List[float] = None
+    ):
+        if benchmark_model is None:
+            raise Exception("neuralmagic must be installed to use this feature.")
+
+        if sparsity_levels is None:
+            sparsity_levels = DEFAULT_PERF_SPARSITY_LEVELS
+        inputs = [
+            np.random.rand(*inp_shape).astype(np.float32)
+            for inp_shape in self.input_shapes
+        ]
+        batch_size = self.input_shapes[0][0]
+        perf_report = {}
+
+        for sparsity_level in sparsity_levels:
+            if sparsity_level == 0:
+                sparsity_level = None
+            key = str(sparsity_level) if sparsity_level else "0.0"
+
+            perf_report[key] = benchmark_model(
+                self.model_path,
+                inputs,
+                imposed_ks=sparsity_level,
+                optimization_level=0,
+                batch_size=batch_size,
+                num_cores=4,
+                num_warmup_iterations=5,
+                num_iterations=30,
+            )
+
+        with open(perf_file, "w+") as js:
+            js.write(json.dumps(perf_report))
+
 
 class PrunableNode:
-    def __init__(self, node, inputs, output_shape: List):
+    def __init__(self, node, inputs: List, output_shape: List):
         self._node = node
         self._inputs = inputs
         self._output_shape = output_shape
@@ -220,6 +302,14 @@ class PrunableNode:
             "baseline": {"flops": float(flops + bias_flops), "timings": None},
             "sparse": sparse,
         }
+
+    @property
+    def node_key(self):
+        return self._node_key
+
+    @property
+    def node_name(self):
+        return self._node_name
 
     @property
     def kernel_shape(self) -> List[int]:

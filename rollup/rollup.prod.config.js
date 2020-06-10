@@ -18,7 +18,7 @@ import * as vegaLite from 'vega-lite'
 export default {
   input:  'src/index.js',
   output: {
-    file:   'public/built/main.min.js',
+    file:   'neuralmagic_studio/static/main.min.js',
     format: 'iife'
   },
   plugins: [
@@ -27,10 +27,10 @@ export default {
     }),
     html({
       template: 'src/template.html',
-      dest:     'public/built',
+      dest:     'neuralmagic_studio/static',
       filename: 'index.html'
     }),
-    css({ output: 'public/built/bundle.css' }),
+    css({ output: 'neuralmagic_studio/static/bundle.css' }),
     resolve({
       mainFields: ['browser', 'jsnext', 'main']
     }),

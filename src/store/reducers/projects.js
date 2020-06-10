@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux'
 import { createReducer } from './util'
 
-const selectedProject = createReducer({}, {
+const selectedProject = createReducer(null, {
   'CREATE_PROJECT': (state, { project }) => project
 })
 

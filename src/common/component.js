@@ -5,7 +5,7 @@ import React, {
 } from 'react'
 import {
   compose, curry, reject, isNil, always,
-  when, is, mergeDeepRight, evolve,
+  when, is, mergeDeepRight, evolve, tap, map, addIndex,
   objOf, unless, either, merge, __, mergeRight, has
 } from 'ramda';
 import { createUseStyles, ThemeProvider, useTheme as jssUseTheme, JssProvider } from 'react-jss'
@@ -13,6 +13,7 @@ import { Provider, useSelector as reduxUseSelector, useDispatch as reduxUseDispa
 import { fold } from './fp'
 
 const asArray = x => Array.isArray(x) ? x : Array.of(x)
+const mapIndexed = addIndex(map)
 
 export { fold }
 export const classToFn = C => props => <C {...props}/>
@@ -141,7 +142,11 @@ export const branch = curry((condition, left, right) =>
   Component(props =>
     condition(props) ? left.fold(props) : right.fold(props)))
 
-const ComponentRenderer = ({ props, g }) => compose(reject(isNil), g)(props)
+const ComponentRenderer = ({ props, g }) => compose(
+  mapIndexed((e, index) => merge(e, { key: index })),
+  reject(isNil),
+  g)(
+  props)
 
 export const Component = compose(
   g => ({

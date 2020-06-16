@@ -1,49 +1,19 @@
-import os
-from functools import reduce
 import json
+import logging
 import math
-from typing import List, Dict
+import os
+import re
+from functools import reduce
+from typing import Any, Dict, Iterable, List
 
 import numpy as np
 import onnx
-from onnx import numpy_helper
-from onnx.helper import get_attribute_value, ValueInfoProto
 import onnxruntime as rt
+from neuralmagic_studio.utils.loss_sensitivity import OneShotKSLossSensitivity
+from neuralmagic_studio.utils.perf_sensitivity import SparsePerformanceSensitivity
+from onnx import numpy_helper
+from onnx.helper import ValueInfoProto, get_attribute_value, make_graph, make_model
 
-try:
-    from neuralmagic.model import benchmark_model
-except OSError:
-    benchmark_model = None
-except ModuleNotFoundError:
-    benchmark_model = None
-
-DEFAULT_LOSS_SPARSITY_LEVELS = [
-    0,
-    0.05,
-    0.2,
-    0.4,
-    0.6,
-    0.7,
-    0.8,
-    0.9,
-    0.95,
-    0.975,
-    0.99,
-]
-DEFAULT_PERF_SPARSITY_LEVELS = [
-    None,
-    0.4,
-    0.6,
-    0.7,
-    0.8,
-    0.85,
-    0.875,
-    0.9,
-    0.925,
-    0.95,
-    0.975,
-    0.99,
-]
 __all__ = ["RecalModel"]
 
 
@@ -77,7 +47,7 @@ def _node_name(node) -> str:
 
 
 class RecalModel:
-    def __init__(self, path):
+    def __init__(self, path: str):
         self._path = path
         self._model = onnx.load_model(path)
         onnx.checker.check_model(self._model)
@@ -92,8 +62,12 @@ class RecalModel:
             output_to_node[node.output[0]] = _node_name(node)
             self._model.graph.output.append(intermediate_layer_value_info)
 
-        sess = rt.InferenceSession(self._model.SerializeToString())
+        sess_options = rt.SessionOptions()
+        sess_options.log_severity_level = 3
+        sess = rt.InferenceSession(self._model.SerializeToString(), sess_options)
 
+        # resets model
+        self._model = onnx.load_model(path)
         self._input_shapes = [inp.shape for inp in sess.get_inputs()]
         node_to_shape = reduce(
             lambda accum, current: (
@@ -154,45 +128,97 @@ class RecalModel:
     def model_path(self) -> str:
         return self._path
 
+    @property
+    def onnx_model(self):
+        return self._model
+
     def run_sparse_analysis_perf(
-        self, perf_file: str, sparsity_levels: List[float] = None
+        self,
+        perf_file: str,
+        inputs: Iterable,
+        sparsity_levels: List[float] = None,
+        optimization_level: int = 0,
+        num_cores: int = 4,
+        num_warmup_iterations: int = 5,
+        num_iterations: int = 30,
     ):
-        if benchmark_model is None:
-            raise Exception("neuralmagic must be installed to use this feature.")
-
-        if sparsity_levels is None:
-            sparsity_levels = DEFAULT_PERF_SPARSITY_LEVELS
-        inputs = [
-            np.random.rand(*inp_shape).astype(np.float32)
-            for inp_shape in self.input_shapes
-        ]
-        batch_size = self.input_shapes[0][0]
-        perf_report = {}
-
-        for sparsity_level in sparsity_levels:
-            if sparsity_level == 0:
-                sparsity_level = None
-            key = str(sparsity_level) if sparsity_level else "0.0"
-
-            perf_report[key] = benchmark_model(
-                self.model_path,
-                inputs,
-                imposed_ks=sparsity_level,
-                optimization_level=0,
-                batch_size=batch_size,
-                num_cores=4,
-                num_warmup_iterations=5,
-                num_iterations=30,
+        try:
+            inputs_data = next(inputs)
+        except StopIteration:
+            raise Exception(
+                "No input data found. Must have at least 1 input to use one shot ks loss sensitivity"
             )
 
-        with open(perf_file, "w+") as js:
-            js.write(json.dumps(perf_report))
+        perf_sensitivity = SparsePerformanceSensitivity(
+            self.model_path,
+            sparsity_levels=sparsity_levels,
+            optimization_level=optimization_level,
+            num_cores=num_cores,
+            num_warmup_iterations=num_warmup_iterations,
+            num_iterations=num_iterations,
+        )
+        sparse_analysis_perf = perf_sensitivity.run(inputs_data, self.prunable_nodes)
+        perf_sensitivity.save(perf_file)
+        return sparse_analysis_perf
+
+    def get_model_pruned_at_node(self, current_node: Any, sparsity_level: float):
+        new_weights = []
+        for weight_idx, weight in enumerate(self.onnx_model.graph.initializer):
+            if weight.name == current_node.node_name:
+                weight = current_node.pruned_weight(sparsity_level)
+            new_weights.append(weight)
+
+        new_graph = make_graph(
+            self.onnx_model.graph.node,
+            self.onnx_model.graph.name,
+            self.onnx_model.graph.input,
+            self.onnx_model.graph.output,
+            initializer=new_weights,
+            value_info=self.onnx_model.graph.value_info,
+        )
+
+        return make_model(new_graph)
+
+    def one_shot_ks_loss_sensitivity(
+        self,
+        loss_file: str,
+        inputs: Iterable,
+        sparsity_levels: List[float] = None,
+        samples_per_measurement: int = 5,
+    ):
+        inputs_data = []
+        for inp in inputs:
+            inputs_data.append(inp)
+            if len(inputs_data) >= samples_per_measurement:
+                break
+
+        if len(inputs_data) == 0:
+            raise Exception(
+                "No input data found. Must have at least 1 input to use one shot ks loss sensitivity"
+            )
+
+        ks_loss_sensitivity = OneShotKSLossSensitivity(
+            [layer.node_name for layer in self.prunable_nodes],
+            self.onnx_model,
+            inputs_data,
+            sparsity_levels,
+        )
+
+        ks_loss_sensitivity.run(
+            inputs_data,
+            self.prunable_nodes,
+            lambda current_node, sparsity_level: self.get_model_pruned_at_node(
+                current_node, sparsity_level
+            ),
+        )
+
+        ks_loss_sensitivity.save(loss_file)
 
 
 class PrunableNode:
-    def __init__(self, node, inputs: List, output_shape: List):
+    def __init__(self, node, weights: List, output_shape: List):
         self._node = node
-        self._inputs = inputs
+        self._weights = weights
         self._output_shape = output_shape
 
         self._attributes = reduce(
@@ -215,8 +241,24 @@ class PrunableNode:
             f"{node.op_type}:(inp={node.input},out={node.output},{attribute_string})"
         ).replace(" ", "")
 
-        self._weight_input = _get_weight_input(self._inputs)
+        self._weight_input = _get_weight_input(self._weights)
         self._node_name = self._weight_input.name
+
+        self._index_sorted = np.argsort(
+            np.absolute(numpy_helper.to_array(self._weight_input)), axis=None
+        )
+
+    def pruned_weight(self, sparsity_level: float):
+        weight_as_np = numpy_helper.to_array(self._weight_input)
+        new_weights = weight_as_np.flatten()
+        max_sparse_count = math.ceil(self._index_sorted.size * sparsity_level)
+        for index, ranking in enumerate(self._index_sorted):
+            if ranking < max_sparse_count:
+                new_weights[index] = 0
+        return numpy_helper.from_array(
+            new_weights.reshape(weight_as_np.shape).astype(np.float32),
+            name=self.node_name,
+        )
 
     @property
     def layer_info(self) -> Dict:
@@ -264,7 +306,7 @@ class PrunableNode:
 
         flops = 0
         bias_flops = 0
-        for weights in self._inputs:
+        for weights in self._weights:
             if "bias" in weights.name:
                 bias_flops = np.prod(numpy_helper.to_array(weights).shape)
             elif self._node.op_type == "Gemm":
@@ -277,7 +319,7 @@ class PrunableNode:
                     * np.prod(self.output_shape[1:])
                 )
 
-        for weights in self._inputs:
+        for weights in self._weights:
             sparse = []
             current_flops = flops
 
@@ -334,3 +376,11 @@ class PrunableNode:
     @property
     def input_channels(self) -> int:
         return self._weight_input.dims[1]
+
+    @property
+    def weights(self) -> List:
+        return self._weights
+
+    @property
+    def op_type(self) -> str:
+        return self._node.op_type

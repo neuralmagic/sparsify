@@ -15,11 +15,6 @@ from neuralmagic_studio.utils import (
     get_missing_fields_message,
 )
 
-from neuralmagic_studio.mock_api import (
-    calc_sparse_loss_sensitivity,
-    calc_sparse_perf_sensitivity,
-)
-
 __all__ = ["project_base_api_bp", "project_api_bp"]
 
 ALLOWED_EXTENSIONS = {"onnx"}
@@ -167,18 +162,51 @@ def get_sparse_loss(project_id: str):
     return handle_project(
         project_id,
         lambda project_path: {
-            "layerSensitivities": calc_sparse_loss_sensitivity(project_path)
+            "layerSensitivities": RecalProject(project_path).sparse_analysis_perf
         },
     )
 
 
-@project_api_bp.route("/sparse-analysis/loss/<analysis_id>", methods=["GET"])
+@project_api_bp.route(
+    "/sparse-analysis/loss/<analysis_id>", methods=["GET", "POST", "PUT"]
+)
 def get_sparse_loss_by_id(project_id: str, analysis_id: str):
-    return handle_project(
-        project_id,
-        lambda project_path: {
-            "layerSensitivities": calc_sparse_loss_sensitivity(project_path)
-        },
+    if request.method == "GET":
+        return handle_project(
+            project_id,
+            lambda project_path: {
+                "layerSensitivities": RecalProject(
+                    project_path
+                ).get_sparse_analysis_loss(analysis_id)
+            },
+        )
+    elif request.method == "POST":
+        return handle_project(
+            project_id,
+            lambda project_path: {
+                "layerSensitivities": RecalProject(
+                    project_path
+                ).run_sparse_analysis_loss(analysis_id)
+            },
+        )
+
+    elif request.method == "PUT":
+        missing_fields_message = get_missing_fields_message(["perf"])
+        if missing_fields_message:
+            return missing_fields_message, 400
+        content = request.get_json()["perf"]
+
+        return handle_project(
+            project_id,
+            lambda project_path: {
+                "layerSensitivities": RecalProject(
+                    project_path
+                ).write_sparse_analysis_loss(analysis_id, content)
+            },
+        )
+    return (
+        {"message": f"Unsupported method {request.method} for {request.path}"},
+        405,
     )
 
 
@@ -230,8 +258,7 @@ def get_sparse_perf_by_id(project_id: str, analysis_id: str):
             },
         )
 
-    else:
-        return (
-            {"message": f"Unsupported method {request.method} for {request.path}"},
-            405,
-        )
+    return (
+        {"message": f"Unsupported method {request.method} for {request.path}"},
+        405,
+    )

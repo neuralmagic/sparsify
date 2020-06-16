@@ -1,8 +1,7 @@
+import argparse
 import os
 import sys
-import traceback
-import argparse
-
+import logging
 from typing import Dict, List, Any, Callable
 
 import uuid
@@ -56,11 +55,13 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Neural Magic Studio Server")
 
     parser.add_argument("--project-root", default=None)
+    parser.add_argument("--host", default="0.0.0.0", type=str)
+    parser.add_argument("--port", default=7890, type=int)
+    parser.add_argument("--logging-level", default="WARNING", type=str)
 
     args = parser.parse_args()
 
     project_root = get_project_root(args.project_root)
-
     app.config["PROJECT_ROOT"] = project_root
 
     app.register_blueprint(base_api_bp)
@@ -68,4 +69,13 @@ if __name__ == "__main__":
     app.register_blueprint(ui_bp)
     app.register_blueprint(project_base_api_bp)
     app.register_blueprint(config_api_bp)
-    app.run(host="0.0.0.0", port=7890)
+
+    try:
+        logging.getLogger().setLevel(getattr(logging, args.logging_level))
+    except AttributeError as e:
+        logging.error(e)
+
+    logging.info(
+        f"Running NeuralMagic Studio from {project_root} on {args.host}:{args.port}"
+    )
+    app.run(host=args.host, port=args.port)

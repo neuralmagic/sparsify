@@ -1,5 +1,6 @@
 import os
 from typing import Dict
+
 import yaml
 
 CONFIG_FILE = "config.yaml"
@@ -47,7 +48,10 @@ class ProjectConfig(dict):
         self._config_settings[key] = value
 
     def get_setting(self, key):
-        return self._config_settings[key]
+        try:
+            return self._config_settings[key]
+        except KeyError:
+            return None
 
     @property
     def id(self) -> str:

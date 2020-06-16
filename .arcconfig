@@ -1,5 +1,4 @@
 {
   "phabricator.uri" : "https://phabricator.neuralmagic.com:8021/",
-  "unit.engine": "PytestTestEngine",
   "https.blindly-trust-domains" : ["phabricator.neuralmagic.com"]
 }

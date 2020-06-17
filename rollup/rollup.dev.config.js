@@ -3,7 +3,6 @@ import html from 'rollup-plugin-bundle-html'
 import commonJS from 'rollup-plugin-commonjs'
 import replace from 'rollup-plugin-replace'
 import resolve from '@rollup/plugin-node-resolve'
-import livereload from 'rollup-plugin-livereload'
 import serve from 'rollup-plugin-serve'
 import builtins from 'rollup-plugin-node-builtins'
 import json from 'rollup-plugin-json'
@@ -18,7 +17,7 @@ import * as vegaLite from 'vega-lite'
 export default {
   input:  'src/index.js',
   output: {
-    file:   'public/built/main.min.js',
+    file:   'neuralmagic_studio/static/main.min.js',
     format: 'iife'
   },
   plugins: [
@@ -33,10 +32,10 @@ export default {
     }),
     html({
       template: 'src/template.html',
-      dest:     'public/built',
+      dest:     'neuralmagic_studio/static',
       filename: 'index.html'
     }),
-    css({ output: 'public/built/bundle.css' }),
+    css({ output: 'neuralmagic_studio/static/bundle.css' }),
     resolve({
       mainFields: ['browser', 'jsnext', 'main']
     }),
@@ -59,12 +58,9 @@ export default {
         'vegaLiteImport': Object.keys(vegaLite)
       }
     }),
-    livereload({
-      watch: 'public'
-    }),
     serve({
       open:        true,
-      contentBase: 'public/built'
+      contentBase: 'neuralmagic_studio/static'
     })
   ]
 }

@@ -44,7 +44,7 @@ def get_project_root(arg_project_root):
         project_root = "~/nm-projects"
 
     project_root = os.path.expanduser(project_root)
-
+    print(project_root)
     if not os.path.exists(project_root):
         raise NotADirectoryError(f"PROJECT_ROOT {project_root} does not exist")
 

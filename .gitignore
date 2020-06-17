@@ -7,6 +7,7 @@ yarn-error.log
 package-lock.json
 public/built/main.min.js
 
+neuralmagic_studio/static/
 
 ### Python template
 # Byte-compiled / optimized / DLL files

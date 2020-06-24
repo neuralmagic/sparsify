@@ -62,27 +62,17 @@ def projects():
         model_path = request.get_json()["modelPath"]
         config_settings = request.get_json()["projectConfig"]
 
-        project_id = str(uuid.uuid4())
-        project_path = get_path(project_id)
+        try:
+            project_config = RecalProject.register_project(model_path, config_settings)
 
-        model_path = os.path.expanduser(model_path)
-        if not os.path.exists(model_path):
-            return {"message": f"Path {model_path} does not exist"}, 404
-        if not os.path.isfile(model_path) or not allowed_file(model_path):
-            return {"message": f"Path {model_path} is not a valid file"}, 404
+            return {
+                "project": project_config.config_settings,
+            }
+        except FileNotFoundError as e:
+            return {"message": str(e)}, 404
+        except Exception as e:
+            return {"message": str(e)}, 400
 
-        os.makedirs(project_path, exist_ok=True)
-
-        config_settings["projectId"] = project_id
-        project_config = ProjectConfig(project_path)
-        project_config.write(config_settings)
-
-        target_file = os.path.join(project_path, "model.onnx")
-        shutil.copy(model_path, target_file)
-
-        return {
-            "project": project_config.config_settings,
-        }
     else:
         return (
             {"message": f"Unsupported method {request.method} for {request.path}"},
@@ -191,7 +181,7 @@ def get_sparse_loss_by_id(project_id: str, analysis_id: str):
         )
 
     elif request.method == "PUT":
-        missing_fields_message = get_missing_fields_message(["perf"])
+        missing_fields_message = get_missing_fields_message(["loss"])
         if missing_fields_message:
             return missing_fields_message, 400
         content = request.get_json()["perf"]

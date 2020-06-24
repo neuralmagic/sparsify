@@ -22,4 +22,5 @@ setup(
     author_email="support@neuralmagic.com",
     url="https://neuralmagic.com/",
     license_file="LICENSE",
+    entry_points={"console_scripts": ["neuralmagic_studio=neuralmagic_studio:main"]},
 )

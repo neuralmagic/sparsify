@@ -1,13 +1,13 @@
 from flask import (
     Blueprint,
+    abort,
+    current_app,
+    redirect,
     render_template,
     request,
-    current_app,
     safe_join,
     send_file,
-    abort,
     url_for,
-    redirect,
 )
 
 ui_bp = Blueprint("ui", __name__)

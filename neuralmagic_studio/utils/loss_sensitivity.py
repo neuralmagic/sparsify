@@ -99,6 +99,8 @@ class OneShotKSLossSensitivity:
 
         if sparsity_levels is None:
             self.sparsity_levels = DEFAULT_LOSS_SPARSITY_LEVELS
+        else:
+            self.sparsity_levels = sparsity_levels
 
         self.inputs = inputs
         self.analysis = KSLossSensitivityAnalysis()

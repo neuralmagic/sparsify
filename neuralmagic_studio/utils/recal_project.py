@@ -2,10 +2,13 @@ import json
 import logging
 import os
 from typing import Dict, Iterable, List
+import uuid
+import shutil
 
 from neuralmagic_studio.utils.config import ProjectConfig
 from neuralmagic_studio.utils.dataloader import Dataloader
 from neuralmagic_studio.utils.models import RecalModel
+from neuralmagic_studio.utils.utils import get_path, allowed_file
 
 __all__ = ["RecalProject"]
 
@@ -22,6 +25,37 @@ class RecalProject:
 
         os.makedirs(self.perf_folder, exist_ok=True)
         os.makedirs(self.loss_folder, exist_ok=True)
+
+    @staticmethod
+    def register_project(
+        model_path: str, config_settings: Dict, project_root: str = None
+    ):
+        project_path = None
+        try:
+            project_id = str(uuid.uuid4())
+            project_path = get_path(project_id, project_root=project_root)
+            model_path = os.path.expanduser(model_path)
+            logging.info(f"Saving {model_path} to path {project_path}")
+
+            if not os.path.exists(model_path):
+                raise FileNotFoundError(f"Path {model_path} does not exist")
+            elif not os.path.isfile(model_path) or not allowed_file(model_path):
+                raise Exception(f"Path {model_path} is not a valid file")
+
+            os.makedirs(project_path, exist_ok=True)
+            config_settings["projectId"] = project_id
+            project_config = ProjectConfig(project_path)
+            project_config.write(config_settings)
+
+            target_file = os.path.join(project_path, "model.onnx")
+            shutil.copy(model_path, target_file)
+
+            return project_config
+        except Exception as e:
+            if project_path is not None and os.path.exists(project_path):
+                shutil.rmtree(project_path)
+            logging.exception(e)
+            raise e
 
     def get_input_loader(self, batch_size: int):
         input_folder = (
@@ -69,9 +103,15 @@ class RecalProject:
     def perf_folder(self) -> str:
         return os.path.join(self._path, "sparse-analysis/perf")
 
+    def perf_file_path(self, perf_file: str):
+        return os.path.join(self.perf_folder, f"{perf_file}.json")
+
     @property
     def loss_folder(self) -> str:
         return os.path.join(self._path, "sparse-analysis/loss")
+
+    def loss_file_path(self, loss_file: str):
+        return os.path.join(self.loss_folder, f"{loss_file}.json")
 
     @property
     def onnx_path(self) -> str:
@@ -83,13 +123,14 @@ class RecalProject:
         batch_size: int = 1,
         sparsity_levels: List[float] = None,
         optimization_level=0,
-        num_cores=4,
+        num_cores=-1,
         num_warmup_iterations=5,
         num_iterations=30,
     ) -> List[Dict]:
         inputs = self.get_input_loader(batch_size)
-        return self.model.run_sparse_analysis_perf(
-            os.path.join(self.perf_folder, f"{perf_file}.json"),
+        perf_path = self.perf_file_path(perf_file)
+        self.model.run_sparse_analysis_perf(
+            perf_path,
             inputs,
             sparsity_levels=sparsity_levels,
             optimization_level=optimization_level,
@@ -97,12 +138,13 @@ class RecalProject:
             num_warmup_iterations=num_warmup_iterations,
             num_iterations=num_iterations,
         )
+        return self.get_sparse_analysis_perf(perf_file)
 
     def write_sparse_analysis_perf(self, perf_file: str, content: dict) -> List[Dict]:
         if perf_file == "approx":
             raise Exception("Cannot name perf file: approx")
-        perf_path = os.path.join(self.perf_folder, f"{perf_file}.json")
-        with open(perf_file, "w+") as json_data:
+        perf_path = self.perf_file_path(perf_file)
+        with open(perf_path, "w+") as json_data:
             json_data.write(json.dumps(content))
 
         return self.get_sparse_analysis_perf(perf_file)
@@ -110,8 +152,8 @@ class RecalProject:
     def write_sparse_analysis_loss(self, loss_file: str, content: dict) -> List[Dict]:
         if loss_file == "approx":
             raise Exception("Cannot name loss file: approx")
-        loss_path = os.path.join(self.loss_folder, f"{loss_file}.json")
-        with open(loss_file, "w+") as json_data:
+        loss_path = self.loss_file_path(loss_file)
+        with open(loss_path, "w+") as json_data:
             json_data.write(json.dumps(content))
 
         return self.get_sparse_analysis_loss(loss_file)
@@ -143,8 +185,9 @@ class RecalProject:
         samples_per_measurement: int = 5,
     ) -> List[Dict]:
         inputs = self.get_input_loader(batch_size)
+        loss_path = self.loss_file_path(loss_file)
         self.model.one_shot_ks_loss_sensitivity(
-            os.path.join(self.loss_folder, f"{loss_file}.json"),
+            loss_path,
             inputs,
             sparsity_levels=sparsity_levels,
             samples_per_measurement=samples_per_measurement,

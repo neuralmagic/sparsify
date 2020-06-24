@@ -334,14 +334,14 @@ class PrunableNode:
                 sparse.append(
                     {
                         "flops": float(current_flops),
-                        "timings": None,
+                        "timing": None,
                         "sparsity": sparsity_percent,
                     }
                 )
 
         return {
             "id": self._node_key,
-            "baseline": {"flops": float(flops + bias_flops), "timings": None},
+            "baseline": {"flops": float(flops + bias_flops), "timing": None},
             "sparse": sparse,
         }
 

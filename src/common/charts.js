@@ -251,7 +251,7 @@ const verticalLinearGradient = values => ({
 })
 
 export const epochSchedulerSpec = ({
-  data, backgroundColor, axesColor, epochBackgroundGradient,
+  data, backgroundColor, epochBackgroundGradient,
   selectedEpochBackgroundGradient, labelColor, selectedModifier }) => ({
   data: { name: 'epochs', values: data },
   background: backgroundColor,
@@ -273,38 +273,18 @@ export const epochSchedulerSpec = ({
     {
       orient: 'top',
       scale: 'xscale',
-      tickSize: 15,
-      grid: true,
-      tickCount: 11,
+      tickSize: 5,
+      grid: false,
+      tickCount: 3,
       labelColor,
       encode: {
-        grid: {
-          update: {
-            stroke: { value: axesColor },
-            strokeDash: [
-              { test: 'datum.index===0', value: [] },
-              { test: 'datum.index===1', value: [] },
-              { value: [0.7, 1.4] }
-            ]
-          }
-        },
         ticks: {
-          enter: {
-            stroke: { value: axesColor },
-            strokeDash: [
-              { test: 'datum.index===0', value: [] },
-              { test: 'datum.index===1', value: [] },
-              { value: [0.7, 1.4] }
-            ]
-          }
+          enter: { stroke: { value: backgroundColor } }
         },
         labels: {
           enter: {
             font: { value: 'OpenSans-Regular' },
-            fontSize: [
-              { test: 'datum.index===0', value: 15 },
-              { test: 'datum.index===1', value: 15 },
-              { value: 8 }]
+            fontSize: { value: 8 }
           }
         }
       }
@@ -316,10 +296,10 @@ export const epochSchedulerSpec = ({
       from: { data: 'epochs' },
       encode: {
         enter: {
-          x: { offset: -25 },
+          x: { offset: -35 },
           y: { scale: 'yscale', field: 'id', offset: 6 },
           fill: { value: labelColor },
-          text: { field: 'label' },
+          text: { field: 'shortLabel' },
           fontSize: { value: 10 }
         }
       }
@@ -370,7 +350,7 @@ export const epochSchedulerSpec = ({
 
 export const layerIndexChartSpec =
   ({ data, backgroundColor, axesColor, labelColor, gridColor, titleColor,
-    denseAreaColors, denseLineColor, sparseAreaColors, sparseLineColor }) => ({
+     denseAreaColors, denseLineColor, sparseAreaColors, sparseLineColor }) => ({
     data: { name: 'layers', values: data },
     background: backgroundColor,
     scales: [

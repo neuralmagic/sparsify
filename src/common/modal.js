@@ -37,7 +37,7 @@ const modalStyles = {
       cursor: 'pointer'
     }
   }),
-  headerTitle: props => ({
+  dialogHeaderTitle: props => ({
     color: props.theme === 'dark' ? 'white' : '#495057',
     fontSize: 22,
     flexGrow: 1
@@ -77,7 +77,7 @@ const dialogHeader = Component(props => compose(
   fold(props),
   map(toContainer({ className: prop('dialogHeader') })),
   concat(__, image.contramap(always({ src: 'assets/close.svg', onClick: props.closeModal }))))(
-  Component(props => <div className={props.classes.headerTitle}>{ props.title }</div>)))
+  Component(props => <div className={props.classes.dialogHeaderTitle}>{ props.title }</div>)))
 
 export const useDialog = curry(({ title }, c) => compose(
   map(toContainer({ className: prop('modalDialog') })),

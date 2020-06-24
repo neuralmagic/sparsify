@@ -4,18 +4,14 @@ import { combineReducers } from 'redux'
 import { createReducer } from './util'
 
 const defaultModifiers = [
-  { id: uuid(), label: 'LRM', min: 0, max: 100, range: [{ start: 20, end: 55 }] },
-  { id: uuid(), label: 'LM1', min: 0, max: 100, range: [{ start: 34, end: 55 }, { start: 10, end: 25 }, { start: 80, end: 90 }] }]
+  { id: uuid(), label: 'Learning Rate', shortLabel: 'LR', min: 0, max: 100, range: [{ start: 20, end: 55 }] },
+  { id: uuid(), label: 'Trainable Layers', shortLabel: 'TL', min: 0, max: 100, range: [{ start: 34, end: 55 }, { start: 10, end: 25 }, { start: 80, end: 90 }] },
+  { id: uuid(), label: 'Quantization', shortLabel: 'Q', min: 0, max: 100, range: [{ start: 20, end: 55 }] }]
 
 const all = createReducer(defaultModifiers, {
   'CREATE_PROJECT': always(defaultModifiers),
   'ADD_MODIFIER': (state, { modifier }) => [...state, modifier],
-  'REMOVE_MODIFIER': (state, { modifier }) => {
-    console.log('before', state)
-    console.log('modifier', modifier)
-    console.log('after', without([modifier], state))
-    return without([modifier], state)
-  }
+  'REMOVE_MODIFIER': (state, { modifier }) => without([modifier], state)
 })
 
 const selected = createReducer(0, {

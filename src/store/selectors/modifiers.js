@@ -4,7 +4,7 @@ export const allModifiers = state => state.modifiers.all
 export const allModifiersExpanded = compose(
   flatten,
   map(m => {
-    const mProps = pick(['label', 'min', 'max', 'id'], m)
+    const mProps = pick(['label', 'shortLabel', 'min', 'max', 'id'], m)
 
     return m.range.map(merge(mProps))
   }),

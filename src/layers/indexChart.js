@@ -5,9 +5,7 @@ import { allModifiersExpanded, selectedModifier } from '../store/selectors/modif
 
 const styles = {
   container: props => ({
-    padding: 10,
-    paddingLeft: 60,
-    background: props.theme === 'dark' ? '#1d2022' : '#f8f9fa',
+    background: props.theme === 'dark' ? '#151719' : '#f8f9fa',
     position: 'relative',
     display: 'flex',
     flexDirection: 'column'
@@ -139,7 +137,7 @@ const chart = vegaChart.contramap(props => merge({
   height: 380,
   autosize: { type: 'fit', contains: 'padding', resize: true },
   spec: layerIndexChartSpec({
-    backgroundColor: props.theme === 'dark' ? '#1d2022' : '#f8f9fa',
+    backgroundColor: props.theme === 'dark' ? '#151719' : '#f8f9fa',
     axesColor: props.theme === 'dark' ? '#434649' : '#C8CDD3',
     gridColor: props.theme === 'dark' ? '#323437' : '#D7DADD',
     titleColor: props.theme === 'dark' ? 'white' : '#868E96',

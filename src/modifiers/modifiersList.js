@@ -6,15 +6,21 @@ import { allModifiers, selectedModifier } from '../store/selectors/modifiers'
 import { selectModifier, addModifier, removeSelectedModifier } from '../store/actions/modifiers'
 
 const styles = {
-  container: () => ({
+  container: props => ({
+    flex: 1,
     display: 'flex',
     flexDirection: 'column',
-    paddingLeft: 60
+    paddingLeft: 20,
+    paddingTop: 15,
+    paddingBottom: 15,
+    background: props.theme === 'dark' ? 'rgba(38, 43, 45, 1)' : 'rgba(228, 234, 240, 1)',
+    borderRadius: 5
   }),
-  title: {
-    fontSize: 10,
-    color: '#AAAAAA'
-  },
+  title: props => ({
+    fontSize: 13,
+    marginBottom: 5,
+    color: props.theme === 'dark' ? 'white' : '#495057'
+  }),
   profileName: {
     fontSize: 18,
     color: 'white'

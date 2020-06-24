@@ -9,23 +9,26 @@ import { image } from '../components'
 const styles = {
   container: props => ({
     display: 'flex',
-    flexDirection: 'row',
-    paddingLeft: 75,
-    background: props.theme === 'dark' ? '#1d2022' : '#F8F9FA'
+    flexDirection: 'column',
+    flex: 1,
+    paddingLeft: 10,
+    background: props.theme === 'dark' ? '#262A2C' : '#F5F6F7'
+  }),
+  title: props => ({
+    fontSize: 14,
+    marginTop: 15,
+    marginBottom: 15,
+    color: props.theme === 'dark' ? 'white' : '#495057'
   }),
   list: {
     display: 'flex',
-    flexDirection: 'row'
+    flexDirection: 'row',
+    marginBottom: 20
   },
   selectorContainer: {
     display: 'flex',
-    flexDirection: 'column'
-  },
-  delimiter: props => ({
-    borderLeft: `1px solid ${props.theme === 'dark' ? '#3E3E3E' : '#c7ced4'}`,
-    marginLeft: 15,
-    marginRight: 15
-  })
+    flexDirection: 'row'
+  }
 }
 
 const metricItemStyles = {
@@ -59,14 +62,15 @@ const metricItemStyles = {
 const selectorItemStyles = {
   container: props => ({
     display: 'flex',
-    flexDirection: 'row',
-    paddingLeft: props.item.selected ? 0 : 5,
+    flexDirection: 'column',
+    paddingTop: props.item.selected ? 0 : 5,
+    marginBottom: 20,
     alignItems: 'center'
   }),
   span: props => ({
     fontSize: 9,
-    background: props.item.selected ? props.theme === 'dark' ? '#133859' : '#c7ced4' : 'rgba(0, 0, 0, 0)',
-    border: `1px solid ${props.theme === 'dark' ? '#276197' : '#c7ced4'}`,
+    background: props.item.selected ? props.theme === 'dark' ? '#133859' : 'rgba(146, 174, 206, 1)' : 'rgba(0, 0, 0, 0)',
+    border: `1px solid ${props.theme === 'dark' ? '#133859' : 'rgba(146, 174, 206, 1)'}`,
     borderRadius: 2,
     textAlign: 'center',
     color: props.theme === 'dark' ? 'white' : props.item.selected ? '#495057' : '#868e96',
@@ -77,9 +81,9 @@ const selectorItemStyles = {
   arrowRight: props => ({
     width: 0,
     height: 0,
-    borderTop: '4px solid transparent',
-    borderBottom: '4px solid transparent',
-    borderLeft: `5px solid ${props.theme === 'dark' ? 'white' : '#868e96'}`
+    borderLeft: '4px solid transparent',
+    borderRight: '4px solid transparent',
+    borderTop: `5px solid ${props.theme === 'dark' ? 'white' : '#868e96'}`
   })
 }
 
@@ -141,7 +145,7 @@ export default Component(props => compose(
   useState('selectedType', 'setSelectedType', 'time'),
   map(toContainer({ className: prop('container') })),
   reduce(concat, nothing()))([
+  fromElement('span').contramap(merge({ className: prop('title'), children: 'Baseline comparisons' })),
   selector,
   selectedMetricsList,
-  fromElement('div').contramap(merge({ className: prop('delimiter') })),
   overallList ]))

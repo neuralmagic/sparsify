@@ -1,11 +1,10 @@
 import React from 'react'
-import { map, compose, propEq, prop, omit, always, merge, reduce, concat, __ } from 'ramda'
-import { Component, fold, toContainer, branch, nothing, useState, fromClass, useStyles } from './component'
+import { map, compose, propEq, prop, omit, always, merge, reduce,
+  concat, not, head, path, prepend, when, __ } from 'ramda'
 import { Image } from 'react-bootstrap'
+import { Component, fold, toContainer, branch, nothing, useState,
+  fromClass, useStyles, fromElement } from './component'
 import { useOutsideClick } from './hooks'
-
-const nothingIfDropdownContentHidden = branch(propEq('isDropdownContentShown', false), nothing())
-const image = fromClass(Image).contramap(merge({ alt: 'image' }))
 
 export const dropdownMenuStyles = {
   dropdownMenu: {
@@ -33,8 +32,29 @@ export const dropdownMenuStyles = {
     minWidth: 30,
     display: 'flex',
     justifyContent: 'center'
+  },
+  fileInput: {
+    width: 0.1,
+    height: 0.1,
+    opacity: 0,
+    overflow: 'hidden',
+    position: 'absolute',
+    zIndex: -1
+  },
+  fileInputLabel: {
+    display: 'flex',
+    width: '100%',
+    height: '100%',
+    alignItems: 'center',
+    marginBottom: 0,
+    cursor: 'pointer'
   }
 }
+
+const nothingIfDropdownContentHidden = branch(propEq('isDropdownContentShown', false), nothing())
+const image = fromClass(Image).contramap(merge({ alt: 'image' }))
+const isFileSelectItem = propEq('fileSelect', true)
+const nothingIfNoFileSelect = branch(compose(not, isFileSelectItem), nothing())
 
 export const useAsDropdownContent = c => Component(props => compose(
   fold(omit(['ref'], props)),
@@ -47,7 +67,7 @@ export const useAsDropdown = c => Component(props => compose(
   useOutsideClick(() => props.setIsDropdownContentShown(false)),
   map(toContainer({
     className: prop('dropdown'),
-    onClick: props => props.setIsDropdownContentShown(!props.isDropdownContentShown) })))(
+    onClick: props => !props.isDropdownContentShown && props.setIsDropdownContentShown(!props.isDropdownContentShown) })))(
   c))
 
 export const useDropdownState = useState('isDropdownContentShown', 'setIsDropdownContentShown', false)
@@ -56,8 +76,19 @@ export const nothingIfNoExtraContent = branch(propEq('extraContent', undefined),
 export const dropdownMenuItem = Component(props => compose(
   fold(props),
   map(toContainer({ className: prop('dropdownMenuItem'), onClick: props.onClick })),
-  concat(__, nothingIfNoExtraContent(props.extraContent)),
-  concat(__, Component(props => <span className={props.classes.dropdownMenuItemLabel}>{props.label}</span>)),
+  when(always(isFileSelectItem(props)), c =>
+    fromElement('label').contramap(props => ({ for: 'dropdownFileSelectInput', className: props.classes.fileInputLabel, children: c.fold(props) }))),
+  reduce(concat, nothing()),
+  prepend(__, [
+    Component(props => <span className={props.classes.dropdownMenuItemLabel}>{props.label}</span>),
+    nothingIfNoExtraContent(props.extraContent),
+    nothingIfNoFileSelect(fromElement('input').contramap(props => ({
+      id: 'dropdownFileSelectInput', type: 'file', accept: props.accept, className: props.classes.fileInput,
+      onChange: compose(
+        props.onFileSelect(props),
+        head,
+        path(['target', 'files'])) })))
+  ]),
   map(toContainer({ className: prop('dropdownMenuItemImageContainer') })))(
   image.contramap(always({ src: props.icon, width: props.iconWidth, height: props.iconHeight }))))
 

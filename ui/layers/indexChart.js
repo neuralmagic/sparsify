@@ -1,6 +1,7 @@
 import { compose, reduce, concat, map, prop, merge, always } from 'ramda'
-import { Component, fold, nothing, useStyles, toContainer, useSelector, fromElement } from '../common/component'
-import { vegaChart, layerIndexChartSpec } from '../common/charts'
+import { Vega } from 'react-vega'
+import { Component, fold, nothing, useStyles, toContainer, useSelector, fromElement, fromClass } from '../common/component'
+import { layerIndexChartSpec } from '../common/charts'
 import { allModifiersExpanded, selectedModifier } from '../store/selectors/modifiers'
 
 const styles = {
@@ -132,7 +133,7 @@ const legend = Component(props => compose(
     { type: 'sparseExecTime', label: 'Sparse Exec. Time' },
   ]))
 
-const chart = vegaChart.contramap(props => merge({
+const chart = fromClass(Vega).contramap(props => merge({
   width: 1000,
   height: 380,
   autosize: { type: 'fit', contains: 'padding', resize: true },

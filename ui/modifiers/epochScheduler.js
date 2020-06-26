@@ -1,7 +1,8 @@
 import { compose, reduce, concat, map, prop, merge, uniqBy } from 'ramda'
+import { Vega } from 'react-vega'
 import { Component, fold, nothing, useStyles, toContainer,
-  fromElement, useSelector } from '../common/component'
-import { vegaChart, epochSchedulerSpec } from '../common/charts'
+  fromElement, useSelector, fromClass } from '../common/component'
+import { epochSchedulerChartSpec } from '../common/charts'
 import { allModifiersExpanded, selectedModifier } from '../store/selectors/modifiers'
 
 const styles = {
@@ -19,11 +20,11 @@ const styles = {
   })
 }
 
-const chart = vegaChart.contramap(props => merge({
+const chart = fromClass(Vega).contramap(props => merge({
   width: 210,
   height: uniqBy(prop('id'), props.modifiers).length * 20,
   autosize: { type: 'fit', contains: 'padding', resize: true },
-  spec: epochSchedulerSpec({
+  spec: epochSchedulerChartSpec({
     backgroundColor: props.theme === 'dark' ? '#2C2F31' : 'rgba(228, 234, 240, 1)',
     axesColor: props.theme === 'dark' ? 'gray' : '#BDC0C4',
     epochBackgroundGradient: props.theme === 'dark' ? ['#222324', '#222324'] : ['#D9DDE6', '#EDF0F4'],
@@ -32,7 +33,6 @@ const chart = vegaChart.contramap(props => merge({
     data: props.modifiers,
     selectedModifier: props.selectedModifier
   }),
-  title: props.title
 }, props))
 
 export default Component(props => compose(

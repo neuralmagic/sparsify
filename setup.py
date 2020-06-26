@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 
 packages = find_packages(
-    include=["neuralmagic_studio", "neuralmagic_studio.*"], exclude=["*.__pycache__.*"]
+    include=["/", "neuralmagic_studio.*"], exclude=["*.__pycache__.*"]
 )
 
 with open("requirements.txt", "r") as req_file:

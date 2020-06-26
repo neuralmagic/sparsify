@@ -1,12 +1,12 @@
 import babel from 'rollup-plugin-babel'
-import html from 'rollup-plugin-bundle-html'
+import html from 'rollup-plugin-html-bundle'
 import commonJS from 'rollup-plugin-commonjs'
 import builtins from 'rollup-plugin-node-builtins'
 import { terser } from 'rollup-plugin-terser'
-import cleanup from 'rollup-plugin-cleanup'
 import replace from 'rollup-plugin-replace'
 import resolve from '@rollup/plugin-node-resolve'
 import json from 'rollup-plugin-json'
+import copy from 'rollup-plugin-copy'
 import * as react from 'react'
 import * as reactDom from 'react-dom'
 import * as reactIs from 'react-is'
@@ -16,9 +16,9 @@ import * as vega from 'vega'
 import * as vegaLite from 'vega-lite'
 
 export default {
-  input:  'src/index.js',
+  input:  'ui/index.js',
   output: {
-    file:   'neuralmagic_studio/static/main.min.js',
+    file:   'static/main.min.js',
     format: 'iife'
   },
   plugins: [
@@ -26,11 +26,10 @@ export default {
       'process.env.NODE_ENV': JSON.stringify('production')
     }),
     html({
-      template: 'src/template.html',
-      dest:     'neuralmagic_studio/static',
-      filename: 'index.html'
+      template: 'ui/template.html',
+      target: 'static/index.html'
     }),
-    css({ output: 'neuralmagic_studio/static/bundle.css' }),
+    css({ output: 'static/bundle.css' }),
     resolve({
       mainFields: ['browser', 'jsnext', 'main']
     }),
@@ -60,6 +59,8 @@ export default {
       ]
     }),
     terser(),
-    //cleanup({ comments: 'none' })
+    copy({
+      targets: [{ src: 'ui/assets/*', dest: 'static/assets' }]
+    })
   ]
 }

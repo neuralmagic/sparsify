@@ -1,8 +1,8 @@
 import { mergeAll, when, is, of, reduce, concat, map, compose, merge, curry } from 'ramda'
+import queryString from 'query-string'
 import React from 'react'
 import { Route, BrowserRouter, HashRouter, Redirect } from 'react-router-dom'
 import { Component, nothing, fromClass } from './component'
-import queryString from 'query-string'
 
 export const useRoute = curry((paths, c) => compose(
   reduce(concat, nothing()),

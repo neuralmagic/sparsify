@@ -1,9 +1,13 @@
 import { compose, reduce, concat, map, prop, merge, objOf, isNil,
   when, propEq, __ } from 'ramda'
+import debounce from 'lodash.debounce'
+import { Form } from 'react-bootstrap'
 import { Component, fold, nothing, useStyles, toContainer,
-  useSelector, fromElement, useDispatch, branch } from '../common/component'
+  useSelector, fromElement, useDispatch, branch, fromClass, useState } from '../common/component'
 import { allModifiers, selectedModifier } from '../store/selectors/modifiers'
+import { sparsityLevel } from '../store/selectors/settings'
 import { selectModifier, addModifier, removeSelectedModifier } from '../store/actions/modifiers'
+import { changeSparsityLevel } from '../store/actions/settings'
 
 const styles = {
   container: props => ({
@@ -11,7 +15,6 @@ const styles = {
     display: 'flex',
     flexDirection: 'column',
     paddingLeft: 20,
-    paddingTop: 15,
     paddingBottom: 15,
     background: props.theme === 'dark' ? 'rgba(38, 43, 45, 1)' : 'rgba(228, 234, 240, 1)',
     borderRadius: 5
@@ -19,6 +22,7 @@ const styles = {
   title: props => ({
     fontSize: 13,
     marginBottom: 5,
+    paddingTop: 15,
     color: props.theme === 'dark' ? 'white' : '#495057'
   }),
   profileName: {
@@ -37,6 +41,9 @@ const styles = {
     '&:hover': {
       textDecoration: 'underline'
     }
+  },
+  sparsityRange: {
+    width: 150
   }
 }
 
@@ -90,13 +97,29 @@ const list = Component(props => compose(
     objOf('modifier'))))(
   props.modifiers))
 
+const debounceChangeSparsityLevel = debounce((value, props) => props.dispatch(changeSparsityLevel(value)), 200)
+
+const sparsityRange = fromClass(Form.Control).contramap(props => merge(props, {
+  type: 'range',
+  value: props.localSparsityLevel || props.sparsityLevel,
+  className: props.classes.sparsityRange,
+  onChange: e => {
+    props.setLocalSparsityLevel(e.target.value)
+    debounceChangeSparsityLevel(e.target.value, props)
+  }
+}))
+
 export default Component(props => compose(
   fold(props),
   useDispatch,
   useSelector('selectedModifier', selectedModifier),
   useSelector('modifiers', allModifiers),
+  useSelector('sparsityLevel', sparsityLevel),
+  useState('localSparsityLevel', 'setLocalSparsityLevel', null),
   useStyles(styles),
   map(toContainer({ className: prop('container') })),
   reduce(concat, nothing()))([
   fromElement('span').contramap(props => merge(props, { children: 'Modifiers', className: props.classes.title })),
-  list ]))
+  list,
+  fromElement('span').contramap(props => merge(props, { children: 'Sparsity', className: props.classes.title })),
+  sparsityRange ]))

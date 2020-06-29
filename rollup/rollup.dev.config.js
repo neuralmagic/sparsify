@@ -10,6 +10,7 @@ import css from 'rollup-plugin-css-only'
 import copy from 'rollup-plugin-copy'
 import * as react from 'react'
 import * as reactDom from 'react-dom'
+import * as reduxSagaEffects from 'redux-saga/effects'
 import * as reactIs from 'react-is'
 import * as propTypes from 'prop-types'
 import * as vega from 'vega'
@@ -53,6 +54,7 @@ export default {
         'node_modules/react-redux/node_modules/react-is/index.js': ['isValidElementType', 'isContextConsumer'],
         'node_modules/react-router/node_modules/react-is/index.js': ['isValidElementType', 'isContextConsumer'],
         'node_modules/react-router-dom/index.js': ['Route', 'Redirect', 'BrowserRouter', 'HashRouter'],
+        'node_modules/redux-saga/dist/redux-saga-effects-npm-proxy.cjs.js': Object.keys(reduxSagaEffects),
         'node_modules/d3-format/dist/d3-format.js': ['format'],
         'vegaImport': Object.keys(vega),
         'vegaLiteImport': Object.keys(vegaLite)

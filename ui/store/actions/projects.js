@@ -1,37 +1,11 @@
-import { uuid } from 'uuidv4'
-import { compose, head, tap, map, defaultTo } from 'ramda'
+import { takeLatest, put } from 'redux-saga/effects'
 import { selectedProject } from '../selectors/projects'
 import { allProfiles } from '../selectors/profiles'
-import { addProfile, selectProfile } from './profiles'
 
-export const createProject = ({ name, profiles }) => dispatch => {
-  const id = uuid()
+export const createProject = ({ name }) => dispatch => {
+  const id = 'test'
 
   dispatch({ type: 'CREATE_PROJECT', project: { name, id } })
-
-  const defaultProfiles = [{
-    id: uuid(),
-    name: 'Performance Optimized',
-    speedupFactor: 12.5,
-    recoverabilityScore: 0.023
-  }, {
-    id: uuid(),
-    name: 'Loss Optimized',
-    speedupFactor: 10.5,
-    recoverabilityScore: 0.018
-  }, {
-    id: uuid(),
-    name: 'Uniform',
-    speedupFactor: 11.4,
-    recoverabilityScore: 0.02
-  }]
-
-  compose(
-    compose(dispatch, selectProfile),
-    head,
-    tap(map(compose(dispatch, addProfile))),
-    defaultTo(defaultProfiles))(
-    profiles)
 
   window.location.hash = `#/project/${id}`
 }
@@ -78,4 +52,15 @@ export const saveProjectToLocal = () => (dispatch, getState) => {
   })
 
   saveFile(content, `${name}.nmprj`, 'application/json')
+}
+
+export const selectProject = id => dispatch =>
+  dispatch({ type: 'SELECT_PROJECT', id })
+
+function* createProjectSaga({ project }) {
+  yield put(selectProject(project.id))
+}
+
+export function* sagas() {
+  yield takeLatest('CREATE_PROJECT', createProjectSaga)
 }

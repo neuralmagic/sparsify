@@ -1,7 +1,6 @@
-import { compose, reduce, concat, map, prop, always } from 'ramda'
+import { compose, reduce, concat, map, prop } from 'ramda'
 import { Component, fold, toContainer, nothing,
   useStyles } from '../common/component'
-import { image } from '../components'
 import profileSelector from '../profiles/selector'
 import epochScheduler from '../modifiers/epochScheduler'
 import modifiersList from '../modifiers/modifiersList'
@@ -51,5 +50,4 @@ export default Component(props => compose(
   map(toContainer({ className: prop('mainContainer') })),
   reduce(concat, nothing()))([
   layerControls,
-  image.contramap(always({ src: `assets/settings_stub_${props.theme}.png`, width: 1041, height: 213 })),
   layerIndexChart ]))

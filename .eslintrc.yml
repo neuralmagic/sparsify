@@ -82,7 +82,7 @@ rules:
         - off
     func-style:
         - error
-        - expression
+        - declaration
         - allowArrowFunctions: true
     jasmine/no-disabled-tests:
         - off

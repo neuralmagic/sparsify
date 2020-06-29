@@ -5,7 +5,7 @@ import React, {
 } from 'react'
 import {
   compose, curry, reject, isNil, always,
-  when, is, mergeDeepRight, evolve, tap, map, addIndex,
+  when, is, mergeDeepRight, evolve, map, addIndex,
   objOf, unless, either, merge, __, mergeRight, has
 } from 'ramda';
 import { createUseStyles, ThemeProvider, useTheme as jssUseTheme, JssProvider } from 'react-jss'

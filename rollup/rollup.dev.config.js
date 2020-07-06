@@ -6,8 +6,10 @@ import resolve from '@rollup/plugin-node-resolve'
 import serve from 'rollup-plugin-serve'
 import builtins from 'rollup-plugin-node-builtins'
 import json from 'rollup-plugin-json'
-import css from 'rollup-plugin-css-only'
 import copy from 'rollup-plugin-copy'
+import svgr from '@svgr/rollup'
+import postcss from 'rollup-plugin-postcss'
+import copyAssets from 'postcss-copy-assets'
 import * as react from 'react'
 import * as reactDom from 'react-dom'
 import * as reduxSagaEffects from 'redux-saga/effects'
@@ -19,10 +21,11 @@ import * as vegaLite from 'vega-lite'
 export default {
   input:  'ui/index.js',
   output: {
-    file:   'static/main.min.js',
+    file:   'neuralmagic_studio/static/main.min.js',
     format: 'iife',
   },
   plugins: [
+    svgr(),
     json(),
     builtins(),
     babel({
@@ -34,9 +37,14 @@ export default {
     }),
     html({
       template: 'ui/template.html',
-      target: 'static/index.html'
+      target: 'neuralmagic_studio/static/index.html'
     }),
-    css({ output: 'static/bundle.css' }),
+    postcss({
+      plugins: [
+        copyAssets({ base: 'neuralmagic_studio/static' })
+      ],
+      to: 'neuralmagic_studio/static/bundle.css'
+    }),
     resolve({
       mainFields: ['browser', 'jsnext', 'main']
     }),
@@ -61,11 +69,11 @@ export default {
       }
     }),
     copy({
-      targets: [{ src: 'ui/assets/*', dest: 'static/assets' }]
+      targets: [{ src: 'ui/assets/*', dest: 'neuralmagic_studio/static/assets' }]
     }),
     serve({
       open:        true,
-      contentBase: 'static'
+      contentBase: 'neuralmagic_studio/static'
     })
   ]
 }

@@ -7,30 +7,47 @@ import replace from 'rollup-plugin-replace'
 import resolve from '@rollup/plugin-node-resolve'
 import json from 'rollup-plugin-json'
 import copy from 'rollup-plugin-copy'
+import postcss from 'rollup-plugin-postcss'
+import copyAssets from 'postcss-copy-assets'
+import svgr from '@svgr/rollup'
 import * as react from 'react'
 import * as reactDom from 'react-dom'
 import * as reduxSagaEffects from 'redux-saga/effects'
 import * as reactIs from 'react-is'
 import * as propTypes from 'prop-types'
-import css from 'rollup-plugin-css-only'
 import * as vega from 'vega'
 import * as vegaLite from 'vega-lite'
 
 export default {
   input:  'ui/index.js',
   output: {
-    file:   'static/main.min.js',
+    file:   'neuralmagic_studio/static/main.min.js',
     format: 'iife'
   },
   plugins: [
+    svgr(),
+    builtins(),
+    babel({
+      babelrc: false,
+      exclude: 'node_modules/**',
+      presets: [
+        '@babel/preset-react'
+      ]
+    }),
+    terser(),
     replace({
       'process.env.NODE_ENV': JSON.stringify('production')
     }),
     html({
       template: 'ui/template.html',
-      target: 'static/index.html'
+      target: 'neuralmagic_studio/static/index.html'
     }),
-    css({ output: 'static/bundle.css' }),
+    postcss({
+      plugins: [
+        copyAssets({ base: 'neuralmagic_studio/static' })
+      ],
+      to: 'neuralmagic_studio/static/bundle.css'
+    }),
     resolve({
       mainFields: ['browser', 'jsnext', 'main']
     }),
@@ -52,17 +69,8 @@ export default {
         'vegaLiteImport': Object.keys(vegaLite)
       }
     }),
-    builtins(),
-    babel({
-      babelrc: false,
-      exclude: 'node_modules/**',
-      presets: [
-        '@babel/preset-react'
-      ]
-    }),
-    terser(),
     copy({
-      targets: [{ src: 'ui/assets/*', dest: 'static/assets' }]
+      targets: [{ src: 'ui/assets/*', dest: 'neuralmagic_studio/static/assets' }]
     })
   ]
 }

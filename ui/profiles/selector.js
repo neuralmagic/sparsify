@@ -1,10 +1,9 @@
 import { compose, reduce, concat, map, prop, merge,
-  addIndex, objOf, always, isNil, path, __ } from 'ramda'
-import { Component, fold, nothing, useStyles, toContainer, useSelector,
-  branch, fromElement, useDispatch } from '../common/component'
+  addIndex, objOf } from 'ramda'
+import { Component, fold, nothing, useStyles, toContainer,
+  useSelector, fromElement, useDispatch } from '../common/component'
 import { allProfiles, selectedProfile } from '../store/selectors/profiles'
-import { selectProfile, addProfile } from '../store/actions/profiles'
-import { image } from '../components'
+import { selectProfile } from '../store/actions/profiles'
 
 const mapIndexed = addIndex(map)
 
@@ -73,12 +72,6 @@ const profileList = Component(props => compose(
   mapIndexed((p, index) => compose(profile.contramap, merge, merge({ index }), objOf('profile'))(p)))(
   props.profiles))
 
-const addProfileButton = image.contramap(props => ({
-  className: props.classes.addProfileIcon,
-  src: 'assets/add_profile.svg',
-  width: 20, height: 20,
-  onClick: () => props.dispatch(addProfile()) }))
-
 export default Component(props => compose(
   fold(props),
   useDispatch,
@@ -87,6 +80,5 @@ export default Component(props => compose(
   useStyles(styles),
   map(toContainer({ className: prop('container') })),
   reduce(concat, nothing()))([
-  fromElement('span').contramap(merge({ className: prop('title'), children: 'Profile' })),
-  profileList,
-  addProfileButton ]))
+  fromElement('span').contramap(props => ({ className: props.classes.title, children: 'Profile' })),
+  profileList ]))

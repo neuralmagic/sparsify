@@ -1,5 +1,4 @@
 import React from 'react'
-import { Image } from 'react-bootstrap'
 import { concat, compose, curry, propEq, prop, map, merge, mergeRight, always, ifElse, is, identity, applyTo, __ } from 'ramda'
 import { Component, useState, branch, nothing, fold, toContainer, useStyles, contramap, fromClass } from './component'
 
@@ -52,8 +51,6 @@ const modalStyles = {
   }
 }
 
-const image = fromClass(Image).contramap(merge({ alt: 'image' }))
-
 const overlay = modal => Component(props => compose(
   fold(props),
   map(toContainer({ className: prop('overlay') })))(
@@ -75,8 +72,7 @@ export const useModal = curry((name, modal, c) => {
 
 const dialogHeader = Component(props => compose(
   fold(props),
-  map(toContainer({ className: prop('dialogHeader') })),
-  concat(__, image.contramap(always({ src: 'assets/close.svg', onClick: props.closeModal }))))(
+  map(toContainer({ className: prop('dialogHeader') })))(
   Component(props => <div className={props.classes.dialogHeaderTitle}>{ props.title }</div>)))
 
 export const useDialog = curry(({ title }, c) => compose(

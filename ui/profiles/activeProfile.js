@@ -1,4 +1,4 @@
-import { compose, reduce, concat, map, prop, merge } from 'ramda'
+import { compose, reduce, concat, map, prop } from 'ramda'
 import { Component, fold, nothing, useStyles, toContainer, useSelector,
   fromElement } from '../common/component'
 import { selectedProfile } from '../store/selectors/profiles'
@@ -26,5 +26,5 @@ export default Component(props => compose(
   map(toContainer({ className: prop('container') })),
   reduce(concat, nothing()))(
   [
-    fromElement('span').contramap(props => merge(props, { children: 'Active Profile', className: props.classes.title })),
-    fromElement('span').contramap(props => merge(props, { children: props.selectedProfile && props.selectedProfile.name, className: props.classes.profileName })) ]))
+    fromElement('span').contramap(props => ({ children: 'Active Profile', className: props.classes.title })),
+    fromElement('span').contramap(props => ({ children: props.selectedProfile && props.selectedProfile.name, className: props.classes.profileName })) ]))

@@ -1,7 +1,7 @@
 import { compose, reduce, concat, map, prop, merge, objOf, isNil,
   when, propEq, __ } from 'ramda'
 import debounce from 'lodash.debounce'
-import { Form } from 'react-bootstrap'
+import Slider from '@material-ui/core/Slider'
 import { Component, fold, nothing, useStyles, toContainer,
   useSelector, fromElement, useDispatch, branch, fromClass, useState } from '../common/component'
 import { allModifiers, selectedModifier } from '../store/selectors/modifiers'
@@ -43,7 +43,7 @@ const styles = {
     }
   },
   sparsityRange: {
-    width: 150
+    width: '150px!important'
   }
 }
 
@@ -66,7 +66,7 @@ const nothingIfNoSelectedModifier = branch(compose(isNil, prop('selectedModifier
 const modifier = Component(props => compose(
   fold(props),
   useStyles(modifierStyles))(
-    fromElement('span').contramap(props => merge(props, {
+    fromElement('span').contramap(props => ({
       onClick: () => props.dispatch(selectModifier(props.modifier)),
       className: props.classes.layerName,
       children: props.modifier.label }))))
@@ -99,13 +99,12 @@ const list = Component(props => compose(
 
 const debounceChangeSparsityLevel = debounce((value, props) => props.dispatch(changeSparsityLevel(value)), 200)
 
-const sparsityRange = fromClass(Form.Control).contramap(props => merge(props, {
-  type: 'range',
+const sparsityRange = fromClass(Slider).contramap(props => ({
   value: props.localSparsityLevel || props.sparsityLevel,
   className: props.classes.sparsityRange,
-  onChange: e => {
-    props.setLocalSparsityLevel(e.target.value)
-    debounceChangeSparsityLevel(e.target.value, props)
+  onChange: (e, value) => {
+    props.setLocalSparsityLevel(value)
+    debounceChangeSparsityLevel(value, props)
   }
 }))
 
@@ -119,7 +118,7 @@ export default Component(props => compose(
   useStyles(styles),
   map(toContainer({ className: prop('container') })),
   reduce(concat, nothing()))([
-  fromElement('span').contramap(props => merge(props, { children: 'Modifiers', className: props.classes.title })),
+  fromElement('span').contramap(props => ({ children: 'Modifiers', className: props.classes.title })),
   list,
-  fromElement('span').contramap(props => merge(props, { children: 'Sparsity', className: props.classes.title })),
+  fromElement('span').contramap(props => ({ children: 'Sparsity', className: props.classes.title })),
   sparsityRange ]))

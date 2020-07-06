@@ -1,6 +1,7 @@
 import { compose, reduce, concat, merge, map, prop,
   curry, always } from 'ramda'
-import { Form } from 'react-bootstrap'
+import Switch from '@material-ui/core/Switch'
+import SvgIcon from '@material-ui/core/SvgIcon'
 import { selectedTheme } from './store/selectors/theme'
 import { selectedProject } from './store/selectors/projects'
 import { changeTheme } from './store/actions/theme'
@@ -13,13 +14,12 @@ import { useHashRouter } from './common/router'
 import { useAsDropdownContent, useAsDropdown, useDropdownState, dropdownMenu } from './common/dropdown'
 import { useModal } from './common/modal'
 import { isDevelopment } from './common/environment'
-import { image } from './components'
 import helpMenu from './help/menu'
 import { newProjectDialog } from './projects/import'
 import projectContainer from './projects/projectContainer'
 import { headerDropdownStyles } from './common/styles/components'
-import './common/styles/reset.css'
-import 'bootstrap/dist/css/bootstrap.min.css'
+import logo from './assets/logo_white.svg'
+import arrowDown from './assets/arrow_down.svg'
 
 const appStyles = {
   '@global': {
@@ -113,8 +113,8 @@ const mainContentStyles = {
   }
 }
 
-const themeCheckbox = fromClass(Form.Check).contramap(props => merge(props, {
-  type: 'switch', checked: props.theme === 'dark', label: '', id: 'themeCheck' }))
+const themeCheckbox = fromClass(Switch).contramap(props => ({
+  checked: props.theme === 'dark' }))
 
 const userMenu = Component(props => compose(
   fold(merge(props, { dropdownAlign: 'left' })),
@@ -122,8 +122,8 @@ const userMenu = Component(props => compose(
   useDropdownState,
   useStyles(userMenuStyles),
   useAsDropdown,
-  concat(image.contramap(props => ({ src: 'assets/logo_white.svg', width: 30, height: 30, className: props.classes.logo }))),
-  concat(image.contramap(always({ src: 'assets/arrow_down.svg', width: 8, height: 4 }))),
+  concat(fromClass(SvgIcon).contramap(always({ component: logo }))),
+  concat(fromClass(SvgIcon).contramap(always({ component: arrowDown }))),
   useAsDropdownContent)(
   dropdownMenu.contramap(props => merge(props, { items: [
     { label: 'New Project', onClick: props => props.setNewProjectModalShow(true), icon: 'assets/new_project.svg', iconWidth: 14, iconHeight: 14 },
@@ -148,7 +148,7 @@ const mainContent = Component(props => compose(
   fold(props),
   useStyles(mainContentStyles),
   map(toContainer({ className: prop('mainContent') })))(
-  image.contramap(always({ src: `assets/main_content_stub_${props.theme}.png`, width: 1178, height: 631 }))))
+  nothing()))
 
 export default Component(props => compose(
   fold(props),

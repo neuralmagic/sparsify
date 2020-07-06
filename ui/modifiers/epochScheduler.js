@@ -42,5 +42,5 @@ export default Component(props => compose(
   useSelector('selectedModifier', selectedModifier),
   map(toContainer({ className: prop('container') })),
   reduce(concat, nothing()))([
-  fromElement('span').contramap(merge({ children: 'Epoch schedule', className: prop('title') })),
+  fromElement('span').contramap(props => ({ children: 'Epoch schedule', className: props.classes.title })),
   chart]))

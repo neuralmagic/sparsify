@@ -3,7 +3,7 @@ import { selectedProject } from '../selectors/projects'
 import { allProfiles } from '../selectors/profiles'
 
 export const createProject = ({ name }) => dispatch => {
-  const id = 'test'
+  const id = 'default'
 
   dispatch({ type: 'CREATE_PROJECT', project: { name, id } })
 

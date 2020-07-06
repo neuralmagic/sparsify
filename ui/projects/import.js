@@ -1,11 +1,11 @@
 import { compose, reduce, concat, map, prop, merge, propEq, always,
-  tap, head, path, join, dropLast, split } from 'ramda'
+  tap, head, path, join, dropLast, split, defaultTo } from 'ramda'
+import Button from '@material-ui/core/Button'
 import { Component, fold, nothing, useStyles, useState, toContainer,
   fromClass, branch, fromElement, useRef, useDispatch } from '../common/component'
 import { createProject } from '../store/actions/projects'
 import { useDialog } from '../common/modal'
 import { inputStyle } from '../common/styles/components'
-import { Button } from 'react-bootstrap'
 import { formatBytes } from '../common/utilities'
 
 const styles = {
@@ -80,7 +80,7 @@ const fileInput = Component(props => compose(
   map(toContainer({ className: prop('inputContainer') })),
   reduce(concat, nothing()))([
   fromElement('input').contramap(always({
-    id: 'newProjectFileInput', type: 'file', accept: '.onnx', className: props.classes.fileInput,
+    id: 'newProjectFileInput', type: 'file', accept: '.onnx', className: props.classes.fileInput, value: '',
     onChange: compose(
       tap(() => { props.projectNameInput.current.focus(); props.projectNameInput.current.select(); }),
       tap(props.setProjectName),
@@ -92,22 +92,22 @@ const fileInput = Component(props => compose(
       head,
       path(['target', 'files'])) })),
   fromClass(Button).contramap(always({
-    children: fromElement('label').contramap(always({ for: 'newProjectFileInput', children: 'Browse' })).fold({}),
+    children: fromElement('label').contramap(always({ htmlFor: 'newProjectFileInput', children: 'Browse' })).fold({}),
     className: props.classes.browseButton,
-    variant: props.theme === 'light' ? 'outline-primary' : 'secondary' })),
+    variant: 'contained' })),
   nothingWhenNoFile(fileName) ]))
 
 const buttons = Component(props => compose(
   fold(props),
   map(toContainer({ className: prop('buttonsContainer') })),
   reduce(concat, nothing()))([
-  fromClass(Button).contramap(merge({
+  fromClass(Button).contramap(always({
     children: 'Cancel',
-    variant: props.theme === 'light' ? 'outline-primary' : 'secondary',
+    variant: 'contained',
     onClick: props.closeModal })),
-  fromClass(Button).contramap(merge({
+  fromClass(Button).contramap(always({
     children: 'Next',
-    variant: 'primary',
+    variant: 'contained',
     disabled: !isNextEnabled(props),
     onClick: () => props.formState === 'fileSelect' ?
       props.setFormState('analysing') : (props.closeModal(), props.dispatch(createProject({ name: props.projectName }))) })) ]))
@@ -121,7 +121,7 @@ const fileSelector = Component(props => compose(
   fromElement('input').contramap(always({
     ref: props.projectNameInput,
     className: props.classes.projectInput,
-    value: props.projectName,
+    value: defaultTo('', props.projectName),
     onChange: e => props.setProjectName(e.target.value)
   }))]))
 

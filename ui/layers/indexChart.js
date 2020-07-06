@@ -90,8 +90,8 @@ const legendItem = Component(props => compose(
   useStyles(legendItemStyles),
   map(toContainer({ className: prop('container') })),
   reduce(concat, nothing()))([
-  fromElement('div').contramap(merge({ className: prop(props.type) })),
-  fromElement('span').contramap(always({ children: props.label }))]))
+  fromElement('div').contramap(props => ({ className: props.classes.type })),
+  fromElement('span').contramap(props => ({ children: props.label }))]))
 
 const legend = Component(props => compose(
   fold(props),

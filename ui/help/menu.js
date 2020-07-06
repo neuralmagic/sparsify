@@ -1,5 +1,4 @@
-import { compose, concat, merge, always } from 'ramda'
-import { image } from '../components'
+import { compose, merge } from 'ramda'
 import { headerDropdownStyles } from '../common/styles/components'
 import { Component, fold, useStyles } from '../common/component'
 import { useAsDropdownContent, useAsDropdown, useDropdownState, dropdownMenu } from '../common/dropdown'
@@ -24,7 +23,6 @@ export default Component(props => compose(
   useDropdownState,
   useStyles(helpStyles),
   useAsDropdown,
-  concat(image.contramap(always({ src: 'assets/help_icon.svg', width: 18, height: 18 }))),
   useAsDropdownContent)(
   dropdownMenu.contramap(props => merge(props, { items: [
     { label: 'Get latest version', icon: 'assets/get_latest_version.svg', iconWidth: 14, iconHeight: 14 },

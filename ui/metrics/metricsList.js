@@ -4,7 +4,6 @@ import { format } from 'd3-format'
 import { Component, fold, nothing, useStyles, toContainer,
   useSelector, fromElement, useState, branch } from '../common/component'
 import { overallMetrics, metricsByType } from '../store/selectors/metrics'
-import { image } from '../components'
 
 const styles = {
   container: props => ({
@@ -91,9 +90,9 @@ const selectorItem = Component(props => compose(
   fold(props),
   useStyles(selectorItemStyles),
   map(toContainer({ className: prop('container') })),
-  when(always(pathEq(['item', 'selected'], true, props)), concat(fromElement('div').contramap(merge({ className: prop('arrowRight') })))))(
-  fromElement('span').contramap(merge({
-    className: prop('span'),
+  when(always(pathEq(['item', 'selected'], true, props)), concat(fromElement('div').contramap(props => ({ className: props.classes.arrowRight })))))(
+  fromElement('span').contramap(props => ({
+    className: props.classes.span,
     children: props.item.label,
     onClick: () => props.setSelectedType(props.item.type) }))))
 
@@ -116,12 +115,11 @@ const metricItem = Component(props => compose(
   fold(props),
   useStyles(metricItemStyles),
   map(toContainer({ className: prop('container') })),
-  concat(fromElement('span').contramap(merge({ className: prop('label'), children: props.item.label }))),
+  concat(fromElement('span').contramap(props => ({ className: props.classes.label, children: props.item.label }))),
   map(toContainer({ className: prop('valueContainer') })),
   reduce(concat, nothing()))([
-  fromElement('span').contramap(merge({ className: prop('value'), children: format(props.item.format)(props.item.value) })),
-  nothingIfNotSpeedFactor(fromElement('span').contramap(merge({ className: prop('value'), children: 'x' }))),
-  nothingIfNotSpeedFactor(image.contramap(props => ({ className: props.classes.speedupFactorImage, src: 'assets/go_up.svg', width: 18, height: 22 })))]))
+  fromElement('span').contramap(props => ({ className: props.classes.value, children: format(props.item.format)(props.item.value) })),
+  nothingIfNotSpeedFactor(fromElement('span').contramap(props => ({ className: props.classes.value, children: 'x' })))]))
 
 const overallList = Component(props => compose(
   fold(props),
@@ -145,7 +143,7 @@ export default Component(props => compose(
   useState('selectedType', 'setSelectedType', 'time'),
   map(toContainer({ className: prop('container') })),
   reduce(concat, nothing()))([
-  fromElement('span').contramap(merge({ className: prop('title'), children: 'Baseline comparisons' })),
+  fromElement('span').contramap(props => ({ className: props.classes.title, children: 'Baseline comparisons' })),
   selector,
   selectedMetricsList,
   overallList ]))

@@ -1,7 +1,6 @@
 import React from 'react'
 import { map, compose, propEq, prop, omit, always, merge, reduce,
   concat, not, head, path, prepend, when, __ } from 'ramda'
-import { Image } from 'react-bootstrap'
 import { Component, fold, toContainer, branch, nothing, useState,
   fromClass, useStyles, fromElement } from './component'
 import { useOutsideClick } from './hooks'
@@ -77,7 +76,7 @@ export const dropdownMenuItem = Component(props => compose(
   fold(props),
   map(toContainer({ className: prop('dropdownMenuItem'), onClick: props.onClick })),
   when(always(isFileSelectItem(props)), c =>
-    fromElement('label').contramap(props => ({ for: 'dropdownFileSelectInput', className: props.classes.fileInputLabel, children: c.fold(props) }))),
+    fromElement('label').contramap(props => ({ htmlFor: 'dropdownFileSelectInput', className: props.classes.fileInputLabel, children: c.fold(props) }))),
   reduce(concat, nothing()),
   prepend(__, [
     Component(props => <span className={props.classes.dropdownMenuItemLabel}>{props.label}</span>),
@@ -90,7 +89,7 @@ export const dropdownMenuItem = Component(props => compose(
         path(['target', 'files'])) })))
   ]),
   map(toContainer({ className: prop('dropdownMenuItemImageContainer') })))(
-  image.contramap(always({ src: props.icon, width: props.iconWidth, height: props.iconHeight }))))
+  nothing()))
 
 export const dropdownMenu = Component(props => compose(
   fold(props),

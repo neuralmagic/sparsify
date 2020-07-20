@@ -1,8 +1,8 @@
-import { compose, reduce, concat, map, prop, merge, always, objOf, zipWith, path, addIndex } from 'ramda'
+import { compose, reduce, concat, map, prop, merge, objOf, zipWith, addIndex } from 'ramda'
 import { Vega } from 'react-vega'
 import { Component, fold, nothing, useStyles, toContainer, useSelector, fromElement, fromClass } from '../common/component'
 import { layerIndexChartSpec } from '../common/charts'
-import { lossData, perfData, sparsity } from '../store/selectors/layers'
+import { sparsity, denseExecutionTimeData, sparseExecutionTimeData } from '../store/selectors/layers'
 
 const mapIndexed = addIndex(map)
 
@@ -60,27 +60,16 @@ const legendItemStyles = {
   }
 }
 
-const computeChartData = ({ lossData, perfData, sparsity }) => {
-  if (!lossData || !perfData)
-    return []
-
-  const lossChartData = map(compose(
-    objOf('sparseExecTime'),
-    path(['baseline', 'timing'])),
-    lossData)
-
-  const denseChartData = map(compose(
-    objOf('denseExecTime'),
-    path(['baseline', 'timing'])),
-    perfData)
-
+const computeChartData = ({ denseExecutionTimeData, sparseExecutionTimeData, sparsity }) => {
   const sparsityData = map(objOf('sparsity'), sparsity)
+  const denseData = map(objOf('denseExecTime'), denseExecutionTimeData)
+  const sparseData = map(objOf('sparseExecTime'), sparseExecutionTimeData)
 
   const chartData = compose(
     mapIndexed((v, index) => merge(v, { layer: index + 1 })),
     zipWith(merge, sparsityData),
-    zipWith(merge, lossChartData))(
-    denseChartData)
+    zipWith(merge, denseData))(
+    sparseData)
 
   return chartData
 }
@@ -130,9 +119,9 @@ const chart = fromClass(Vega).contramap(props => merge({
 export default Component(props => compose(
   fold(props),
   useStyles(styles),
-  useSelector('lossData', lossData),
-  useSelector('perfData', perfData),
   useSelector('sparsity', sparsity),
+  useSelector('denseExecutionTimeData', denseExecutionTimeData),
+  useSelector('sparseExecutionTimeData', sparseExecutionTimeData),
   map(toContainer({ className: prop('container') })),
   reduce(concat, nothing()))([
   chart,

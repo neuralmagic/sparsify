@@ -97,14 +97,14 @@ const list = Component(props => compose(
     objOf('modifier'))))(
   props.modifiers))
 
-const debounceChangeSparsityLevel = debounce((value, props) => props.dispatch(changeSparsityLevel(value)), 200)
+const debounceChangeSparsityLevel = debounce((value, props) => props.dispatch(changeSparsityLevel(value)), 50)
 
 const sparsityRange = fromClass(Slider).contramap(props => ({
-  value: props.localSparsityLevel || props.sparsityLevel,
+  value: props.localSparsityLevel || props.sparsityLevel * 100,
   className: props.classes.sparsityRange,
   onChange: (e, value) => {
     props.setLocalSparsityLevel(value)
-    debounceChangeSparsityLevel(value, props)
+    debounceChangeSparsityLevel(value / 100, props)
   }
 }))
 

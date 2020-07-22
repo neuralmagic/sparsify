@@ -7,7 +7,13 @@ import { verticalLinearGradient } from './utils'
 export default ({
   data, backgroundColor, axesColor, labelColor, gridColor, titleColor,
   denseAreaColors, denseLineColor, sparseAreaColors, sparseLineColor }) => ({
-  data: { name: 'layers', values: data },
+  data: {
+    name: 'layers',
+    values: data,
+    transform: [
+      { type: 'formula', expr: 'datum.sparsity*10000', as: 'sparsityMultiplied' },
+      { type: 'formula', expr: 'datum.denseExecTime + 0.5', as: 'denseExecTimeExtended' },
+      { type: 'formula', expr: 'datum.sparseExecTime + 0.5', as: 'sparseExecTimeExtended' }] },
   background: backgroundColor,
   scales: [
     {
@@ -15,13 +21,14 @@ export default ({
       type: 'linear',
       range: 'height',
       nice: true,
-      domain: { data: 'layers', field: 'sparsity' }
+      domain: { data: 'layers', field: 'sparsityMultiplied' },
+      domainMax: 100
     },
     {
       name: 'executionTimeScale',
       type: 'linear',
       range: 'height',
-      domain: { data: 'layers', fields: ['denseExecTime', 'sparseExecTime'] }
+      domain: { data: 'layers', fields: ['denseExecTimeExtended', 'sparseExecTimeExtended'] }
     },
     {
       name: 'layerScale',
@@ -40,29 +47,19 @@ export default ({
       tickMinStep: 1,
       titleColor,
       titlePadding: 15,
-      grid: true,
+      //grid: true,
       tickSize: 0,
       tickCount: data.length,
       labelPadding: 5,
       labelFontSize: 9,
-      labelColor,
-      encode: {
-        grid: {
-          enter: { stroke: { value: gridColor } }
-        },
-        ticks: {
-          enter: {
-            stroke: { value: axesColor }
-          }
-        }
-      }
+      labelColor
     },
     {
       orient: 'left',
       scale: 'sparsityScale',
-      title: 'Layer Sparsity',
+      title: 'Layer Sparsity %',
       titleColor,
-      grid: true,
+      //grid: true,
       tickCount: 11,
       tickSize: 0,
       labelPadding: 10,
@@ -75,12 +72,12 @@ export default ({
         },
         domain: {
           enter: {
-            stroke: { value: axesColor }
+            stroke: { value: 'white' }
           }
         },
         ticks: {
           enter: {
-            stroke: { value: axesColor }
+            stroke: { value: 'white' }
           }
         }
       }
@@ -102,12 +99,12 @@ export default ({
         },
         domain: {
           enter: {
-            stroke: { value: axesColor }
+            stroke: { value: 'white' }
           }
         },
         ticks: {
           enter: {
-            stroke: { value: axesColor }
+            stroke: { value: 'white' }
           }
         }
       }
@@ -165,7 +162,7 @@ export default ({
     encode: {
       enter: {
         x: { scale: 'layerScale', field: 'layer' },
-        y: { scale: 'sparsityScale', field: 'sparsity' },
+        y: { scale: 'sparsityScale', field: 'sparsityMultiplied' },
         stroke: { value: '#E19325' }
       }
     }
@@ -176,7 +173,7 @@ export default ({
     encode: {
       update: {
         x: { scale: 'layerScale', field: 'layer' },
-        y: { scale: 'sparsityScale', field: 'sparsity' },
+        y: { scale: 'sparsityScale', field: 'sparsityMultiplied' },
         stroke: { value: '#E19325' },
         fill: { value: 'white' },
         size: { value: 20 }

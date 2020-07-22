@@ -15,8 +15,8 @@ const areAllSparsitiesLessThan = value => compose(
   prop('sparsity'),
   last)
 
-export const lossData = state => state.layers.lossData
-export const perfData = state => state.layers.perfData
+export const lossData = state => state.pruning.lossData
+export const perfData = state => state.pruning.perfData
 export const sparsity = createSelector(
   lossData,
   perfData,
@@ -58,9 +58,9 @@ const calculateTimingBasedOnSparsity = curry((sparsity, values) => {
 })
 
 export const sparseExecutionTimeData = createSelector(
-  lossData,
+  perfData,
   sparsityLevel,
-  (loss, sparsityLevel) => map(compose(
+  (perfData, sparsityLevel) => map(compose(
       calculateTimingBasedOnSparsity(sparsityLevel),
       flatten,
       ifElse(
@@ -80,4 +80,4 @@ export const sparseExecutionTimeData = createSelector(
       // into two arrays to get neighbours.
       splitWhen(compose(lt(sparsityLevel), prop('sparsity'))),
       prop('sparse')))(
-      defaultTo([], loss)))
+      defaultTo([], perfData)))

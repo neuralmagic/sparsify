@@ -4,7 +4,7 @@ import React, {
   useEffect as reactUseEffect, useRef as reactUseRef
 } from 'react'
 import {
-  compose, curry, reject, isNil, always,
+  compose, curry, reject, isNil, always, ifElse, prop,
   when, is, mergeDeepRight, evolve, map, addIndex,
   objOf, unless, either, merge, __, mergeRight, has
 } from 'ramda';
@@ -23,7 +23,9 @@ export const buildComponentWithChildren = curry((Comp, settings, c) =>
     fold(props),
     fromClass(Comp).contramap,
     always,
-    merge(settings),
+    merge(evolve({
+      className: unless(either(is(String), isNil), classFn => classFn(props.classes))
+    }, settings)),
     objOf('children'),
     when(has('fold'), fold(props)))(
     c)))
@@ -90,14 +92,15 @@ export const useContext = context => c => {
   return c.contramap(merge(__, { ...data }))
 }
 
-export const useState = (name, updateFn, initialValue) => c => {
-  const [value, updater] = reactUseState(initialValue)
+export const useState = (name, updateFn, initialValue) => c => Component(props => {
+  const initial = when(is(Function), f => f(props), initialValue)
+  const [value, updater] = reactUseState(initial)
 
-  return c.contramap(merge(__, {
+  return c.fold(merge(props, {
     [name]:     value,
     [updateFn]: updater
   }))
-}
+})
 
 export const useEffect = (updateFn, dependants) => c => Component(props => {
   reactUseEffect(() => updateFn(props), dependants)
@@ -154,7 +157,12 @@ export const Component = compose(
     map:       f => Component(x => f(g(x), x)),
     contramap: f => Component(x => g(f(x))),
     concat:    other => Component(x => g(x).concat(other.g(x))),
-    fold: props => <ComponentRenderer props={props} g={g}/>
+    fold: ifElse(prop('customRenderer'),
+      compose(
+        mapIndexed((e, index) => merge(e, { key: index })),
+        reject(isNil),
+        g),
+      props => <ComponentRenderer props={props} g={g}/>)
   }),
   x => compose(asArray, x))
 

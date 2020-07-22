@@ -4,7 +4,7 @@ import projects from './projects'
 import profiles from './profiles'
 import modifiers from './modifiers'
 import metrics from './metrics'
-import layers from './layers'
+import pruning from './pruning'
 import settings from './settings'
 
 export default combineReducers({
@@ -13,6 +13,6 @@ export default combineReducers({
   profiles,
   modifiers,
   metrics,
-  layers,
+  pruning,
   settings
 })

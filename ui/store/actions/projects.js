@@ -1,4 +1,6 @@
-import { takeLatest, put } from 'redux-saga/effects'
+import { compose, andThen, prop } from 'ramda'
+import { takeLatest, put, call, all } from 'redux-saga/effects'
+import { navigateToSelectedProject } from './navigation'
 import { selectedProject } from '../selectors/projects'
 import { allProfiles } from '../selectors/profiles'
 
@@ -6,8 +8,6 @@ export const createProject = ({ name }) => dispatch => {
   const id = 'default'
 
   dispatch({ type: 'CREATE_PROJECT', project: { name, id } })
-
-  window.location.hash = `#/project/${id}`
 }
 
 export const createProjectFromFile = file => dispatch => {
@@ -54,13 +54,33 @@ export const saveProjectToLocal = () => (dispatch, getState) => {
   saveFile(content, `${name}.nmprj`, 'application/json')
 }
 
-export const selectProject = id => dispatch =>
+export const selectProject = id => dispatch => {
   dispatch({ type: 'SELECT_PROJECT', id })
+  dispatch(navigateToSelectedProject())
+}
 
 function* createProjectSaga({ project }) {
   yield put(selectProject(project.id))
 }
 
+export const loadProjects = () => dispatch =>
+  dispatch({ type: 'LOAD_PROJECTS' })
+
+export const updateProjects = projects => dispatch =>
+  dispatch({ type: 'UPDATE_PROJECTS', projects })
+
+function* loadProjectsSaga() {
+  const projects = yield call(() => compose(
+    andThen(prop('projects')),
+    andThen(r => r.json()))(
+    fetch('/api/projects')))
+
+  yield put(updateProjects(projects))
+}
+
 export function* sagas() {
-  yield takeLatest('CREATE_PROJECT', createProjectSaga)
+  yield all([
+    takeLatest('CREATE_PROJECT', createProjectSaga),
+    takeLatest('LOAD_PROJECTS', loadProjectsSaga)
+  ])
 }

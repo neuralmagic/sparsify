@@ -7,12 +7,11 @@ import { sparsity, denseExecutionTimeData, sparseExecutionTimeData } from '../st
 const mapIndexed = addIndex(map)
 
 const styles = {
-  container: props => ({
-    background: props.theme === 'dark' ? '#151719' : '#f8f9fa',
+  container: {
     position: 'relative',
     display: 'flex',
     flexDirection: 'column'
-  }),
+  },
   title: props => ({
     position: 'absolute',
     marginLeft: -45,
@@ -24,7 +23,7 @@ const styles = {
     flexDirection: 'row',
     justifyContent: 'flex-end',
     paddingRight: 57,
-    width: 1127
+    width: 700
   }
 }
 
@@ -48,14 +47,14 @@ const legendItemStyles = {
     width: 15,
     height: 13,
     marginRight: 4,
-    borderTop: '1px solid #92cafd',
+    borderTop: '2px solid #92cafd',
     background: 'rgba(31, 120, 202, 0.5)',
   },
   sparseExecTime: {
     width: 15,
     height: 13,
     marginRight: 4,
-    borderTop: '1px solid #6c86ff',
+    borderTop: '2px solid #6c86ff',
     background: 'rgba(1, 41, 110, 0.5)',
   }
 }
@@ -79,7 +78,7 @@ const legendItem = Component(props => compose(
   useStyles(legendItemStyles),
   map(toContainer({ className: prop('container') })),
   reduce(concat, nothing()))([
-  fromElement('div').contramap(props => ({ className: props.classes.type })),
+  fromElement('div').contramap(props => ({ className: props.classes[props.type] })),
   fromElement('span').contramap(props => ({ children: props.label }))]))
 
 const legend = Component(props => compose(
@@ -94,11 +93,11 @@ const legend = Component(props => compose(
   ]))
 
 const chart = fromClass(Vega).contramap(props => merge({
-  width: 1000,
-  height: 380,
+  width: 600,
+  height: 200,
   autosize: { type: 'fit', contains: 'padding', resize: true },
   spec: layerIndexChartSpec({
-    backgroundColor: props.theme === 'dark' ? '#151719' : '#f8f9fa',
+    backgroundColor: 'white',
     axesColor: props.theme === 'dark' ? '#434649' : '#C8CDD3',
     gridColor: props.theme === 'dark' ? '#323437' : '#D7DADD',
     titleColor: props.theme === 'dark' ? 'white' : '#868E96',

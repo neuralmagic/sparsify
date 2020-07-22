@@ -1,25 +1,19 @@
-import { compose, reduce, concat, merge, map, prop,
-  curry, always } from 'ramda'
-import Switch from '@material-ui/core/Switch'
-import SvgIcon from '@material-ui/core/SvgIcon'
+import { compose, reduce, concat, map, prop } from 'ramda'
 import { selectedTheme } from './store/selectors/theme'
 import { selectedProject } from './store/selectors/projects'
-import { changeTheme } from './store/actions/theme'
-import { createProjectFromFile } from './store/actions/projects'
 import { onlyOnRootPage, onlyOnProjectPage, redirectToRootIfNoSelectedProject } from './routes'
 import { Component, fold, toContainer, nothing,
-  useStyles, useSelector, useDispatch, useJssProvider,
-  fromClass, fromElement } from './common/component'
+  useStyles, useSelector, useDispatch, useJssProvider } from './common/component'
+import { drawer, divider, typography } from './common/materialui'
 import { useHashRouter } from './common/router'
-import { useAsDropdownContent, useAsDropdown, useDropdownState, dropdownMenu } from './common/dropdown'
-import { useModal } from './common/modal'
 import { isDevelopment } from './common/environment'
-import helpMenu from './help/menu'
-import { newProjectDialog } from './projects/import'
+import projectList from './projects/projectList'
+import projectMenu from './projects/projectMenu'
 import projectContainer from './projects/projectContainer'
-import { headerDropdownStyles } from './common/styles/components'
-import logo from './assets/logo_white.svg'
-import arrowDown from './assets/arrow_down.svg'
+import selectedProjectNav from './projects/selectedProjectNav'
+import { logo } from './common/icons'
+
+const drawerWidth = 280
 
 const appStyles = {
   '@global': {
@@ -34,73 +28,32 @@ const appStyles = {
     '.vega-embed.has-actions': { paddingRight: '0!important', width: '100%!important' },
     '.vega-embed.has-actions details': { display: 'none' }
   },
-  mainContainer: props => ({
+  drawer: {
+    background: '#232323!important',
+    width: drawerWidth
+  },
+  drawerHeader: {
+    display: 'flex',
+    flexDirection: 'row',
+    color: 'white!important',
+    padding: '20px 15px 20px 20px'
+  },
+  drawerDivider: {
+    background: '#3E3E3E!important'
+  },
+  mainContainer: {
     display: 'flex',
     width: '100%',
     height: '100%',
     flexDirection: 'column',
     overflowX: 'hidden',
     overflowY: 'auto',
-    ...props.theme === 'dark' && {
-      backgroundColor: '#1c1f22',
-      backgroundImage: 'url("assets/bg.png")',
-      backgroundPosition: 'left top',
-      backgroundRepeat: 'repeat',
-      backgroundAttachment: 'scroll',
-      backgroundSize: '46px 23px',
-      backgroundOrigin: 'border-box'
-    },
-    ...props.theme === 'light' && {
-      backgroundColor: 'white'
-    }
-  }),
-  layerControls: props => ({
-    background: props.theme === 'dark' ? '#151719' : '#f8f9fa',
-    display: 'flex',
-    paddingTop: 35,
-    paddingBottom: 15,
-    paddingRight: 35
-  })
-}
-
-const headerStyles = {
-  header: {
-    background: '#303234',
-    height: 55,
-    borderBottom: '1px solid black',
-    display: 'flex',
-    alignItems: 'center',
-    flexShrink: 0,
-    position: 'sticky',
-    top: 0,
-    zIndex: 2
+    backgroundColor: 'white'
   },
-  headerTitle: {
-    color: 'white',
-    flexGrow: 1,
-    paddingLeft: 20,
-    fontSize: 20
-  }
-}
-
-const userMenuStyles = {
-  ...headerDropdownStyles,
-  userIcon: {
-    width: 28,
-    height: 28,
-    display: 'flex',
-    alignItems: 'center',
-    fontSize: 12,
-    color: 'white',
-    justifyContent: 'center',
-    backgroundColor: '#467CB1',
-    borderRadius: 14,
-    flexShrink: 0,
-    userSelect: 'none'
-  },
-
   logo: {
-    marginRight: 5
+    width: '30px!important',
+    height: '28px!important',
+    marginRight: 10
   }
 }
 
@@ -113,36 +66,27 @@ const mainContentStyles = {
   }
 }
 
-const themeCheckbox = fromClass(Switch).contramap(props => ({
-  checked: props.theme === 'dark' }))
-
-const userMenu = Component(props => compose(
-  fold(merge(props, { dropdownAlign: 'left' })),
-  useDispatch,
-  useDropdownState,
-  useStyles(userMenuStyles),
-  useAsDropdown,
-  concat(fromClass(SvgIcon).contramap(always({ component: logo }))),
-  concat(fromClass(SvgIcon).contramap(always({ component: arrowDown }))),
-  useAsDropdownContent)(
-  dropdownMenu.contramap(props => merge(props, { items: [
-    { label: 'New Project', onClick: props => props.setNewProjectModalShow(true), icon: 'assets/new_project.svg', iconWidth: 14, iconHeight: 14 },
-    { label: 'Open Project', icon: 'assets/open_project.svg', iconWidth: 18, iconHeight: 18,
-      fileSelect: true, accept: '.nmprj', onFileSelect: curry((props, file) => props.dispatch(createProjectFromFile(file))) },
-    { label: 'Dark mode', icon: 'assets/moon_icon.svg', iconWidth: 14, iconHeight: 14, extraContent: themeCheckbox,
-      onClick: props => props.dispatch(changeTheme(props.theme === 'dark' ? 'light' : 'dark')) } ] }))))
-
-const header = Component(props => compose(
+const appDrawerHeader = Component(props => compose(
   fold(props),
-  useStyles(headerStyles),
-  useModal('NewProject', newProjectDialog),
-  map(toContainer({ className: prop('header') })),
+  map(toContainer({ className: prop('drawerHeader') })),
   reduce(concat, nothing()))([
-  userMenu,
-  fromElement('span').contramap(props => ({
-    className: props.classes.headerTitle,
-    children: props.selectedProject ? `${props.selectedProject.name}: Resnet-50` : '' })),
-  helpMenu]))
+  logo.contramap(props => ({ className: props.classes.logo })),
+  typography({ variant: 'h5' }, 'Sparsify') ]))
+
+const appDrawer = Component(props => compose(
+  fold(props),
+  drawer({
+    classes: { paper: props.classes.drawer },
+    anchor: 'left',
+    open: true,
+    variant: 'persistent'
+  }),
+  reduce(concat, nothing()))([
+  appDrawerHeader,
+  onlyOnProjectPage(selectedProjectNav),
+  divider.contramap(props => ({ className: props.classes.drawerDivider })),
+  onlyOnProjectPage(projectMenu),
+  onlyOnRootPage(projectList)]))
 
 const mainContent = Component(props => compose(
   fold(props),
@@ -152,13 +96,13 @@ const mainContent = Component(props => compose(
 
 export default Component(props => compose(
   fold(props),
+  useDispatch,
   useHashRouter,
   useJssProvider({ id: { minify: !isDevelopment() } }),
   useSelector('theme', selectedTheme),
   useSelector('selectedProject', selectedProject),
   useStyles(appStyles),
-  map(toContainer({ className: prop('mainContainer') })),
   reduce(concat, nothing()))([
-  header,
+  appDrawer,
   onlyOnRootPage(mainContent),
   redirectToRootIfNoSelectedProject(onlyOnProjectPage(projectContainer))]))

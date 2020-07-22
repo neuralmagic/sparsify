@@ -118,7 +118,4 @@ export default Component(props => compose(
   useStyles(styles),
   map(toContainer({ className: prop('container') })),
   reduce(concat, nothing()))([
-  fromElement('span').contramap(props => ({ children: 'Modifiers', className: props.classes.title })),
-  list,
-  fromElement('span').contramap(props => ({ children: 'Sparsity', className: props.classes.title })),
   sparsityRange ]))

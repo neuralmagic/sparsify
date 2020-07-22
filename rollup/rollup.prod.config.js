@@ -62,7 +62,7 @@ export default {
         'prop-types': Object.keys(propTypes),
         'node_modules/react-redux/node_modules/react-is/index.js': ['isValidElementType', 'isContextConsumer'],
         'node_modules/react-router/node_modules/react-is/index.js': ['isValidElementType', 'isContextConsumer'],
-        'node_modules/react-router-dom/index.js': ['Route', 'Redirect', 'BrowserRouter', 'HashRouter'],
+        'node_modules/react-router-dom/index.js': ['Route', 'Redirect', 'BrowserRouter', 'HashRouter', 'useHistory'],
         'node_modules/redux-saga/dist/redux-saga-effects-npm-proxy.cjs.js': Object.keys(reduxSagaEffects),
         'node_modules/d3-format/dist/d3-format.js': ['format'],
         'vegaImport': Object.keys(vega),

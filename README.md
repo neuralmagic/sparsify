@@ -2,6 +2,9 @@
 ## Setting Up UI for Server
 1) Move contents of `public/built/` to `server/static`
 
+## Running tests
+1) Start the server with the following command `python3 neuralmagic_studio server --project-root  /tmp/recal.neuralmagic.com/test_data/`
+2) Run `pytest tests`
 
 ## API
 ### Get All Projects

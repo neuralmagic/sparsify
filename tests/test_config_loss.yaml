@@ -1,0 +1,59 @@
+version: 1.0.0
+
+modifiers:
+    - !SetLearningRateModifier
+        constant_logging: False
+        end_epoch: -1
+        learning_rate: 0.000505
+        log_types: __ALL__
+        start_epoch: 0
+
+    - !EpochRangeModifier
+        end_epoch: 67
+        start_epoch: 0
+
+    - !LearningRateModifier
+        constant_logging: False
+        end_epoch: -1.0
+        init_lr: 0.000505
+        log_types: __ALL__
+        lr_class: MultiStepLR
+        lr_kwargs: {'gamma': 0.2, 'milestones': [34, 42, 50, 58]}
+        start_epoch: 0
+        update_frequency: -1.0
+
+    - !GradualKSModifier
+        end_epoch: 33
+        final_sparsity: 0.8
+        init_sparsity: 0.05
+        inter_func: cubic
+        leave_enabled: True
+        log_types: __ALL__
+        mask_type: unstructured
+        params: ['sections.2.1.conv1.weight', 'sections.1.0.conv2.weight', 'sections.0.0.conv1.weight', 'sections.3.0.conv1.weight', 'sections.2.0.conv1.weight', 'sections.1.0.conv1.weight']
+        start_epoch: 1
+        update_frequency: 1.0
+
+    - !GradualKSModifier
+        end_epoch: 33
+        final_sparsity: 0.85
+        init_sparsity: 0.05
+        inter_func: cubic
+        leave_enabled: True
+        log_types: __ALL__
+        mask_type: unstructured
+        params: ['sections.0.1.conv1.weight', 'sections.2.0.conv2.weight', 'sections.1.0.identity.conv.weight', 'sections.1.1.conv2.weight', 'classifier.fc.weight', 'sections.1.1.conv1.weight']
+        start_epoch: 1
+        update_frequency: 1.0
+
+    - !GradualKSModifier
+        end_epoch: 33
+        final_sparsity: 0.9
+        init_sparsity: 0.05
+        inter_func: cubic
+        leave_enabled: True
+        log_types: __ALL__
+        mask_type: unstructured
+        params: ['sections.0.0.conv2.weight', 'sections.0.1.conv2.weight', 'sections.2.1.conv2.weight', 'sections.3.1.conv2.weight', 'sections.3.0.conv2.weight', 'sections.3.0.identity.conv.weight']
+        start_epoch: 1
+        update_frequency: 1.0

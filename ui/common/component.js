@@ -25,7 +25,7 @@ export const buildComponentWithChildren = curry((Comp, settings, c) =>
     always,
     merge(evolve({
       className: unless(either(is(String), isNil), classFn => classFn(props.classes))
-    }, settings)),
+    }, when(is(Function), f => f(props), settings))),
     objOf('children'),
     when(has('fold'), fold(props)))(
     c)))

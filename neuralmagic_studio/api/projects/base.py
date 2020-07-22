@@ -10,10 +10,10 @@ from flask import Blueprint, request, current_app, abort
 
 from neuralmagic_studio.utils import (
     get_path,
-    RecalProject,
-    ProjectConfig,
     get_missing_fields_message,
 )
+
+from neuralmagicML.onnx import RecalProject, ProjectConfig
 
 __all__ = ["project_base_api_bp", "project_api_bp"]
 
@@ -184,7 +184,7 @@ def get_sparse_loss_by_id(project_id: str, analysis_id: str):
         missing_fields_message = get_missing_fields_message(["loss"])
         if missing_fields_message:
             return missing_fields_message, 400
-        content = request.get_json()["perf"]
+        content = request.get_json()["loss"]
 
         return handle_project(
             project_id,

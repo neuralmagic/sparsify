@@ -38,7 +38,7 @@ def get_path(filename: str, project_root: str = None) -> str:
 
 def get_missing_fields_message(required_fields) -> Dict[str, str]:
     for required_field in required_fields:
-        if required_field not in request.get_json():
+        if request.get_json() is not None and required_field not in request.get_json():
             return {"message": f"Missing required field '{required_field}'"}
     return None
 
@@ -83,7 +83,8 @@ def get_project_root(arg_project_root: str):
     project_root = os.path.expanduser(project_root)
 
     if not os.path.exists(project_root):
-        raise NotADirectoryError(f"PROJECT_ROOT {project_root} does not exist")
+        os.makedirs(project_root)
+        # raise NotADirectoryError(f"PROJECT_ROOT {project_root} does not exist")
 
     project_root = os.path.abspath(project_root)
     return project_root

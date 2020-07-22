@@ -16,6 +16,7 @@ const areAllSparsitiesLessThan = value => compose(
   last)
 
 export const lossData = state => state.pruning.lossData
+export const lossApproxData = state => state.pruning.lossApproxData
 export const perfData = state => state.pruning.perfData
 export const sparsity = createSelector(
   lossData,

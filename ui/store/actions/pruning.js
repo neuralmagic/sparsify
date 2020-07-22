@@ -7,15 +7,16 @@ const loadSensitivityData = compose(
   fetch)
 
 function* selectProjectSaga({ id }) {
-  yield put({ type: 'LOSS_DATA', data: [] })
-  yield put({ type: 'PERF_DATA', data: [] })
+  yield put({ type: 'RESET_DATA' })
 
-  const [lossData, perfData] = yield all([
+  const [lossData, lossApproxData, perfData] = yield all([
     call(() => loadSensitivityData(`/api/projects/${id}/sparse-analysis/loss`)),
+    call(() => loadSensitivityData(`/api/projects/${id}/sparse-analysis/loss/approx`)),
     call(() => loadSensitivityData(`/api/projects/${id}/sparse-analysis/perf`))
   ])
 
   yield put({ type: 'LOSS_DATA', data: lossData })
+  yield put({ type: 'LOSS_APPROX_DATA', data: lossApproxData })
   yield put({ type: 'PERF_DATA', data: perfData })
 }
 

@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 
 packages = find_packages(
-    include=["/", "neuralmagic_studio.*"], exclude=["*.__pycache__.*"]
+    include=["neuralmagic_studio", "neuralmagic_studio.*"], exclude=["*.__pycache__.*", "setup.py"]
 )
 
 with open("requirements.txt", "r") as req_file:
@@ -16,7 +16,7 @@ setup(
     name="neuralmagic_studio",
     version="1.0.0",
     packages=packages,
-    package_data={},
+    package_data={"neuralmagic_studio": ["static/*", "static/assets/*", "static/files/*"]},
     install_requires=install_reqs,
     author="Neural Magic",
     author_email="support@neuralmagic.com",

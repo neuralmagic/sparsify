@@ -11,6 +11,7 @@ import AccordionSummary from '@material-ui/core/AccordionSummary'
 import AccordionDetails from '@material-ui/core/AccordionDetails'
 import Accordion from '@material-ui/core/Accordion'
 import Paper from '@material-ui/core/Paper'
+import Button from '@material-ui/core/Button'
 import { buildComponentWithChildren, fromClass } from './component'
 
 export const drawer = buildComponentWithChildren(Drawer)
@@ -26,3 +27,4 @@ export const accordionDetails = buildComponentWithChildren(AccordionDetails)
 export const accordion = buildComponentWithChildren(Accordion)
 export const iconButton = buildComponentWithChildren(IconButton)
 export const paper = buildComponentWithChildren(Paper)
+export const button = buildComponentWithChildren(Button)

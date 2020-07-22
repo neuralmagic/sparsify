@@ -2,7 +2,7 @@ import { compose, reduce, concat, map, prop, merge, objOf, zipWith, addIndex } f
 import { Vega } from 'react-vega'
 import { Component, fold, nothing, useStyles, toContainer, useSelector, fromElement, fromClass } from '../common/component'
 import { layerIndexChartSpec } from '../common/charts'
-import { sparsity, denseExecutionTimeData, sparseExecutionTimeData } from '../store/selectors/layers'
+import { sparsity, denseExecutionTimeData, sparseExecutionTimeData } from '../store/selectors/pruning'
 
 const mapIndexed = addIndex(map)
 

@@ -1,0 +1,680 @@
+[
+    {
+        "attributes": {
+            "dilations": [
+                1,
+                1
+            ],
+            "group": 1,
+            "kernel_shape": [
+                7,
+                7
+            ],
+            "pads": [
+                3,
+                3,
+                3,
+                3
+            ],
+            "strides": [
+                2,
+                2
+            ]
+        },
+        "id": "123",
+        "name": "input.conv.weight",
+        "inputs": [
+            "input",
+            "input.conv.weight"
+        ],
+        "outputs": [
+            "123"
+        ],
+        "op_type": "Conv"
+    },
+    {
+        "attributes": {
+            "dilations": [
+                1,
+                1
+            ],
+            "group": 1,
+            "kernel_shape": [
+                3,
+                3
+            ],
+            "pads": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "strides": [
+                1,
+                1
+            ]
+        },
+        "id": "127",
+        "name": "sections.0.0.conv1.weight",
+        "inputs": [
+            "126",
+            "sections.0.0.conv1.weight"
+        ],
+        "outputs": [
+            "127"
+        ],
+        "op_type": "Conv"
+    },
+    {
+        "attributes": {
+            "dilations": [
+                1,
+                1
+            ],
+            "group": 1,
+            "kernel_shape": [
+                3,
+                3
+            ],
+            "pads": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "strides": [
+                1,
+                1
+            ]
+        },
+        "id": "130",
+        "name": "sections.0.0.conv2.weight",
+        "inputs": [
+            "129",
+            "sections.0.0.conv2.weight"
+        ],
+        "outputs": [
+            "130"
+        ],
+        "op_type": "Conv"
+    },
+    {
+        "attributes": {
+            "dilations": [
+                1,
+                1
+            ],
+            "group": 1,
+            "kernel_shape": [
+                3,
+                3
+            ],
+            "pads": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "strides": [
+                1,
+                1
+            ]
+        },
+        "id": "134",
+        "name": "sections.0.1.conv1.weight",
+        "inputs": [
+            "133",
+            "sections.0.1.conv1.weight"
+        ],
+        "outputs": [
+            "134"
+        ],
+        "op_type": "Conv"
+    },
+    {
+        "attributes": {
+            "dilations": [
+                1,
+                1
+            ],
+            "group": 1,
+            "kernel_shape": [
+                3,
+                3
+            ],
+            "pads": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "strides": [
+                1,
+                1
+            ]
+        },
+        "id": "137",
+        "name": "sections.0.1.conv2.weight",
+        "inputs": [
+            "136",
+            "sections.0.1.conv2.weight"
+        ],
+        "outputs": [
+            "137"
+        ],
+        "op_type": "Conv"
+    },
+    {
+        "attributes": {
+            "dilations": [
+                1,
+                1
+            ],
+            "group": 1,
+            "kernel_shape": [
+                3,
+                3
+            ],
+            "pads": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "strides": [
+                2,
+                2
+            ]
+        },
+        "id": "141",
+        "name": "sections.1.0.conv1.weight",
+        "inputs": [
+            "140",
+            "sections.1.0.conv1.weight"
+        ],
+        "outputs": [
+            "141"
+        ],
+        "op_type": "Conv"
+    },
+    {
+        "attributes": {
+            "dilations": [
+                1,
+                1
+            ],
+            "group": 1,
+            "kernel_shape": [
+                3,
+                3
+            ],
+            "pads": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "strides": [
+                1,
+                1
+            ]
+        },
+        "id": "144",
+        "name": "sections.1.0.conv2.weight",
+        "inputs": [
+            "143",
+            "sections.1.0.conv2.weight"
+        ],
+        "outputs": [
+            "144"
+        ],
+        "op_type": "Conv"
+    },
+    {
+        "attributes": {
+            "dilations": [
+                1,
+                1
+            ],
+            "group": 1,
+            "kernel_shape": [
+                1,
+                1
+            ],
+            "pads": [
+                0,
+                0,
+                0,
+                0
+            ],
+            "strides": [
+                2,
+                2
+            ]
+        },
+        "id": "146",
+        "name": "sections.1.0.identity.conv.weight",
+        "inputs": [
+            "140",
+            "sections.1.0.identity.conv.weight"
+        ],
+        "outputs": [
+            "146"
+        ],
+        "op_type": "Conv"
+    },
+    {
+        "attributes": {
+            "dilations": [
+                1,
+                1
+            ],
+            "group": 1,
+            "kernel_shape": [
+                3,
+                3
+            ],
+            "pads": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "strides": [
+                1,
+                1
+            ]
+        },
+        "id": "150",
+        "name": "sections.1.1.conv1.weight",
+        "inputs": [
+            "149",
+            "sections.1.1.conv1.weight"
+        ],
+        "outputs": [
+            "150"
+        ],
+        "op_type": "Conv"
+    },
+    {
+        "attributes": {
+            "dilations": [
+                1,
+                1
+            ],
+            "group": 1,
+            "kernel_shape": [
+                3,
+                3
+            ],
+            "pads": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "strides": [
+                1,
+                1
+            ]
+        },
+        "id": "153",
+        "name": "sections.1.1.conv2.weight",
+        "inputs": [
+            "152",
+            "sections.1.1.conv2.weight"
+        ],
+        "outputs": [
+            "153"
+        ],
+        "op_type": "Conv"
+    },
+    {
+        "attributes": {
+            "dilations": [
+                1,
+                1
+            ],
+            "group": 1,
+            "kernel_shape": [
+                3,
+                3
+            ],
+            "pads": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "strides": [
+                2,
+                2
+            ]
+        },
+        "id": "157",
+        "name": "sections.2.0.conv1.weight",
+        "inputs": [
+            "156",
+            "sections.2.0.conv1.weight"
+        ],
+        "outputs": [
+            "157"
+        ],
+        "op_type": "Conv"
+    },
+    {
+        "attributes": {
+            "dilations": [
+                1,
+                1
+            ],
+            "group": 1,
+            "kernel_shape": [
+                3,
+                3
+            ],
+            "pads": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "strides": [
+                1,
+                1
+            ]
+        },
+        "id": "160",
+        "name": "sections.2.0.conv2.weight",
+        "inputs": [
+            "159",
+            "sections.2.0.conv2.weight"
+        ],
+        "outputs": [
+            "160"
+        ],
+        "op_type": "Conv"
+    },
+    {
+        "attributes": {
+            "dilations": [
+                1,
+                1
+            ],
+            "group": 1,
+            "kernel_shape": [
+                1,
+                1
+            ],
+            "pads": [
+                0,
+                0,
+                0,
+                0
+            ],
+            "strides": [
+                2,
+                2
+            ]
+        },
+        "id": "162",
+        "name": "sections.2.0.identity.conv.weight",
+        "inputs": [
+            "156",
+            "sections.2.0.identity.conv.weight"
+        ],
+        "outputs": [
+            "162"
+        ],
+        "op_type": "Conv"
+    },
+    {
+        "attributes": {
+            "dilations": [
+                1,
+                1
+            ],
+            "group": 1,
+            "kernel_shape": [
+                3,
+                3
+            ],
+            "pads": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "strides": [
+                1,
+                1
+            ]
+        },
+        "id": "166",
+        "name": "sections.2.1.conv1.weight",
+        "inputs": [
+            "165",
+            "sections.2.1.conv1.weight"
+        ],
+        "outputs": [
+            "166"
+        ],
+        "op_type": "Conv"
+    },
+    {
+        "attributes": {
+            "dilations": [
+                1,
+                1
+            ],
+            "group": 1,
+            "kernel_shape": [
+                3,
+                3
+            ],
+            "pads": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "strides": [
+                1,
+                1
+            ]
+        },
+        "id": "169",
+        "name": "sections.2.1.conv2.weight",
+        "inputs": [
+            "168",
+            "sections.2.1.conv2.weight"
+        ],
+        "outputs": [
+            "169"
+        ],
+        "op_type": "Conv"
+    },
+    {
+        "attributes": {
+            "dilations": [
+                1,
+                1
+            ],
+            "group": 1,
+            "kernel_shape": [
+                3,
+                3
+            ],
+            "pads": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "strides": [
+                2,
+                2
+            ]
+        },
+        "id": "173",
+        "name": "sections.3.0.conv1.weight",
+        "inputs": [
+            "172",
+            "sections.3.0.conv1.weight"
+        ],
+        "outputs": [
+            "173"
+        ],
+        "op_type": "Conv"
+    },
+    {
+        "attributes": {
+            "dilations": [
+                1,
+                1
+            ],
+            "group": 1,
+            "kernel_shape": [
+                3,
+                3
+            ],
+            "pads": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "strides": [
+                1,
+                1
+            ]
+        },
+        "id": "176",
+        "name": "sections.3.0.conv2.weight",
+        "inputs": [
+            "175",
+            "sections.3.0.conv2.weight"
+        ],
+        "outputs": [
+            "176"
+        ],
+        "op_type": "Conv"
+    },
+    {
+        "attributes": {
+            "dilations": [
+                1,
+                1
+            ],
+            "group": 1,
+            "kernel_shape": [
+                1,
+                1
+            ],
+            "pads": [
+                0,
+                0,
+                0,
+                0
+            ],
+            "strides": [
+                2,
+                2
+            ]
+        },
+        "id": "178",
+        "name": "sections.3.0.identity.conv.weight",
+        "inputs": [
+            "172",
+            "sections.3.0.identity.conv.weight"
+        ],
+        "outputs": [
+            "178"
+        ],
+        "op_type": "Conv"
+    },
+    {
+        "attributes": {
+            "dilations": [
+                1,
+                1
+            ],
+            "group": 1,
+            "kernel_shape": [
+                3,
+                3
+            ],
+            "pads": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "strides": [
+                1,
+                1
+            ]
+        },
+        "id": "182",
+        "name": "sections.3.1.conv1.weight",
+        "inputs": [
+            "181",
+            "sections.3.1.conv1.weight"
+        ],
+        "outputs": [
+            "182"
+        ],
+        "op_type": "Conv"
+    },
+    {
+        "attributes": {
+            "dilations": [
+                1,
+                1
+            ],
+            "group": 1,
+            "kernel_shape": [
+                3,
+                3
+            ],
+            "pads": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "strides": [
+                1,
+                1
+            ]
+        },
+        "id": "185",
+        "name": "sections.3.1.conv2.weight",
+        "inputs": [
+            "184",
+            "sections.3.1.conv2.weight"
+        ],
+        "outputs": [
+            "185"
+        ],
+        "op_type": "Conv"
+    },
+    {
+        "attributes": {
+            "alpha": 1.0,
+            "beta": 1.0,
+            "transB": 1
+        },
+        "id": "output_0",
+        "name": "classifier.fc.weight",
+        "inputs": [
+            "197",
+            "classifier.fc.weight",
+            "classifier.fc.bias"
+        ],
+        "outputs": [
+            "output_0"
+        ],
+        "op_type": "Gemm"
+    }
+]

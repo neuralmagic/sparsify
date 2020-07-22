@@ -1,10 +1,9 @@
 import { compose, reduce, concat, map, prop } from 'ramda'
-import { selectedTheme } from './store/selectors/theme'
 import { selectedProject } from './store/selectors/projects'
 import { onlyOnRootPage, onlyOnProjectPage, redirectToRootIfNoSelectedProject } from './routes'
 import { Component, fold, toContainer, nothing,
   useStyles, useSelector, useDispatch, useJssProvider } from './common/component'
-import { drawer, divider, typography } from './common/materialui'
+import { drawer, divider, typography, themeProvider, createTheme } from './common/materialui'
 import { useHashRouter } from './common/router'
 import { isDevelopment } from './common/environment'
 import projectList from './projects/projectList'
@@ -14,6 +13,28 @@ import selectedProjectNav from './projects/selectedProjectNav'
 import { logo } from './common/icons'
 
 const drawerWidth = 280
+
+const drawerTheme = createTheme({
+  menu: {
+    textColor: '#A3B6C1',
+    textSelectedColor: '#DF5B46',
+    sectionBackground: '#2E2E2E'
+  },
+  palette: {
+    text: {
+      primary: '#C2D1DB',
+      secondary: '#8E9AA2'
+    }
+  }
+})
+
+const mainContentTheme = createTheme({
+  palette: {
+    primary: {
+      main: '#ff634a'
+    }
+  }
+})
 
 const appStyles = {
   '@global': {
@@ -29,7 +50,7 @@ const appStyles = {
     '.vega-embed.has-actions details': { display: 'none' }
   },
   drawer: {
-    background: '#232323!important',
+    background: '#1d1d1d!important',
     width: drawerWidth
   },
   drawerHeader: {
@@ -39,7 +60,8 @@ const appStyles = {
     padding: '20px 15px 20px 20px'
   },
   drawerDivider: {
-    background: '#3E3E3E!important'
+    background: '#3E3E3E!important',
+    margin: '18px 0 15px 0!important'
   },
   mainContainer: {
     display: 'flex',
@@ -99,10 +121,10 @@ export default Component(props => compose(
   useDispatch,
   useHashRouter,
   useJssProvider({ id: { minify: !isDevelopment() } }),
-  useSelector('theme', selectedTheme),
   useSelector('selectedProject', selectedProject),
   useStyles(appStyles),
+  concat(themeProvider({ theme: drawerTheme }, appDrawer)),
+  themeProvider({ theme: mainContentTheme }),
   reduce(concat, nothing()))([
-  appDrawer,
   onlyOnRootPage(mainContent),
   redirectToRootIfNoSelectedProject(onlyOnProjectPage(projectContainer))]))

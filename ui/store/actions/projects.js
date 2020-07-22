@@ -2,7 +2,6 @@ import { compose, andThen, prop, identity } from 'ramda'
 import { takeLatest, put, call, all, select } from 'redux-saga/effects'
 import { navigateToSelectedProject } from './navigation'
 import { selectedProject } from '../selectors/projects'
-import { allProfiles } from '../selectors/profiles'
 import { lossApproxData } from '../selectors/pruning'
 
 export const createProject = ({ name }) => dispatch => {
@@ -15,9 +14,9 @@ export const createProjectFromFile = file => dispatch => {
   const reader = new FileReader()
 
   reader.addEventListener('load', () => {
-    const { name, profiles } = JSON.parse(reader.result)
+    const { name } = JSON.parse(reader.result)
 
-    dispatch(createProject({ name, profiles }))
+    dispatch(createProject({ name }))
   })
   reader.readAsText(file)
 }
@@ -45,11 +44,9 @@ const saveFile = (data, filename, type) => {
 export const saveProjectToLocal = () => (dispatch, getState) => {
   const state = getState()
   const { name } = selectedProject(state)
-  const profiles = allProfiles(state)
 
   const content = JSON.stringify({
-    name,
-    profiles
+    name
   })
 
   saveFile(content, `${name}.nmprj`, 'application/json')

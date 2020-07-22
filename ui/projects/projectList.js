@@ -6,14 +6,8 @@ import { allProjects } from '../store/selectors/projects'
 import { selectProject } from '../store/actions/projects'
 
 const itemStyles = {
-  primaryText: {
-    color: '#C2D1DB!important',
-    fontSize: '14px!important'
-  },
-  secondaryText: {
-    color: '#8E9AA2!important',
-    fontSize: '12px!important'
-  }
+  primaryText: { fontSize: '14px!important' },
+  secondaryText: { fontSize: '12px!important' }
 }
 
 const projectItem = Component(props => compose(

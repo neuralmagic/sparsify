@@ -3,7 +3,12 @@ import { map, always, path, compose, flatten, lt, prop,
   ifElse, evolve, take, add, takeLast, reject, isEmpty, length,
   splitWhen, subtract, cond, defaultTo, reduceRight, reverse } from 'ramda'
 import { createSelector } from 'reselect'
-import { sparsityLevel } from './settings'
+
+export const pruningModifiers = state => state.pruning.modifiers
+export const metrics = state => [
+  { label: 'Est. Speedup', value: '12.64' },
+  { label: 'Est. Time', value: 5.46 },
+  { label: 'Recoverability', value: 0.0954 }]
 
 const areAllSparsitiesBiggerThan = value => compose(
   lt(value),
@@ -18,15 +23,15 @@ const areAllSparsitiesLessThan = value => compose(
 export const lossData = state => state.pruning.lossData
 export const lossApproxData = state => state.pruning.lossApproxData
 export const perfData = state => state.pruning.perfData
-export const sparsity = createSelector(
+
+export const sparsity = modifier => createSelector(
   lossData,
   perfData,
-  sparsityLevel,
-  (loss, perf, sparsityLevel) => {
+  (loss, perf) => {
     if (!loss || !perf)
       return []
 
-    return map(always(sparsityLevel/100), loss)
+    return map(always(modifier.sparsityLevel/100), loss)
   })
 
 export const denseExecutionTimeData = createSelector(
@@ -58,11 +63,10 @@ const calculateTimingBasedOnSparsity = curry((sparsity, values) => {
   }
 })
 
-export const sparseExecutionTimeData = createSelector(
+export const sparseExecutionTimeData = modifier => createSelector(
   perfData,
-  sparsityLevel,
-  (perfData, sparsityLevel) => map(compose(
-      calculateTimingBasedOnSparsity(sparsityLevel),
+  perfData => map(compose(
+      calculateTimingBasedOnSparsity(modifier.sparsityLevel),
       flatten,
       ifElse(
         compose(lt(1), length),
@@ -72,13 +76,13 @@ export const sparseExecutionTimeData = createSelector(
         // otherwise, we have first two or last two, depending on whether current
         // sparsity is less or greater than any sparsities in the layer
         compose(
-          ifElse(areAllSparsitiesBiggerThan(sparsityLevel), take(2), takeLast(2)),
+          ifElse(areAllSparsitiesBiggerThan(modifier.sparsityLevel), take(2), takeLast(2)),
           flatten)),
       // if current sparsity is out of range, we get an empty
       // array on one side, which we ignore
       reject(isEmpty),
       // find the spot where current sparsity fits in, separate
       // into two arrays to get neighbours.
-      splitWhen(compose(lt(sparsityLevel), prop('sparsity'))),
+      splitWhen(compose(lt(modifier.sparsityLevel), prop('sparsity'))),
       prop('sparse')))(
       defaultTo([], perfData)))

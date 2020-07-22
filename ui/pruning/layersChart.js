@@ -118,9 +118,9 @@ const chart = fromClass(Vega).contramap(props => merge({
 export default Component(props => compose(
   fold(props),
   useStyles(styles),
-  useSelector('sparsity', sparsity),
+  useSelector('sparsity', sparsity(props.modifier)),
   useSelector('denseExecutionTimeData', denseExecutionTimeData),
-  useSelector('sparseExecutionTimeData', sparseExecutionTimeData),
+  useSelector('sparseExecutionTimeData', sparseExecutionTimeData(props.modifier)),
   map(toContainer({ className: prop('container') })),
   reduce(concat, nothing()))([
   chart,

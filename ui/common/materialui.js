@@ -1,3 +1,4 @@
+import { mergeRight } from 'ramda'
 import Drawer from '@material-ui/core/Drawer'
 import Divider from '@material-ui/core/Divider'
 import List from '@material-ui/core/List'
@@ -13,6 +14,7 @@ import Accordion from '@material-ui/core/Accordion'
 import Paper from '@material-ui/core/Paper'
 import Button from '@material-ui/core/Button'
 import { buildComponentWithChildren, fromClass } from './component'
+import { ThemeProvider, createMuiTheme, useTheme as muiUseTheme } from '@material-ui/core/styles'
 
 export const drawer = buildComponentWithChildren(Drawer)
 export const divider = fromClass(Divider)
@@ -28,3 +30,11 @@ export const accordion = buildComponentWithChildren(Accordion)
 export const iconButton = buildComponentWithChildren(IconButton)
 export const paper = buildComponentWithChildren(Paper)
 export const button = buildComponentWithChildren(Button)
+export const themeProvider = buildComponentWithChildren(ThemeProvider)
+export const createTheme = createMuiTheme
+
+export const useTheme = c => {
+  const theme = muiUseTheme()
+
+  return c.contramap(mergeRight({ theme }))
+}

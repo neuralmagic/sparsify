@@ -64,6 +64,7 @@ export default {
         'node_modules/react-router-dom/index.js': ['Route', 'Redirect', 'BrowserRouter', 'HashRouter', 'useHistory'],
         'node_modules/redux-saga/dist/redux-saga-effects-npm-proxy.cjs.js': Object.keys(reduxSagaEffects),
         'node_modules/d3-format/dist/d3-format.js': ['format'],
+        'node_modules/@material-ui/core/styles/index.js': ['ThemeProvider', 'createMuiTheme', 'useTheme'],
         'vegaImport': Object.keys(vega),
         'vegaLiteImport': Object.keys(vegaLite)
       }

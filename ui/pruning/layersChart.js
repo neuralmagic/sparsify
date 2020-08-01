@@ -1,4 +1,4 @@
-import { compose, reduce, concat, map, prop, merge, objOf, zipWith, addIndex } from 'ramda'
+import { compose, reduce, concat, map, prop, merge, objOf, zipWith, addIndex, tap } from 'ramda'
 import { Vega } from 'react-vega'
 import { Component, fold, nothing, useStyles, toContainer, useSelector, fromElement, fromClass } from '../common/component'
 import { layerIndexChartSpec } from '../common/charts'
@@ -7,28 +7,21 @@ import { sparsity, denseExecutionTimeData, sparseExecutionTimeData } from '../st
 const mapIndexed = addIndex(map)
 
 const styles = {
-  container: {
+  root: {
     position: 'relative',
     display: 'flex',
     flexDirection: 'column'
   },
-  title: props => ({
-    position: 'absolute',
-    marginLeft: -45,
-    fontSize: 13,
-    color: props.theme === 'dark' ? '#DFDFDF' : '#878D94'
-  }),
   legend: {
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'flex-end',
-    paddingRight: 57,
-    width: 700
+    paddingRight: 20,
   }
 }
 
 const legendItemStyles = {
-  container: {
+  root: {
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'center',
@@ -76,7 +69,7 @@ const computeChartData = ({ denseExecutionTimeData, sparseExecutionTimeData, spa
 const legendItem = Component(props => compose(
   fold(props),
   useStyles(legendItemStyles),
-  map(toContainer({ className: prop('container') })),
+  map(toContainer({ className: prop('root') })),
   reduce(concat, nothing()))([
   fromElement('div').contramap(props => ({ className: props.classes[props.type] })),
   fromElement('span').contramap(props => ({ children: props.label }))]))
@@ -93,18 +86,17 @@ const legend = Component(props => compose(
   ]))
 
 const chart = fromClass(Vega).contramap(props => merge({
-  width: 600,
+  //width: 600,
   height: 200,
-  autosize: { type: 'fit', contains: 'padding', resize: true },
   spec: layerIndexChartSpec({
     backgroundColor: 'white',
-    axesColor: props.theme === 'dark' ? '#434649' : '#C8CDD3',
-    gridColor: props.theme === 'dark' ? '#323437' : '#D7DADD',
-    titleColor: props.theme === 'dark' ? 'white' : '#868E96',
-    denseAreaColors: props.theme === 'dark' ? ['rgba(31, 120, 202, 1)', 'rgba(31, 120, 202, 0.4)'] : ['rgba(31, 120, 202, 1)', 'rgba(31, 120, 202, 0.4)'],
-    sparseAreaColors: props.theme === 'dark' ? 'rgb(1, 41, 110)' : 'rgb(83, 153, 234)',
-    sparseLineColor: props.theme === 'dark' ? '#6c86ff' : 'rgb(73, 145, 229)',
-    denseLineColor: props.theme === 'dark' ? '#92cafd' : '#92cafd',
+    axesColor: '#434649',
+    gridColor: '#F4F6F8',
+    titleColor: '#868E96',
+    denseAreaColors: ['rgba(31, 120, 202, 1)', 'rgba(31, 120, 202, 0.4)'],
+    sparseAreaColors: 'rgb(1, 41, 110)',
+    sparseLineColor: '#6c86ff',
+    denseLineColor: '#92cafd',
     labelColor: '#AAAAAA',
     data: computeChartData(props),
   }),
@@ -121,7 +113,7 @@ export default Component(props => compose(
   useSelector('sparsity', sparsity(props.modifier)),
   useSelector('denseExecutionTimeData', denseExecutionTimeData),
   useSelector('sparseExecutionTimeData', sparseExecutionTimeData(props.modifier)),
-  map(toContainer({ className: prop('container') })),
+  map(toContainer({ className: classes => `${classes.root} ${props.classes.root}` })),
   reduce(concat, nothing()))([
   chart,
   legend]))

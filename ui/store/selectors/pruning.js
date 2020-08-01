@@ -31,7 +31,11 @@ export const sparsity = modifier => createSelector(
     if (!loss || !perf)
       return []
 
+<<<<<<< HEAD
+    return map(always(modifier.sparsity/100), loss)
+=======
     return map(always(modifier.sparsityLevel/100), loss)
+>>>>>>> master
   })
 
 export const denseExecutionTimeData = createSelector(
@@ -66,7 +70,7 @@ const calculateTimingBasedOnSparsity = curry((sparsity, values) => {
 export const sparseExecutionTimeData = modifier => createSelector(
   perfData,
   perfData => map(compose(
-      calculateTimingBasedOnSparsity(modifier.sparsityLevel),
+      calculateTimingBasedOnSparsity(modifier.sparsity),
       flatten,
       ifElse(
         compose(lt(1), length),
@@ -76,13 +80,13 @@ export const sparseExecutionTimeData = modifier => createSelector(
         // otherwise, we have first two or last two, depending on whether current
         // sparsity is less or greater than any sparsities in the layer
         compose(
-          ifElse(areAllSparsitiesBiggerThan(modifier.sparsityLevel), take(2), takeLast(2)),
+          ifElse(areAllSparsitiesBiggerThan(modifier.sparsity), take(2), takeLast(2)),
           flatten)),
       // if current sparsity is out of range, we get an empty
       // array on one side, which we ignore
       reject(isEmpty),
       // find the spot where current sparsity fits in, separate
       // into two arrays to get neighbours.
-      splitWhen(compose(lt(modifier.sparsityLevel), prop('sparsity'))),
+      splitWhen(compose(lt(modifier.sparsity), prop('sparsity'))),
       prop('sparse')))(
       defaultTo([], perfData)))

@@ -5,7 +5,8 @@ import { Component, fold, nothing, toContainer,
 import { accordion, accordionSummary, accordionDetails, typography, useTheme } from '../common/materialui'
 import { navigateToProjectSection } from '../store/actions/navigation'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
-import { benchmarksMenuIcon, optimizationMenuIcon, settingsMenuIcon, helpMenuIcon } from '../common/icons'
+import { benchmarksMenuIcon, optimizationMenuIcon, settingsMenuIcon,
+  helpMenuIcon, profileMenuIcon } from '../common/icons'
 
 const styles = {
   container: {
@@ -109,6 +110,11 @@ const menuHeader = Component(props => compose(
   props.icon.contramap(always({})),
   typography({}, props.label) ]))
 
+const performanceProfiles = menuAccordion.contramap(merge({
+  section: 'performanceProfiles',
+  summaryContent: menuHeader.fold({ label: 'Performance Profile', icon: profileMenuIcon }),
+}))
+
 const benchmarks = menuAccordion.contramap(merge({
   section: 'benchmarks',
   summaryContent: menuHeader.fold({ label: 'Benchmarks', icon: benchmarksMenuIcon }),
@@ -140,6 +146,7 @@ export default Component(props => compose(
   useStyles(styles),
   useState('selectedSection', 'setSelectedSection', prop('selectedSection')),
   reduce(concat, nothing()))([
+  performanceProfiles,
   benchmarks,
   optimization,
   settings,

@@ -2,7 +2,7 @@ import { compose, reduce, concat, map, prop } from 'ramda'
 import { onlyOnProjectOptimization } from '../routes'
 import { Component, fold, toContainer, nothing,
   useStyles, useDispatch, fromClass } from '../common/component'
-import { button } from '../common/materialui'
+import { button, useTheme } from '../common/materialui'
 import { exportCurrentProject } from '../store/actions/projects'
 import pruningContainer from '../pruning/pruningContainer'
 import PublishIcon from '@material-ui/icons/Publish'
@@ -15,7 +15,8 @@ const styles = {
     paddingLeft: 320,
     paddingRight: 50,
     paddingTop: 40,
-  },
+    background: props.theme.background
+  }),
   exportButton: {
     alignSelf: 'flex-end',
     borderRadius: '30px!important',
@@ -34,6 +35,7 @@ const exportButton = button(props => ({
 
 export default Component(props => compose(
   fold(props),
+  useTheme,
   useStyles(styles),
   useDispatch,
   map(toContainer({ className: prop('container') })),

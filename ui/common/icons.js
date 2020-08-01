@@ -6,6 +6,7 @@ import benchmarksIcon from '../assets/menu_benchmarks.svg'
 import optimizationIcon from '../assets/menu_optimization.svg'
 import settingsIcon from '../assets/menu_settings.svg'
 import helpIcon from '../assets/menu_help.svg'
+import performaceProfileIcon from '../assets/menu_performance_profile.svg'
 
 export const logo = fromClass(SvgIcon).contramap(merge({
   component: whiteLogo,
@@ -14,12 +15,12 @@ export const logo = fromClass(SvgIcon).contramap(merge({
 
 export const benchmarksMenuIcon = fromClass(SvgIcon).contramap(merge({
   component: benchmarksIcon,
-  viewBox: '0 0 20 16'
+  viewBox: '0 0 20 17'
 }))
 
 export const optimizationMenuIcon = fromClass(SvgIcon).contramap(merge({
   component: optimizationIcon,
-  viewBox: '0 0 17 12'
+  viewBox: '0 0 19 15'
 }))
 
 export const settingsMenuIcon = fromClass(SvgIcon).contramap(merge({
@@ -30,4 +31,9 @@ export const settingsMenuIcon = fromClass(SvgIcon).contramap(merge({
 export const helpMenuIcon = fromClass(SvgIcon).contramap(merge({
   component: helpIcon,
   viewBox: '0 0 18 18'
+}))
+
+export const profileMenuIcon = fromClass(SvgIcon).contramap(merge({
+  component: performaceProfileIcon,
+  viewBox: '0 0 20 16'
 }))

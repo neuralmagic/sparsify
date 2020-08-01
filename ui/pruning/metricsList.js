@@ -5,7 +5,7 @@ import { Component, fold, nothing, useStyles, toContainer,
 import { metrics } from '../store/selectors/pruning'
 
 const styles = {
-  container: {
+  root: {
     display: 'flex',
     flexDirection: 'column',
     paddingRight: 20,
@@ -23,7 +23,6 @@ const metricItemStyles = {
     display: 'flex',
     flexDirection: 'column',
     marginBottom: 25,
-    marginLeft: 20,
     marginRight: 20
   },
   label: {
@@ -67,5 +66,5 @@ export default Component(props => compose(
   fold(props),
   useStyles(styles),
   useSelector('metrics', metrics),
-  map(toContainer({ className: prop('container') })))(
+  map(toContainer({ className: classes => `${classes.root} ${props.classes.root}` })))(
   list))

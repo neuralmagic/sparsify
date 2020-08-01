@@ -1,8 +1,8 @@
 import { prop, compose, andThen, defaultTo } from 'ramda'
 import { takeLatest, call, put, all } from 'redux-saga/effects'
 
-export const changeSparsityLevel = (sparsityLevel, modifier) => dispatch =>
-  dispatch({ type: 'CHANGE_SPARSITY_LEVEL', sparsityLevel, modifier })
+export const changeSparsity = (sparsity, modifier) => dispatch =>
+  dispatch({ type: 'CHANGE_SPARSITY', sparsity, modifier })
 
 const loadSensitivityData = compose(
   andThen(compose(defaultTo([]), prop('layerSensitivities'))),

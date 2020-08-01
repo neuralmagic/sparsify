@@ -16,8 +16,8 @@ const drawerWidth = 280
 
 const drawerTheme = createTheme({
   menu: {
-    textColor: '#A3B6C1',
-    textSelectedColor: '#DF5B46',
+    textColor: '#8E9AA2',
+    textSelectedColor: '#8793D0',
     sectionBackground: '#2E2E2E'
   },
   palette: {
@@ -29,9 +29,10 @@ const drawerTheme = createTheme({
 })
 
 const mainContentTheme = createTheme({
+  background: '#F4F6F8',
   palette: {
     primary: {
-      main: '#ff634a'
+      main: '#4652B1'
     }
   }
 })

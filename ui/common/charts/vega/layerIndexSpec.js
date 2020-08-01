@@ -7,6 +7,7 @@ import { verticalLinearGradient } from './utils'
 export default ({
   data, backgroundColor, axesColor, labelColor, gridColor, titleColor,
   denseAreaColors, denseLineColor, sparseAreaColors, sparseLineColor }) => ({
+  autosize: { type: 'fit-x', resize: true },
   data: {
     name: 'layers',
     values: data,
@@ -44,10 +45,12 @@ export default ({
       orient: 'bottom',
       scale: 'layerScale',
       title: 'Layer Index',
-      tickMinStep: 1,
+      tickMinStep: 5,
       titleColor,
       titlePadding: 15,
-      //grid: true,
+      tickExtra: true,
+      bandPosition: 1,
+      padding: 0,
       tickSize: 0,
       tickCount: data.length,
       labelPadding: 5,
@@ -59,7 +62,7 @@ export default ({
       scale: 'sparsityScale',
       title: 'Layer Sparsity %',
       titleColor,
-      //grid: true,
+      grid: true,
       tickCount: 11,
       tickSize: 0,
       labelPadding: 10,
@@ -176,7 +179,7 @@ export default ({
         y: { scale: 'sparsityScale', field: 'sparsityMultiplied' },
         stroke: { value: '#E19325' },
         fill: { value: 'white' },
-        size: { value: 20 }
+        size: { value: 40 }
       },
       hover: {
         size: { value: 90 }
@@ -189,5 +192,15 @@ export default ({
     on: [
       { events: 'symbol:click', update: 'datum' }
     ]
+  }, {
+    name: 'width',
+    init: 'containerSize()[0]-30',
+    on: [{
+      events: {
+        source: 'window',
+        type: 'resize'
+      },
+      update: 'containerSize()[0]-30'
+    }]
   }]
 })

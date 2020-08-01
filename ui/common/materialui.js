@@ -13,6 +13,12 @@ import AccordionDetails from '@material-ui/core/AccordionDetails'
 import Accordion from '@material-ui/core/Accordion'
 import Paper from '@material-ui/core/Paper'
 import Button from '@material-ui/core/Button'
+import Popover from '@material-ui/core/Popover'
+import Fab from '@material-ui/core/Fab'
+import InputLabel from '@material-ui/core/InputLabel'
+import Select from '@material-ui/core/Select'
+import FormControl from '@material-ui/core/FormControl'
+import MenuItem from '@material-ui/core/MenuItem'
 import { buildComponentWithChildren, fromClass } from './component'
 import { ThemeProvider, createMuiTheme, useTheme as muiUseTheme } from '@material-ui/core/styles'
 
@@ -31,6 +37,12 @@ export const iconButton = buildComponentWithChildren(IconButton)
 export const paper = buildComponentWithChildren(Paper)
 export const button = buildComponentWithChildren(Button)
 export const themeProvider = buildComponentWithChildren(ThemeProvider)
+export const popover = buildComponentWithChildren(Popover)
+export const fab = buildComponentWithChildren(Fab)
+export const inputLabel = buildComponentWithChildren(InputLabel)
+export const select = buildComponentWithChildren(Select)
+export const menuItem = buildComponentWithChildren(MenuItem)
+export const formControl = buildComponentWithChildren(FormControl)
 export const createTheme = createMuiTheme
 
 export const useTheme = c => {

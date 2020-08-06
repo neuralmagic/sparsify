@@ -1,11 +1,11 @@
 import { compose, reduce, concat, map, prop } from 'ramda'
 import { onlyOnProjectOptimization } from '../routes'
 import { Component, fold, toContainer, nothing,
-  useStyles, useDispatch, fromClass } from '../common/component'
+  useStyles, useDispatch } from '../common/component'
 import { button, useTheme } from '../common/materialui'
 import { exportCurrentProject } from '../store/actions/projects'
 import pruningContainer from '../pruning/pruningContainer'
-import PublishIcon from '@material-ui/icons/Publish'
+import { exportIcon } from '../common/icons'
 
 const styles = {
   container: {
@@ -20,16 +20,22 @@ const styles = {
   exportButton: {
     alignSelf: 'flex-end',
     borderRadius: '30px!important',
-    color: 'white!important'
+    color: 'white!important',
+    height: '50px!important',
+    textTransform: 'none!important',
+    fontSize: '1.1rem!important',
+    '& svg': {
+      marginBottom: '5px'
+    }
   }
 }
 
 const exportButton = button(props => ({
   variant: 'contained',
-  color: 'primary',
+  color: 'secondary',
   size: 'large',
   classes: { root: props.classes.exportButton },
-  startIcon: fromClass(PublishIcon).fold({}),
+  startIcon: exportIcon.fold({}),
   onClick: () => props.dispatch(exportCurrentProject())
 }), 'Export')
 

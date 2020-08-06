@@ -1,18 +1,47 @@
 import { compose, reduce, concat, map, prop } from 'ramda'
 import { selectedProject } from './store/selectors/projects'
 import { onlyOnRootPage, onlyOnProjectPage, redirectToRootIfNoSelectedProject } from './routes'
-import { Component, fold, toContainer, nothing,
-  useStyles, useSelector, useDispatch, useJssProvider } from './common/component'
-import { drawer, divider, typography, themeProvider, createTheme } from './common/materialui'
+import { Component, fold, toContainer, nothing, fromClass,
+  useStyles, useSelector, useDispatch, useJssProvider, useState } from './common/component'
+import { drawer, divider, typography, themeProvider, createTheme,
+  cardMedia, useTheme, modal, fab } from './common/materialui'
 import { useHashRouter } from './common/router'
 import { isDevelopment } from './common/environment'
 import projectList from './projects/projectList'
 import projectMenu from './projects/projectMenu'
 import projectContainer from './projects/projectContainer'
+import newProject from './projects/newProject'
 import selectedProjectNav from './projects/selectedProjectNav'
 import { logo } from './common/icons'
+import AddIcon from '@material-ui/icons/Add'
 
 const drawerWidth = 280
+const fonts = ['Open Sans', 'sans-serif']
+
+const drawerTheme = createTheme({
+  menu: {
+    textColor: '#8E9AA2',
+    textSelectedColor: '#8793D0',
+    sectionBackground: '#2E2E2E'
+  },
+  palette: {
+    text: {
+      primary: '#C2D1DB',
+      secondary: '#8E9AA2'
+    }
+  },
+  typography: { fontFamily: fonts }
+})
+
+const mainContentTheme = createTheme({
+  background: '#F4F6F8',
+  disabledColor: '#E0E0E0',
+  palette: {
+    primary: { main: '#4652B1' },
+    secondary: { main: '#ff9900' }
+  },
+  typography: { fontFamily: fonts }
+})
 
 const drawerTheme = createTheme({
   menu: {
@@ -81,11 +110,38 @@ const appStyles = {
 }
 
 const mainContentStyles = {
-  mainContent: {
-    display: 'flex',
+  scrollContainer: props => ({
+    flexGrow: 1,
+    overflowY: 'auto',
+    paddingTop: 10,
+    paddingLeft: drawerWidth + 50,
+    backgroundColor: props.theme.background
+  }),
+  mainContainer: {
+    display: 'inline-flex',
     flexDirection: 'column',
-    paddingTop: 100,
-    paddingLeft: 100,
+    alignItems: 'flex-end',
+    paddingBottom: 100
+  },
+  startPageImage: {
+    width: 953,
+    height: 926,
+    backgroundPosition: 'top!important',
+    marginBottom: 100
+  },
+  newProjectButton: {
+    position: 'absolute!important',
+    bottom: 50,
+    borderRadius: '30px!important',
+    color: 'white!important',
+    height: '50px!important',
+    textTransform: 'none!important',
+    fontSize: '1.1rem!important'
+  },
+  newProjectModal: {
+    display: 'flex',
+    paddingTop: '12vh',
+    justifyContent: 'center'
   }
 }
 
@@ -111,11 +167,35 @@ const appDrawer = Component(props => compose(
   onlyOnProjectPage(projectMenu),
   onlyOnRootPage(projectList)]))
 
+const newProjectModal = modal(props => ({
+  className: props.classes.newProjectModal,
+  open: props.newProjectModalOpen,
+  onClose: () => props.setNewProjectModalOpen(false)
+}), newProject)
+
+const newProjectButton = fab(props => ({
+  variant: 'contained',
+  color: 'secondary',
+  size: 'large',
+  classes: { root: props.classes.newProjectButton },
+  startIcon: fromClass(AddIcon).fold({ fontSize: 'large' }),
+  onClick: () => props.setNewProjectModalOpen(true)
+}), 'New Project')
+
 const mainContent = Component(props => compose(
   fold(props),
+  useTheme,
   useStyles(mainContentStyles),
-  map(toContainer({ className: prop('mainContent') })))(
-  nothing()))
+  useState('newProjectModalOpen', 'setNewProjectModalOpen', false),
+  map(toContainer({ className: prop('scrollContainer') })),
+  map(toContainer({ className: prop('mainContainer') })),
+  reduce(concat, nothing()))([
+  cardMedia.contramap(props => ({
+    image: 'assets/start_page.png',
+    className: props.classes.startPageImage
+  })),
+  newProjectButton,
+  newProjectModal ]))
 
 export default Component(props => compose(
   fold(props),

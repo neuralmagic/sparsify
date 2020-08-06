@@ -34,7 +34,11 @@ export const sparsity = modifier => createSelector(
 <<<<<<< HEAD
     return map(always(modifier.sparsity/100), loss)
 =======
+<<<<<<< HEAD
+    return map(always(modifier.sparsity/100), loss)
+=======
     return map(always(modifier.sparsityLevel/100), loss)
+>>>>>>> master
 >>>>>>> master
   })
 

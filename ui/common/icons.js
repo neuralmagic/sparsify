@@ -7,6 +7,12 @@ import optimizationIcon from '../assets/menu_optimization.svg'
 import settingsIcon from '../assets/menu_settings.svg'
 import helpIcon from '../assets/menu_help.svg'
 import performaceProfileIcon from '../assets/menu_performance_profile.svg'
+import exportSvg from '../assets/export_icon.svg'
+import deploymentProfileSvg from '../assets/new_project_deployment_profile.svg'
+import nameProjectSvg from '../assets/new_project_name_project.svg'
+import selectModelSvg from '../assets/new_project_select_model.svg'
+import arrowRightSvg from '../assets/arrow_right.svg'
+import arrowLeftSvg from '../assets/arrow_left.svg'
 
 export const logo = fromClass(SvgIcon).contramap(merge({
   component: whiteLogo,
@@ -36,4 +42,34 @@ export const helpMenuIcon = fromClass(SvgIcon).contramap(merge({
 export const profileMenuIcon = fromClass(SvgIcon).contramap(merge({
   component: performaceProfileIcon,
   viewBox: '0 0 20 16'
+}))
+
+export const exportIcon = fromClass(SvgIcon).contramap(merge({
+  component: exportSvg,
+  viewBox: '0 0 18 18'
+}))
+
+export const deploymentProfileIcon = fromClass(SvgIcon).contramap(merge({
+  component: deploymentProfileSvg,
+  viewBox: '0 0 46 46'
+}))
+
+export const nameProjectIcon = fromClass(SvgIcon).contramap(merge({
+  component: nameProjectSvg,
+  viewBox: '0 0 46 46'
+}))
+
+export const selectModelIcon = fromClass(SvgIcon).contramap(merge({
+  component: selectModelSvg,
+  viewBox: '0 0 46 46'
+}))
+
+export const arrowRightIcon = fromClass(SvgIcon).contramap(merge({
+  component: arrowRightSvg,
+  viewBox: '0 0 6 10'
+}))
+
+export const arrowLeftIcon = fromClass(SvgIcon).contramap(merge({
+  component: arrowLeftSvg,
+  viewBox: '0 0 6 10'
 }))

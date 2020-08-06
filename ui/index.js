@@ -3,7 +3,6 @@ import store from './store'
 import { useStoreProvider } from './common/component'
 import app from './app'
 import { loadProjects } from './store/actions/projects'
-import 'fontsource-roboto'
 import './common/styles/reset.css'
 
 render(useStoreProvider(store, app.fold({})), document.getElementById('app'))

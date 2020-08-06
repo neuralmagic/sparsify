@@ -5532,6 +5532,13 @@ react-dom@^16.13.0:
     prop-types "^15.6.2"
     scheduler "^0.19.1"
 
+react-file-drop@^3.0.7:
+  version "3.0.7"
+  resolved "https://registry.yarnpkg.com/react-file-drop/-/react-file-drop-3.0.7.tgz#6b98b7782369c17192ce438cdf3cd0aac79a5624"
+  integrity sha512-X5n0q1IcslvJsj5J4JoSsdF4QDdqMBsh7Y9Z90P9wvY1aKXUvUg4EmgNty1SgG7McKXUlvFLHKSbqjT9VFBSXA==
+  dependencies:
+    prop-types "^15.7.2"
+
 react-is@^16.6.0, react-is@^16.7.0, react-is@^16.8.0, react-is@^16.8.1, react-is@^16.9.0:
   version "16.13.1"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.13.1.tgz#789729a4dc36de2999dc156dd6c1d9c18cea56a4"

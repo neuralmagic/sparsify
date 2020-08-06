@@ -19,6 +19,14 @@ import InputLabel from '@material-ui/core/InputLabel'
 import Select from '@material-ui/core/Select'
 import FormControl from '@material-ui/core/FormControl'
 import MenuItem from '@material-ui/core/MenuItem'
+import CardMedia from '@material-ui/core/CardMedia'
+import Modal from '@material-ui/core/Modal'
+import Step from '@material-ui/core/Step'
+import Stepper from '@material-ui/core/Stepper'
+import StepLabel from '@material-ui/core/StepLabel'
+import StepConnector from '@material-ui/core/StepConnector'
+import CircularProgress from '@material-ui/core/CircularProgress'
+import Fade from '@material-ui/core/Fade'
 import { buildComponentWithChildren, fromClass } from './component'
 import { ThemeProvider, createMuiTheme, useTheme as muiUseTheme } from '@material-ui/core/styles'
 
@@ -29,6 +37,7 @@ export const listItemText = fromClass(ListItemText)
 export const list = buildComponentWithChildren(List)
 export const listItem = buildComponentWithChildren(ListItem)
 export const slider = fromClass(Slider)
+export const circularProgress = fromClass(CircularProgress)
 export const typography = buildComponentWithChildren(Typography)
 export const accordionSummary = buildComponentWithChildren(AccordionSummary)
 export const accordionDetails = buildComponentWithChildren(AccordionDetails)
@@ -43,6 +52,14 @@ export const inputLabel = buildComponentWithChildren(InputLabel)
 export const select = buildComponentWithChildren(Select)
 export const menuItem = buildComponentWithChildren(MenuItem)
 export const formControl = buildComponentWithChildren(FormControl)
+export const modal = buildComponentWithChildren(Modal)
+export const stepper = buildComponentWithChildren(Stepper)
+export const step = buildComponentWithChildren(Step)
+export const stepLabel = buildComponentWithChildren(StepLabel)
+export const fade = buildComponentWithChildren(Fade)
+export const stepConnector = fromClass(StepConnector)
+export const cardMedia = fromClass(CardMedia)
+
 export const createTheme = createMuiTheme
 
 export const useTheme = c => {

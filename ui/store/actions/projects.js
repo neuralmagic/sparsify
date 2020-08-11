@@ -1,6 +1,6 @@
 import { compose, andThen, prop, identity } from 'ramda'
 import { takeLatest, put, call, all, select } from 'redux-saga/effects'
-import { navigateToSelectedProject } from './navigation'
+import { navigateToProjectSection } from './navigation'
 import { selectedProject } from '../selectors/projects'
 import { lossApproxData } from '../selectors/pruning'
 
@@ -54,7 +54,8 @@ export const saveProjectToLocal = () => (dispatch, getState) => {
 
 export const selectProject = id => dispatch => {
   dispatch({ type: 'SELECT_PROJECT', id })
-  dispatch(navigateToSelectedProject())
+
+  dispatch(navigateToProjectSection('profiles'))
 }
 
 export const loadProjects = () => dispatch =>

@@ -1,14 +1,15 @@
 import { compose, reduce, concat, map, prop } from 'ramda'
-import { onlyOnProjectOptimization } from '../routes'
+import { onlyOnProjectOptimizationPage, onlyOnProfilesPage } from '../routes'
 import { Component, fold, toContainer, nothing,
-  useStyles, useDispatch } from '../common/component'
+  useStyles, useDispatch, fromClass } from '../common/component'
 import { button, useTheme } from '../common/materialui'
 import { exportCurrentProject } from '../store/actions/projects'
 import pruningContainer from '../pruning/pruningContainer'
+import profileContainer from '../profiles/profileContainer'
 import { exportIcon } from '../common/icons'
 
 const styles = {
-  container: {
+  container: props => ({
     display: 'flex',
     flexDirection: 'column',
     flexGrow: 1,
@@ -18,6 +19,9 @@ const styles = {
     background: props.theme.background
   }),
   exportButton: {
+    position: 'absolute!important',
+    bottom: 50,
+    right: 100,
     alignSelf: 'flex-end',
     borderRadius: '30px!important',
     color: 'white!important',
@@ -46,5 +50,6 @@ export default Component(props => compose(
   useDispatch,
   map(toContainer({ className: prop('container') })),
   reduce(concat, nothing()))([
-  onlyOnProjectOptimization(pruningContainer),
-  onlyOnProjectOptimization(exportButton) ]))
+  onlyOnProjectOptimizationPage(pruningContainer),
+  onlyOnProjectOptimizationPage(exportButton),
+  onlyOnProfilesPage(fromClass(profileContainer)) ]))

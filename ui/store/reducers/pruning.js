@@ -18,7 +18,7 @@ const perfData = createReducer(null, {
   'RESET_DATA': always(null)
 })
 
-const modifiers = createReducer([{ id: uuid(), sparsity: 0.50 }, { id: uuid(), sparsity: 0.50 }], {
+const modifiers = createReducer([{ id: uuid(), sparsity: 0.50 }], {
   'ADD_MODIFIER': (state, { modifier }) => append(modifier, state),
   'CHANGE_SPARSITY': (state, { sparsity, modifier }) => map(
     when(propEq('id', modifier.id), mergeLeft({ sparsity })))(

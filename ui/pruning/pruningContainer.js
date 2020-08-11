@@ -121,11 +121,11 @@ const modifierMenuContent = Component(props => compose(
   secondPlotMenu,
   pruningTypeMenu,
   typography({ className: prop('presetFiltersText') }, 'Preset filters'),
+  sparsitySlider,
   inputWithSlider.contramap(merge({
     label: 'Performance',
     value: 2
   })),
-  sparsitySlider,
   inputWithSlider.contramap(merge({
     label: 'Loss',
     value: 0.4

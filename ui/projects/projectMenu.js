@@ -1,9 +1,10 @@
 import React from 'react'
 import { compose, reduce, concat, merge, prop, reject, isNil, map, always } from 'ramda'
 import { Component, fold, nothing, toContainer,
-  useStyles, useDispatch, useState, branch } from '../common/component'
+  useStyles, useDispatch, useState, branch, useSelector } from '../common/component'
 import { accordion, accordionSummary, accordionDetails, typography, useTheme } from '../common/materialui'
 import { navigateToProjectSection } from '../store/actions/navigation'
+import { selectedProjectSection } from '../store/selectors/navigation'
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore'
 import { benchmarksMenuIcon, optimizationMenuIcon, settingsMenuIcon,
   helpMenuIcon, profileMenuIcon } from '../common/icons'
@@ -73,10 +74,7 @@ const menuAccordion = Component(props => compose(
   fold(merge(props, { customRenderer: true })),
   accordion({
     expanded: props.selectedSection === props.section,
-    onChange: () => {
-      props.setSelectedSection(props.section)
-      setTimeout(() => props.dispatch(navigateToProjectSection(props.section)), 180)
-    },
+    onChange: () => setTimeout(() => props.dispatch(navigateToProjectSection(props.section)), 180),
     classes: {
       root: props.classes.accordion,
       expanded: props.classes.accordionExpanded
@@ -111,7 +109,7 @@ const menuHeader = Component(props => compose(
   typography({}, props.label) ]))
 
 const performanceProfiles = menuAccordion.contramap(merge({
-  section: 'performanceProfiles',
+  section: 'profiles',
   summaryContent: menuHeader.fold({ label: 'Performance Profile', icon: profileMenuIcon }),
 }))
 
@@ -144,7 +142,7 @@ export default Component(props => compose(
   useDispatch,
   useTheme,
   useStyles(styles),
-  useState('selectedSection', 'setSelectedSection', prop('selectedSection')),
+  useSelector('selectedSection', selectedProjectSection),
   reduce(concat, nothing()))([
   performanceProfiles,
   benchmarks,

@@ -5,4 +5,5 @@ export const redirectToRootIfNoSelectedProject = useRedirect('/', compose(isNil,
 
 export const onlyOnRootPage = useRoute('/')
 export const onlyOnProjectPage = useRoute('/project/:selectedProjectId/:selectedSection')
-export const onlyOnProjectOptimization = useRoute('/project/:selectedProjectId/optimization')
+export const onlyOnProjectOptimizationPage = useRoute('/project/:selectedProjectId/optimization')
+export const onlyOnProfilesPage = useRoute('/project/:selectedProjectId/profiles')

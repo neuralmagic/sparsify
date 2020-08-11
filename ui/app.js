@@ -1,10 +1,11 @@
+import React from 'react'
 import { compose, reduce, concat, map, prop } from 'ramda'
 import { selectedProject } from './store/selectors/projects'
 import { onlyOnRootPage, onlyOnProjectPage, redirectToRootIfNoSelectedProject } from './routes'
 import { Component, fold, toContainer, nothing, fromClass,
   useStyles, useSelector, useDispatch, useJssProvider, useState } from './common/component'
 import { drawer, divider, typography, themeProvider, createTheme,
-  cardMedia, useTheme, modal, fab } from './common/materialui'
+  cardMedia, useTheme, modal, button } from './common/materialui'
 import { useHashRouter } from './common/router'
 import { isDevelopment } from './common/environment'
 import projectList from './projects/projectList'
@@ -41,29 +42,6 @@ const mainContentTheme = createTheme({
     secondary: { main: '#ff9900' }
   },
   typography: { fontFamily: fonts }
-})
-
-const drawerTheme = createTheme({
-  menu: {
-    textColor: '#8E9AA2',
-    textSelectedColor: '#8793D0',
-    sectionBackground: '#2E2E2E'
-  },
-  palette: {
-    text: {
-      primary: '#C2D1DB',
-      secondary: '#8E9AA2'
-    }
-  }
-})
-
-const mainContentTheme = createTheme({
-  background: '#F4F6F8',
-  palette: {
-    primary: {
-      main: '#4652B1'
-    }
-  }
 })
 
 const appStyles = {
@@ -132,6 +110,7 @@ const mainContentStyles = {
   newProjectButton: {
     position: 'absolute!important',
     bottom: 50,
+    right: 100,
     borderRadius: '30px!important',
     color: 'white!important',
     height: '50px!important',
@@ -173,7 +152,7 @@ const newProjectModal = modal(props => ({
   onClose: () => props.setNewProjectModalOpen(false)
 }), newProject)
 
-const newProjectButton = fab(props => ({
+const newProjectButton = button(props => ({
   variant: 'contained',
   color: 'secondary',
   size: 'large',

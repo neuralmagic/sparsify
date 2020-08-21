@@ -1,4 +1,5 @@
 import { merge } from 'ramda'
+import React from 'react'
 import { fromClass } from './component'
 import SvgIcon from '@material-ui/core/SvgIcon'
 import whiteLogo from '../assets/logo_white.svg'
@@ -13,6 +14,7 @@ import nameProjectSvg from '../assets/new_project_name_project.svg'
 import selectModelSvg from '../assets/new_project_select_model.svg'
 import arrowRightSvg from '../assets/arrow_right.svg'
 import arrowLeftSvg from '../assets/arrow_left.svg'
+import panelEditSvg from '../assets/panel_edit.svg'
 
 export const logo = fromClass(SvgIcon).contramap(merge({
   component: whiteLogo,
@@ -73,3 +75,6 @@ export const arrowLeftIcon = fromClass(SvgIcon).contramap(merge({
   component: arrowLeftSvg,
   viewBox: '0 0 6 10'
 }))
+
+export const panelEditIcon =
+  <SvgIcon component={panelEditSvg} viewBox='0 0 17 20'/>

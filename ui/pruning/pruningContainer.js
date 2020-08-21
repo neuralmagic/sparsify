@@ -1,12 +1,17 @@
 import { compose, reduce, concat, prop, map, merge, mergeDeepLeft, objOf, always } from 'ramda'
+import React from 'react'
 import { Component, fold, nothing, useStyles, toContainer, useSelector, fromClass, useState, contramap } from '../common/component'
 import layersChart from './layersChart'
 import inputWithSlider from '../common/components/inputWithSlider'
 import metricsList from './metricsList'
 import { paper, typography, divider, iconButton, popover, inputLabel, select, menuItem, formControl } from '../common/materialui'
 import MoreVertIcon from '@material-ui/icons/MoreVert'
+import IconButton from '@material-ui/core/IconButton'
+import Modal from '@material-ui/core/Modal'
 import { pruningModifiers } from '../store/selectors/pruning'
 import { changeSparsity } from '../store/actions/pruning'
+import { panelEditIcon } from '../common/icons'
+import AdvancedPruningEditor from './advancedPruningEditor'
 
 const styles = {
   container: {
@@ -144,6 +149,20 @@ const modifierMenu = Component(props => compose(
   })))(
   fromClass(MoreVertIcon).contramap(always({}))))
 
+const editButton = ({ setSelectedModifier, modifier }) =>
+  <IconButton onClick={() => setSelectedModifier(modifier)}>
+    {panelEditIcon}
+  </IconButton>
+
+const advancedPruningModal = ({ selectedModifier, setSelectedModifier }) =>
+  <Modal
+    open={!!selectedModifier}
+    disableScrollLock>
+    <AdvancedPruningEditor
+      modifier={selectedModifier || {}}
+      onClose={() => setSelectedModifier(null)}/>
+  </Modal>
+
 const modifierChart = Component(props => compose(
   fold(props),
   map(toContainer({ className: prop('modifierContainer') })),
@@ -153,11 +172,13 @@ const modifierChart = Component(props => compose(
   sparsitySlider.contramap(mergeDeepLeft({
     classes: { root: props.classes.sparsitySlider }
   })),
+  fromClass(editButton),
   modifierMenu ]))
 
 const modifierContainers = Component(props => compose(
   fold(props),
   map(toContainer({ className: prop('modifiersContainer') })),
+  concat(fromClass(advancedPruningModal)),
   reduce(concat, nothing()),
   map(compose(modifierChart.contramap, merge, objOf('modifier'))))(
   props.modifiers))
@@ -166,6 +187,7 @@ export default Component(props => compose(
   fold(props),
   useStyles(styles),
   useSelector('modifiers', pruningModifiers),
+  useState('selectedModifier', 'setSelectedModifier', null),
   map(toContainer({ className: prop('container') })),
   concat(typography({
     variant: 'h5',

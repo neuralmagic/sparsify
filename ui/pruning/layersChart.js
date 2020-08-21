@@ -1,3 +1,4 @@
+import React from 'react'
 import { compose, reduce, concat, map, prop, merge, objOf, zipWith, addIndex, tap } from 'ramda'
 import { Vega } from 'react-vega'
 import { Component, fold, nothing, useStyles, toContainer, useSelector, fromElement, fromClass } from '../common/component'
@@ -86,8 +87,7 @@ const legend = Component(props => compose(
   ]))
 
 const chart = fromClass(Vega).contramap(props => merge({
-  //width: 600,
-  height: 200,
+  height: props.height || 200,
   spec: layerIndexChartSpec({
     backgroundColor: 'white',
     axesColor: '#434649',

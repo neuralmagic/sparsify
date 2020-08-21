@@ -39,13 +39,23 @@ const mainContentTheme = createTheme({
   disabledColor: '#E0E0E0',
   palette: {
     primary: { main: '#4652B1' },
-    secondary: { main: '#ff9900' }
+    secondary: { main: '#ff9900' },
+    text: {
+      secondary: '#777777'
+    }
   },
   typography: { fontFamily: fonts }
 })
 
 const appStyles = {
   '@global': {
+    'div[role=presentation]': {
+      overflowY: 'auto',
+      display: 'flex',
+      justifyContent: 'center',
+      paddingLeft: 120,
+      paddingRight: 120
+    },
     '#app': {
       width: '100%',
       height: '100%',

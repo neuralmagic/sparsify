@@ -8,7 +8,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { selectedProfile } from '../store/selectors/profiles'
 import { navigateToProjectSection } from '../store/actions/navigation'
 
-const useMainStyles = makeStyles(theme => ({
+const useStyles = makeStyles({
   container: {
     padding: 40
   },
@@ -26,7 +26,7 @@ const useMainStyles = makeStyles(theme => ({
     height: 50,
     textTransform: 'none'
   }
-}))
+})
 
 const useMetricItemStyles = makeStyles({
   root: {
@@ -53,7 +53,7 @@ const MetricItem = ({ label, value, valueSize }) => {
 }
 
 export default () => {
-  const classes = useMainStyles()
+  const classes = useStyles()
   const profile = useSelector(selectedProfile)
   const dispatch = useDispatch()
 

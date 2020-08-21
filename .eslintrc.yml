@@ -149,6 +149,8 @@ rules:
         - allowTemplateLiterals: true
     react/display-name:
         - off
+    react/prop-types:
+        - off
     react/jsx-uses-vars:
         - warn
     react/jsx-no-undef:

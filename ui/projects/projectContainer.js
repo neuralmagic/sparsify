@@ -1,12 +1,17 @@
+import React from 'react'
 import { compose, reduce, concat, map, prop } from 'ramda'
+import { useSelector } from 'react-redux'
 import { onlyOnProjectOptimizationPage, onlyOnProfilesPage } from '../routes'
 import { Component, fold, toContainer, nothing,
   useStyles, useDispatch, fromClass } from '../common/component'
 import { button, useTheme } from '../common/materialui'
+import Modal from '@material-ui/core/Modal'
 import { exportCurrentProject } from '../store/actions/projects'
 import pruningContainer from '../pruning/pruningContainer'
 import profileContainer from '../profiles/profileContainer'
+import ProjectSettings from './projectSettings'
 import { exportIcon } from '../common/icons'
+import { selectedProjectHasSettings, optimizationSettingsDiscarded } from '../store/selectors/settings'
 
 const styles = {
   container: props => ({
@@ -43,6 +48,17 @@ const exportButton = button(props => ({
   onClick: () => props.dispatch(exportCurrentProject())
 }), 'Export')
 
+const modelOptimizationSettingsModal = () => {
+  const hasSettings = useSelector(selectedProjectHasSettings)
+  const settingsDiscarded = useSelector(optimizationSettingsDiscarded)
+
+  return <Modal
+    open={!hasSettings && !settingsDiscarded}
+    disableScrollLock>
+    <ProjectSettings/>
+  </Modal>
+}
+
 export default Component(props => compose(
   fold(props),
   useTheme,
@@ -52,4 +68,5 @@ export default Component(props => compose(
   reduce(concat, nothing()))([
   onlyOnProjectOptimizationPage(pruningContainer),
   onlyOnProjectOptimizationPage(exportButton),
-  onlyOnProfilesPage(fromClass(profileContainer)) ]))
+  onlyOnProfilesPage(fromClass(profileContainer)),
+  onlyOnProjectOptimizationPage(fromClass(modelOptimizationSettingsModal)) ]))

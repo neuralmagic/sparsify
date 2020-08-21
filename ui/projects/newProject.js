@@ -1,6 +1,7 @@
 import React from 'react'
 import { compose, reduce, concat, map, merge, nth, prop, tap, when, last,
-  head, path, always, propEq, T, cond, equals, not, isNil, split, isEmpty } from 'ramda'
+  head, path, always, propEq, T, cond, equals, not, isNil, split, isEmpty,
+  all, props, either, defaultTo } from 'ramda'
 import { Component, fold, nothing, contramap, branch, buildComponentWithChildren,
   useStyles, useState, toContainer, fromElement, fromClass } from '../common/component'
 import { useTheme, paper, stepLabel, step, stepper,
@@ -208,7 +209,8 @@ const deploymentProfileStyles = {
   },
   coresInput: {
     width: '100px!important',
-    marginLeft: '20px!important'
+    marginLeft: '20px!important',
+    marginRight: '20px!important'
   }
 }
 
@@ -241,7 +243,8 @@ const stepLabels = ['', 'Select Model', 'Name Project', 'Deployment Profile', ''
 const nothingWhenAtFirstStep = branch(propEq('activeStep', 1), nothing())
 const nothingWhenAtFourthStep = branch(propEq('activeStep', 4), nothing())
 const nothingWhenFileIsSelected = branch(compose(not, isNil, prop('file')), nothing())
-const nothingWhenNoFileIsSelected = branch(compose(isNil, prop('file')), nothing())
+const nothingWhenNoFileAndNoPath = branch(compose(all(either(isNil, isEmpty)), props(['file', 'serverPath'])), nothing())
+const nothingWhenServerPathIsNotEmpty = branch(compose(not, either(isNil, isEmpty), prop('serverPath')), nothing())
 
 const fileInput = Component(props => compose(
   fold(props),
@@ -276,15 +279,17 @@ const selectModelStep = Component(props => compose(
   concat(typography({}, 'Select the ONNX model to load and name the project')),
   map(toContainer({ className: prop('fileInputsContainer') })),
   reduce(concat, nothing()))([
-  fileInput,
-  nothingWhenFileIsSelected(typography(props => ({ className: props.classes.orText }), 'or')),
+  nothingWhenServerPathIsNotEmpty(fileInput),
+  nothingWhenServerPathIsNotEmpty(nothingWhenFileIsSelected(typography(props => ({ className: props.classes.orText }), 'or'))),
   nothingWhenFileIsSelected(textField.contramap(props => ({
     className: props.classes.pathInputRoot,
+    value: defaultTo('', props.serverPath),
+    onChange: e => props.setServerPath(e.target.value),
     variant: 'outlined',
     label: 'Remote server path' }))),
-  nothingWhenNoFileIsSelected(button({
+  nothingWhenNoFileAndNoPath(button({
     className: props.classes.removeFileButton,
-    onClick: () => props.setFile(null) },
+    onClick: () => { props.setFile(null); props.setServerPath(null) } },
     fromClass(CloseIcon).fold({})))]))
 
 const nameProjectStep = Component(props => compose(
@@ -296,6 +301,8 @@ const nameProjectStep = Component(props => compose(
     className: props.classes.projectNameTextField,
     variant: 'outlined',
     label: 'Project Name',
+    autoFocus: true,
+    onFocus: e => e.target.select(),
     defaultValue: props.projectName,
     onChange: event => props.setProjectName(event.target.value)
   })),
@@ -318,12 +325,21 @@ const deploymentProfileStep = Component(props => compose(
   textField.contramap(always({
     className: props.classes.batchSizeInput,
     variant: 'outlined',
+    defaultValue: 1,
     label: 'Batch size',
   })),
   textField.contramap(always({
     className: props.classes.coresInput,
     variant: 'outlined',
     label: 'Cores',
+  })),
+  textField.contramap(always({
+    label: 'Instruction set',
+    value: 'AVX512, VNNI',
+    InputProps: {
+      readOnly: true,
+      disableUnderline: true
+    }
   })) ]))
 
 const completionStep = Component(props => compose(
@@ -409,7 +425,7 @@ const nextButton = Component(props => compose(
       endIcon: props.classes.nextButtonIcon
     },
     disabled:
-      props.activeStep === 1 && isNil(props.file) ||
+      props.activeStep === 1 && isNil(props.file) && either(isNil, isEmpty)(props.serverPath) ||
       props.activeStep === 2 && isEmpty(props.projectName) ||
       props.activeStep === 4,
     endIcon: arrowRightIcon.fold({}),
@@ -447,6 +463,7 @@ export default Component(props => compose(
   fold(props),
   useState('activeStep', 'setActiveStep', 1),
   useState('file', 'setFile', null),
+  useState('serverPath', 'setServerPath', null),
   useState('projectName', 'setProjectName', null),
   useTheme,
   useStyles(styles),

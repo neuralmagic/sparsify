@@ -55,7 +55,7 @@ export const saveProjectToLocal = () => (dispatch, getState) => {
 export const selectProject = id => dispatch => {
   dispatch({ type: 'SELECT_PROJECT', id })
 
-  dispatch(navigateToProjectSection('profiles'))
+  dispatch(navigateToProjectSection('optimization'))
 }
 
 export const loadProjects = () => dispatch =>

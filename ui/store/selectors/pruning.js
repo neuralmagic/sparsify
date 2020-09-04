@@ -31,7 +31,7 @@ export const sparsity = modifier => createSelector(
     if (!loss || !perf)
       return []
 
-    return map(always(modifier.sparsity/100), loss)
+    return map(always(modifier.sparsity), loss)
   })
 
 export const denseExecutionTimeData = createSelector(

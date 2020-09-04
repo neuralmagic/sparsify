@@ -15,8 +15,6 @@ import * as reactDom from 'react-dom'
 import * as reduxSagaEffects from 'redux-saga/effects'
 import * as reactIs from 'react-is'
 import * as propTypes from 'prop-types'
-import * as vega from 'vega'
-import * as vegaLite from 'vega-lite'
 
 export default {
   input:  'ui/index.js',
@@ -64,9 +62,7 @@ export default {
         'node_modules/react-router-dom/index.js': ['Route', 'Redirect', 'BrowserRouter', 'HashRouter', 'useHistory'],
         'node_modules/redux-saga/dist/redux-saga-effects-npm-proxy.cjs.js': Object.keys(reduxSagaEffects),
         'node_modules/d3-format/dist/d3-format.js': ['format'],
-        'node_modules/@material-ui/core/styles/index.js': ['ThemeProvider', 'createMuiTheme', 'useTheme', 'makeStyles'],
-        'vegaImport': Object.keys(vega),
-        'vegaLiteImport': Object.keys(vegaLite)
+        'node_modules/@material-ui/core/styles/index.js': ['ThemeProvider', 'createMuiTheme', 'useTheme', 'makeStyles']
       }
     }),
     copy({

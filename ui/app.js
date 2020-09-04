@@ -1,4 +1,3 @@
-import React from 'react'
 import { compose, reduce, concat, map, prop } from 'ramda'
 import { selectedProject } from './store/selectors/projects'
 import { onlyOnRootPage, onlyOnProjectPage, redirectToRootIfNoSelectedProject } from './routes'
@@ -63,9 +62,7 @@ const appStyles = {
       display: 'flex',
       fontFamily: '"Open Sans Regular", "Open Sans", "sans-serif"',
       whiteSpace: 'nowrap'
-    },
-    '.vega-embed.has-actions': { paddingRight: '0!important', width: '100%!important' },
-    '.vega-embed.has-actions details': { display: 'none' }
+    }
   },
   drawer: {
     background: '#1d1d1d!important',

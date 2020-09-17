@@ -1,15 +1,15 @@
 import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
-import LoaderLayout from "../../../components/loader-layout";
+import LoaderLayout from "../../components/loader-layout";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
 
 import {
   getProjectsThunk,
   selectProjectsState,
-} from "../../../store/projects-slice";
+} from "../../store/projects-slice";
 import makeStyles from "./sidenav-styles";
-import ScrollerLayout from "../../../components/scroller-layout";
+import ScrollerLayout from "../../components/scroller-layout";
 import { List, ListItem, Typography } from "@material-ui/core";
 
 function HomeSideNav() {

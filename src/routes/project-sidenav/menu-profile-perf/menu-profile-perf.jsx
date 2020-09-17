@@ -5,25 +5,19 @@ import { Button, List, ListItem, Typography } from "@material-ui/core";
 import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
 import { find, propEq, compose, defaultTo } from "ramda";
 
-import makeStyles from "./sidenav-styles";
+import makeStyles from "./menu-profile-perf-styles";
 import {
-  getProjectThunk,
-  selectProjectsState,
-  selectSelectedProjectState,
+  getProfilesPerfThunk,
+  selectSelectedProfilesPerfState,
 } from "../../../store";
-import LoaderLayout from "../../../components/loader-layout";
-import moment from "moment";
-import ScrollerLayout from "../../../components/scroller-layout";
 
-function ProjectSideNav({ match }) {
+function ProjectSideNavMenuProfilePerf({projectId, profileId, selected}) {
   const useStyles = makeStyles();
   const classes = useStyles();
 
   const dispatch = useDispatch();
-  const projectsState = useSelector(selectProjectsState);
-  const selectedProjectState = useSelector(selectSelectedProjectState);
+  const selectedProfilesPerfState = useSelector(selectSelectedProfilesPerfState);
 
-  const projectId = match.params.projectId;
   const selectedProjectMetaData = compose(
     find(propEq("project_id", projectId)),
     defaultTo({})
@@ -55,7 +49,7 @@ function ProjectSideNav({ match }) {
         errorSpacingHoriz={2}
         errorSpacingVert={2}
       >
-
+        <List className={classes.listRoot}></List>
       </LoaderLayout>
     </ScrollerLayout>
   );

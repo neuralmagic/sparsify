@@ -5,17 +5,17 @@ import { Button, List, ListItem, Typography } from "@material-ui/core";
 import ArrowBackIosIcon from "@material-ui/icons/ArrowBackIos";
 import { find, propEq, compose, defaultTo } from "ramda";
 
-import makeStyles from "./menu-profile-perf-styles";
+import makeStyles from "./sidenav-styles";
 import {
   getProjectThunk,
   selectProjectsState,
   selectSelectedProjectState,
-} from "../../../../store";
-import LoaderLayout from "../../../../components/loader-layout";
+} from "../../store";
+import LoaderLayout from "../../components/loader-layout";
 import moment from "moment";
-import ScrollerLayout from "../../../../components/scroller-layout";
+import ScrollerLayout from "../../components/scroller-layout";
 
-function ProjectMenuProfilePerf({profileId, selected}) {
+function ProjectSideNav({ match }) {
   const useStyles = makeStyles();
   const classes = useStyles();
 
@@ -55,7 +55,7 @@ function ProjectMenuProfilePerf({profileId, selected}) {
         errorSpacingHoriz={2}
         errorSpacingVert={2}
       >
-        <List className={classes.listRoot}></List>
+
       </LoaderLayout>
     </ScrollerLayout>
   );

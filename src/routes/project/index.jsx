@@ -1,2 +1,2 @@
-export * from "./sidenav";
+export * from "../project-sidenav";
 export { default } from "./project";

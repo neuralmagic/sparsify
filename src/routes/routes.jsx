@@ -6,9 +6,9 @@ import ProjectOptim from "./project-optim";
 import ProjectPerf from "./project-perf";
 import ProjectSettings from "./project-settings";
 
-import HomeSideNav from "./home/sidenav";
-import NotFoundSideNav from "./not-found/sidenav";
-import ProjectSideNav from "./project/sidenav";
+import HomeSideNav from "./home-sidenav";
+import NotFoundSideNav from "./notfound-sidenav";
+import ProjectSideNav from "./project-sidenav";
 
 /**
  * Create a route transition for use with the react-route-transition library.

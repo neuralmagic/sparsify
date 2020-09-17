@@ -48,9 +48,7 @@ export default function makeAppSideNavStyles() {
       body: {
         flex: "1 0",
         width: "100%",
-        "& div": {
-          height: "100%",
-        },
+        position: "relative",
       },
     }),
     { name: "AppSideNav" }

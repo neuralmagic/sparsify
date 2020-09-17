@@ -31,7 +31,7 @@ function HomeSideNav() {
           {projectsState.val.map((project) => (
             <ListItem button key={project.project_id}>
               <Link
-                to={`/projects/${project.project_id}`}
+                to={`/project/${project.project_id}`}
                 className={classes.projectCard}
               >
                 <Typography color="textPrimary" variant="body1">{project.name}</Typography>

@@ -23,7 +23,7 @@ import ProjectSideNav from "./project/sidenav";
  *    }
  *  }
  */
-export function createRouteTransitionOpacity() {
+export function makeRouteTransitionOpacity() {
   return {
     atEnter: {
       opacity: 0,
@@ -40,114 +40,62 @@ export function createRouteTransitionOpacity() {
   };
 }
 
-export function createRouteTransitionSlideRight() {
-  return {
-    atEnter: {
-      offset: -100,
-      opacity: 0,
-    },
-    atLeave: {
-      offset: -100,
-      opacity: 0,
-    },
-    atActive: {
-      offset: 0,
-      opacity: 1,
-    },
-    mapStyles: (styles) => ({
-      transform: `translateX(${styles.offset}%)`,
-      opacity: styles.opacity,
-    }),
-  };
-}
-
-export function createRouteTransitionSlideLeft() {
-  return {
-    atEnter: {
-      offset: 100,
-      opacity: 0,
-    },
-    atLeave: {
-      offset: 100,
-      opacity: 0,
-    },
-    atActive: {
-      offset: 0,
-      opacity: 1,
-    },
-    mapStyles: (styles) => ({
-      transform: `translateX(${styles.offset}%)`,
-      opacity: styles.opacity,
-    }),
-  };
-}
-
-export function createContentRoutes() {
+export function makeContentRoutes() {
   return [
     {
       path: "/",
       exact: true,
       component: Home,
-      transition: createRouteTransitionOpacity(),
     },
     {
       path: "/project/:projectId",
       exact: true,
       component: Project,
-      transition: createRouteTransitionOpacity(),
     },
     {
       path: "/project/:projectId/benchmark",
       exact: true,
       component: ProjectBenchmark,
-      transition: createRouteTransitionOpacity(),
     },
     {
       path: "/project/:projectId/optim",
       exact: true,
       component: ProjectOptim,
-      transition: createRouteTransitionOpacity(),
     },
     {
       path: "/project/:projectId/perf",
       exact: true,
       component: ProjectPerf,
-      transition: createRouteTransitionOpacity(),
     },
     {
       path: "/project/:projectId/settings",
       exact: true,
       component: ProjectSettings,
-      transition: createRouteTransitionOpacity(),
     },
     {
       path: "*",
       exact: false,
       component: NotFound,
-      transition: createRouteTransitionOpacity(),
     },
   ];
 }
 
-export function createSideNavRoutes() {
+export function makeSideNavRoutes() {
   return [
     {
       path: "/",
       exact: true,
       component: HomeSideNav,
-      transition: createRouteTransitionSlideLeft(),
     },
     {
       path: "/project/:projectId",
       exact: false,
       component: ProjectSideNav,
-      transition: createRouteTransitionSlideRight(),
     },
     {
       path: "*",
       exact: false,
       component: NotFoundSideNav,
-      transition: createRouteTransitionSlideRight(),
     },
   ];
 }

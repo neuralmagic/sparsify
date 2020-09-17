@@ -1,11 +1,11 @@
 import React from "react";
-import { BrowserRouter as Router, Switch } from "react-router-dom";
-import { AnimatedRoute } from "react-router-transition";
+import { BrowserRouter as Router, Route } from "react-router-dom";
+import { AnimatedSwitch } from "react-router-transition";
 import { ThemeProvider } from "@material-ui/core/styles";
 
 import makeTheme, { useDarkMode } from "./app-theme";
 import AppSideNav from "./sidenav";
-import { createContentRoutes } from "../routes";
+import { makeContentRoutes, makeRouteTransitionOpacity } from "../routes";
 import makeStyles from "./app-styles";
 
 function App() {
@@ -15,7 +15,8 @@ function App() {
   const useStyles = makeStyles();
   const classes = useStyles();
 
-  const routes = createContentRoutes();
+  const routes = makeContentRoutes();
+  const transition = makeRouteTransitionOpacity();
 
   return (
     <ThemeProvider theme={theme}>
@@ -26,20 +27,21 @@ function App() {
           </ThemeProvider>
 
           <div className={classes.main}>
-            <Switch>
+            <AnimatedSwitch
+              atEnter={transition.atEnter}
+              atLeave={transition.atLeave}
+              atActive={transition.atActive}
+              mapStyles={transition.mapStyles}
+            >
               {routes.map((route) => (
-                <AnimatedRoute
+                <Route
                   key={route.path}
                   path={route.path}
                   component={route.component}
                   exact={route.exact}
-                  atEnter={route.transition.atEnter}
-                  atLeave={route.transition.atLeave}
-                  atActive={route.transition.atActive}
-                  mapStyles={route.transition.mapStyles}
                 />
               ))}
-            </Switch>
+            </AnimatedSwitch>
           </div>
         </div>
       </Router>

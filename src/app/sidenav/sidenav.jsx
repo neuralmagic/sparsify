@@ -1,16 +1,18 @@
 import React from "react";
-import { Switch } from "react-router-dom";
-import { AnimatedRoute } from "react-router-transition";
+import { Route } from "react-router-dom";
+import { AnimatedSwitch } from "react-router-transition";
 import Box from "@material-ui/core/Box";
 
-import { createSideNavRoutes } from "../../routes";
+import { makeRouteTransitionOpacity, makeSideNavRoutes } from "../../routes";
 import makeStyles from "./sidenav-styles";
 import { ReactComponent as NMLogo } from "./img/logo.svg";
 
 function AppSideNav() {
   const useStyles = makeStyles();
   const classes = useStyles();
-  const routes = createSideNavRoutes();
+
+  const routes = makeSideNavRoutes();
+  const transition = makeRouteTransitionOpacity();
 
   return (
     <Box className={classes.root} boxShadow={16}>
@@ -23,20 +25,21 @@ function AppSideNav() {
       </div>
       <div className={classes.divider} />
       <div className={classes.body}>
-        <Switch>
+        <AnimatedSwitch
+          atEnter={transition.atEnter}
+          atLeave={transition.atLeave}
+          atActive={transition.atActive}
+          mapStyles={transition.mapStyles}
+        >
           {routes.map((route) => (
-            <AnimatedRoute
+            <Route
               key={route.path}
               path={route.path}
               component={route.component}
               exact={route.exact}
-              atEnter={route.transition.atEnter}
-              atLeave={route.transition.atLeave}
-              atActive={route.transition.atActive}
-              mapStyles={route.transition.mapStyles}
             />
           ))}
-        </Switch>
+        </AnimatedSwitch>
       </div>
     </Box>
   );

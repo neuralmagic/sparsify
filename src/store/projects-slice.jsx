@@ -1,7 +1,17 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import {
+  createSlice,
+  createAsyncThunk,
+  AsyncThunk,
+  Slice,
+} from "@reduxjs/toolkit";
 
 import { requestGetProjects } from "../api";
 
+/**
+ * Async thunk for making a request to get the starting page for the projects on the server
+ *
+ * @type {AsyncThunk<Promise<*>, void, {}>}
+ */
 export const getProjectsThunk = createAsyncThunk(
   "projects/getProjects",
   async () => {
@@ -11,6 +21,11 @@ export const getProjectsThunk = createAsyncThunk(
   }
 );
 
+/**
+ * Slice for handling the projects states in the redux store.
+ *
+ * @type {Slice<{val: [], error: null, status: string}, {}, string>}
+ */
 const projectsSlice = createSlice({
   name: "projects",
   initialState: {
@@ -29,13 +44,23 @@ const projectsSlice = createSlice({
     },
     [getProjectsThunk.rejected]: (state, action) => {
       state.status = "failed";
-      state.error = action.payload;
+      state.error = action.error.message;
     },
   },
 });
 
-export const { postAdded, postUpdated, reactionAdded } = projectsSlice.actions;
+/**
+ * Available actions for projects redux store
+ */
+export const {} = projectsSlice.actions;
+
+/**
+ * Simple selector to get the current projects state
+ * including the val, status, and error
+ *
+ * @param state - the redux store state
+ * @returns {Reducer<State> | Reducer<{val: null, error: null, projectId: null, status: string}>}
+ */
+export const selectProjectsState = (state) => state.projects;
 
 export default projectsSlice.reducer;
-
-export const selectProjectsState = (state) => state.projects;

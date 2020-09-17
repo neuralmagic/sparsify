@@ -40,40 +40,50 @@ export function makeRouteTransitionOpacity() {
   };
 }
 
+export const ROUTE_HOME = "/";
+export const ROUTE_PROJECT = "/project/:projectId";
+export const ROUTE_PROJECT_ACTION = `${ROUTE_PROJECT}/:action?/:actionId?`;
+export const ROUTE_PROJECT_BENCHMARK = `${ROUTE_PROJECT}/benchmark`;
+export const ROUTE_PROJECT_OPTIM = `${ROUTE_PROJECT}/optim/:optimId?`;
+export const ROUTE_PROJECT_PERF = `${ROUTE_PROJECT}/perf/:perfId?`;
+export const ROUTE_PROJECT_LOSS = `${ROUTE_PROJECT}/loss/:lossId?`;
+export const ROUTE_PROJECT_SETTINGS = `${ROUTE_PROJECT}/settings`;
+export const ROUTE_NOT_FOUND = "*";
+
 export function makeContentRoutes() {
   return [
     {
-      path: "/",
+      path: ROUTE_HOME,
       exact: true,
       component: Home,
     },
     {
-      path: "/project/:projectId",
+      path: ROUTE_PROJECT,
       exact: true,
       component: Project,
     },
     {
-      path: "/project/:projectId/benchmark",
+      path: ROUTE_PROJECT_BENCHMARK,
       exact: true,
       component: ProjectBenchmark,
     },
     {
-      path: "/project/:projectId/optim",
+      path: ROUTE_PROJECT_OPTIM,
       exact: true,
       component: ProjectOptim,
     },
     {
-      path: "/project/:projectId/perf",
+      path: ROUTE_PROJECT_PERF,
       exact: true,
       component: ProjectPerf,
     },
     {
-      path: "/project/:projectId/settings",
+      path: ROUTE_PROJECT_SETTINGS,
       exact: true,
       component: ProjectSettings,
     },
     {
-      path: "*",
+      path: ROUTE_NOT_FOUND,
       exact: false,
       component: NotFound,
     },
@@ -83,17 +93,17 @@ export function makeContentRoutes() {
 export function makeSideNavRoutes() {
   return [
     {
-      path: "/",
+      path: ROUTE_HOME,
       exact: true,
       component: HomeSideNav,
     },
     {
-      path: "/project/:projectId",
+      path: ROUTE_PROJECT_ACTION,
       exact: false,
       component: ProjectSideNav,
     },
     {
-      path: "*",
+      path: ROUTE_NOT_FOUND,
       exact: false,
       component: NotFoundSideNav,
     },

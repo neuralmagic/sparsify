@@ -3,8 +3,8 @@ import { makeStyles } from "@material-ui/core/styles";
 export default function makeScrollerLayoutStyles(spacingHoriz, spacingVert) {
   return makeStyles(
     (theme) => {
-      const paddingSides = theme.spacing(spacingHoriz);
-      const paddingTopBot = theme.spacing(spacingVert);
+      const paddingSides = theme.spacing(spacingHoriz ? spacingHoriz : 0);
+      const paddingTopBot = theme.spacing(spacingVert ? spacingVert : 0);
 
       return {
         root: {

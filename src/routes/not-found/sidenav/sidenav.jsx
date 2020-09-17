@@ -1,7 +1,7 @@
 import React from "react";
 
 function NotFoundSideNav() {
-    return <div>Home SideNav</div>;
+    return <div>Not Found SideNav</div>;
 }
 
 export default NotFoundSideNav;

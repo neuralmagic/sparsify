@@ -4,14 +4,6 @@ import PropTypes from "prop-types";
 import makeStyles from "./scroller-layout-styles";
 
 function ScrollerLayout({ spacingHoriz, spacingVert, children }) {
-  if (!spacingHoriz) {
-    spacingHoriz = 0;
-  }
-
-  if (!spacingVert) {
-    spacingVert = 0;
-  }
-
   const useStyles = makeStyles(spacingHoriz, spacingVert);
   const classes = useStyles();
 
@@ -25,7 +17,7 @@ function ScrollerLayout({ spacingHoriz, spacingVert, children }) {
 ScrollerLayout.propTypes = {
   spacingHoriz: PropTypes.number,
   spacingVert: PropTypes.number,
-  children: PropTypes.element.isRequired,
+  children: PropTypes.node.isRequired,
 };
 
 export default ScrollerLayout;

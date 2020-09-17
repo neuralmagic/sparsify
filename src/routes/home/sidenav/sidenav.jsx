@@ -8,7 +8,7 @@ import {
   getProjectsThunk,
   selectProjectsState,
 } from "../../../store/projects-slice";
-import makeStyles  from "./sidenav-styles";
+import makeStyles from "./sidenav-styles";
 import ScrollerLayout from "../../../components/scroller-layout";
 import { List, ListItem, Typography } from "@material-ui/core";
 
@@ -26,7 +26,15 @@ function HomeSideNav() {
 
   return (
     <ScrollerLayout spacingHoriz={0} spacingVert={1}>
-      <LoaderLayout error={projectsState.error} status={projectsState.status}>
+      <LoaderLayout
+        error={projectsState.error}
+        status={projectsState.status}
+        errorTitle="Error loading projects"
+        loaderSpacingHoriz={2}
+        loaderSpacingVert={2}
+        errorSpacingHoriz={2}
+        errorSpacingVert={2}
+      >
         <List className={classes.listRoot}>
           {projectsState.val.map((project) => (
             <ListItem button key={project.project_id}>
@@ -34,8 +42,20 @@ function HomeSideNav() {
                 to={`/project/${project.project_id}`}
                 className={classes.projectCard}
               >
-                <Typography color="textPrimary" variant="body1">{project.name}</Typography>
-                <Typography color="textSecondary" variant="subtitle2">
+                <Typography
+                  color="textPrimary"
+                  variant="body1"
+                  noWrap
+                  className={classes.projectCardTitle}
+                >
+                  {project.name}
+                </Typography>
+                <Typography
+                  color="textSecondary"
+                  variant="subtitle2"
+                  noWrap
+                  className={classes.projectCardSubTitle}
+                >
                   {moment(project.modified).fromNow()}
                 </Typography>
               </Link>

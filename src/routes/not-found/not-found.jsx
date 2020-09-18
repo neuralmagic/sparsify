@@ -1,7 +1,9 @@
 import React from "react";
 
+import AbsoluteLayout from "../../components/absolute-layout";
+
 function NotFound() {
-  return <div>404 page not found</div>;
+  return <AbsoluteLayout>Not Found</AbsoluteLayout>;
 }
 
 export default NotFound;

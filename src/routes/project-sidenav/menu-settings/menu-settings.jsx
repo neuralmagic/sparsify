@@ -5,10 +5,7 @@ import PropTypes from "prop-types";
 import { createProjectSettingsPath } from "../../paths";
 import ProjectSideNavMenu from "../menu";
 
-function ProjectSideNavMenuSettings({
-  projectId,
-  action,
-}) {
+function ProjectSideNavMenuSettings({ projectId, action }) {
   const selected = action === "settings";
 
   return (

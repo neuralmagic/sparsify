@@ -33,9 +33,7 @@ export default function makeProjectSideNavMenuStyles() {
 
           "& svg": {
             fill: ({ selected }) =>
-              selected
-                ? theme.palette.primary.light
-                : theme.palette.text.primary,
+              selected ? theme.palette.primary.light : theme.palette.text.primary,
             width: "24px",
             height: "24px",
           },
@@ -49,9 +47,7 @@ export default function makeProjectSideNavMenuStyles() {
 
           "& svg": {
             fill: ({ selected }) =>
-              selected
-                ? theme.palette.primary.light
-                : theme.palette.text.primary,
+              selected ? theme.palette.primary.light : theme.palette.text.primary,
             width: "24px",
             height: "24px",
           },

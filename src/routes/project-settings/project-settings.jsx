@@ -1,7 +1,8 @@
 import React from "react";
+import AbsoluteLayout from "../../components/absolute-layout";
 
 function ProjectSettings() {
-  return <div>Project Settings</div>;
+  return <AbsoluteLayout>Project Settings</AbsoluteLayout>;
 }
 
 export default ProjectSettings;

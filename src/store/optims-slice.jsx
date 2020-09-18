@@ -8,12 +8,12 @@ import { requestGetProjectOptims } from "../api";
  * @type {AsyncThunk<Promise<*>, {readonly projectId?: *}, {}>}
  */
 export const getOptimsThunk = createAsyncThunk(
-    "selectedOptims/getProjectOptims",
-    async ({ projectId }) => {
-        const body = await requestGetProjectOptims(projectId);
+  "selectedOptims/getProjectOptims",
+  async ({ projectId }) => {
+    const body = await requestGetProjectOptims(projectId);
 
-        return body.optims;
-    }
+    return body.optims;
+  }
 );
 
 /**
@@ -22,30 +22,30 @@ export const getOptimsThunk = createAsyncThunk(
  * @type {Slice<{val: [], error: null, projectId: null, status: string}, {}, string>}
  */
 const selectedOptimsSlice = createSlice({
-    name: "selectedOptims",
-    initialState: {
-        val: [],
-        status: "idle",
-        error: null,
-        projectId: null,
+  name: "selectedOptims",
+  initialState: {
+    val: [],
+    status: "idle",
+    error: null,
+    projectId: null,
+  },
+  reducers: {},
+  extraReducers: {
+    [getOptimsThunk.pending]: (state, action) => {
+      state.status = "loading";
+      state.projectId = action.meta.arg.projectId;
     },
-    reducers: {},
-    extraReducers: {
-        [getOptimsThunk.pending]: (state, action) => {
-            state.status = "loading";
-            state.projectId = action.meta.arg.projectId;
-        },
-        [getOptimsThunk.fulfilled]: (state, action) => {
-            state.status = "succeeded";
-            state.val = action.payload;
-            state.projectId = action.meta.arg.projectId;
-        },
-        [getOptimsThunk.rejected]: (state, action) => {
-            state.status = "failed";
-            state.error = action.error.message;
-            state.projectId = action.meta.arg.projectId;
-        },
+    [getOptimsThunk.fulfilled]: (state, action) => {
+      state.status = "succeeded";
+      state.val = action.payload;
+      state.projectId = action.meta.arg.projectId;
     },
+    [getOptimsThunk.rejected]: (state, action) => {
+      state.status = "failed";
+      state.error = action.error.message;
+      state.projectId = action.meta.arg.projectId;
+    },
+  },
 });
 
 /***

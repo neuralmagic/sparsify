@@ -31,10 +31,7 @@ function ProjectSideNavMenuProfileLoss({
     selectedState.val.length > 0
   ) {
     // redirect to select the first profile
-    const path = createProjectLossPath(
-      projectId,
-      selectedState.val[0].profile_id
-    );
+    const path = createProjectLossPath(projectId, selectedState.val[0].profile_id);
 
     return <Redirect to={path} />;
   }

@@ -25,7 +25,7 @@ export default function makeProjectSideNavSubMenuItemStyles() {
         },
         title: {
           color: ({ selected }) =>
-              selected ? theme.palette.primary.light : theme.palette.text.secondary,
+            selected ? theme.palette.primary.light : theme.palette.text.secondary,
         },
         selectedIcon: {
           position: "absolute",

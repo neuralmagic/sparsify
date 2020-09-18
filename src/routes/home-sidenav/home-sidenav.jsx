@@ -45,10 +45,7 @@ function HomeSideNav() {
                     noWrap
                     className={classes.projectCardTitle}
                   >
-                    <NullableText
-                      placeholder="Unspecified"
-                      value={project.name}
-                    />
+                    <NullableText placeholder="Unspecified" value={project.name} />
                   </Typography>
                   <Typography
                     color="textSecondary"

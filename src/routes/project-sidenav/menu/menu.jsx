@@ -8,13 +8,7 @@ import PropTypes from "prop-types";
 
 import makeStyles from "./menu-styles";
 
-function ProjectSideNavMenu({
-  selected,
-  title,
-  titlePath,
-  collapsible,
-  children,
-}) {
+function ProjectSideNavMenu({ selected, title, titlePath, collapsible, children }) {
   const useStyles = makeStyles();
   const classes = useStyles({ selected });
   const icon = collapsible ? children[0] : children;
@@ -52,10 +46,7 @@ ProjectSideNavMenu.propTypes = {
   title: PropTypes.string.isRequired,
   titlePath: PropTypes.string.isRequired,
   collapsible: PropTypes.bool.isRequired,
-  children: PropTypes.oneOfType([
-    PropTypes.arrayOf(PropTypes.node),
-    PropTypes.node,
-  ]),
+  children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]),
 };
 
 export default ProjectSideNavMenu;

@@ -1,9 +1,4 @@
-import {
-  createSlice,
-  createAsyncThunk,
-  AsyncThunk,
-  Slice,
-} from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, AsyncThunk, Slice } from "@reduxjs/toolkit";
 
 import { requestGetProjectProfilesPerf } from "../api";
 
@@ -65,7 +60,6 @@ export const {} = selectedProfilesPerfSlice.actions;
  * @param state - the redux store state
  * @returns {Reducer<State> | Reducer<{val: *[], error: null, projectId: null, status: string}>}
  */
-export const selectSelectedProfilesPerfState = (state) =>
-  state.selectedProfilesPerf;
+export const selectSelectedProfilesPerfState = (state) => state.selectedProfilesPerf;
 
 export default selectedProfilesPerfSlice.reducer;

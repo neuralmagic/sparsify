@@ -9,11 +9,7 @@ import { API_ROOT, objToQueryString, validateAPIResponseJSON } from "./utils";
  * @param {number} pageLength - The number of profiles to load for the given page
  * @returns {Promise<any>}
  */
-export function requestGetProjectProfilesLoss(
-  projectId,
-  page = 1,
-  pageLength = 100
-) {
+export function requestGetProjectProfilesLoss(projectId, page = 1, pageLength = 100) {
   const queryParams = objToQueryString({
     page,
     page_length: pageLength,
@@ -37,11 +33,7 @@ export function requestGetProjectProfilesLoss(
  * @param {number} pageLength - The number of profiles to load for the given page
  * @returns {Promise<any>}
  */
-export function requestGetProjectProfilesPerf(
-  projectId,
-  page = 1,
-  pageLength = 100
-) {
+export function requestGetProjectProfilesPerf(projectId, page = 1, pageLength = 100) {
   const queryParams = objToQueryString({
     page,
     page_length: pageLength,

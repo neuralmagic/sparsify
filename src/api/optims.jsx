@@ -9,21 +9,17 @@ import { API_ROOT, objToQueryString, validateAPIResponseJSON } from "./utils";
  * @param {number} pageLength - The number of profiles to load for the given page
  * @returns {Promise<any>}
  */
-export function requestGetProjectOptims(
-    projectId,
-    page = 1,
-    pageLength = 100
-) {
-    const queryParams = objToQueryString({
-        page,
-        page_length: pageLength,
-    });
-    const url = `${API_ROOT}/projects/${projectId}/optim?${queryParams}`;
+export function requestGetProjectOptims(projectId, page = 1, pageLength = 100) {
+  const queryParams = objToQueryString({
+    page,
+    page_length: pageLength,
+  });
+  const url = `${API_ROOT}/projects/${projectId}/optim?${queryParams}`;
 
-    return validateAPIResponseJSON(
-        fetch(url, {
-            method: "GET",
-            cache: "no-cache",
-        })
-    );
+  return validateAPIResponseJSON(
+    fetch(url, {
+      method: "GET",
+      cache: "no-cache",
+    })
+  );
 }

@@ -1,9 +1,4 @@
-import {
-  createSlice,
-  createAsyncThunk,
-  AsyncThunk,
-  Slice,
-} from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, AsyncThunk, Slice } from "@reduxjs/toolkit";
 
 import { requestGetProject } from "../api";
 

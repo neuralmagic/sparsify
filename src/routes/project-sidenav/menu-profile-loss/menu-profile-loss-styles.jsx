@@ -7,7 +7,7 @@ export default function makeProjectSideNavMenuProfileLossStyles() {
         root: {},
         loaderLayout: {
           display: "flex",
-          flexDirection: "column"
+          flexDirection: "column",
         },
         divider: {
           marginBottom: theme.spacing(1),

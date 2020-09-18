@@ -5,10 +5,7 @@ import PropTypes from "prop-types";
 import { createProjectBenchmarksPath } from "../../paths";
 import ProjectSideNavMenu from "../menu";
 
-function ProjectSideNavMenuBenchmark({
-  projectId,
-  action,
-}) {
+function ProjectSideNavMenuBenchmark({ projectId, action }) {
   const selected = action === "bench";
 
   return (

@@ -1,9 +1,4 @@
-import {
-  createSlice,
-  createAsyncThunk,
-  AsyncThunk,
-  Slice,
-} from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, AsyncThunk, Slice } from "@reduxjs/toolkit";
 
 import { requestGetProjects } from "../api";
 
@@ -12,14 +7,11 @@ import { requestGetProjects } from "../api";
  *
  * @type {AsyncThunk<Promise<*>, void, {}>}
  */
-export const getProjectsThunk = createAsyncThunk(
-  "projects/getProjects",
-  async () => {
-    const body = await requestGetProjects();
+export const getProjectsThunk = createAsyncThunk("projects/getProjects", async () => {
+  const body = await requestGetProjects();
 
-    return body.projects;
-  }
-);
+  return body.projects;
+});
 
 /**
  * Slice for handling the projects states in the redux store.

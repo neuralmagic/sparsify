@@ -18,7 +18,7 @@
     "lodash.debounce": "^4.0.8",
     "moment": "^2.28.0",
     "prop-types": "^15.7.2",
-    "query-string": "^6.12.1",
+    "query-string": "^6.13.2",
     "ramda": "^0.27.0",
     "ramda-fantasy": "^0.8.0",
     "react": "^16.13.0",
@@ -62,5 +62,17 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "prettier": {
+    "printWidth": 88,
+    "tabWidth": 2,
+    "useTabs": false,
+    "semi": true,
+    "singleQuote": false,
+    "quoteProps": "as-needed",
+    "trailingComma": "es5",
+    "bracketSpacing": true,
+    "jsxBracketSameLine": false,
+    "arrowParens": "always"
   }
 }

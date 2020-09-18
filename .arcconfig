@@ -1,4 +1,4 @@
 {
-  "phabricator.uri" : "https://phabricator.neuralmagic.com:8021/",
-  "https.blindly-trust-domains" : ["phabricator.neuralmagic.com"]
+  "phabricator.uri": "https://phabricator.neuralmagic.com:8021/",
+  "https.blindly-trust-domains": ["phabricator.neuralmagic.com"]
 }

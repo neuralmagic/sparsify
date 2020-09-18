@@ -12,12 +12,7 @@ function AbsoluteLayout({
   layoutClass,
   children,
 }) {
-  const useStyles = makeStyles(
-    spacingLeft,
-    spacingRight,
-    spacingTop,
-    spacingBottom
-  );
+  const useStyles = makeStyles(spacingLeft, spacingRight, spacingTop, spacingBottom);
   const classes = useStyles();
 
   if (!rootClass) {

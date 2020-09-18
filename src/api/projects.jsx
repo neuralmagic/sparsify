@@ -31,7 +31,6 @@ export function requestGetProjects(
   );
 }
 
-
 /**
  * Request to get the requested project with project_id from the neuralmagicML.server.
  *
@@ -42,10 +41,9 @@ export function requestGetProject(projectId) {
   const url = `${API_ROOT}/projects/${projectId}`;
 
   return validateAPIResponseJSON(
-      fetch(url, {
-        method: "GET",
-        cache: "no-cache",
-      })
+    fetch(url, {
+      method: "GET",
+      cache: "no-cache",
+    })
   );
 }
-

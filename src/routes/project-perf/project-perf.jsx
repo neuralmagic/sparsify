@@ -1,7 +1,8 @@
 import React from "react";
+import AbsoluteLayout from "../../components/absolute-layout";
 
 function ProjectPerf() {
-  return <div>Project Performance</div>;
+  return <AbsoluteLayout>Project Perf</AbsoluteLayout>;
 }
 
 export default ProjectPerf;

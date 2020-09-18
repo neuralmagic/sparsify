@@ -31,7 +31,7 @@ export default function makeHomeSideNavStyles() {
           "& svg": {
             width: "28px",
             height: "28px",
-          }
+          },
         },
         headerText: {
           flex: "1 0",
@@ -45,7 +45,11 @@ export default function makeHomeSideNavStyles() {
           width: "100%",
           padding: 0,
           margin: 0,
-        }
+        },
+        spacer: {
+          width: "100%",
+          height: theme.spacing(2),
+        },
       };
     },
     { name: "ProjectSideNav" }

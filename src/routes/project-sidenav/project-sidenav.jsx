@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Button, Divider, List, Typography } from "@material-ui/core";
 import ChevronLeft from "@material-ui/icons/ChevronLeft";
 import { find, propEq, compose, defaultTo } from "ramda";
+import queryString from "query-string";
 
 import {
   getOptimsThunk,
@@ -27,10 +28,11 @@ import ProjectSideNavMenuBenchmark from "./menu-benchmark";
 import ProjectSideNavMenuSettings from "./menu-settings";
 import ProjectSideNavMenuOptim from "./menu-optim";
 
-function ProjectSideNav({ match }) {
+function ProjectSideNav({ match, location }) {
   const projectId = match.params.projectId;
   const action = match.params.action ? match.params.action : null;
   const actionId = match.params.actionId ? match.params.actionId : null;
+  const query = queryString.parse(location.search);
 
   const useStyles = makeStyles();
   const classes = useStyles();
@@ -38,12 +40,8 @@ function ProjectSideNav({ match }) {
   const dispatch = useDispatch();
   const projectsState = useSelector(selectProjectsState);
   const selectedProjectState = useSelector(selectSelectedProjectState);
-  const selectedProfilesPerfState = useSelector(
-    selectSelectedProfilesPerfState
-  );
-  const selectedProfilesLossState = useSelector(
-    selectSelectedProfilesLossState
-  );
+  const selectedProfilesPerfState = useSelector(selectSelectedProfilesPerfState);
+  const selectedProfilesLossState = useSelector(selectSelectedProfilesLossState);
   const selectedOptimsState = useSelector(selectSelectedOptimsState);
 
   const selectedProjectMetaData = compose(
@@ -101,16 +99,11 @@ function ProjectSideNav({ match }) {
                 selectedProfilesLossState={selectedProfilesLossState}
                 projectId={projectId}
                 action={action}
-                profileId={action === "optim" ? actionId : null}
+                optimId={action === "optim" ? actionId : null}
+                query={query}
               />
-              <ProjectSideNavMenuBenchmark
-                projectId={projectId}
-                action={action}
-              />
-              <ProjectSideNavMenuSettings
-                projectId={projectId}
-                action={action}
-              />
+              <ProjectSideNavMenuBenchmark projectId={projectId} action={action} />
+              <ProjectSideNavMenuSettings projectId={projectId} action={action} />
             </List>
           </LoaderLayout>
         </ScrollerLayout>

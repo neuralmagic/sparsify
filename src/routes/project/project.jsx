@@ -1,7 +1,9 @@
 import React from "react";
 
+import AbsoluteLayout from "../../components/absolute-layout";
+
 function Project() {
-    return <div>Project</div>;
+  return <AbsoluteLayout>Project</AbsoluteLayout>;
 }
 
 export default Project;

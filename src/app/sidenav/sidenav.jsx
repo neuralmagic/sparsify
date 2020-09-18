@@ -1,7 +1,7 @@
 import React from "react";
 import { Route } from "react-router-dom";
 import { AnimatedSwitch } from "react-router-transition";
-import Box from "@material-ui/core/Box";
+import Paper from "@material-ui/core/Paper";
 
 import { makeRouteTransitionOpacity, makeSideNavRoutes } from "../../routes";
 import makeStyles from "./sidenav-styles";
@@ -15,7 +15,7 @@ function AppSideNav() {
   const transition = makeRouteTransitionOpacity();
 
   return (
-    <Box className={classes.root} boxShadow={16}>
+    <Paper className={classes.root} elevation={10}>
       <div className={classes.header}>
         <div className={classes.logo}>
           <NMLogo />
@@ -23,7 +23,6 @@ function AppSideNav() {
         <span className={classes.title}>Sparsify</span>
         <span className={classes.trademark}>TM</span>
       </div>
-      <div className={classes.divider} />
       <div className={classes.body}>
         <AnimatedSwitch
           atEnter={transition.atEnter}
@@ -41,7 +40,7 @@ function AppSideNav() {
           ))}
         </AnimatedSwitch>
       </div>
-    </Box>
+    </Paper>
   );
 }
 

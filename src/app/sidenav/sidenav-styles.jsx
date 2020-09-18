@@ -12,6 +12,7 @@ export default function makeAppSideNavStyles() {
         overflow: "hidden",
         fontSize: theme.typography.fontSize,
         fontFamily: theme.typography.fontFamily,
+        borderRadius: 0,
       },
       header: {
         display: "flex",
@@ -39,11 +40,6 @@ export default function makeAppSideNavStyles() {
         alignSelf: "start",
         paddingTop: theme.spacing(0.5),
         paddingLeft: theme.spacing(0.5),
-      },
-      divider: {
-        height: "1px",
-        width: "100%",
-        background: theme.palette.divider,
       },
       body: {
         flex: "1 0",

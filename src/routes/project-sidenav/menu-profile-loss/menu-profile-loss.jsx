@@ -5,20 +5,20 @@ import { ReactComponent as Icon } from "./img/icon.svg";
 import PropTypes from "prop-types";
 import moment from "moment";
 
-import makeStyles from "./menu-profile-perf-styles";
-import { createProjectPerfPath } from "../../paths";
+import makeStyles from "./menu-profile-loss-styles";
+import { createProjectLossPath } from "../../paths";
 import ProjectSideNavMenu from "../menu";
 import ProjectSideNavSubMenuTitle from "../sub-menu-title";
 import ProjectSideNavSubMenuItem from "../sub-menu-item";
 import LoaderLayout from "../../../components/loader-layout";
 
-function ProjectSideNavMenuProfilePerf({
+function ProjectSideNavMenuProfileLoss({
   selectedState,
   projectId,
   action,
   profileId,
 }) {
-  const selected = action === "perf";
+  const selected = action === "loss";
 
   const useStyles = makeStyles();
   const classes = useStyles();
@@ -31,7 +31,7 @@ function ProjectSideNavMenuProfilePerf({
     selectedState.val.length > 0
   ) {
     // redirect to select the first profile
-    const path = createProjectPerfPath(
+    const path = createProjectLossPath(
       projectId,
       selectedState.val[0].profile_id
     );
@@ -41,8 +41,8 @@ function ProjectSideNavMenuProfilePerf({
 
   return (
     <ProjectSideNavMenu
-      titlePath={createProjectPerfPath(projectId, profileId)}
-      title="Performance Profiles"
+      titlePath={createProjectLossPath(projectId, profileId)}
+      title="Loss Profiles"
       selected={selected}
       collapsible={true}
     >
@@ -50,7 +50,7 @@ function ProjectSideNavMenuProfilePerf({
       <LoaderLayout
         status={selectedState.status}
         error={selectedState.error}
-        errorTitle="Error loading performance profiles"
+        errorTitle="Error loading loss profiles"
         loaderSize={28}
         rootClass={classes.loaderLayout}
       >
@@ -59,7 +59,7 @@ function ProjectSideNavMenuProfilePerf({
         {selectedState.val.map((profile) => (
           <ProjectSideNavSubMenuItem
             key={profile.profile_id}
-            path={createProjectPerfPath(projectId, profile.profile_id)}
+            path={createProjectLossPath(projectId, profile.profile_id)}
             selected={profileId === profile.profile_id}
             value={profile.name}
             extraValue={`(${moment(profile.created).fromNow()})`}
@@ -70,11 +70,11 @@ function ProjectSideNavMenuProfilePerf({
   );
 }
 
-ProjectSideNavMenuProfilePerf.propTypes = {
+ProjectSideNavMenuProfileLoss.propTypes = {
   selectedState: PropTypes.object.isRequired,
   projectId: PropTypes.string.isRequired,
   action: PropTypes.string,
   profileId: PropTypes.string,
 };
 
-export default ProjectSideNavMenuProfilePerf;
+export default ProjectSideNavMenuProfileLoss;

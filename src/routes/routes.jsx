@@ -7,8 +7,20 @@ import ProjectPerf from "./project-perf";
 import ProjectSettings from "./project-settings";
 
 import HomeSideNav from "./home-sidenav";
-import NotFoundSideNav from "./notfound-sidenav";
+import NotFoundSideNav from "./not-found-sidenav";
 import ProjectSideNav from "./project-sidenav";
+
+import {
+  PATH_HOME,
+  PATH_PROJECT,
+  PATH_PROJECT_ACTION,
+  PATH_PROJECT_BENCHMARK,
+  PATH_PROJECT_PERF,
+  PATH_PROJECT_LOSS,
+  PATH_PROJECT_OPTIM,
+  PATH_PROJECT_SETTINGS,
+  PATH_NOT_FOUND,
+} from "./paths";
 
 /**
  * Create a route transition for use with the react-route-transition library.
@@ -40,50 +52,40 @@ export function makeRouteTransitionOpacity() {
   };
 }
 
-export const ROUTE_HOME = "/";
-export const ROUTE_PROJECT = "/project/:projectId";
-export const ROUTE_PROJECT_ACTION = `${ROUTE_PROJECT}/:action?/:actionId?`;
-export const ROUTE_PROJECT_BENCHMARK = `${ROUTE_PROJECT}/benchmark`;
-export const ROUTE_PROJECT_OPTIM = `${ROUTE_PROJECT}/optim/:optimId?`;
-export const ROUTE_PROJECT_PERF = `${ROUTE_PROJECT}/perf/:perfId?`;
-export const ROUTE_PROJECT_LOSS = `${ROUTE_PROJECT}/loss/:lossId?`;
-export const ROUTE_PROJECT_SETTINGS = `${ROUTE_PROJECT}/settings`;
-export const ROUTE_NOT_FOUND = "*";
-
 export function makeContentRoutes() {
   return [
     {
-      path: ROUTE_HOME,
+      path: PATH_HOME,
       exact: true,
       component: Home,
     },
     {
-      path: ROUTE_PROJECT,
+      path: PATH_PROJECT,
       exact: true,
       component: Project,
     },
     {
-      path: ROUTE_PROJECT_BENCHMARK,
+      path: PATH_PROJECT_BENCHMARK,
       exact: true,
       component: ProjectBenchmark,
     },
     {
-      path: ROUTE_PROJECT_OPTIM,
+      path: PATH_PROJECT_OPTIM,
       exact: true,
       component: ProjectOptim,
     },
     {
-      path: ROUTE_PROJECT_PERF,
+      path: PATH_PROJECT_PERF,
       exact: true,
       component: ProjectPerf,
     },
     {
-      path: ROUTE_PROJECT_SETTINGS,
+      path: PATH_PROJECT_SETTINGS,
       exact: true,
       component: ProjectSettings,
     },
     {
-      path: ROUTE_NOT_FOUND,
+      path: PATH_NOT_FOUND,
       exact: false,
       component: NotFound,
     },
@@ -93,17 +95,17 @@ export function makeContentRoutes() {
 export function makeSideNavRoutes() {
   return [
     {
-      path: ROUTE_HOME,
+      path: PATH_HOME,
       exact: true,
       component: HomeSideNav,
     },
     {
-      path: ROUTE_PROJECT_ACTION,
+      path: PATH_PROJECT_ACTION,
       exact: false,
       component: ProjectSideNav,
     },
     {
-      path: ROUTE_NOT_FOUND,
+      path: PATH_NOT_FOUND,
       exact: false,
       component: NotFoundSideNav,
     },

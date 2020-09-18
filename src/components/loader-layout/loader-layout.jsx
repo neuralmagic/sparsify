@@ -11,10 +11,9 @@ function LoaderLayout({
   errorTitle,
   progress,
   loaderSize,
-  loaderSpacingHoriz,
-  loaderSpacingVert,
-  errorSpacingHoriz,
-  errorSpacingVert,
+  rootClass,
+  loaderClass,
+  errorClass,
   children,
 }) {
   const showError = !!error;
@@ -28,12 +27,7 @@ function LoaderLayout({
     loaderSize = 56;
   }
 
-  const useStyles = makeStyles(
-    loaderSpacingHoriz,
-    loaderSpacingVert,
-    errorSpacingHoriz,
-    errorSpacingVert
-  );
+  const useStyles = makeStyles();
   const classes = useStyles();
 
   if (!errorTitle) {
@@ -42,14 +36,28 @@ function LoaderLayout({
     errorTitle = `${errorTitle}: `;
   }
 
+  if (!rootClass) {
+    rootClass = "";
+  }
+
+  if (!loaderClass) {
+    loaderClass = "";
+  }
+
+  if (!errorClass) {
+    errorClass = "";
+  }
+
   return (
-    <div className={classes.root}>
+    <div className={`${rootClass} ${classes.root}`}>
       {showError && (
-        <span className={classes.error}>{`${errorTitle}${error}`}</span>
+        <div className={`${errorClass} ${classes.error}`}>
+          <span>{`${errorTitle}${error}`}</span>
+        </div>
       )}
 
       {showLoading && (
-        <div className={classes.progress}>
+        <div className={`${loaderClass} ${classes.loader}`}>
           {showLoadingIndefinite && (
             <CircularProgress color="primary" size={loaderSize} />
           )}
@@ -75,10 +83,9 @@ LoaderLayout.propTypes = {
   error: PropTypes.string,
   errorTitle: PropTypes.string,
   progress: PropTypes.number,
-  loaderSpacingHoriz: PropTypes.number,
-  loaderSpacingVert: PropTypes.number,
-  errorSpacingHoriz: PropTypes.number,
-  errorSpacingVert: PropTypes.number,
+  rootClass: PropTypes.string,
+  loaderClass: PropTypes.string,
+  errorClass: PropTypes.string,
   children: PropTypes.node.isRequired,
 };
 

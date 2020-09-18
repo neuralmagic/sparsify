@@ -1,10 +1,9 @@
 import React from "react";
 import PropTypes from "prop-types";
 
-import makeStyles from "./scroller-layout-styles";
-import AbsoluteLayout from "../absolute-layout";
+import makeStyles from "./absolute-layout-styles";
 
-function ScrollerLayout({
+function AbsoluteLayout({
   spacingLeft,
   spacingRight,
   spacingTop,
@@ -13,7 +12,12 @@ function ScrollerLayout({
   layoutClass,
   children,
 }) {
-  const useStyles = makeStyles();
+  const useStyles = makeStyles(
+    spacingLeft,
+    spacingRight,
+    spacingTop,
+    spacingBottom
+  );
   const classes = useStyles();
 
   if (!rootClass) {
@@ -25,20 +29,13 @@ function ScrollerLayout({
   }
 
   return (
-    <AbsoluteLayout
-      spacingLeft={spacingLeft}
-      spacingRight={spacingRight}
-      spacingBottom={spacingBottom}
-      spacingTop={spacingTop}
-      rootClass={rootClass}
-      layoutClass={`${layoutClass} ${classes.layout}`}
-    >
-      {children}
-    </AbsoluteLayout>
+    <div className={`${rootClass} ${classes.root}`}>
+      <div className={`${layoutClass} ${classes.layout}`}>{children}</div>
+    </div>
   );
 }
 
-ScrollerLayout.propTypes = {
+AbsoluteLayout.propTypes = {
   spacingLeft: PropTypes.number,
   spacingRight: PropTypes.number,
   spacingTop: PropTypes.number,
@@ -48,4 +45,4 @@ ScrollerLayout.propTypes = {
   children: PropTypes.node.isRequired,
 };
 
-export default ScrollerLayout;
+export default AbsoluteLayout;

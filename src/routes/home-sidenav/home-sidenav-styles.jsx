@@ -4,35 +4,12 @@ export default function makeHomeSideNavStyles() {
   return makeStyles(
     (theme) => {
       const paddingSides = theme.spacing(1);
-      const paddingTopBot = theme.spacing(2);
+      const paddingTopBot = theme.spacing(3);
 
       return {
-        header: {
-          width: `calc(100% - 2 * ${paddingSides}px)`,
-          display: "flex",
-          flexDirection: "row",
-          alignItems: "center",
-          paddingLeft: paddingSides,
-          paddingRight: paddingSides,
-          paddingTop: paddingTopBot,
+        listRoot: {
+          width: "100%",
         },
-        headerButton: {
-          width: "40px",
-          height: "40px",
-          minWidth: "40px",
-          minHeight: "40px",
-          padding: 0,
-          margin: 0,
-        },
-        headerIcon: {
-          width: "24px",
-          height: "24px",
-          marginLeft: "8px",
-        },
-        headerText: {
-          flex: "1 0",
-        },
-
         projectCard: {
           width: `calc(100% - 2 * ${paddingSides}px)`,
           paddingLeft: `${paddingSides}px`,
@@ -40,10 +17,10 @@ export default function makeHomeSideNavStyles() {
           textDecoration: "none",
         },
         projectCardTitle: {
-
+          width: "100%",
         },
         projectCardSubTitle: {
-
+          width: "100%",
         },
         layout: {
           position: "relative",
@@ -54,13 +31,9 @@ export default function makeHomeSideNavStyles() {
           paddingBottom: `${paddingTopBot}px`,
           paddingLeft: `${paddingSides}px`,
           paddingRight: `${paddingSides}px`,
-
-          "& div": {
-            height: "fit-content",
-          },
         },
       };
     },
-    { name: "ProjectSideNav" }
+    { name: "HomeSideNav" }
   );
 }

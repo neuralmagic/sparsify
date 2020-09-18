@@ -1,6 +1,6 @@
 import { makeStyles } from "@material-ui/core/styles";
 
-export default function makeProjectSideNavMenuProfilePerfStyles() {
+export default function makeProjectSideNavMenuProfileLossStyles() {
   return makeStyles(
     (theme) => {
       return {
@@ -14,6 +14,6 @@ export default function makeProjectSideNavMenuProfilePerfStyles() {
         },
       };
     },
-    { name: "ProjectSideNavMenuProfilePerf" }
+    { name: "ProjectSideNavMenuProfileLoss" }
   );
 }

@@ -1,2 +1,2 @@
-export * from "../notfound-sidenav";
+export * from "../not-found-sidenav";
 export { default } from "./not-found";

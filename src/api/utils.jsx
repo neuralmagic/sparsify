@@ -45,3 +45,32 @@ export function validateAPIResponseJSON(responsePromise) {
       return Promise.reject(err);
     });
 }
+
+/***
+ * Utility function to validate and format a text response
+ * from the neuralmagicML.server APIs.
+ *
+ * @param {Promise<any>} responsePromise
+ * @returns {Promise<any>}
+ */
+export function validateAPIResponseText(responsePromise) {
+  return responsePromise
+    .then((response) => {
+      return response.text().then((data) => {
+        return {
+          statusOk: response.ok,
+          status: response.status,
+          body: data,
+        };
+      });
+    })
+    .then((data) => {
+      if (!data.statusOk) {
+        return Promise.reject(Error(data.body.error_message));
+      }
+      return data.body;
+    })
+    .catch((err) => {
+      return Promise.reject(err);
+    });
+}

@@ -16,6 +16,9 @@ export default function makeAppStyles() {
         flex: "1 0",
         position: "relative",
       },
+      switch: {
+        width: "100%"
+      }
     }),
     { name: "App" }
   );

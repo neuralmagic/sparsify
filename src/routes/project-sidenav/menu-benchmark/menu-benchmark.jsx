@@ -1,7 +1,7 @@
 import React from "react";
-import { ReactComponent as Icon } from "./img/icon.svg";
 import PropTypes from "prop-types";
 
+import { ReactComponent as Icon } from "./img/icon.svg";
 import { createProjectBenchmarksPath } from "../../paths";
 import ProjectSideNavMenu from "../menu";
 

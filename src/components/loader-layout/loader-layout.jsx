@@ -4,6 +4,8 @@ import { CircularProgress } from "@material-ui/core";
 
 import makeStyles from "./loader-layout-styles";
 
+const useStyles = makeStyles();
+
 function LoaderLayout({
   loading,
   status,
@@ -16,6 +18,8 @@ function LoaderLayout({
   errorClass,
   children,
 }) {
+  const classes = useStyles();
+
   const showError = !!error;
   const showLoading =
     !showError && (loading || status === "idle" || status === "loading");
@@ -26,9 +30,6 @@ function LoaderLayout({
   if (!loaderSize) {
     loaderSize = 56;
   }
-
-  const useStyles = makeStyles();
-  const classes = useStyles();
 
   if (!errorTitle) {
     errorTitle = "";
@@ -86,7 +87,7 @@ LoaderLayout.propTypes = {
   rootClass: PropTypes.string,
   loaderClass: PropTypes.string,
   errorClass: PropTypes.string,
-  children: PropTypes.node.isRequired,
+  children: PropTypes.node,
 };
 
 export default LoaderLayout;

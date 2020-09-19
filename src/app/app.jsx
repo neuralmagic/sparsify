@@ -1,12 +1,11 @@
 import React from "react";
-import { BrowserRouter as Router, Route } from "react-router-dom";
-import { AnimatedSwitch } from "react-router-transition";
+import { BrowserRouter as Router } from "react-router-dom";
 import { ThemeProvider } from "@material-ui/core/styles";
 
 import makeTheme, { useDarkMode } from "./app-theme";
 import AppSideNav from "./sidenav";
-import { makeContentRoutes, makeRouteTransitionOpacity } from "../routes";
 import makeStyles from "./app-styles";
+import AppMain from "./main";
 
 function App() {
   const darkMode = useDarkMode();
@@ -14,9 +13,6 @@ function App() {
   const sideNavTheme = makeTheme(!darkMode);
   const useStyles = makeStyles();
   const classes = useStyles();
-
-  const routes = makeContentRoutes();
-  const transition = makeRouteTransitionOpacity();
 
   return (
     <ThemeProvider theme={theme}>
@@ -27,21 +23,7 @@ function App() {
           </ThemeProvider>
 
           <div className={classes.main}>
-            <AnimatedSwitch
-              atEnter={transition.atEnter}
-              atLeave={transition.atLeave}
-              atActive={transition.atActive}
-              mapStyles={transition.mapStyles}
-            >
-              {routes.map((route) => (
-                <Route
-                  key={route.path}
-                  path={route.path}
-                  component={route.component}
-                  exact={route.exact}
-                />
-              ))}
-            </AnimatedSwitch>
+            <AppMain />
           </div>
         </div>
       </Router>

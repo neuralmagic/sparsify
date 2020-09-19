@@ -1,5 +1,4 @@
 import React from "react";
-import { Redirect } from "react-router-dom";
 import { Divider } from "@material-ui/core";
 import { ReactComponent as Icon } from "./img/icon.svg";
 import PropTypes from "prop-types";
@@ -12,29 +11,17 @@ import ProjectSideNavSubMenuTitle from "../sub-menu-title";
 import ProjectSideNavSubMenuItem from "../sub-menu-item";
 import LoaderLayout from "../../../components/loader-layout";
 
+const useStyles = makeStyles();
+
 function ProjectSideNavMenuProfilePerf({
   selectedState,
   projectId,
   action,
   profileId,
 }) {
-  const selected = action === "perf";
-
-  const useStyles = makeStyles();
   const classes = useStyles();
 
-  if (
-    selected &&
-    !profileId &&
-    selectedState.projectId === projectId &&
-    selectedState.val &&
-    selectedState.val.length > 0
-  ) {
-    // redirect to select the first profile
-    const path = createProjectPerfPath(projectId, selectedState.val[0].profile_id);
-
-    return <Redirect to={path} />;
-  }
+  const selected = action === "perf";
 
   return (
     <ProjectSideNavMenu
@@ -53,6 +40,11 @@ function ProjectSideNavMenuProfilePerf({
       >
         <ProjectSideNavSubMenuTitle title="Profile" showAdd={true} />
         <Divider light className={classes.divider} />
+        <ProjectSideNavSubMenuItem
+          path={createProjectPerfPath(projectId, null)}
+          selected={!profileId}
+          value="FLOPS"
+        />
         {selectedState.val.map((profile) => (
           <ProjectSideNavSubMenuItem
             key={profile.profile_id}

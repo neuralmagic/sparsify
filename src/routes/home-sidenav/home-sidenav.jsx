@@ -11,8 +11,9 @@ import AbsoluteLayout from "../../components/absolute-layout";
 import LoaderLayout from "../../components/loader-layout";
 import NullableText from "../../components/nullable-text";
 
+const useStyles = makeStyles();
+
 function HomeSideNav() {
-  const useStyles = makeStyles();
   const classes = useStyles();
 
   const dispatch = useDispatch();

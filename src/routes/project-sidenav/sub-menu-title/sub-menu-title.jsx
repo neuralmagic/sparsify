@@ -5,8 +5,9 @@ import PropTypes from "prop-types";
 
 import makeStyles from "./sub-menu-title-styles";
 
+const useStyles = makeStyles();
+
 function ProjectSideNavSubMenuTitle({ title, showAdd, onClick }) {
-  const useStyles = makeStyles();
   const classes = useStyles();
 
   return (

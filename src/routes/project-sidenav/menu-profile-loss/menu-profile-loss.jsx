@@ -12,16 +12,17 @@ import ProjectSideNavSubMenuTitle from "../sub-menu-title";
 import ProjectSideNavSubMenuItem from "../sub-menu-item";
 import LoaderLayout from "../../../components/loader-layout";
 
+const useStyles = makeStyles();
+
 function ProjectSideNavMenuProfileLoss({
   selectedState,
   projectId,
   action,
   profileId,
 }) {
-  const selected = action === "loss";
-
-  const useStyles = makeStyles();
   const classes = useStyles();
+
+  const selected = action === "loss";
 
   if (
     selected &&

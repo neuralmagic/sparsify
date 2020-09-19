@@ -20,6 +20,10 @@ export default function makeTheme(darkMode) {
     // make the background color darker
     theme.palette.background.default = "#1D1D1D";
     theme.palette.background.paper = "#303030";
+
+    theme.palette.overlay = "rgba(255, 255, 255, 0.3)";
+  } else {
+    theme.palette.overlay = "rgba(0, 0, 0, 0.6)";
   }
 
   return theme;

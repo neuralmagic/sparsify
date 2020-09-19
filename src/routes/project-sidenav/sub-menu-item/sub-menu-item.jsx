@@ -7,8 +7,9 @@ import PropTypes from "prop-types";
 import makeStyles from "./sub-menu-item-styles";
 import NullableText from "../../../components/nullable-text";
 
+const useStyles = makeStyles();
+
 function ProjectSideNavSubMenuItem({ selected, value, extraValue, path }) {
-  const useStyles = makeStyles();
   const classes = useStyles({ selected });
 
   if (!extraValue) {

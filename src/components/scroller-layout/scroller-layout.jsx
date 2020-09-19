@@ -4,6 +4,8 @@ import PropTypes from "prop-types";
 import makeStyles from "./scroller-layout-styles";
 import AbsoluteLayout from "../absolute-layout";
 
+const useStyles = makeStyles();
+
 function ScrollerLayout({
   spacingLeft,
   spacingRight,
@@ -13,7 +15,6 @@ function ScrollerLayout({
   layoutClass,
   children,
 }) {
-  const useStyles = makeStyles();
   const classes = useStyles();
 
   if (!rootClass) {

@@ -3,6 +3,8 @@ import PropTypes from "prop-types";
 
 import makeStyles from "./absolute-layout-styles";
 
+const useStyles = makeStyles();
+
 function AbsoluteLayout({
   spacingLeft,
   spacingRight,
@@ -12,8 +14,7 @@ function AbsoluteLayout({
   layoutClass,
   children,
 }) {
-  const useStyles = makeStyles(spacingLeft, spacingRight, spacingTop, spacingBottom);
-  const classes = useStyles();
+  const classes = useStyles({ spacingLeft, spacingRight, spacingTop, spacingBottom });
 
   if (!rootClass) {
     rootClass = "";

@@ -16,10 +16,7 @@ export default function makeProjectSideNavMenuStyles() {
           flexDirection: "column",
         },
         item: {
-          paddingLeft: paddingHoriz,
-          paddingRight: paddingHorizRight,
-          paddingTop: paddingVert,
-          paddingBottom: paddingVert,
+          padding: 0,
           margin: 0,
         },
         link: {
@@ -27,6 +24,10 @@ export default function makeProjectSideNavMenuStyles() {
           display: "flex",
           flexDirection: "row",
           textDecoration: "none",
+          paddingLeft: paddingHoriz,
+          paddingRight: paddingHorizRight,
+          paddingTop: paddingVert,
+          paddingBottom: paddingVert,
         },
         icon: {
           marginRight: theme.spacing(2),

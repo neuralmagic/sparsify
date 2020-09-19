@@ -28,14 +28,15 @@ import ProjectSideNavMenuBenchmark from "./menu-benchmark";
 import ProjectSideNavMenuSettings from "./menu-settings";
 import ProjectSideNavMenuOptim from "./menu-optim";
 
+const useStyles = makeStyles();
+
 function ProjectSideNav({ match, location }) {
+  const classes = useStyles();
+
   const projectId = match.params.projectId;
   const action = match.params.action ? match.params.action : null;
   const actionId = match.params.actionId ? match.params.actionId : null;
   const query = queryString.parse(location.search);
-
-  const useStyles = makeStyles();
-  const classes = useStyles();
 
   const dispatch = useDispatch();
   const projectsState = useSelector(selectProjectsState);
@@ -46,7 +47,7 @@ function ProjectSideNav({ match, location }) {
 
   const selectedProjectMetaData = compose(
     find(propEq("project_id", projectId)),
-    defaultTo({})
+    defaultTo(null)
   )(projectsState.val);
 
   if (selectedProjectState.projectId !== projectId) {
@@ -62,6 +63,14 @@ function ProjectSideNav({ match, location }) {
     history.push(createHomePath());
   }
 
+  let projectName = "";
+
+  if (selectedProjectState.val) {
+    projectName = selectedProjectState.val.name;
+  } else if (selectedProjectMetaData) {
+    projectName = selectedProjectMetaData.name;
+  }
+
   return (
     <AbsoluteLayout layoutClass={classes.root}>
       <div className={classes.header}>
@@ -69,7 +78,7 @@ function ProjectSideNav({ match, location }) {
           <ChevronLeft />
         </Button>
         <Typography color="textPrimary" className={classes.headerText} noWrap>
-          {selectedProjectMetaData ? selectedProjectMetaData.name : ""}
+          {projectName}
         </Typography>
       </div>
       <Divider />

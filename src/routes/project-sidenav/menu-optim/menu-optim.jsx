@@ -12,6 +12,8 @@ import ProjectSideNavSubMenuTitle from "../sub-menu-title";
 import ProjectSideNavSubMenuItem from "../sub-menu-item";
 import LoaderLayout from "../../../components/loader-layout";
 
+const useStyles = makeStyles();
+
 function ProjectSideNavMenuOptim({
   selectedOptimsState,
   selectedProfilesPerfState,
@@ -21,12 +23,11 @@ function ProjectSideNavMenuOptim({
   optimId,
   query,
 }) {
+  const classes = useStyles();
+
   const selected = action === "optim";
   const profilePerfId = "perf" in query ? query.perf : null;
   const profileLossId = "loss" in query ? query.loss : null;
-
-  const useStyles = makeStyles();
-  const classes = useStyles();
 
   if (
     selected &&
@@ -88,7 +89,7 @@ function ProjectSideNavMenuOptim({
 
         <div className={classes.spacer} />
 
-        <ProjectSideNavSubMenuTitle title="Performance Profile" showAdd={true} />
+        <ProjectSideNavSubMenuTitle title="Performance Profile" showAdd={false} />
         <Divider light className={classes.divider} />
         <LoaderLayout
           status={selectedProfilesPerfState.status}
@@ -100,7 +101,7 @@ function ProjectSideNavMenuOptim({
           <ProjectSideNavSubMenuItem
             path={createProjectOptimPath(projectId, optimId, null, profileLossId)}
             selected={!profilePerfId}
-            value="None"
+            value="FLOPS"
           />
           {selectedProfilesPerfState.val.map((profile) => (
             <ProjectSideNavSubMenuItem
@@ -120,7 +121,7 @@ function ProjectSideNavMenuOptim({
 
         <div className={classes.spacer} />
 
-        <ProjectSideNavSubMenuTitle title="Loss Profile" showAdd={true} />
+        <ProjectSideNavSubMenuTitle title="Loss Profile" showAdd={false} />
         <Divider light className={classes.divider} />
         <LoaderLayout
           status={selectedProfilesLossState.status}
@@ -132,7 +133,7 @@ function ProjectSideNavMenuOptim({
           <ProjectSideNavSubMenuItem
             path={createProjectOptimPath(projectId, optimId, profilePerfId, null)}
             selected={!profileLossId}
-            value="None"
+            value="Estimated"
           />
           {selectedProfilesLossState.val.map((profile) => (
             <ProjectSideNavSubMenuItem

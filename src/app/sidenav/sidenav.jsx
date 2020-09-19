@@ -7,15 +7,16 @@ import { makeRouteTransitionOpacity, makeSideNavRoutes } from "../../routes";
 import makeStyles from "./sidenav-styles";
 import { ReactComponent as NMLogo } from "./img/logo.svg";
 
+const useStyles = makeStyles();
+
 function AppSideNav() {
-  const useStyles = makeStyles();
   const classes = useStyles();
 
   const routes = makeSideNavRoutes();
   const transition = makeRouteTransitionOpacity();
 
   return (
-    <Paper className={classes.root} elevation={10}>
+    <Paper className={classes.root} elevation={20}>
       <div className={classes.header}>
         <div className={classes.logo}>
           <NMLogo />

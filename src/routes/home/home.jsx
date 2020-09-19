@@ -5,8 +5,9 @@ import AddIcon from "@material-ui/icons/Add";
 import makeStyles from "./home-styles";
 import AbsoluteLayout from "../../components/absolute-layout";
 
+const useStyles = makeStyles();
+
 function Home() {
-  const useStyles = makeStyles();
   const classes = useStyles();
 
   return (
@@ -17,7 +18,7 @@ function Home() {
         aria-label="New Project"
         className={classes.fab}
       >
-        <AddIcon />
+        <AddIcon className={classes.fabIcon} />
         New Project
       </Fab>
     </AbsoluteLayout>

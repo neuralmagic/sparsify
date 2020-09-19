@@ -8,8 +8,9 @@ import PropTypes from "prop-types";
 
 import makeStyles from "./menu-styles";
 
+const useStyles = makeStyles();
+
 function ProjectSideNavMenu({ selected, title, titlePath, collapsible, children }) {
-  const useStyles = makeStyles();
   const classes = useStyles({ selected });
   const icon = collapsible ? children[0] : children;
   const subMenu = collapsible ? children[1] : null;

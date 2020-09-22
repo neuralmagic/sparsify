@@ -57,7 +57,12 @@ function ExportDialog({ projectId, optimId, open, handleClose }) {
     _.get(availableFrameworks, frameworkTab) &&
     sampleType in _.get(codeSamples, `${availableFrameworks[frameworkTab]}`, {});
   return (
-    <Dialog open={open} onClose={() => handleClose()} maxWidth="md">
+    <Dialog
+      open={open}
+      onClose={() => handleClose()}
+      maxWidth="md"
+      PaperProps={{ className: classes.dialog }}
+    >
       <DialogTitle>Export</DialogTitle>
       <DialogContent>
         <Box display="flex">

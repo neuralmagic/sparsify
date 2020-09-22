@@ -1,19 +1,19 @@
-import { makeStyles } from "@material-ui/core/styles"
+import { makeStyles } from "@material-ui/core/styles";
 
 export default function makeLayersChartStyles() {
   return makeStyles(
     (theme) => {
       return {
         root: {
-          marginBottom: 15
+          marginBottom: 15,
         },
         label: {
           fontSize: 10,
-          color: theme.palette.text.secondary
+          color: theme.palette.text.secondary,
         },
         value: {
-          fontSize: 26
-        }
+          fontSize: 26,
+        },
       };
     },
     { name: "OptimPruning" }

@@ -1,14 +1,16 @@
 import React from "react";
-import { CardContent } from "@material-ui/core";
-import Card from "@material-ui/core/Card";
 import PropTypes from "prop-types";
+import { Box, Button, DialogContent } from "@material-ui/core";
 
 import ProjectSettingsContainer from "../../../components/project-settings-container";
-import makeStyles from "./settings-training-card-styles";
+import makeStyles from "../optim-create-styles";
 
 const useStyles = makeStyles();
 
-function ProjectSettingsTrainingCard({
+function OptimSelectContainer({
+  onCancel,
+  onPrevious,
+  onSubmit,
   optimizer,
   optimizerValError,
   optimizerOnChange,
@@ -25,8 +27,8 @@ function ProjectSettingsTrainingCard({
   const classes = useStyles();
 
   return (
-    <Card elevation={1}>
-      <CardContent className={classes.layout}>
+    <DialogContent>
+      <Box marginY={2}>
         <ProjectSettingsContainer
           optimizer={optimizer}
           optimizerValError={optimizerValError}
@@ -41,12 +43,45 @@ function ProjectSettingsTrainingCard({
           finalLRValError={finalLRValError}
           finalLROnChange={finalLROnChange}
         />
-      </CardContent>
-    </Card>
+        <Box paddingY={3} display="flex" justifyContent="flex-end" alignItems="center">
+          <Box paddingRight={1}>
+            <Button
+              onClick={() => onCancel()}
+              className={`${classes.button} ${classes.cancelButton}`}
+            >
+              Cancel
+            </Button>
+          </Box>
+          <Box marginRight={1}>
+            <Button
+              onClick={() => onPrevious()}
+              color="secondary"
+              variant="contained"
+              className={classes.button}
+            >
+              Previous
+            </Button>
+          </Box>
+          <Box>
+            <Button
+              onClick={() => onSubmit()}
+              color="secondary"
+              variant="contained"
+              className={classes.button}
+            >
+              Apply
+            </Button>
+          </Box>
+        </Box>
+      </Box>
+    </DialogContent>
   );
 }
 
-ProjectSettingsTrainingCard.propTypes = {
+OptimSelectContainer.propTypes = {
+  onCancel: PropTypes.func.isRequired,
+  onPrevious: PropTypes.func.isRequired,
+  onSubmit: PropTypes.func.isRequired,
   optimizer: PropTypes.string,
   optimizerValError: PropTypes.string,
   optimizerOnChange: PropTypes.func,
@@ -61,4 +96,4 @@ ProjectSettingsTrainingCard.propTypes = {
   finalLROnChange: PropTypes.func,
 };
 
-export default ProjectSettingsTrainingCard;
+export default OptimSelectContainer;

@@ -1,4 +1,4 @@
-import { makeStyles } from "@material-ui/core/styles"
+import { makeStyles } from "@material-ui/core/styles";
 
 export default function makePruningModifierStyles() {
   return makeStyles(
@@ -6,11 +6,11 @@ export default function makePruningModifierStyles() {
       return {
         root: {
           paddingTop: 20,
-          paddingLeft: 20
+          paddingLeft: 20,
         },
         sparsityInput: {
-          width: 80
-        }
+          width: 80,
+        },
       };
     },
     { name: "PruningModifier" }

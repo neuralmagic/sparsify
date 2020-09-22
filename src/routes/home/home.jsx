@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Fab, CircularProgress } from "@material-ui/core";
+import { Fab } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 
 import { ReactComponent as NMLogo } from "./img/logo.svg";
@@ -8,49 +8,31 @@ import makeStyles from "./home-styles";
 import AbsoluteLayout from "../../components/absolute-layout";
 
 const useStyles = makeStyles();
-const HOME_URL = "https://www.neuralmagic.com";
+const HOME_URL = null;
 
 function Home() {
-  const [loadingStatus, setLoadingStatus] = useState("loading");
   const classes = useStyles();
+  const [displayType, setDisplayType] = useState(HOME_URL ? "iframe" : "fallback");
 
-  fetch({
-    url: HOME_URL,
-    mode: "nocors",
-  })
-    .then((response) => {
-      setLoadingStatus("success");
-    })
-    .catch((error) => {
-      setLoadingStatus("error");
-    });
+  const fallbackDescription =
+    "Select a project from the left or add a new project with the bottom right button to profile, " +
+    "benchmark, and optimize your Neural Network for production.";
 
   return (
     <AbsoluteLayout>
-      {loadingStatus === "loading" && (
-        <Box
-          width="100%"
-          height="100%"
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-        >
-          <CircularProgress />
-        </Box>
-      )}
-      {loadingStatus === "success" && (
+      {displayType === "iframe" && (
         <iframe
           title={"Home"}
           width="100%"
           height="100%"
           src={HOME_URL}
-          onError={(error) => console.log("failed")}
-        ></iframe>
+          onError={() => setDisplayType("fallback")}
+        />
       )}
-      {loadingStatus === "error" && (
+      {displayType === "fallback" && (
         <GenericPage
           title="Sparsify"
-          description="Select a project from the left or add a new project with the bottom right button to profile, benchmark, and optimize your Neural Network for production"
+          description={fallbackDescription}
           logoComponent={<NMLogo />}
         />
       )}

@@ -9,7 +9,6 @@ const useStyles = makeStyles();
 
 function GenericPage({ title, description, logoComponent, logoClassName }) {
   const classes = useStyles();
-  console.log(logoComponent);
   return (
     <AbsoluteLayout spacingTop={4} spacingBottom={4} spacingRight={4} spacingLeft={4}>
       <div className={classes.root}>

@@ -1,1 +1,1 @@
-export { default } from "./metric-item"
+export { default } from "./metric-item";

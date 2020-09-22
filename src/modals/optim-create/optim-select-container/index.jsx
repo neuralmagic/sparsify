@@ -1,1 +1,1 @@
-export { default } from "./optim-select-container"
+export { default } from "./optim-select-container";

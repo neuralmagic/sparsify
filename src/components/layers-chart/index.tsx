@@ -1,1 +1,1 @@
-export { default } from './layers-chart'
+export { default } from "./layers-chart";

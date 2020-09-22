@@ -1,4 +1,4 @@
-import { makeStyles } from "@material-ui/core/styles"
+import { makeStyles } from "@material-ui/core/styles";
 
 export default function makeOptimPruningStyles() {
   return makeStyles(
@@ -6,7 +6,7 @@ export default function makeOptimPruningStyles() {
       return {
         root: {
           paddingTop: 20,
-          paddingLeft: 20
+          paddingLeft: 20,
         },
       };
     },

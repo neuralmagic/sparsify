@@ -15,7 +15,7 @@ import {
 import ProjectSettingsTrainingCard from "./settings-training-card";
 import LoaderOverlay from "../../components/loader-overlay";
 import ProjectSettingsDeleteCard from "./delete-card";
-import useProjectUpdateState from "./hooks/use-project-update-state";
+import useProjectUpdateState from "../../hooks/use-project-update-state";
 import FadeTransition from "../../components/fade-transition";
 import ProjectDeleteDialog from "../../modals/project-delete";
 import { createHomePath } from "../paths";

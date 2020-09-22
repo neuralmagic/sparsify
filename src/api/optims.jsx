@@ -1,6 +1,59 @@
 import { API_ROOT, objToQueryString, validateAPIResponseJSON } from "./utils";
 
 /**
+ * Request to create an optimization for project
+ * with project_id from the neuralmagicML.server.
+ *
+ * @param {string} projectId - The id of the project to get
+ * @param {string} name - The name of the created optimizer
+ * @param {boolean} add_pruning - Using pruning in created optimizer
+ * @param {boolean} add_quantization - Using quantization in created optimizer
+ * @param {boolean} add_lr_schedule - Using lr schedule in created optimizer
+ * @param {boolean} add_trainable - Using trainable in created optimizer
+ */
+export function requestCreateProjectOptimizer(
+  projectId,
+  name = undefined,
+  add_pruning = undefined,
+  add_quantization = undefined,
+  add_lr_schedule = undefined,
+  add_trainable = undefined
+) {
+  const url = `${API_ROOT}/projects/${projectId}/optim/`;
+  const body = {};
+  if (name !== undefined) {
+    body["name"] = name;
+  }
+
+  if (add_pruning !== undefined) {
+    body["add_pruning"] = add_pruning;
+  }
+
+  if (add_quantization !== undefined) {
+    body["add_quantization"] = add_quantization;
+  }
+
+  if (add_lr_schedule !== undefined) {
+    body["add_lr_schedule"] = add_lr_schedule;
+  }
+
+  if (add_trainable !== undefined) {
+    body["add_trainable"] = add_trainable;
+  }
+
+  return validateAPIResponseJSON(
+    fetch(url, {
+      method: "POST",
+      cache: "no-cache",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    })
+  );
+}
+
+/**
  * Request to get the requested project's optimizations
  * with project_id from the neuralmagicML.server.
  *
@@ -33,16 +86,22 @@ export function requestGetProjectOptims(projectId, page = 1, pageLength = 100) {
  * @param settings - Object with modifier settings to be updated
  * @returns {Promise<any>}
  */
-export const requestChangeModifierSettings = (projectId, optimId, modifierId, settings) => {
-  const url = `${API_ROOT}/projects/${projectId}/optim/${optimId}/modifiers/${modifierId}/pruning`
+export const requestChangeModifierSettings = (
+  projectId,
+  optimId,
+  modifierId,
+  settings
+) => {
+  const url = `${API_ROOT}/projects/${projectId}/optim/${optimId}/modifiers/${modifierId}/pruning`;
 
   return validateAPIResponseJSON(
     fetch(url, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(settings) })
-  )
-}
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(settings),
+    })
+  );
+};
 
 /**
  * Request to get the requested project's best estimated optimization meta data

@@ -1,7 +1,50 @@
-import { compose, path, propEq, find, curry, map, when, always, mergeRight, tap } from 'ramda';
+import {
+  compose,
+  path,
+  propEq,
+  find,
+  curry,
+  map,
+  when,
+  always,
+  mergeRight,
+  tap,
+} from "ramda";
 import { createSlice, createAsyncThunk, AsyncThunk, Slice } from "@reduxjs/toolkit";
 
-import { requestGetProjectOptims, requestChangeModifierSettings } from "../api";
+import {
+  requestGetProjectOptims,
+  requestChangeModifierSettings,
+  requestCreateProjectOptimizer,
+} from "../api";
+
+/**
+ * Async thunk for making a request to create a project optimizer
+ *
+ * @type {AsyncThunk<Promise<*>, {readonly projectId?: *, name?: string, add_pruning?: boolean, add_quantization?: boolean, add_lr_schedule?: boolean, add_trainable?: boolean}, {}>}
+ */
+export const createOptimThunk = createAsyncThunk(
+  "selectedOptims/createProjectOptims",
+  async ({
+    projectId,
+    name,
+    add_pruning,
+    add_quantization,
+    add_lr_schedule,
+    add_trainable,
+  }) => {
+    const body = await requestCreateProjectOptimizer(
+      projectId,
+      name,
+      add_pruning,
+      add_quantization,
+      add_lr_schedule,
+      add_trainable
+    );
+
+    return body.optim;
+  }
+);
 
 /**
  * Async thunk for making a request to get the starting page for a project's optimizers
@@ -20,11 +63,16 @@ export const getOptimsThunk = createAsyncThunk(
 export const changeModifierSettingsThunk = createAsyncThunk(
   "selectedOptims/changeModifierSettings",
   async ({ projectId, modifierId, optimId, settings }, thunk) => {
-    const body = await requestChangeModifierSettings(projectId, optimId, modifierId, settings)
+    const body = await requestChangeModifierSettings(
+      projectId,
+      optimId,
+      modifierId,
+      settings
+    );
 
-    return body.optim
+    return body.optim;
   }
-)
+);
 
 /**
  * Slice for handling the selected project's optimizations state in the redux store.
@@ -70,10 +118,24 @@ const selectedOptimsSlice = createSlice({
     },
     [changeModifierSettingsThunk.fulfilled]: (state, action) => {
       state.val = map(
-        when(propEq('optim_id', action.payload.optim_id),
-        always(action.payload)),
-        state.val)
-    }
+        when(propEq("optim_id", action.payload.optim_id), always(action.payload)),
+        state.val
+      );
+    },
+    [createOptimThunk.pending]: (state, action) => {
+      state.status = "loading";
+      state.projectId = action.meta.arg.projectId;
+    },
+    [createOptimThunk.fulfilled]: (state, action) => {
+      state.status = "succeeded";
+      state.val.push(action.payload);
+      state.projectId = action.meta.arg.projectId;
+    },
+    [createOptimThunk.rejected]: (state, action) => {
+      state.status = "failed";
+      state.error = action.error.message;
+      state.projectId = action.meta.arg.projectId;
+    },
   },
 });
 
@@ -94,6 +156,8 @@ export const {
  * @returns {Reducer<State> | Reducer<{val: *[], error: null, projectId: null, status: string}>}
  */
 export const selectSelectedOptimsState = (state) => state.selectedOptims;
-export const selectedOptimById = curry((id, state) => compose(find(propEq('optim_id', id)), path(['selectedOptims', 'val']))(state))
+export const selectedOptimById = curry((id, state) =>
+  compose(find(propEq("optim_id", id)), path(["selectedOptims", "val"]))(state)
+);
 
 export default selectedOptimsSlice.reducer;

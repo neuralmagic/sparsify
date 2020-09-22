@@ -59,7 +59,11 @@ function ProjectSideNavMenuOptim({
                 profileLossId
               )}
               selected={optimId === optim.optim_id}
-              value={optim.name}
+              value={
+                optim.name
+                  ? optim.name
+                  : moment(optim.created).format("MM/DD/YYYY h:mma")
+              }
               extraValue={`(${moment(optim.created).fromNow()})`}
             />
           ))}

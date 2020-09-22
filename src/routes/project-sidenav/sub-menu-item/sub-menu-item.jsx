@@ -20,7 +20,9 @@ function ProjectSideNavSubMenuItem({ selected, value, extraValue, path }) {
     <ListItem button className={classes.root}>
       <Link to={path} className={classes.link}>
         <Typography variant="subtitle2" className={classes.title} noWrap>
-          <NullableText placeholder="Unspecified" value={value} />
+          <NullableText placeholder="Unspecified" value={value}>
+            {value ? value : ""}
+          </NullableText>
           &nbsp;
           <i>{extraValue}</i>
         </Typography>

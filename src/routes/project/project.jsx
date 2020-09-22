@@ -15,10 +15,10 @@ function Project() {
   const classes = useStyles();
 
   const selectedProjectState = useSelector(selectSelectedProjectState);
-  const projectName = selectedProjectState.val ? selectedProjectState.val.name : null;
+  const projectName = selectedProjectState.val ? selectedProjectState.val.name : "";
   const projectDesc = selectedProjectState.val
     ? selectedProjectState.val.description
-    : null;
+    : "";
 
   return (
     <AbsoluteLayout spacingTop={4} spacingBottom={4} spacingRight={4} spacingLeft={4}>

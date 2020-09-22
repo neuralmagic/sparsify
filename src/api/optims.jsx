@@ -23,3 +23,35 @@ export function requestGetProjectOptims(projectId, page = 1, pageLength = 100) {
     })
   );
 }
+
+/**
+ * Request to get the requested project's best estimated optimization meta data
+ * based on optional loss and performance profiles
+ *
+ * @param projectId - The id of the project to get best estimated for
+ * @param profilePerfId - The performance profile to use to calculate the best estimated, if any
+ * @param profileLossId - The loss profile to use to calculate the best estimated, if any
+ * @returns {Promise<any>}
+ */
+export function requestGetProjectOptimBestEstimated(
+  projectId,
+  profilePerfId,
+  profileLossId
+) {
+  const queryParamsDict = {};
+  if (profilePerfId) {
+    queryParamsDict["profile_perf_id"] = profilePerfId;
+  }
+  if (profileLossId) {
+    queryParamsDict["profile_loss_id"] = profileLossId;
+  }
+  const queryParams = objToQueryString(queryParamsDict);
+  const url = `${API_ROOT}/projects/${projectId}/optim/modifiers/best-estimated?${queryParams}`;
+
+  return validateAPIResponseJSON(
+    fetch(url, {
+      method: "GET",
+      cache: "no-cache",
+    })
+  );
+}

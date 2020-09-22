@@ -4,6 +4,7 @@ import Project from "./project";
 import ProjectBenchmark from "./project-benchmark";
 import ProjectOptim from "./project-optim";
 import ProjectPerf from "./project-perf";
+import ProjectLoss from "./project-loss";
 import ProjectSettings from "./project-settings";
 
 import HomeSideNav from "./home-sidenav";
@@ -78,6 +79,11 @@ export function makeContentRoutes() {
       path: PATH_PROJECT_PERF,
       exact: true,
       component: ProjectPerf,
+    },
+    {
+      path: PATH_PROJECT_LOSS,
+      exact: true,
+      component: ProjectLoss,
     },
     {
       path: PATH_PROJECT_SETTINGS,

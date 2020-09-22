@@ -1,6 +1,8 @@
 import { createSlice, createAsyncThunk, AsyncThunk, Slice } from "@reduxjs/toolkit";
 
 import { requestGetProjectProfilesLoss } from "../api";
+import {STATUS_SUCCEEDED} from "./utils";
+import {compose, defaultTo, find, propEq} from "ramda";
 
 /**
  * Async thunk for making a request to get the starting page for a project's loss profiles
@@ -28,8 +30,13 @@ const selectedProfilesLossSlice = createSlice({
     status: "idle",
     error: null,
     projectId: null,
+    selectedId: null,
   },
-  reducers: {},
+  reducers: {
+    setSelectedProfileLoss: (state, action) => {
+      state.selectedId = action.payload;
+    },
+  },
   extraReducers: {
     [getProfilesLossThunk.pending]: (state, action) => {
       state.status = "loading";
@@ -51,7 +58,7 @@ const selectedProfilesLossSlice = createSlice({
 /***
  * Available actions for selectedProfilesLoss redux store
  */
-export const {} = selectedProfilesLossSlice.actions;
+export const { setSelectedProfileLoss } = selectedProfilesLossSlice.actions;
 
 /**
  * Simple selector to get the current selected loss profiles state
@@ -61,5 +68,28 @@ export const {} = selectedProfilesLossSlice.actions;
  * @returns {Reducer<State> | Reducer<{val: *[], error: null, projectId: null, status: string}>}
  */
 export const selectSelectedProfilesLossState = (state) => state.selectedProfilesLoss;
+
+export const selectSelectedProfilesLoss = (state) => {
+  const profilesLossState = selectSelectedProfilesLossState(state);
+
+  return profilesLossState.status !== STATUS_SUCCEEDED ? null : profilesLossState.val;
+};
+
+export const selectSelectedProfilesLossAnyStatus = (state) => {
+  return selectSelectedProfilesLossState(state).val;
+};
+
+export const selectSelectedProfileLoss = (state) => {
+  const profilesLossState = selectSelectedProfilesLossState(state);
+
+  if (profilesLossState.status !== STATUS_SUCCEEDED || !profilesLossState.selectedId) {
+    return null;
+  }
+
+  return compose(
+      find(propEq("profile_id", profilesLossState.selectedId)),
+      defaultTo(null)
+  )(profilesLossState.val);
+};
 
 export default selectedProfilesLossSlice.reducer;

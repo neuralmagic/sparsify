@@ -6,6 +6,7 @@ import makeTheme, { useDarkMode } from "./app-theme";
 import AppSideNav from "./sidenav";
 import makeStyles from "./app-styles";
 import AppMain from "./main";
+import useLocationUpdateStore from "./hooks/use-location-update-store";
 
 function App() {
   const darkMode = useDarkMode();
@@ -13,20 +14,19 @@ function App() {
   const sideNavTheme = makeTheme(!darkMode);
   const useStyles = makeStyles();
   const classes = useStyles();
+  useLocationUpdateStore();
 
   return (
     <ThemeProvider theme={theme}>
-      <Router>
-        <div className={classes.root}>
-          <ThemeProvider theme={sideNavTheme}>
-            <AppSideNav />
-          </ThemeProvider>
+      <div className={classes.root}>
+        <ThemeProvider theme={sideNavTheme}>
+          <AppSideNav />
+        </ThemeProvider>
 
-          <div className={classes.main}>
-            <AppMain />
-          </div>
+        <div className={classes.main}>
+          <AppMain />
         </div>
-      </Router>
+      </div>
     </ThemeProvider>
   );
 }

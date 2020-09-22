@@ -1,20 +1,21 @@
 import React from "react";
 import PropTypes from "prop-types";
 
-function NullableText({ value, placeholder, proxyCheck }) {
+function NullableText({ value, placeholder, proxyCheck, children }) {
   const checkVal = proxyCheck ? proxyCheck : value;
 
   if (!checkVal) {
     return <i>{placeholder}</i>;
   }
 
-  return value;
+  return children;
 }
 
 NullableText.propTypes = {
-  value: PropTypes.string,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   placeholder: PropTypes.string.isRequired,
-  checkVal: PropTypes.string,
+  checkVal: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  children: PropTypes.node,
 };
 
 export default NullableText;

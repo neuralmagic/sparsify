@@ -20,7 +20,6 @@ function ProjectSideNavMenuProfilePerf({
   profileId,
 }) {
   const classes = useStyles();
-
   const selected = action === "perf";
 
   return (

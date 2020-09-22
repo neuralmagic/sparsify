@@ -119,9 +119,9 @@ export function requestDeleteProject(projectId) {
   const url = `${API_ROOT}/projects/${projectId}`;
 
   return validateAPIResponseJSON(
-      fetch(url, {
-        method: "DELETE",
-        cache: "no-cache",
-      })
+    fetch(url, {
+      method: "DELETE",
+      cache: "no-cache",
+    })
   );
 }

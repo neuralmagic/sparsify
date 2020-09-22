@@ -1,6 +1,6 @@
 import { makeStyles } from "@material-ui/core/styles";
 
-export default function makeProjectStyles() {
+export default function makeProjectSettingsCardStyles() {
   return makeStyles(
     (theme) => {
       return {
@@ -21,6 +21,6 @@ export default function makeProjectStyles() {
         },
       };
     },
-    { name: "Project" }
+    { name: "ProjectSettingsCard" }
   );
 }

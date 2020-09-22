@@ -23,3 +23,14 @@ export function requestGetProjectOptims(projectId, page = 1, pageLength = 100) {
     })
   );
 }
+
+export const requestChangeModifierSettings = ({ projectId, optimId, modifierId, settings }) => {
+  const url = `${API_ROOT}/projects/${projectId}/optim/${optimId}/modifiers/${modifierId}/pruning`
+
+  return validateAPIResponseJSON(
+    fetch(url, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(settings) })
+  )
+}

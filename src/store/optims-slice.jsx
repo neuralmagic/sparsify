@@ -1,7 +1,7 @@
-import { compose, path, propEq, find } from 'ramda';
+import { compose, path, propEq, find, curry, map, when, always, mergeRight, tap } from 'ramda';
 import { createSlice, createAsyncThunk, AsyncThunk, Slice } from "@reduxjs/toolkit";
 
-import { requestGetProjectOptims } from "../api";
+import { requestGetProjectOptims, requestChangeModifierSettings } from "../api";
 
 /**
  * Async thunk for making a request to get the starting page for a project's optimizers
@@ -16,6 +16,16 @@ export const getOptimsThunk = createAsyncThunk(
     return body.optims;
   }
 );
+
+export const changeModifierSettingsThunk = createAsyncThunk(
+  "selectedOptims/changeModifierSettings",
+  async ({ modifierId, optimId, settings }, thunk) => {
+    const { project_id: projectId } = selectedOptimById(optimId, thunk.getState())
+    const body = await requestChangeModifierSettings({ projectId, optimId, modifierId, settings })
+
+    return body.optim
+  }
+)
 
 /**
  * Slice for handling the selected project's optimizations state in the redux store.
@@ -46,6 +56,12 @@ const selectedOptimsSlice = createSlice({
       state.error = action.error.message;
       state.projectId = action.meta.arg.projectId;
     },
+    [changeModifierSettingsThunk.fulfilled]: (state, action) => {
+      state.val = map(
+        when(propEq('optim_id', action.payload.optim_id),
+        always(action.payload)),
+        state.val)
+    }
   },
 });
 
@@ -62,6 +78,6 @@ export const {} = selectedOptimsSlice.actions;
  * @returns {Reducer<State> | Reducer<{val: *[], error: null, projectId: null, status: string}>}
  */
 export const selectSelectedOptimsState = (state) => state.selectedOptims;
-export const selectedOptimById = id => compose(find(propEq('optim_id', id)), path(['selectedOptims', 'val']))
+export const selectedOptimById = curry((id, state) => compose(find(propEq('optim_id', id)), path(['selectedOptims', 'val']))(state))
 
 export default selectedOptimsSlice.reducer;

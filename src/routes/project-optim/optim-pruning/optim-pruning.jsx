@@ -18,7 +18,7 @@ const OptimPruning = ({ optim }) => {
     <Typography variant="h6">Pruning</Typography>
     <Paper elevation={4} className={classes.root}>
       {optim && optim.pruning_modifiers.map(modifier =>
-        <PruningModifier key={modifier.modifier_id} modifier={modifier}/>)}
+        <PruningModifier key={modifier.modifier_id} modifier={modifier} optim={optim}/>)}
     </Paper>
   </AbsoluteLayout>
 }

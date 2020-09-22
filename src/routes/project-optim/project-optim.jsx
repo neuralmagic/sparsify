@@ -1,16 +1,37 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { selectedOptimById } from "../../store";
-import OptimPruning from "./optim-pruning";
 
-import AbsoluteLayout from "../../components/absolute-layout";
+import { Box } from "@material-ui/core"
 
-function ProjectOptim(props) {
-  const optim = useSelector(selectedOptimById(props.match.params.optimId))
+import { 
+  selectSelectedOptimsState,
+} from "../../store";
+import { ReactComponent as Icon } from "./img/icon.svg";
+import OptimCreate from "../../modals/optim-create";
+import GenericPage from "../../components/generic-page";
 
-  return <AbsoluteLayout>
-    <OptimPruning optim={optim}></OptimPruning>
-  </AbsoluteLayout>;
+function ProjectOptim() {
+  const optimsState = useSelector(selectSelectedOptimsState);
+  const [isOptimCreateOpen, setIsOptimCreateOpen] = useState(false);
+
+  console.log(optimsState)
+  useEffect(() => {
+    if (optimsState.status === "succeeded" && optimsState.val.length === 0) {
+      setIsOptimCreateOpen(true);
+    }
+  }, [optimsState])
+
+  return (
+    <Box>
+      <GenericPage
+        logoComponent={<Icon/>}
+        title="Optimization"
+        description="Optimize, retrain, and utilize Neural Magic's runtime engine to achieve faster inference timings."
+      />
+      <OptimCreate open={isOptimCreateOpen} handleClose={() => setIsOptimCreateOpen(false)}/>
+    </Box>
+    
+  );
 }
 
 export default ProjectOptim;

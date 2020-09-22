@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Typography } from "@material-ui/core";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
@@ -178,36 +178,43 @@ function ProjectPerf() {
       : null;
   const firstLossProfileId = firstLossProfile ? firstLossProfile.profile_id : null;
 
-  // make sure loss is finished so we can grab the first loss profile, if available
-  // make the best estimated request if it hasn't been made yet
-  if (
-    projectState.status === STATUS_SUCCEEDED &&
-    profilesPerfState.status === STATUS_SUCCEEDED &&
-    profilesLossState.status === STATUS_SUCCEEDED
-  ) {
-    const requestMatches =
-      projectState.projectId === bestEstimatedState.projectId &&
-      profilePerfId === bestEstimatedState.profilePerfId &&
-      firstLossProfileId === bestEstimatedState.profileLossId;
+  useEffect(() => {
+    // make sure all desired requests are finished first,
+    // then make the best estimated request if it hasn't been made yet
+    if (
+      projectState.status === STATUS_SUCCEEDED &&
+      profilesPerfState.status === STATUS_SUCCEEDED &&
+      profilesLossState.status === STATUS_SUCCEEDED
+    ) {
+      const requestMatches =
+        projectState.projectId === bestEstimatedState.projectId &&
+        profilePerfId === bestEstimatedState.profilePerfId &&
+        firstLossProfileId === bestEstimatedState.profileLossId;
 
-    if (!requestMatches) {
-      dispatch(
-        getOptimsBestEstimatedThunk({
-          projectId: projectState.projectId,
-          profilePerfId: profilePerfId,
-          profileLossId: firstLossProfileId,
-        })
-      );
+      if (!requestMatches) {
+        dispatch(
+          getOptimsBestEstimatedThunk({
+            projectId: projectState.projectId,
+            profilePerfId: profilePerfId,
+            profileLossId: firstLossProfileId,
+          })
+        );
+      }
     }
-  }
+  }, [
+    projectState,
+    profilesPerfState,
+    profilesLossState,
+    dispatch,
+    profilePerfId,
+    firstLossProfileId,
+  ]);
 
   const overallStatus = combineStatuses([
     projectState.status,
     profilesPerfState.status,
-    profilesLossState.status,
   ]);
-  const overallError =
-    projectState.error || profilesPerfState.error || profilesLossState.error;
+  const overallError = projectState.error || profilesPerfState.error;
 
   let displayValues;
 
@@ -238,12 +245,18 @@ function ProjectPerf() {
         loaderClass={classes.loader}
       >
         <div className={classes.layout}>
-          <Typography color="textSecondary" variant="h5" className={classes.title}>
-            Performance Profile{" "}
-            <Typography variant="h6" className={classes.titleExtras}>
+          <div className={classes.title}>
+            <Typography color="textSecondary" variant="h5">
+              Performance Profile{" "}
+            </Typography>
+            <Typography
+              color="textSecondary"
+              variant="h6"
+              className={classes.titleExtras}
+            >
               {displayValues.extras}
             </Typography>
-          </Typography>
+          </div>
           <ProfileSummaryCard
             status={bestEstimatedState.status}
             error={bestEstimatedState.error}
@@ -290,8 +303,9 @@ function ProjectPerf() {
           <ChartSummariesCard
             plotType="line"
             summaries={displayValues.analysisResults}
+            xAxisTitle="Layer Index"
             tooltipValues={[
-              { key: "label", display: "Layer Index" },
+              { key: "label", display: "Layer Depth" },
               { key: "id", display: "Layer ID" },
               { key: "opType", display: "Layer Type" },
               { key: "weightName", display: "Weight Name" },

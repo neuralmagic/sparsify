@@ -1,8 +1,15 @@
-import { createSlice, createAsyncThunk, AsyncThunk, Slice } from "@reduxjs/toolkit";
+import {
+  createSlice,
+  createAsyncThunk,
+  AsyncThunk,
+  Slice,
+  createSelector,
+} from "@reduxjs/toolkit";
 
 import { requestGetProjectProfilesLoss } from "../api";
-import { STATUS_SUCCEEDED } from "./utils";
+import { STATUS_SUCCEEDED, summarizeObjValuesArray } from "./utils";
 import { compose, defaultTo, find, propEq } from "ramda";
+import { selectSelectedProjectModelAnalysis } from "./project-slice";
 
 /**
  * Async thunk for making a request to get the starting page for a project's loss profiles
@@ -91,5 +98,66 @@ export const selectSelectedProfileLoss = (state) => {
     defaultTo(null)
   )(profilesLossState.val);
 };
+
+export const selectSelectedProfileLossNodeResults = createSelector(
+  [selectSelectedProjectModelAnalysis, selectSelectedProfileLoss],
+  (analysis, profileLoss) => {
+    if (!analysis || !profileLoss || !profileLoss.analysis) {
+      return {};
+    }
+
+    const results = {};
+
+    const nodeLookup = {};
+    if (analysis.nodes) {
+      analysis.nodes.forEach((node) => {
+        nodeLookup[node.id] = node;
+      });
+    }
+
+    // fill in pruning
+    if (profileLoss.pruning_estimations && profileLoss.analysis.pruning) {
+      results["Pruning Sensitivity"] = summarizeObjValuesArray(
+        profileLoss.analysis.pruning.ops,
+        (node, objIndex) => {
+          return objIndex;
+        },
+        (node) => {
+          if (node.measurements.length < 1 || !node.baseline_measurement_key) {
+            return null;
+          }
+
+          const keys = Object.keys(node.measurements);
+          let targetIndex = Math.round(0.95 * keys.length);
+
+          if (targetIndex > keys.length) {
+            targetIndex = keys.length - 1;
+          }
+
+          const targetKey = keys[targetIndex];
+
+          return (
+            node.measurements[targetKey] -
+            node.measurements[node.baseline_measurement_key]
+          );
+        },
+        (node) => {
+          const analysisNode = nodeLookup.hasOwnProperty(node.id)
+            ? nodeLookup[node.id]
+            : null;
+
+          return {
+            id: analysisNode ? analysisNode.id : node.name,
+            opType: analysisNode ? analysisNode.op_type : "Other",
+            weightName: analysisNode ? analysisNode.weight_name : null,
+          };
+        },
+        false
+      );
+    }
+
+    return results;
+  }
+);
 
 export default selectedProfilesLossSlice.reducer;

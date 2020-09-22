@@ -51,7 +51,7 @@ function ProfileSummaryCard({
                 <DisplayMetric
                   key={desc.title}
                   title={desc.title}
-                  size="medium"
+                  size="small"
                   rootClass={classes.containerColumn}
                 >
                   <NullableText placeholder="--" value={desc.value}>
@@ -67,7 +67,7 @@ function ProfileSummaryCard({
                 <DisplayMetric
                   key={desc.title}
                   title={desc.title}
-                  size="medium"
+                  size="small"
                   rootClass={classes.containerColumn}
                 >
                   <NullableText placeholder="--" value={desc.value}>

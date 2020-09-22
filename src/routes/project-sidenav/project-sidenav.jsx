@@ -64,11 +64,18 @@ function ProjectSideNav({ match, location }) {
   // handle redux store and state setup for the current route
   // todo, move out to central location to work with store
   useEffect(() => {
+    console.log("checking nav settings");
     if (action === "perf" && selectedProfilesPerfState.selectedId != actionId) {
+      console.log("setting action perf");
+      console.log(actionId);
       dispatch(setSelectedProfilePerf(actionId ? actionId : null));
     } else if (action === "loss" && selectedProfilesLossState.selectedId != actionId) {
+      console.log("setting action loss");
+      console.log(actionId);
       dispatch(setSelectedProfileLoss(actionId ? actionId : null));
     } else if (action === "optim" && selectedOptimsState.selectedOptimId != actionId) {
+      console.log("setting action optim");
+      console.log(actionId);
       dispatch(setSelectedOptim(actionId ? actionId : null));
     } else if (
       action === "optim" &&

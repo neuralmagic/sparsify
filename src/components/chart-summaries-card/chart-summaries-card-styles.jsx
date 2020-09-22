@@ -24,7 +24,7 @@ export default function makeChartSummariesCardStyles() {
           marginBottom: theme.spacing(3),
         },
         headerSelect: {
-          width: "160px",
+          width: "192px",
           marginRight: theme.spacing(2),
         },
         chart: {

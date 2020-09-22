@@ -12,7 +12,7 @@ export default function makeDisplayMetricStyles() {
           marginBottom: theme.spacing(1),
         },
         metric: {},
-        metricLarge: {
+        metricReduceFontWeight: {
           fontWeight: 300,
         },
       };

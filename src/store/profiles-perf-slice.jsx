@@ -102,8 +102,8 @@ export const selectSelectedProfilePerf = (state) => {
 export const selectSelectedProfilePerfNodeSummaries = createSelector(
   [selectSelectedProjectModelAnalysis, selectSelectedProfilePerf],
   (analysis, profilePerf) => {
-    if (!analysis || !profilePerf) {
-      return null;
+    if (!analysis || !profilePerf || !profilePerf.analysis) {
+      return {};
     }
 
     const nodeLookup = {};
@@ -176,8 +176,8 @@ export const selectSelectedProfilePerfNodeSummaries = createSelector(
 export const selectSelectedProfilePerfNodeResults = createSelector(
   [selectSelectedProjectModelAnalysis, selectSelectedProfilePerf],
   (analysis, profilePerf) => {
-    if (!analysis || !profilePerf) {
-      return null;
+    if (!analysis || !profilePerf || !profilePerf.analysis) {
+      return {};
     }
 
     const nodeLookup = {};

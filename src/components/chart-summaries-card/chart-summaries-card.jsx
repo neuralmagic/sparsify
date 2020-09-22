@@ -67,12 +67,16 @@ function ChartSummariesCard({ plotType, summaries, xAxisTitle, tooltipValues }) 
   if (valueDisplay === "valuesLog") {
     summaryTypeLabel = `log(${summaryTypeLabel})`;
   } else if (valueDisplay === "valuesPercent") {
-    summaryTypeLabel = `${summaryTypeLabel}%`;
+    summaryTypeLabel = `(${summaryTypeLabel})%`;
   }
 
   function tooltip(val) {
     const data = val.hasOwnProperty("data") ? val.data : val.point.data;
     const color = val.hasOwnProperty("color") ? val.color : val.point.borderColor;
+
+    if (data.y) {
+      data.y = data.y.toLocaleString(navigator.language, { maximumFractionDigits: 3 });
+    }
 
     const innerHtml = (
       <div className={classes.tooltipLayout}>
@@ -162,7 +166,7 @@ function ChartSummariesCard({ plotType, summaries, xAxisTitle, tooltipValues }) 
               variant="subtitle2"
               className={classes.chartYAxisNumberTop}
             >
-              {readableNumber(selectedRangeMax)}
+              {readableNumber(selectedRangeMax, 1)}
             </Typography>
             <div className={classes.chartYAxisTitle}>
               <div className={classes.chartYAxisTitleRotation}>
@@ -181,7 +185,7 @@ function ChartSummariesCard({ plotType, summaries, xAxisTitle, tooltipValues }) 
               variant="subtitle2"
               className={classes.chartYAxisNumberBottom}
             >
-              {readableNumber(selectedRangeMin)}
+              {readableNumber(selectedRangeMin, 1)}
             </Typography>
           </div>
           {plotType === "bar" && (

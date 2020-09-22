@@ -3,6 +3,7 @@ import { Typography } from "@material-ui/core";
 import PropTypes from "prop-types";
 
 import makeStyles from "./display-metric-styles";
+import Tooltip from "@material-ui/core/Tooltip";
 
 const useStyles = makeStyles();
 
@@ -25,7 +26,7 @@ function DisplayMetric({
   let metricVariant = null;
 
   if (size === "small") {
-    metricVariant = "body1";
+    metricVariant = "h6";
   } else if (size === "medium") {
     metricVariant = "h6";
   } else if (size === "large") {
@@ -41,16 +42,18 @@ function DisplayMetric({
       >
         {title}
       </Typography>
-      <Typography
-        color="textPrimary"
-        className={`${metricClass} ${classes.metric} ${
-          size === "large" ? classes.metricLarge : ""
-        }`}
-        variant={metricVariant}
-        noWrap={!wrap}
-      >
-        {children}
-      </Typography>
+      <Tooltip title={children} classes={{ tooltip: classes.valueTooltip }}>
+        <Typography
+          color="textPrimary"
+          className={`${metricClass} ${classes.metric} ${
+            size === "small" || size === "large" ? classes.metricReduceFontWeight : ""
+          }`}
+          variant={metricVariant}
+          noWrap={!wrap}
+        >
+          {children}
+        </Typography>
+      </Tooltip>
     </div>
   );
 }

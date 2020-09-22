@@ -1,4 +1,4 @@
-export const API_ROOT = "http://3.128.37.170:5543/api";
+export const API_ROOT = "http://0.0.0.0:5543/api";
 
 /***
  * Utility function to convert an object into a query params string.

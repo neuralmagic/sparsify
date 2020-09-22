@@ -198,6 +198,33 @@ export const selectSelectedProjectModelAnalysisBatchSize = createSelector(
   }
 );
 
+export const selectSelectedProjectModelAnalysisNodeParams = createSelector(
+  [selectSelectedProjectModelAnalysis],
+  (analysis) => {
+    if (!analysis) {
+      return null;
+    }
+
+    const prunableNodes = [];
+    analysis.nodes.forEach((node) => {
+      if (node.prunable) {
+        prunableNodes.push(node);
+      }
+    });
+
+    return {
+      "Params Count": summarizeObjValuesArray(
+        prunableNodes,
+        (node, objIndex) => objIndex,
+        (node) => (node.params ? node.params : null),
+        (node) => {
+          return { id: node.id, opType: node.op_type, weightName: node.weight_name };
+        }
+      ),
+    };
+  }
+);
+
 export const selectSelectedProjectModelAnalysisPerfNodeSummaries = createSelector(
   [selectSelectedProjectModelAnalysis],
   (analysis) => {
@@ -230,6 +257,37 @@ export const selectSelectedProjectModelAnalysisPerfNodeResults = createSelector(
         analysis.nodes,
         (node, objIndex) => objIndex,
         (node) => (node.flops ? node.flops : null),
+        (node) => {
+          return { id: node.id, opType: node.op_type, weightName: node.weight_name };
+        },
+        false
+      ),
+    };
+  }
+);
+
+export const selectSelectedProjectModelAnalysisLossSensitivityNodeResults = createSelector(
+  [selectSelectedProjectModelAnalysis],
+  (analysis) => {
+    if (!analysis) {
+      return null;
+    }
+
+    const prunableNodes = [];
+    analysis.nodes.forEach((node) => {
+      if (node.prunable) {
+        prunableNodes.push(node);
+      }
+    });
+
+    return {
+      "Pruning Sensitivity": summarizeObjValuesArray(
+        analysis.nodes,
+        (node, objIndex) => objIndex,
+        (node) =>
+          node.prunable_equation_sensitivity
+            ? node.prunable_equation_sensitivity
+            : null,
         (node) => {
           return { id: node.id, opType: node.op_type, weightName: node.weight_name };
         },

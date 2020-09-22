@@ -11,7 +11,6 @@ import makeStyles from "./optim-pruning-styles"
 const useStyles = makeStyles()
 
 const OptimPruning = ({ optim }) => {
-  console.log('pruning optim', optim)
   const classes = useStyles()
 
   return <AbsoluteLayout spacingTop={4} spacingBottom={4} spacingRight={4} spacingLeft={4}>

@@ -1,3 +1,4 @@
+import { compose, path, propEq, find } from 'ramda';
 import { createSlice, createAsyncThunk, AsyncThunk, Slice } from "@reduxjs/toolkit";
 
 import { requestGetProjectOptims } from "../api";
@@ -61,5 +62,6 @@ export const {} = selectedOptimsSlice.actions;
  * @returns {Reducer<State> | Reducer<{val: *[], error: null, projectId: null, status: string}>}
  */
 export const selectSelectedOptimsState = (state) => state.selectedOptims;
+export const selectedOptimById = id => compose(find(propEq('optim_id', id)), path(['selectedOptims', 'val']))
 
 export default selectedOptimsSlice.reducer;

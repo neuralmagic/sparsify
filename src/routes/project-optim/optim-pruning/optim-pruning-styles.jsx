@@ -1,11 +1,12 @@
 import { makeStyles } from "@material-ui/core/styles"
 
-export default function makeLayersChartStyles() {
+export default function makeOptimPruningStyles() {
   return makeStyles(
     (theme) => {
       return {
         root: {
-          padding: 100
+          paddingTop: 20,
+          paddingLeft: 20
         },
       };
     },

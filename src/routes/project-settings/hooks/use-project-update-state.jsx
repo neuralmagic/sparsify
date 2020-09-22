@@ -129,6 +129,7 @@ function changeProjectUpdateState(newVals, stateDict, original) {
  * Handles updating values state, validation, and save checking.
  * Additionally returns callbacks to enable updating the state.
  *
+ * @param projectId - id of the project to create the state for
  * @returns {{
  *   changeValue: changeValue,
  *   projectLoaded: projectLoaded,
@@ -148,7 +149,7 @@ function changeProjectUpdateState(newVals, stateDict, original) {
  *   saveOptions: {dirty: boolean, errored: boolean},
  * }}
  */
-function useProjectUpdateState() {
+function useProjectUpdateState(projectId) {
   const [values, setValues] = useState({
     projectId: null,
     name: "",

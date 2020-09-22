@@ -1,5 +1,4 @@
 import React from "react";
-import { Redirect } from "react-router-dom";
 import { Divider } from "@material-ui/core";
 import { ReactComponent as Icon } from "./img/icon.svg";
 import PropTypes from "prop-types";
@@ -21,32 +20,11 @@ function ProjectSideNavMenuOptim({
   projectId,
   action,
   optimId,
-  query,
+  profilePerfId,
+  profileLossId,
 }) {
   const classes = useStyles();
-
   const selected = action === "optim";
-  const profilePerfId = "perf" in query ? query.perf : null;
-  const profileLossId = "loss" in query ? query.loss : null;
-
-  if (
-    selected &&
-    !optimId &&
-    selectedOptimsState.projectId === projectId &&
-    selectedOptimsState.val &&
-    selectedOptimsState.val.length > 0
-  ) {
-    // redirect to select the first optim
-    const selectedOptim = selectedOptimsState.val[0];
-    const path = createProjectOptimPath(
-      projectId,
-      selectedOptim.optim_id,
-      selectedOptim.profile_perf_id,
-      selectedOptim.profile_loss_id
-    );
-
-    return <Redirect to={path} />;
-  }
 
   return (
     <ProjectSideNavMenu
@@ -133,7 +111,7 @@ function ProjectSideNavMenuOptim({
           <ProjectSideNavSubMenuItem
             path={createProjectOptimPath(projectId, optimId, profilePerfId, null)}
             selected={!profileLossId}
-            value="Estimated"
+            value="Approximated"
           />
           {selectedProfilesLossState.val.map((profile) => (
             <ProjectSideNavSubMenuItem
@@ -162,7 +140,8 @@ ProjectSideNavMenuOptim.propTypes = {
   projectId: PropTypes.string.isRequired,
   action: PropTypes.string,
   optimId: PropTypes.string,
-  query: PropTypes.object,
+  profilePerfId: PropTypes.string,
+  profileLossId: PropTypes.string,
 };
 
 export default ProjectSideNavMenuOptim;

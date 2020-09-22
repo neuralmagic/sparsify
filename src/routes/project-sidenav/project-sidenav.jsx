@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Button, Divider, List, Typography } from "@material-ui/core";
@@ -16,6 +16,11 @@ import {
   selectSelectedProfilesLossState,
   selectSelectedProfilesPerfState,
   selectSelectedProjectState,
+  setSelectedProfilePerf,
+  setSelectedProfileLoss,
+  setSelectedOptim,
+  setSelectedOptimProfilePerf,
+  setSelectedOptimProfileLoss,
 } from "../../store";
 import { createHomePath } from "../paths";
 import makeStyles from "./project-sidenav-styles";
@@ -32,11 +37,14 @@ const useStyles = makeStyles();
 
 function ProjectSideNav({ match, location }) {
   const classes = useStyles();
+  const history = useHistory();
 
   const projectId = match.params.projectId;
   const action = match.params.action ? match.params.action : null;
   const actionId = match.params.actionId ? match.params.actionId : null;
   const query = queryString.parse(location.search);
+  const profilePerfId = "perf" in query ? query.perf : null;
+  const profileLossId = "loss" in query ? query.loss : null;
 
   const dispatch = useDispatch();
   const projectsState = useSelector(selectProjectsState);
@@ -45,23 +53,56 @@ function ProjectSideNav({ match, location }) {
   const selectedProfilesLossState = useSelector(selectSelectedProfilesLossState);
   const selectedOptimsState = useSelector(selectSelectedOptimsState);
 
-  const selectedProjectMetaData = compose(
-    find(propEq("project_id", projectId)),
-    defaultTo(null)
-  )(projectsState.val);
-
   if (selectedProjectState.projectId !== projectId) {
+    // current project doesn't match, preload all necessary data
     dispatch(getProjectThunk({ projectId }));
     dispatch(getProfilesPerfThunk({ projectId }));
     dispatch(getProfilesLossThunk({ projectId }));
     dispatch(getOptimsThunk({ projectId }));
   }
 
-  const history = useHistory();
+  // handle redux store and state setup for the current route
+  // todo, move out to central location to work with store
+  useEffect(() => {
+    if (action === "perf" && selectedProfilesPerfState.selectedId != actionId) {
+      dispatch(setSelectedProfilePerf(actionId ? actionId : null));
+    } else if (action === "loss" && selectedProfilesLossState.selectedId != actionId) {
+      dispatch(setSelectedProfileLoss(actionId ? actionId : null));
+    } else if (action === "optim" && selectedOptimsState.selectedOptimId != actionId) {
+      dispatch(setSelectedOptim(actionId ? actionId : null));
+    } else if (
+      action === "optim" &&
+      selectedOptimsState.selectedProfilePerfId != profilePerfId
+    ) {
+      dispatch(setSelectedOptimProfilePerf(profilePerfId ? profilePerfId : null));
+    } else if (
+      action === "optim" &&
+      selectedOptimsState.selectedProfileLossId != profileLossId
+    ) {
+      dispatch(setSelectedOptimProfileLoss(profileLossId ? profileLossId : null));
+    }
+  }, [
+    dispatch,
+    action,
+    actionId,
+    profilePerfId,
+    profileLossId,
+    selectedProfilesPerfState,
+    selectedProfilesLossState,
+    selectedOptimsState,
+    selectedOptimsState,
+  ]);
 
   function handleBackClick() {
     history.push(createHomePath());
   }
+
+  // grab from the array as a backup name, if possible,
+  // to use while loading the project
+  const selectedProjectMetaData = compose(
+    find(propEq("project_id", projectId)),
+    defaultTo(null)
+  )(projectsState.val);
 
   let projectName = "";
 
@@ -109,7 +150,8 @@ function ProjectSideNav({ match, location }) {
                 projectId={projectId}
                 action={action}
                 optimId={action === "optim" ? actionId : null}
-                query={query}
+                profilePerfId={profilePerfId}
+                profileLossId={profileLossId}
               />
               <ProjectSideNavMenuBenchmark projectId={projectId} action={action} />
               <ProjectSideNavMenuSettings projectId={projectId} action={action} />

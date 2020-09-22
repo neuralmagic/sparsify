@@ -23,6 +23,8 @@ import { createHomePath } from "../paths";
 const useStyles = makeStyles();
 
 function ProjectSettings({ match }) {
+  const projectId = match.params.projectId;
+
   const classes = useStyles();
   const dispatch = useDispatch();
   const {
@@ -33,10 +35,9 @@ function ProjectSettings({ match }) {
     saveValues,
     validationErrors,
     saveOptions,
-  } = useProjectUpdateState();
+  } = useProjectUpdateState(projectId);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
-  const projectId = match.params.projectId;
   const selectedProjectState = useSelector(selectSelectedProjectState);
 
   const projectSize = selectedProjectState.val

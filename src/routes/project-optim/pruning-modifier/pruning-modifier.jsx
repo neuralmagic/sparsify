@@ -38,9 +38,10 @@ const PruningModifier = ({ modifier, optim }) => {
       </Grid>
       <Grid item xs>
         <Slider value={modifier.sparsity * 100} onChange={(e, value) => dispatch(changeModifierSettingsThunk({
-          settings: { sparsity: value / 100 },
+          projectId: optim.project_id,
+          optimId: optim.optim_id,
           modifierId: modifier.modifier_id,
-          optimId: optim.optim_id
+          settings: { sparsity: value / 100 },
         }))}/>
       </Grid>
     </Grid>

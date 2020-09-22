@@ -1,5 +1,4 @@
 import React from "react";
-import { Redirect } from "react-router-dom";
 import { Divider } from "@material-ui/core";
 import { ReactComponent as Icon } from "./img/icon.svg";
 import PropTypes from "prop-types";
@@ -21,21 +20,7 @@ function ProjectSideNavMenuProfileLoss({
   profileId,
 }) {
   const classes = useStyles();
-
   const selected = action === "loss";
-
-  if (
-    selected &&
-    !profileId &&
-    selectedState.projectId === projectId &&
-    selectedState.val &&
-    selectedState.val.length > 0
-  ) {
-    // redirect to select the first profile
-    const path = createProjectLossPath(projectId, selectedState.val[0].profile_id);
-
-    return <Redirect to={path} />;
-  }
 
   return (
     <ProjectSideNavMenu
@@ -54,6 +39,11 @@ function ProjectSideNavMenuProfileLoss({
       >
         <ProjectSideNavSubMenuTitle title="Profile" showAdd={true} />
         <Divider light className={classes.divider} />
+        <ProjectSideNavSubMenuItem
+          path={createProjectLossPath(projectId, null)}
+          selected={!profileId}
+          value="Approximated"
+        />
         {selectedState.val.map((profile) => (
           <ProjectSideNavSubMenuItem
             key={profile.profile_id}

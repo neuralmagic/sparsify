@@ -28,3 +28,6 @@ export default function makeTheme(darkMode) {
 
   return theme;
 }
+
+export const referenceDarkTheme = makeTheme(true);
+export const referenceLightTheme = makeTheme(false);

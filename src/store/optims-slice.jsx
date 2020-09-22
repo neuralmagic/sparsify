@@ -19,9 +19,8 @@ export const getOptimsThunk = createAsyncThunk(
 
 export const changeModifierSettingsThunk = createAsyncThunk(
   "selectedOptims/changeModifierSettings",
-  async ({ modifierId, optimId, settings }, thunk) => {
-    const { project_id: projectId } = selectedOptimById(optimId, thunk.getState())
-    const body = await requestChangeModifierSettings({ projectId, optimId, modifierId, settings })
+  async ({ projectId, modifierId, optimId, settings }, thunk) => {
+    const body = await requestChangeModifierSettings(projectId, optimId, modifierId, settings)
 
     return body.optim
   }
@@ -39,8 +38,21 @@ const selectedOptimsSlice = createSlice({
     status: "idle",
     error: null,
     projectId: null,
+    selectedId: null,
+    selectedProfilePerfId: null,
+    selectedProfileLossId: null,
   },
-  reducers: {},
+  reducers: {
+    setSelectedOptim: (state, action) => {
+      state.selectedId = action.payload;
+    },
+    setSelectedOptimProfilePerf: (state, action) => {
+      state.selectedProfilePerfId = action.payload;
+    },
+    setSelectedOptimProfileLoss: (state, action) => {
+      state.selectedProfileLossId = action.payload;
+    },
+  },
   extraReducers: {
     [getOptimsThunk.pending]: (state, action) => {
       state.status = "loading";
@@ -68,7 +80,11 @@ const selectedOptimsSlice = createSlice({
 /***
  * Available actions for selectedOptims redux store
  */
-export const {} = selectedOptimsSlice.actions;
+export const {
+  setSelectedOptim,
+  setSelectedOptimProfilePerf,
+  setSelectedOptimProfileLoss,
+} = selectedOptimsSlice.actions;
 
 /**
  * Simple selector to get the current selected optimizations state

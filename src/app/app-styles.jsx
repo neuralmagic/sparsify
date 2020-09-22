@@ -17,8 +17,8 @@ export default function makeAppStyles() {
         position: "relative",
       },
       switch: {
-        width: "100%"
-      }
+        width: "100%",
+      },
     }),
     { name: "App" }
   );

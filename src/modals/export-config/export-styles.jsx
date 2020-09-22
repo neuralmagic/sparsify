@@ -30,6 +30,9 @@ export default function createExportStyles() {
         textDecoration: "none",
         color: theme.palette.primary.main,
       },
+      dialog: {
+        padding: theme.spacing(2),
+      },
     };
   });
 }

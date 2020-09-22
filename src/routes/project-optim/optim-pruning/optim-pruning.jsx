@@ -11,7 +11,6 @@ import makeStyles from "./optim-pruning-styles";
 const useStyles = makeStyles();
 
 const OptimPruning = ({ optim }) => {
-  console.log("pruning optim", optim);
   const classes = useStyles();
 
   return (

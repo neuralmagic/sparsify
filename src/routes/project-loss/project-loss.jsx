@@ -10,11 +10,7 @@ function ProjectLoss() {
   const classes = useStyles();
   const dispatch = useDispatch();
 
-  return (
-    <ScrollerLayout layoutClass={classes.root}>
-      loss profile
-    </ScrollerLayout>
-  );
+  return <ScrollerLayout layoutClass={classes.root}>loss profile</ScrollerLayout>;
 }
 
 export default ProjectLoss;

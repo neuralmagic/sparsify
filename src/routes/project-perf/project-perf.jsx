@@ -239,7 +239,7 @@ function ProjectPerf() {
       >
         <div className={classes.layout}>
           <Typography color="textSecondary" variant="h5" className={classes.title}>
-            Performance Profile {" "}
+            Performance Profile{" "}
             <Typography variant="h6" className={classes.titleExtras}>
               {displayValues.extras}
             </Typography>

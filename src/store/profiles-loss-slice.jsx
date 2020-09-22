@@ -1,8 +1,8 @@
 import { createSlice, createAsyncThunk, AsyncThunk, Slice } from "@reduxjs/toolkit";
 
 import { requestGetProjectProfilesLoss } from "../api";
-import {STATUS_SUCCEEDED} from "./utils";
-import {compose, defaultTo, find, propEq} from "ramda";
+import { STATUS_SUCCEEDED } from "./utils";
+import { compose, defaultTo, find, propEq } from "ramda";
 
 /**
  * Async thunk for making a request to get the starting page for a project's loss profiles
@@ -87,8 +87,8 @@ export const selectSelectedProfileLoss = (state) => {
   }
 
   return compose(
-      find(propEq("profile_id", profilesLossState.selectedId)),
-      defaultTo(null)
+    find(propEq("profile_id", profilesLossState.selectedId)),
+    defaultTo(null)
   )(profilesLossState.val);
 };
 

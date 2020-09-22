@@ -8,7 +8,6 @@ import { BrowserRouter as Router } from "react-router-dom";
 
 // get off initial get projects so their available for all routes
 store.dispatch(getProjectsThunk());
-
 ReactDOM.render(
   <Provider store={store}>
     <Router>

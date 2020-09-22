@@ -1,3 +1,4 @@
+import Export from "./export";
 import Home from "./home";
 import NotFound from "./not-found";
 import Project from "./project";
@@ -19,6 +20,7 @@ import {
   PATH_PROJECT_PERF,
   PATH_PROJECT_LOSS,
   PATH_PROJECT_OPTIM,
+  PATH_PROJECT_EXPORT,
   PATH_PROJECT_SETTINGS,
   PATH_NOT_FOUND,
 } from "./paths";
@@ -55,6 +57,11 @@ export function makeRouteTransitionOpacity() {
 
 export function makeContentRoutes() {
   return [
+    {
+      path: PATH_PROJECT_EXPORT,
+      exact: true,
+      component: Export,
+    },
     {
       path: PATH_HOME,
       exact: true,

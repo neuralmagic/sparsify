@@ -1,7 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import Paper from "@material-ui/core/Paper";
-import Typography from "@material-ui/core/Typography";
+import { Paper, Typography } from "@material-ui/core";
 
 import AbsoluteLayout from "../../../components/absolute-layout";
 import PruningModifier from "../pruning-modifier";

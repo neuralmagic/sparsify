@@ -62,12 +62,31 @@ export const getOptimsThunk = createAsyncThunk(
 
 export const changeModifierSettingsThunk = createAsyncThunk(
   "selectedOptims/changeModifierSettings",
-  async ({ projectId, modifierId, optimId, settings }, thunk) => {
+  async ({ projectId, modifierId, optimId, settings }) => {
     const body = await requestChangeModifierSettings(
       projectId,
       optimId,
       modifierId,
       settings
+    );
+
+    return body.optim;
+  }
+);
+
+export const changeModifierLayerSettingsThunk = createAsyncThunk(
+  "selectedOptims/changeModifierSettings",
+  async ({ projectId, modifierId, optimId, layer, settings }) => {
+    const body = await requestChangeModifierSettings(
+      projectId,
+      optimId,
+      modifierId,
+      {
+        nodes: [{
+          node_id: layer.node_id,
+          ...settings
+        }]
+      }
     );
 
     return body.optim;

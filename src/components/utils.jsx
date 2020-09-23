@@ -1,10 +1,10 @@
+import { curry } from "ramda";
+
 /**
  * Converts a long string of bytes into a readable format e.g KB, MB, GB, TB, YB
  *
  * @param {number} bytes - The number of bytes.
  */
-import { sum } from "ramda";
-
 export function readableBytes(bytes) {
   if (!bytes || bytes < 1) {
     return "";
@@ -117,3 +117,10 @@ export const trainingOptimizers = [
     label: "Other",
   },
 ];
+
+export const formatMetricValue = curry(({ mantissaLength }, value) =>
+  value ? value.toFixed(mantissaLength) : "--"
+);
+
+export const formatWithMantissa = (length, value) =>
+  formatMetricValue({ mantissaLength: length }, value);

@@ -10,9 +10,11 @@ import MetricItem from '../../components/metric-item'
 import { formatWithMantissa } from '../../components'
 //import PruningSettings from './pruningSettings'
 
-import makeStyles from "./optim-advanced-pruning-styles"
+import makeStyles, { makeTableStyles } from "./optim-advanced-pruning-styles"
+import { changeModifierLayerSettingsThunk } from "../../store";
 
 const useStyles = makeStyles()
+const tableStyles = makeTableStyles()
 
 const pruningSettingsStyles = makeStyles({
   root: {
@@ -27,33 +29,6 @@ const pruningSettingsStyles = makeStyles({
   rangeContainer: {
     display: 'flex',
     justifyContent: 'space-between'
-  }
-})
-
-const tableStyles = makeStyles({
-  header: {
-    '& .MuiTypography-root': {
-      fontSize: 10,
-      textTransform: 'uppercase'
-    },
-    backgroundColor: '#f4f4f8'
-  },
-  row: {
-    '& .MuiTypography-root': {
-      fontSize: 14
-    },
-    height: 40
-  },
-  rowDisabled: {
-    opacity: 0.4
-  },
-  sparsityCell: {
-    display: 'flex',
-    alignItems: 'center',
-    minWidth: 170
-  },
-  sparsityValue: {
-    marginLeft: 10
   }
 })
 
@@ -105,7 +80,7 @@ const DetailedMetrics = ({ modifier }) =>
 //     inputWithSlider.fold({ label: 'Loss', value: 0.4, classes: { root: classes.presetSlider } })]
 // }
 
-const LayersTable = ({ modifier }) => {
+const LayersTable = ({ modifier, optim }) => {
   const classes = tableStyles()
   const [searchTerm, setSearchTerm] = useState(null)
   const dispatch = useDispatch()
@@ -161,15 +136,23 @@ const LayersTable = ({ modifier }) => {
               </TableCell>
               <TableCell>
                 <div className={classes.sparsityCell}>
-                  {/* <Switch checked={layer.sparsity !== null} color='primary'
-                    onChange={e => dispatch(changeModifierLayerSettings(modifier, layer, {
-                      sparsity: e.target.checked ? modifier.sparsity : null
+                  <Switch checked={layer.sparsity !== null} color='primary'
+                    onChange={e => dispatch(changeModifierLayerSettingsThunk({
+                      projectId: optim.project_id,
+                      optimId: optim.optim_id,
+                      modifierId: modifier.modifier_id,
+                      layer,
+                      settings: { sparsity: e.target.checked ? modifier.sparsity : null }
                     }))}/>
                   <Slider value={layer.sparsity * 100} min={0} max={100}
                     disabled={layer.sparsity === null}
-                    onChange={(e, value) => dispatch(changeModifierLayerSettings(modifier, layer, {
-                      sparsity: Number(value) / 100
-                    }))}/> */}
+                    onChange={(e, value) => dispatch(changeModifierLayerSettingsThunk({
+                      projectId: optim.project_id,
+                      optimId: optim.optim_id,
+                      modifierId: modifier.modifier_id,
+                      layer,
+                      settings: { sparsity: Number(value) / 100 }
+                    }))}/>
                   <Typography className={classes.sparsityValue}>{layer.sparsity ? `${formatWithMantissa(1, layer.sparsity * 100)}%` : ''}</Typography>
                 </div>
               </TableCell>
@@ -197,14 +180,13 @@ const LayersTable = ({ modifier }) => {
     </TableContainer>)
 }
 
-export default ({ modifier, open, onClose }) => {
+export default ({ modifier, optim, open, onClose }) => {
   const classes = useStyles()
 
   return <Dialog
     open={open}
     maxWidth="xl"
-    onClose={onClose}
-    >
+    onClose={onClose}>
     <DialogTitle>Pruning Editor</DialogTitle>
     <DialogContent>
       <Box marginY={2}>
@@ -220,7 +202,7 @@ export default ({ modifier, open, onClose }) => {
           sparsityProp="sparsity"
           denseProp="est_time"
           sparseProp="est_time_baseline"/>
-        <LayersTable modifier={modifier}/>
+        <LayersTable modifier={modifier} optim={optim}/>
       </Box>
     </DialogContent>
   </Dialog>

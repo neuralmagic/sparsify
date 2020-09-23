@@ -5,7 +5,7 @@ import { Grid, TextField, Slider, IconButton } from "@material-ui/core"
 import LayersChart from "../../../components/layers-chart"
 import MetricItem from "../../../components/metric-item"
 import AdvancedPruning from '../../../modals/optim-advanced-pruning'
-import { ReactComponent as EditIcon } from "../img/icon.svg"
+import EditIcon from '@material-ui/icons/Edit'
 
 import { formatWithMantissa } from '../../../components'
 import makeStyles from "./pruning-modifier-styles";
@@ -73,11 +73,12 @@ const PruningModifier = ({ modifier, optim }) => {
                 )
               }
             />
-        </Grid>
+          </Grid>
         </Grid>
       </Grid>
       <AdvancedPruning
         modifier={modifier}
+        optim={optim}
         open={advancedModalOpen}
         onClose={() => setAdvancedModalOpen(false)}/>
     </Grid>

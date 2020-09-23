@@ -31,3 +31,35 @@ export default function makeOptimAdvancedPruningStyles() {
     { name: "OptimAdvancedPruning" }
   );
 }
+
+export const makeTableStyles = () => makeStyles(
+  (theme) => {
+    return {
+      header: {
+        '& .MuiTypography-root': {
+          fontSize: 10,
+          textTransform: 'uppercase'
+        },
+        backgroundColor: '#f4f4f8'
+      },
+      row: {
+        '& .MuiTypography-root': {
+          fontSize: 14
+        },
+        height: 40
+      },
+      rowDisabled: {
+        opacity: 0.4
+      },
+      sparsityCell: {
+        display: 'flex',
+        alignItems: 'center',
+        minWidth: 170
+      },
+      sparsityValue: {
+        marginLeft: 10
+      }
+    };
+  },
+  { name: "OptimAdvancedPruningTableStyles" }
+)

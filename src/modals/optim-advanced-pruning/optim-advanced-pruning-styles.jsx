@@ -63,3 +63,14 @@ export const makeTableStyles = () => makeStyles(
   },
   { name: "OptimAdvancedPruningTableStyles" }
 )
+
+export const makeFiltersStyles = () => makeStyles(
+  (theme) => {
+    return {
+      input: {
+        width: 100
+      }
+    }
+  },
+  { name: "OptimAdvancedPruningFiltersStyles" }
+)

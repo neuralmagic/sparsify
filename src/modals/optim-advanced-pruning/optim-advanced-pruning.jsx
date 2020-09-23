@@ -10,11 +10,12 @@ import MetricItem from '../../components/metric-item'
 import { formatWithMantissa } from '../../components'
 //import PruningSettings from './pruningSettings'
 
-import makeStyles, { makeTableStyles } from "./optim-advanced-pruning-styles"
-import { changeModifierLayerSettingsThunk } from "../../store";
+import makeStyles, { makeTableStyles, makeFiltersStyles } from "./optim-advanced-pruning-styles"
+import { changeModifierLayerSettingsThunk, changeModifierSettingsThunk } from "../../store";
 
 const useStyles = makeStyles()
 const tableStyles = makeTableStyles()
+const filtersStyles = makeFiltersStyles()
 
 const pruningSettingsStyles = makeStyles({
   root: {
@@ -29,17 +30,6 @@ const pruningSettingsStyles = makeStyles({
   rangeContainer: {
     display: 'flex',
     justifyContent: 'space-between'
-  }
-})
-
-const filtersStyles = makeStyles({
-  presetTitle: {
-    fontSize: 14,
-    paddingTop: 20,
-    paddingBottom: 20
-  },
-  presetSlider: {
-    marginBottom: 20
   }
 })
 
@@ -65,20 +55,64 @@ const DetailedMetrics = ({ modifier }) =>
     </Grid>
   </Grid>
 
-// const Filters = ({ modifier }) => {
-//   const classes = filtersStyles()
-//   const dispatch = useDispatch()
+const Filters = ({ modifier, optim }) => {
+  const classes = filtersStyles()
+  const dispatch = useDispatch()
 
-//   return [
-//     inputWithSlider.fold({
-//       label: 'Sparsity',
-//       value: modifier.sparsity * 100,
-//       onChange: value => dispatch(changeModifierSettings(modifier, { sparsity: value / 100 })) }),
-//     <div><Typography className={classes.presetTitle}>Preset filters</Typography></div>,
-//     inputWithSlider.fold({ label: 'Min Sparsity', value: 35, classes: { root: classes.presetSlider } }),
-//     inputWithSlider.fold({ label: 'Performance', value: 35, classes: { root: classes.presetSlider } }),
-//     inputWithSlider.fold({ label: 'Loss', value: 0.4, classes: { root: classes.presetSlider } })]
-// }
+  return <Grid container direction='column' spacing={3}>
+    <Grid item container direction='row' spacing={2}>
+      <Grid item>
+        <TextField
+          value={`${Math.round(modifier.sparsity * 100)}%`}
+          className={classes.input}
+          size="small"
+          variant="outlined"
+          label="Sparsity"/>
+      </Grid>
+      <Grid item xs>
+        <Slider
+          value={modifier.sparsity * 100}
+          onChange={(e, value) =>
+            dispatch(
+              changeModifierSettingsThunk({
+                projectId: optim.project_id,
+                optimId: optim.optim_id,
+                modifierId: modifier.modifier_id,
+                settings: { sparsity: value / 100 },
+              }))}/>
+      </Grid>
+    </Grid>
+    <Grid item>Preset filters</Grid>
+    {[{ name: 'filter_min_sparsity', label: 'Min sparsity', value: Math.round(modifier.filter_min_sparsity * 100) },
+      { name: 'filter_min_perf_gain', label: 'Performance', value: Math.round(modifier.filter_min_perf_gain * 100) },
+      { name: 'filter_max_loss_drop', label: 'Loss', value: modifier.filter_max_loss_drop }]
+      .map(({ name, value, label }) =>
+        <Grid key={name} item container direction='row' spacing={2}>
+          <Grid item>
+            <TextField
+              value={value}
+              className={classes.input}
+              size="small"
+              variant="outlined"
+              label={label}/>
+          </Grid>
+          <Grid item xs>
+            <Slider
+              value={modifier.filter_min_sparsity * 100}
+              onChange={(e, value) =>
+                dispatch(
+                  changeModifierSettingsThunk({
+                    projectId: optim.project_id,
+                    optimId: optim.optim_id,
+                    modifierId: modifier.modifier_id,
+                    settings: { [name]: value / 100 },
+                  })
+                )}/>
+          </Grid>
+        </Grid>
+      )}
+  </Grid>
+}
 
 const LayersTable = ({ modifier, optim }) => {
   const classes = tableStyles()
@@ -191,10 +225,10 @@ export default ({ modifier, optim, open, onClose }) => {
     <DialogContent>
       <Box marginY={2}>
         <IconButton className={classes.closeButton} onClick={onClose}><CloseIcon/></IconButton>
-        <Grid container direction='row' spacing={5}>
+        <Grid container direction='row' spacing={6}>
           <Grid item xs={1}><SummaryMetrics modifier={modifier}/></Grid>
           <Grid item xs={3}><DetailedMetrics modifier={modifier}/></Grid>
-          {/* <Grid item xs={4}><Filters modifier={modifier}/></Grid> */}
+          <Grid item xs={3}><Filters modifier={modifier} optim={optim}/></Grid>
           {/* <Grid item xs={4}><PruningSettings modifier={modifier}/></Grid> */}
         </Grid>
         <LayersChart

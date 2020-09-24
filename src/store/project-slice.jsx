@@ -99,6 +99,7 @@ const selectedProjectSlice = createSlice({
       state.status = STATUS_SUCCEEDED;
       state.val = action.payload;
       state.projectId = action.meta.arg.projectId;
+      state.error = null;
     },
     [getProjectThunk.rejected]: (state, action) => {
       state.status = STATUS_FAILED;
@@ -114,6 +115,7 @@ const selectedProjectSlice = createSlice({
       state.status = STATUS_SUCCEEDED;
       state.val = action.payload;
       state.projectId = action.meta.arg.projectId;
+      state.error = null;
     },
     [updateProjectThunk.rejected]: (state, action) => {
       state.status = STATUS_FAILED;
@@ -129,6 +131,7 @@ const selectedProjectSlice = createSlice({
       state.status = STATUS_SUCCEEDED;
       state.deleted = true;
       state.projectId = action.meta.arg.projectId;
+      state.error = null;
     },
     [deleteProjectThunk.rejected]: (state, action) => {
       state.status = STATUS_FAILED;

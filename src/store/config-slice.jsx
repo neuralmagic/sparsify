@@ -93,6 +93,7 @@ const selectedConfigSlice = createSlice({
       state.projectId = action.meta.arg.projectId;
       state.optimId = action.meta.arg.optimId;
       state.config[action.meta.arg.framework] = action.payload;
+      state.error = null;
     },
     [getConfigThunk.rejected]: (state, action) => {
       state.status = "failed";
@@ -108,6 +109,7 @@ const selectedConfigSlice = createSlice({
       state.status = "succeeded";
       state.projectId = action.meta.arg.projectId;
       state.availableFrameworks = action.payload;
+      state.error = null;
     },
     [getAvailableFrameworksThunk.rejected]: (state, action) => {
       state.status = "failed";
@@ -122,6 +124,7 @@ const selectedConfigSlice = createSlice({
       state.status = "succeeded";
       state.projectId = action.meta.arg.projectId;
       state.availableCodeSamples[action.meta.arg.framework] = action.payload;
+      state.error = null;
     },
     [getAvailableCodeSamplesThunk.rejected]: (state, action) => {
       state.status = "failed";
@@ -140,6 +143,7 @@ const selectedConfigSlice = createSlice({
       }
       state.codeSamples[action.meta.arg.framework][action.meta.arg.sampleType] =
         action.payload;
+      state.error = null;
     },
     [getCodeSampleThunk.rejected]: (state, action) => {
       state.status = "failed";

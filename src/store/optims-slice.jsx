@@ -127,6 +127,7 @@ const selectedOptimsSlice = createSlice({
       state.status = "succeeded";
       state.val = action.payload;
       state.projectId = action.meta.arg.projectId;
+      state.error = null;
     },
     [getOptimsThunk.rejected]: (state, action) => {
       state.status = "failed";
@@ -138,6 +139,7 @@ const selectedOptimsSlice = createSlice({
         when(propEq("optim_id", action.payload.optim_id), always(action.payload)),
         state.val
       );
+      state.error = null;
     },
     [createOptimThunk.pending]: (state, action) => {
       state.status = "loading";
@@ -147,6 +149,7 @@ const selectedOptimsSlice = createSlice({
       state.status = "succeeded";
       state.val.push(action.payload);
       state.projectId = action.meta.arg.projectId;
+      state.error = null;
     },
     [createOptimThunk.rejected]: (state, action) => {
       state.status = "failed";

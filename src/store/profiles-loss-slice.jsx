@@ -57,6 +57,7 @@ const selectedProfilesLossSlice = createSlice({
       state.status = "succeeded";
       state.val = action.payload;
       state.projectId = action.meta.arg.projectId;
+      state.error = null;
     },
     [getProfilesLossThunk.rejected]: (state, action) => {
       state.status = "failed";

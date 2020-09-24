@@ -37,6 +37,7 @@ const projectsSlice = createSlice({
     [getProjectsThunk.fulfilled]: (state, action) => {
       state.status = "succeeded";
       state.val = action.payload;
+      state.error = null;
     },
     [getProjectsThunk.rejected]: (state, action) => {
       state.status = "failed";

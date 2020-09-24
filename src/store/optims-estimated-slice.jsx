@@ -57,6 +57,7 @@ const selectedOptimsBestEstimatedSlice = createSlice({
       state.projectId = action.meta.arg.projectId;
       state.profilePerfId = action.meta.arg.profilePerfId;
       state.profileLossId = action.meta.arg.profileLossId;
+      state.error = null;
     },
     [getOptimsBestEstimatedThunk.rejected]: (state, action) => {
       state.status = "failed";

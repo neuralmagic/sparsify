@@ -34,6 +34,7 @@ const systemSlice = createSlice({
     [getSystemInfoThunk.fulfilled]: (state, action) => {
       state.status = "succeeded";
       state.val = action.payload;
+      state.error = null;
     },
     [getSystemInfoThunk.rejected]: (state, action) => {
       state.status = "failed";

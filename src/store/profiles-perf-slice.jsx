@@ -57,6 +57,7 @@ const selectedProfilesPerfSlice = createSlice({
       state.status = "succeeded";
       state.val = action.payload;
       state.projectId = action.meta.arg.projectId;
+      state.error = null;
     },
     [getProfilesPerfThunk.rejected]: (state, action) => {
       state.status = "failed";

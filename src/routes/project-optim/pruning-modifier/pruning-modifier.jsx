@@ -4,6 +4,7 @@ import { useDispatch } from "react-redux";
 import { Grid, TextField, Slider, IconButton } from "@material-ui/core"
 import LayersChart from "../../../components/layers-chart"
 import MetricItem from "../../../components/metric-item"
+import PruningSettings from "../../../components/pruning-settings"
 import AdvancedPruning from '../../../modals/optim-advanced-pruning'
 import EditIcon from '@material-ui/icons/Edit'
 
@@ -20,7 +21,7 @@ const PruningModifier = ({ modifier, optim }) => {
   const [advancedModalOpen, setAdvancedModalOpen] = useState(false)
 
   return (
-    <Grid container key={modifier.modifier_id} direction="row">
+    <Grid container key={modifier.modifier_id} direction="row" className={classes.root}>
       <Grid direction="column" xs={1}>
         <MetricItem
           label="Est. Speedup"
@@ -43,13 +44,13 @@ const PruningModifier = ({ modifier, optim }) => {
           sparseProp="est_time_baseline"
         />
       </Grid>
-      <Grid item container xs={3} direction="column" spacing={2}>
+      <Grid item container xs={3} direction="column">
         <Grid item container justify="flex-end">
           <IconButton className={classes.closeButton} onClick={() => setAdvancedModalOpen(true)}>
             <EditIcon/>
           </IconButton>
         </Grid>
-        <Grid item container direction="row">
+        <Grid item container direction="row" alignItems="center">
           <Grid item>
             <TextField
               value={`${Math.round(modifier.sparsity * 100)}%`}
@@ -75,6 +76,7 @@ const PruningModifier = ({ modifier, optim }) => {
             />
           </Grid>
         </Grid>
+        <PruningSettings modifier={modifier} optim={optim} showRecovery={false}/>
       </Grid>
       <AdvancedPruning
         modifier={modifier}

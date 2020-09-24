@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Button, Typography } from "@material-ui/core";
+import { Button, Typography } from "@material-ui/core";
 import ChevronLeft from "@material-ui/icons/ChevronLeft";
 
 import AbsoluteLayout from "../../components/absolute-layout";

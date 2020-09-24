@@ -11,6 +11,7 @@ import {
   tap,
 } from "ramda";
 import { createSlice, createAsyncThunk, AsyncThunk, Slice } from "@reduxjs/toolkit";
+import { createAsyncThunkWrapper } from "../store/utils";
 
 import {
   requestGetProjectOptims,
@@ -23,7 +24,7 @@ import {
  *
  * @type {AsyncThunk<Promise<*>, {readonly projectId?: *, name?: string, add_pruning?: boolean, add_quantization?: boolean, add_lr_schedule?: boolean, add_trainable?: boolean}, {}>}
  */
-export const createOptimThunk = createAsyncThunk(
+export const createOptimThunk = createAsyncThunkWrapper(
   "selectedOptims/createProjectOptims",
   async ({
     projectId,
@@ -51,7 +52,7 @@ export const createOptimThunk = createAsyncThunk(
  *
  * @type {AsyncThunk<Promise<*>, {readonly projectId?: *}, {}>}
  */
-export const getOptimsThunk = createAsyncThunk(
+export const getOptimsThunk = createAsyncThunkWrapper(
   "selectedOptims/getProjectOptims",
   async ({ projectId }) => {
     const body = await requestGetProjectOptims(projectId);
@@ -60,7 +61,7 @@ export const getOptimsThunk = createAsyncThunk(
   }
 );
 
-export const changeModifierSettingsThunk = createAsyncThunk(
+export const changeModifierSettingsThunk = createAsyncThunkWrapper(
   "selectedOptims/changeModifierSettings",
   async ({ projectId, modifierId, optimId, settings }) => {
     const body = await requestChangeModifierSettings(
@@ -74,20 +75,17 @@ export const changeModifierSettingsThunk = createAsyncThunk(
   }
 );
 
-export const changeModifierLayerSettingsThunk = createAsyncThunk(
+export const changeModifierLayerSettingsThunk = createAsyncThunkWrapper(
   "selectedOptims/changeModifierSettings",
   async ({ projectId, modifierId, optimId, layer, settings }) => {
-    const body = await requestChangeModifierSettings(
-      projectId,
-      optimId,
-      modifierId,
-      {
-        nodes: [{
+    const body = await requestChangeModifierSettings(projectId, optimId, modifierId, {
+      nodes: [
+        {
           node_id: layer.node_id,
-          ...settings
-        }]
-      }
-    );
+          ...settings,
+        },
+      ],
+    });
 
     return body.optim;
   }

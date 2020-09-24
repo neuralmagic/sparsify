@@ -1,7 +1,8 @@
 import { createMuiTheme } from "@material-ui/core/styles";
+import { useState } from "react";
 
 export function useDarkMode() {
-  return false;
+  return useState(false);
 }
 
 export default function makeTheme(darkMode) {

@@ -29,6 +29,13 @@ export default function makeAppSideNavStyles() {
           fill: theme.palette.text.primary,
         },
       },
+      info: {
+        padding: theme.spacing(0, 0, 0, 2),
+        height: "100%",
+        display: "flex",
+        alignItems: "flex-end",
+        cursor: "pointer",
+      },
       title: {
         paddingLeft: theme.spacing(2),
         fontSize: "32px",

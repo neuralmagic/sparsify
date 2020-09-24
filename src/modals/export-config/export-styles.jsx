@@ -9,7 +9,8 @@ export default function createExportStyles() {
       },
       codeblock: {
         margin: theme.spacing(2, 0),
-        maxHeight: "20vh",
+        height: "20vh",
+        width: "40vw",
         overflowY: "scroll",
         borderRadius: "5px",
         borderStyle: "solid",

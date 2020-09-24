@@ -5,11 +5,12 @@ export default function makePruningModifierStyles() {
     (theme) => {
       return {
         root: {
-          paddingTop: 20,
-          paddingLeft: 20,
+          paddingRight: 20
         },
         sparsityInput: {
           width: 80,
+          marginRight: 20,
+          marginBottom: 40
         },
       };
     },

@@ -8,7 +8,7 @@ import CloseIcon from '@material-ui/icons/Close'
 import LayersChart from '../../components/layers-chart'
 import MetricItem from '../../components/metric-item'
 import { formatWithMantissa } from '../../components'
-//import PruningSettings from './pruningSettings'
+import PruningSettings from '../../components/pruning-settings'
 
 import makeStyles, { makeTableStyles, makeFiltersStyles } from "./optim-advanced-pruning-styles"
 import { changeModifierLayerSettingsThunk, changeModifierSettingsThunk } from "../../store";
@@ -17,21 +17,6 @@ const useStyles = makeStyles()
 const tableStyles = makeTableStyles()
 const filtersStyles = makeFiltersStyles()
 
-const pruningSettingsStyles = makeStyles({
-  root: {
-    '& .MuiTextField-root': {
-      width: 80
-    }
-  },
-  title: {
-    fontSize: 12,
-    marginBottom: 20
-  },
-  rangeContainer: {
-    display: 'flex',
-    justifyContent: 'space-between'
-  }
-})
 
 const SummaryMetrics = ({ modifier }) =>
   <Grid container direction='column'>
@@ -229,7 +214,7 @@ export default ({ modifier, optim, open, onClose }) => {
           <Grid item xs={1}><SummaryMetrics modifier={modifier}/></Grid>
           <Grid item xs={3}><DetailedMetrics modifier={modifier}/></Grid>
           <Grid item xs={3}><Filters modifier={modifier} optim={optim}/></Grid>
-          {/* <Grid item xs={4}><PruningSettings modifier={modifier}/></Grid> */}
+          <Grid item xs={4}><PruningSettings modifier={modifier} optim={optim}/></Grid>
         </Grid>
         <LayersChart
           data={modifier.nodes}

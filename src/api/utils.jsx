@@ -1,5 +1,4 @@
 export const API_ROOT = process.env.REACT_APP_API_ROOT || "/api";
-
 /***
  * Utility function to convert an object into a query params string.
  *

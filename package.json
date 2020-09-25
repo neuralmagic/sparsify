@@ -51,7 +51,7 @@
   },
   "scripts": {
     "lint": "yarn prettier --write src",
-    "start": "react-scripts start",
+    "start": "export REACT_APP_VERSION=$npm_package_version && react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

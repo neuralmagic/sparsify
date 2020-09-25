@@ -11,6 +11,7 @@ import {
   tap,
 } from "ramda";
 import { createSlice, createAsyncThunk, AsyncThunk, Slice } from "@reduxjs/toolkit";
+import { createAsyncThunkWrapper } from "../store/utils";
 
 import {
   requestGetProjectOptims,
@@ -23,7 +24,7 @@ import {
  *
  * @type {AsyncThunk<Promise<*>, {readonly projectId?: *, name?: string, add_pruning?: boolean, add_quantization?: boolean, add_lr_schedule?: boolean, add_trainable?: boolean}, {}>}
  */
-export const createOptimThunk = createAsyncThunk(
+export const createOptimThunk = createAsyncThunkWrapper(
   "selectedOptims/createProjectOptims",
   async ({
     projectId,
@@ -51,7 +52,7 @@ export const createOptimThunk = createAsyncThunk(
  *
  * @type {AsyncThunk<Promise<*>, {readonly projectId?: *}, {}>}
  */
-export const getOptimsThunk = createAsyncThunk(
+export const getOptimsThunk = createAsyncThunkWrapper(
   "selectedOptims/getProjectOptims",
   async ({ projectId }) => {
     const body = await requestGetProjectOptims(projectId);
@@ -60,15 +61,31 @@ export const getOptimsThunk = createAsyncThunk(
   }
 );
 
-export const changeModifierSettingsThunk = createAsyncThunk(
+export const changeModifierSettingsThunk = createAsyncThunkWrapper(
   "selectedOptims/changeModifierSettings",
-  async ({ projectId, modifierId, optimId, settings }, thunk) => {
+  async ({ projectId, modifierId, optimId, settings }) => {
     const body = await requestChangeModifierSettings(
       projectId,
       optimId,
       modifierId,
       settings
     );
+
+    return body.optim;
+  }
+);
+
+export const changeModifierLayerSettingsThunk = createAsyncThunkWrapper(
+  "selectedOptims/changeModifierSettings",
+  async ({ projectId, modifierId, optimId, layer, settings }) => {
+    const body = await requestChangeModifierSettings(projectId, optimId, modifierId, {
+      nodes: [
+        {
+          node_id: layer.node_id,
+          ...settings,
+        },
+      ],
+    });
 
     return body.optim;
   }
@@ -110,6 +127,7 @@ const selectedOptimsSlice = createSlice({
       state.status = "succeeded";
       state.val = action.payload;
       state.projectId = action.meta.arg.projectId;
+      state.error = null;
     },
     [getOptimsThunk.rejected]: (state, action) => {
       state.status = "failed";
@@ -121,6 +139,7 @@ const selectedOptimsSlice = createSlice({
         when(propEq("optim_id", action.payload.optim_id), always(action.payload)),
         state.val
       );
+      state.error = null;
     },
     [createOptimThunk.pending]: (state, action) => {
       state.status = "loading";
@@ -130,6 +149,7 @@ const selectedOptimsSlice = createSlice({
       state.status = "succeeded";
       state.val.push(action.payload);
       state.projectId = action.meta.arg.projectId;
+      state.error = null;
     },
     [createOptimThunk.rejected]: (state, action) => {
       state.status = "failed";

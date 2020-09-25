@@ -53,13 +53,15 @@ function ProjectSideNav({ match, location }) {
   const selectedProfilesLossState = useSelector(selectSelectedProfilesLossState);
   const selectedOptimsState = useSelector(selectSelectedOptimsState);
 
-  if (selectedProjectState.projectId !== projectId) {
-    // current project doesn't match, preload all necessary data
-    dispatch(getProjectThunk({ projectId }));
-    dispatch(getProfilesPerfThunk({ projectId }));
-    dispatch(getProfilesLossThunk({ projectId }));
-    dispatch(getOptimsThunk({ projectId }));
-  }
+  useEffect(() => {
+    if (selectedProjectState.projectId !== projectId) {
+      // current project doesn't match, preload all necessary data
+      dispatch(getProjectThunk({ projectId }));
+      dispatch(getProfilesPerfThunk({ projectId }));
+      dispatch(getProfilesLossThunk({ projectId }));
+      dispatch(getOptimsThunk({ projectId }));
+    }
+  }, [dispatch, selectProjectsState, projectId]);
 
   // handle redux store and state setup for the current route
   // todo, move out to central location to work with store

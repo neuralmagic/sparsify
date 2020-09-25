@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk, AsyncThunk, Slice } from "@reduxjs/toolkit";
+import { createAsyncThunkWrapper } from "./utils";
 
 import {
   requestGetProjectConfig,
@@ -12,7 +13,7 @@ import {
  *
  * @type {AsyncThunk<Promise<*>, {readonly projectId?: *, readonly optimId?: *, readonly framework?: *}, {}>}
  */
-export const getConfigThunk = createAsyncThunk(
+export const getConfigThunk = createAsyncThunkWrapper(
   "selectedProjectConfig/getProjectConfig",
   async ({ projectId, optimId, framework }) => {
     const body = await requestGetProjectConfig(projectId, optimId, framework);
@@ -26,7 +27,7 @@ export const getConfigThunk = createAsyncThunk(
  *
  * @type {AsyncThunk<Promise<*>, {readonly projectId?: *,}, {}>}
  */
-export const getAvailableFrameworksThunk = createAsyncThunk(
+export const getAvailableFrameworksThunk = createAsyncThunkWrapper(
   "selectedProjectConfig/getAvailableFrameworks",
   async ({ projectId }) => {
     const body = await requestGetAvailableFrameworks(projectId);
@@ -40,7 +41,7 @@ export const getAvailableFrameworksThunk = createAsyncThunk(
  *
  * @type {AsyncThunk<Promise<*>, {readonly projectId?: *, readonly framework?: *}, {}>}
  */
-export const getAvailableCodeSamplesThunk = createAsyncThunk(
+export const getAvailableCodeSamplesThunk = createAsyncThunkWrapper(
   "selectedProjectConfig/getAvailableCodeSamples",
   async ({ projectId, framework }) => {
     const body = await requestGetAvailableCodeSamples(projectId, framework);
@@ -54,7 +55,7 @@ export const getAvailableCodeSamplesThunk = createAsyncThunk(
  *
  * @type {AsyncThunk<Promise<*>, {readonly projectId?: *, readonly framework?: *, readonly sampleType?: *}, {}>}
  */
-export const getCodeSampleThunk = createAsyncThunk(
+export const getCodeSampleThunk = createAsyncThunkWrapper(
   "selectedProjectConfig/getCodeSample",
   async ({ projectId, framework, sampleType }) => {
     const body = await requestGetCodeSample(projectId, framework, sampleType);
@@ -92,6 +93,7 @@ const selectedConfigSlice = createSlice({
       state.projectId = action.meta.arg.projectId;
       state.optimId = action.meta.arg.optimId;
       state.config[action.meta.arg.framework] = action.payload;
+      state.error = null;
     },
     [getConfigThunk.rejected]: (state, action) => {
       state.status = "failed";
@@ -107,6 +109,7 @@ const selectedConfigSlice = createSlice({
       state.status = "succeeded";
       state.projectId = action.meta.arg.projectId;
       state.availableFrameworks = action.payload;
+      state.error = null;
     },
     [getAvailableFrameworksThunk.rejected]: (state, action) => {
       state.status = "failed";
@@ -121,6 +124,7 @@ const selectedConfigSlice = createSlice({
       state.status = "succeeded";
       state.projectId = action.meta.arg.projectId;
       state.availableCodeSamples[action.meta.arg.framework] = action.payload;
+      state.error = null;
     },
     [getAvailableCodeSamplesThunk.rejected]: (state, action) => {
       state.status = "failed";
@@ -139,6 +143,7 @@ const selectedConfigSlice = createSlice({
       }
       state.codeSamples[action.meta.arg.framework][action.meta.arg.sampleType] =
         action.payload;
+      state.error = null;
     },
     [getCodeSampleThunk.rejected]: (state, action) => {
       state.status = "failed";

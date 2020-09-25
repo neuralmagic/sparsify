@@ -1,32 +1,27 @@
-import React from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
-import { curry } from "ramda";
 import { useDispatch } from "react-redux";
-import LayersChart from "../../../components/layers-chart";
-import Grid from "@material-ui/core/Grid";
-import MetricItem from "../../../components/metric-item";
-import TextField from "@material-ui/core/TextField";
-import Slider from "@material-ui/core/Slider";
+import { Grid, TextField, Slider, IconButton } from "@material-ui/core"
+import LayersChart from "../../../components/layers-chart"
+import MetricItem from "../../../components/metric-item"
+import PruningSettings from "../../../components/pruning-settings"
+import AdvancedPruning from '../../../modals/optim-advanced-pruning'
+import EditIcon from '@material-ui/icons/Edit'
 
+import { formatWithMantissa } from '../../../components'
 import makeStyles from "./pruning-modifier-styles";
 
 import { changeModifierSettingsThunk } from "../../../store";
 
 const useStyles = makeStyles();
 
-export const formatMetricValue = curry(({ mantissaLength }, value) =>
-  value ? value.toFixed(mantissaLength) : "--"
-);
-
-export const formatWithMantissa = (length, value) =>
-  formatMetricValue({ mantissaLength: length }, value);
-
 const PruningModifier = ({ modifier, optim }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
+  const [advancedModalOpen, setAdvancedModalOpen] = useState(false)
 
   return (
-    <Grid container key={modifier.modifier_id} direction="row">
+    <Grid container key={modifier.modifier_id} direction="row" className={classes.root}>
       <Grid direction="column" xs={1}>
         <MetricItem
           label="Est. Speedup"
@@ -49,32 +44,45 @@ const PruningModifier = ({ modifier, optim }) => {
           sparseProp="est_time_baseline"
         />
       </Grid>
-      <Grid item container xs={3} direction="row" spacing={2}>
-        <Grid item>
-          <TextField
-            value={`${Math.round(modifier.sparsity * 100)}%`}
-            className={classes.sparsityInput}
-            size="small"
-            variant="outlined"
-            label="Sparsity"
-          />
+      <Grid item container xs={3} direction="column">
+        <Grid item container justify="flex-end">
+          <IconButton className={classes.closeButton} onClick={() => setAdvancedModalOpen(true)}>
+            <EditIcon/>
+          </IconButton>
         </Grid>
-        <Grid item xs>
-          <Slider
-            value={modifier.sparsity * 100}
-            onChange={(e, value) =>
-              dispatch(
-                changeModifierSettingsThunk({
-                  projectId: optim.project_id,
-                  optimId: optim.optim_id,
-                  modifierId: modifier.modifier_id,
-                  settings: { sparsity: value / 100 },
-                })
-              )
-            }
-          />
+        <Grid item container direction="row" alignItems="center">
+          <Grid item>
+            <TextField
+              value={`${Math.round(modifier.sparsity * 100)}%`}
+              className={classes.sparsityInput}
+              size="small"
+              variant="outlined"
+              label="Sparsity"
+            />
+          </Grid>
+          <Grid item xs>
+            <Slider
+              value={modifier.sparsity * 100}
+              onChange={(e, value) =>
+                dispatch(
+                  changeModifierSettingsThunk({
+                    projectId: optim.project_id,
+                    optimId: optim.optim_id,
+                    modifierId: modifier.modifier_id,
+                    settings: { sparsity: value / 100 },
+                  })
+                )
+              }
+            />
+          </Grid>
         </Grid>
+        <PruningSettings modifier={modifier} optim={optim} showRecovery={false}/>
       </Grid>
+      <AdvancedPruning
+        modifier={modifier}
+        optim={optim}
+        open={advancedModalOpen}
+        onClose={() => setAdvancedModalOpen(false)}/>
     </Grid>
   );
 };

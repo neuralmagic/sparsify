@@ -8,7 +8,11 @@ import {
 import { compose, defaultTo, find, propEq } from "ramda";
 
 import { requestGetProjectProfilesPerf } from "../api";
-import { STATUS_SUCCEEDED, summarizeObjValuesArray } from "./utils";
+import {
+  createAsyncThunkWrapper,
+  STATUS_SUCCEEDED,
+  summarizeObjValuesArray,
+} from "./utils";
 import { selectSelectedProjectModelAnalysis } from "./project-slice";
 
 /**
@@ -16,7 +20,7 @@ import { selectSelectedProjectModelAnalysis } from "./project-slice";
  *
  * @type {AsyncThunk<Promise<*>, {readonly projectId?: *}, {}>}
  */
-export const getProfilesPerfThunk = createAsyncThunk(
+export const getProfilesPerfThunk = createAsyncThunkWrapper(
   "selectedProfilesPerf/getProjectProfilesPerf",
   async ({ projectId }) => {
     const body = await requestGetProjectProfilesPerf(projectId);
@@ -53,6 +57,7 @@ const selectedProfilesPerfSlice = createSlice({
       state.status = "succeeded";
       state.val = action.payload;
       state.projectId = action.meta.arg.projectId;
+      state.error = null;
     },
     [getProfilesPerfThunk.rejected]: (state, action) => {
       state.status = "failed";

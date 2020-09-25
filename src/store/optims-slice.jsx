@@ -6,11 +6,9 @@ import {
   curry,
   map,
   when,
-  always,
-  mergeRight,
-  tap,
+  always
 } from "ramda";
-import { createSlice, createAsyncThunk, AsyncThunk, Slice } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 import {
   requestGetProjectOptims,

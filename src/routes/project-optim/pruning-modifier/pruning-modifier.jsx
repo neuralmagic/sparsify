@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Grid, TextField, Slider, IconButton } from "@material-ui/core"
 import LayersChart from "../../../components/layers-chart"
 import MetricItem from "../../../components/metric-item"
@@ -11,13 +11,12 @@ import EditIcon from '@material-ui/icons/Edit'
 import { formatWithMantissa } from '../../../components'
 import makeStyles from "./pruning-modifier-styles";
 
-import { changeModifierSettingsThunk } from "../../../store";
+import { selectModifierAdjustableSettings, changeModifierAdjustableSettings } from "../../../store";
 
 const useStyles = makeStyles();
 
 const PruningModifier = ({ modifier, optim }) => {
   const classes = useStyles();
-  const dispatch = useDispatch();
   const [advancedModalOpen, setAdvancedModalOpen] = useState(false)
 
   return (
@@ -50,33 +49,8 @@ const PruningModifier = ({ modifier, optim }) => {
             <EditIcon/>
           </IconButton>
         </Grid>
-        <Grid item container direction="row" alignItems="center">
-          <Grid item>
-            <TextField
-              value={`${Math.round(modifier.sparsity * 100)}%`}
-              className={classes.sparsityInput}
-              size="small"
-              variant="outlined"
-              label="Sparsity"
-            />
-          </Grid>
-          <Grid item xs>
-            <Slider
-              value={modifier.sparsity * 100}
-              onChange={(e, value) =>
-                dispatch(
-                  changeModifierSettingsThunk({
-                    projectId: optim.project_id,
-                    optimId: optim.optim_id,
-                    modifierId: modifier.modifier_id,
-                    settings: { sparsity: value / 100 },
-                  })
-                )
-              }
-            />
-          </Grid>
-        </Grid>
-        <PruningSettings modifier={modifier} optim={optim} showRecovery={false}/>
+        <ModifierSparsitySlider modifier={modifier} classes={classes}/>
+        <PruningSettings modifier={modifier} showRecovery={false}/>
       </Grid>
       <AdvancedPruning
         modifier={modifier}
@@ -86,6 +60,36 @@ const PruningModifier = ({ modifier, optim }) => {
     </Grid>
   );
 };
+
+const ModifierSparsitySlider = ({ modifier, classes }) => {
+  const dispatch = useDispatch();
+  const adjustableSettings = useSelector(selectModifierAdjustableSettings(modifier.modifier_id))
+
+  return <Grid className={classes.sparsitySliderRoot} item container direction="row" alignItems="center">
+    <Grid item>
+      <TextField
+        value={`${Math.round(adjustableSettings.sparsity * 100)}%`}
+        className={classes.sparsityInput}
+        size="small"
+        variant="outlined"
+        label="Sparsity"
+      />
+    </Grid>
+    <Grid item xs>
+      <Slider
+        value={adjustableSettings.sparsity * 100}
+        onChange={(e, value) =>
+          dispatch(
+            changeModifierAdjustableSettings({
+              modifierId: modifier.modifier_id,
+              settings: { sparsity: value / 100 }
+            })
+          )
+        }
+      />
+    </Grid>
+  </Grid>
+}
 
 PruningModifier.propTypes = {
   optim: PropTypes.object.isRequired,

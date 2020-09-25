@@ -11,7 +11,8 @@ import { formatWithMantissa } from '../../components'
 import PruningSettings from '../../components/pruning-settings'
 
 import makeStyles, { makeTableStyles, makeFiltersStyles } from "./optim-advanced-pruning-styles"
-import { changeModifierLayerSettingsThunk, changeModifierSettingsThunk } from "../../store";
+import { changeModifierLayerSettingsThunk,
+  selectModifierAdjustableSettings, changeModifierAdjustableSettings } from "../../store";
 
 const useStyles = makeStyles()
 const tableStyles = makeTableStyles()
@@ -40,42 +41,45 @@ const DetailedMetrics = ({ modifier }) =>
     </Grid>
   </Grid>
 
-const Filters = ({ modifier, optim }) => {
+const Filters = ({ modifier }) => {
   const classes = filtersStyles()
   const dispatch = useDispatch()
+  const adjustableSettings = useSelector(selectModifierAdjustableSettings(modifier.modifier_id))
 
   return <Grid container direction='column' spacing={3}>
-    <Grid item container direction='row' spacing={2}>
+    <Grid item container direction="row" alignItems="center" spacing={2}>
       <Grid item>
         <TextField
-          value={`${Math.round(modifier.sparsity * 100)}%`}
           className={classes.input}
+          value={`${Math.round(adjustableSettings.sparsity * 100)}%`}
           size="small"
           variant="outlined"
-          label="Sparsity"/>
+          label="Sparsity"
+        />
       </Grid>
       <Grid item xs>
         <Slider
-          value={modifier.sparsity * 100}
+          value={adjustableSettings.sparsity * 100}
           onChange={(e, value) =>
             dispatch(
-              changeModifierSettingsThunk({
-                projectId: optim.project_id,
-                optimId: optim.optim_id,
+              changeModifierAdjustableSettings({
                 modifierId: modifier.modifier_id,
-                settings: { sparsity: value / 100 },
-              }))}/>
+                settings: { sparsity: value / 100 }
+              })
+            )
+          }
+        />
       </Grid>
     </Grid>
     <Grid item>Preset filters</Grid>
-    {[{ name: 'filter_min_sparsity', label: 'Min sparsity', value: Math.round(modifier.filter_min_sparsity * 100) },
-      { name: 'filter_min_perf_gain', label: 'Performance', value: Math.round(modifier.filter_min_perf_gain * 100) },
-      { name: 'filter_max_loss_drop', label: 'Loss', value: modifier.filter_max_loss_drop }]
-      .map(({ name, value, label }) =>
-        <Grid key={name} item container direction='row' spacing={2}>
+    {[{ name: 'filter_min_sparsity', label: 'Min sparsity', value: Math.round(adjustableSettings.filter_min_sparsity * 100), suffix: '%' },
+      { name: 'filter_min_perf_gain', label: 'Performance', value: Math.round(adjustableSettings.filter_min_perf_gain * 100), suffix: '%' },
+      { name: 'filter_max_loss_drop', label: 'Loss', value: adjustableSettings.filter_max_loss_drop, divideBy100: false, max: 1, step: 0.01 }]
+      .map(({ name, value, label, min = 0, max = 100, step = 1, divideBy100 = true, suffix = '' }) =>
+        <Grid key={name} item container direction='row' spacing={2} alignItems="center">
           <Grid item>
             <TextField
-              value={value}
+              value={`${value || 0}${suffix}`}
               className={classes.input}
               size="small"
               variant="outlined"
@@ -83,14 +87,15 @@ const Filters = ({ modifier, optim }) => {
           </Grid>
           <Grid item xs>
             <Slider
-              value={modifier.filter_min_sparsity * 100}
+              value={value}
+              min={min}
+              max={max}
+              step={step}
               onChange={(e, value) =>
                 dispatch(
-                  changeModifierSettingsThunk({
-                    projectId: optim.project_id,
-                    optimId: optim.optim_id,
+                  changeModifierAdjustableSettings({
                     modifierId: modifier.modifier_id,
-                    settings: { [name]: value / 100 },
+                    settings: { [name] : divideBy100 ? value / 100 : value }
                   })
                 )}/>
           </Grid>
@@ -213,8 +218,8 @@ export default ({ modifier, optim, open, onClose }) => {
         <Grid container direction='row' spacing={6}>
           <Grid item xs={1}><SummaryMetrics modifier={modifier}/></Grid>
           <Grid item xs={3}><DetailedMetrics modifier={modifier}/></Grid>
-          <Grid item xs={3}><Filters modifier={modifier} optim={optim}/></Grid>
-          <Grid item xs={4}><PruningSettings modifier={modifier} optim={optim}/></Grid>
+          <Grid item xs={3}><Filters modifier={modifier}/></Grid>
+          <Grid item xs={4}><PruningSettings modifier={modifier}/></Grid>
         </Grid>
         <LayersChart
           data={modifier.nodes}

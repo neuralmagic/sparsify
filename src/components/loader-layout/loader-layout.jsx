@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { CircularProgress } from "@material-ui/core";
+import { CircularProgress, Typography } from "@material-ui/core";
 
 import makeStyles from "./loader-layout-styles";
 
@@ -23,7 +23,8 @@ function LoaderLayout({
   const showError = !!error;
   const showLoading =
     !showError && (loading || status === "idle" || status === "loading");
-  const showLoadingIndefinite = showLoading && progress === undefined;
+  const showLoadingIndefinite =
+    showLoading && (progress === undefined || progress === null);
   const showLoadingProgress = showLoading && !showLoadingIndefinite;
   const showChildren = !showError && !showLoading;
 
@@ -63,12 +64,19 @@ function LoaderLayout({
             <CircularProgress color="primary" size={loaderSize} />
           )}
           {showLoadingProgress && (
-            <CircularProgress
-              color="primary"
-              variant="static"
-              value={progress}
-              size={loaderSize}
-            />
+            <div className={classes.progressContainer}>
+              <CircularProgress
+                color="primary"
+                variant="static"
+                value={progress}
+                size={loaderSize}
+              />
+              <div className={classes.progressTextContainer}>
+                <Typography variant="h6" color="primary">
+                  {progress ? Math.round(progress) : 0}%
+                </Typography>
+              </div>
+            </div>
           )}
         </div>
       )}

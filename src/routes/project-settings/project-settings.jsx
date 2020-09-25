@@ -19,6 +19,7 @@ import useProjectUpdateState from "../../hooks/use-project-update-state";
 import FadeTransition from "../../components/fade-transition";
 import ProjectDeleteDialog from "../../modals/project-delete";
 import { createHomePath } from "../paths";
+import moment from "moment";
 
 const useStyles = makeStyles();
 
@@ -40,6 +41,12 @@ function ProjectSettings({ match }) {
 
   const selectedProjectState = useSelector(selectSelectedProjectState);
 
+  const projectCreated = selectedProjectState.val
+    ? moment(selectedProjectState.val.created).format("MM/DD/YYYY h:mma")
+    : null;
+  const projectModified = selectedProjectState.val
+    ? moment(selectedProjectState.val.modified).format("MM/DD/YYYY h:mma")
+    : null;
   const projectSize = selectedProjectState.val
     ? selectedProjectState.val.dir_size
     : null;
@@ -99,6 +106,8 @@ function ProjectSettings({ match }) {
             projectDesc={values.description}
             projectDescValError={validationErrors.description}
             projectDescOnChange={(e) => changeValue("description", e.target.value)}
+            projectCreated={projectCreated}
+            projectModified={projectModified}
             projectSize={projectSize}
             projectPath={projectPath}
             projectFilename={projectFileName}

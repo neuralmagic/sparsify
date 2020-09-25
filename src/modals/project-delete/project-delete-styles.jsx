@@ -16,29 +16,6 @@ export default function makeProjectStyles() {
         deleteButton: {
           color: theme.palette.error.main,
         },
-
-        icon: {
-          fill: theme.palette.text.secondary,
-          marginBottom: theme.spacing(6),
-
-          "& svg": {
-            width: "200px",
-            height: "200px",
-          },
-        },
-        name: {
-          display: "-webkit-box",
-          lineClamp: 2,
-          boxOrient: "vertical",
-          overflow: "hidden",
-        },
-        desc: {
-          marginTop: theme.spacing(2),
-          display: "-webkit-box",
-          lineClamp: 3,
-          boxOrient: "vertical",
-          overflow: "hidden",
-        },
       };
     },
     { name: "Project" }

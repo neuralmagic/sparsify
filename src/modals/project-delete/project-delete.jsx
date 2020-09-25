@@ -5,8 +5,7 @@ import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogActions from "@material-ui/core/DialogActions";
-import IconButton from "@material-ui/core/IconButton";
-import CloseIcon from "@material-ui/icons/Close";
+import PropTypes from "prop-types";
 
 import makeStyles from "./project-delete-styles";
 import NullableText from "../../components/nullable-text";
@@ -23,6 +22,8 @@ function ProjectDeleteDialog({ open, projectName, handleClose, handleDelete }) {
       onClose={handleClose}
       open={open}
       aria-labelledby="project-delete-dialog-title"
+      fullWidth={true}
+      width="sm"
     >
       <DialogTitle id="project-delete-dialog-title" onClose={handleClose}>
         Delete{" "}
@@ -60,5 +61,12 @@ function ProjectDeleteDialog({ open, projectName, handleClose, handleDelete }) {
     </Dialog>
   );
 }
+
+ProjectDeleteDialog.propTypes = {
+  open: PropTypes.bool.isRequired,
+  projectName: PropTypes.string,
+  handleClose: PropTypes.func,
+  handleDelete: PropTypes.func,
+};
 
 export default ProjectDeleteDialog;

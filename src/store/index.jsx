@@ -7,6 +7,7 @@ import selectedOptimsBestEstimated from "./optims-estimated-slice";
 import selectedProfilesLoss from "./profiles-loss-slice";
 import selectedProfilesPerf from "./profiles-perf-slice";
 import selectedConfig from "./config-slice";
+import createProject from "./project-create-slice";
 
 export default configureStore({
   reducer: {
@@ -17,6 +18,7 @@ export default configureStore({
     selectedProfilesLoss: selectedProfilesLoss,
     selectedProfilesPerf: selectedProfilesPerf,
     selectedConfig: selectedConfig,
+    createProject: createProject,
   },
 });
 
@@ -27,5 +29,6 @@ export * from "./optims-estimated-slice";
 export * from "./profiles-loss-slice";
 export * from "./profiles-perf-slice";
 export * from "./config-slice";
+export * from "./project-create-slice";
 
 export * from "./utils";

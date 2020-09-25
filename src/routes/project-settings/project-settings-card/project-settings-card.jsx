@@ -17,6 +17,8 @@ function ProjectSettingsCard({
   projectDesc,
   projectDescValError,
   projectDescOnChange,
+  projectCreated,
+  projectModified,
   projectSize,
   projectPath,
   projectFilename,
@@ -51,6 +53,16 @@ function ProjectSettingsCard({
           onChange={projectDescOnChange}
         />
         <ProjectSettingsCardInfoRow
+          label="Created"
+          value={projectCreated}
+          className={classes.cardInfoRow}
+        />
+        <ProjectSettingsCardInfoRow
+          label="Last Modified"
+          value={projectModified}
+          className={classes.cardInfoRow}
+        />
+        <ProjectSettingsCardInfoRow
           label="Size on disk"
           value={readableBytes(projectSize)}
           className={classes.cardInfoRow}
@@ -78,6 +90,8 @@ ProjectSettingsCard.propTypes = {
   projectDesc: PropTypes.string,
   projectDescValError: PropTypes.string,
   projectDescOnChange: PropTypes.func,
+  projectCreated: PropTypes.string,
+  projectModified: PropTypes.string,
   projectSize: PropTypes.number,
   projectPath: PropTypes.string,
   projectFilename: PropTypes.string,

@@ -26,13 +26,23 @@ export function objToQueryString(obj) {
 export function validateAPIResponseJSON(responsePromise) {
   return responsePromise
     .then((response) => {
-      return response.json().then((data) => {
-        return {
-          statusOk: response.ok,
+      if (response.data) {
+        // axios response
+        return Promise.resolve({
+          statusOk: response.statusText === "OK",
           status: response.status,
-          body: data,
-        };
-      });
+          body: response.data,
+        });
+      } else {
+        // fetch response
+        return response.json().then((data) => {
+          return {
+            statusOk: response.ok,
+            status: response.status,
+            body: data,
+          };
+        });
+      }
     })
     .then((data) => {
       if (!data.statusOk) {

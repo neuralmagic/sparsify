@@ -20,6 +20,19 @@ export default function makeLoaderLayoutStyles() {
           justifyContent: "center",
           alignItems: "center",
         },
+        progressContainer: {
+          position: "relative"
+        },
+        progressTextContainer: {
+          position: "absolute",
+          top: 0,
+          left: 0,
+          height: "100%",
+          width: "100%",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        },
       };
     },
     { name: "LoaderLayout" }

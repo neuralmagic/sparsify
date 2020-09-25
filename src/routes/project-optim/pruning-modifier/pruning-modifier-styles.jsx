@@ -7,10 +7,12 @@ export default function makePruningModifierStyles() {
         root: {
           paddingRight: 20
         },
+        sparsitySliderRoot: {
+          marginBottom: 20
+        },
         sparsityInput: {
           width: 80,
           marginRight: 20,
-          marginBottom: 40
         },
       };
     },

@@ -12,6 +12,9 @@ import selectedProfilesPerf from "./profiles-perf-slice";
 import selectedConfig from "./config-slice";
 import adjustableSettings, { sagas as adjustableSettingsSagas } from "./adjustable-settings-slice";
 
+import system from "./system-slice";
+import serverStatus from "./server-slice";
+
 const sagaMiddleware = createSagaMiddleware()
 
 export default configureStore({
@@ -23,7 +26,9 @@ export default configureStore({
     selectedProfilesLoss: selectedProfilesLoss,
     selectedProfilesPerf: selectedProfilesPerf,
     selectedConfig: selectedConfig,
-    adjustableSettings
+    adjustableSettings,
+    system: system,
+    serverStatus: serverStatus,
   },
   middleware: getDefaultMiddleware => getDefaultMiddleware().concat(sagaMiddleware)
 });
@@ -42,5 +47,7 @@ export * from "./optims-estimated-slice";
 export * from "./profiles-loss-slice";
 export * from "./profiles-perf-slice";
 export * from "./config-slice";
+export * from "./system-slice";
+export * from "./server-slice";
 
 export * from "./utils";

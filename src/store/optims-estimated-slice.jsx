@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk, AsyncThunk, Slice } from "@reduxjs/toolkit";
+import { createAsyncThunkWrapper } from "../store/utils";
 
 import { requestGetProjectOptimBestEstimated } from "../api";
 
@@ -8,7 +9,7 @@ import { requestGetProjectOptimBestEstimated } from "../api";
  *
  * @type {AsyncThunk<Promise<*>, {readonly projectId?: *}, {}>}
  */
-export const getOptimsBestEstimatedThunk = createAsyncThunk(
+export const getOptimsBestEstimatedThunk = createAsyncThunkWrapper(
   "selectedOptimsBestEstimated/",
   async ({ projectId, profilePerfId, profileLossId }) => {
     const body = await requestGetProjectOptimBestEstimated(
@@ -56,6 +57,7 @@ const selectedOptimsBestEstimatedSlice = createSlice({
       state.projectId = action.meta.arg.projectId;
       state.profilePerfId = action.meta.arg.profilePerfId;
       state.profileLossId = action.meta.arg.profileLossId;
+      state.error = null;
     },
     [getOptimsBestEstimatedThunk.rejected]: (state, action) => {
       state.status = "failed";

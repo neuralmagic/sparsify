@@ -1,6 +1,13 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
-import { Box, Button, DialogContent, Link, Tab, Tabs } from "@material-ui/core";
+import {
+  Box,
+  Button,
+  DialogContent,
+  DialogActions,
+  Tab,
+  Tabs,
+} from "@material-ui/core";
 import makeStyles from "../optim-create-styles";
 import CustomOptimSelect from "./custom-optim-select";
 import PresetOptimSelect from "./preset-optim-select";
@@ -27,10 +34,7 @@ function OptimInitContainer({ onCancel, onNext, pruning, setPruning }) {
         <CustomOptimSelect pruning={pruning} setPruning={setPruning} />
       )}
       {optimizerSelectTab === 1 && <PresetOptimSelect />}
-      <Box paddingY={3} display="flex" justifyContent="flex-start" alignItems="center">
-        <Box flexGrow={1}>
-          <Link>Learn more about inference speedups.</Link>
-        </Box>
+      <DialogActions>
         <Box paddingRight={1}>
           <Button
             onClick={() => onCancel()}
@@ -49,7 +53,7 @@ function OptimInitContainer({ onCancel, onNext, pruning, setPruning }) {
             Next
           </Button>
         </Box>
-      </Box>
+      </DialogActions>
     </DialogContent>
   );
 }

@@ -7,7 +7,11 @@ import {
 } from "@reduxjs/toolkit";
 
 import { requestGetProjectProfilesLoss } from "../api";
-import { STATUS_SUCCEEDED, summarizeObjValuesArray } from "./utils";
+import {
+  createAsyncThunkWrapper,
+  STATUS_SUCCEEDED,
+  summarizeObjValuesArray,
+} from "./utils";
 import { compose, defaultTo, find, propEq } from "ramda";
 import { selectSelectedProjectModelAnalysis } from "./project-slice";
 
@@ -16,7 +20,7 @@ import { selectSelectedProjectModelAnalysis } from "./project-slice";
  *
  * @type {AsyncThunk<Promise<*>, {readonly projectId?: *}, {}>}
  */
-export const getProfilesLossThunk = createAsyncThunk(
+export const getProfilesLossThunk = createAsyncThunkWrapper(
   "selectedProfilesLoss/getProjectProfilesLoss",
   async ({ projectId }) => {
     const body = await requestGetProjectProfilesLoss(projectId);
@@ -53,6 +57,7 @@ const selectedProfilesLossSlice = createSlice({
       state.status = "succeeded";
       state.val = action.payload;
       state.projectId = action.meta.arg.projectId;
+      state.error = null;
     },
     [getProfilesLossThunk.rejected]: (state, action) => {
       state.status = "failed";

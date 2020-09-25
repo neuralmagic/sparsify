@@ -7,7 +7,13 @@ import {
 } from "@reduxjs/toolkit";
 
 import { requestDeleteProject, requestGetProject, requestUpdateProject } from "../api";
-import { STATUS_FAILED, STATUS_IDLE, STATUS_LOADING, STATUS_SUCCEEDED } from "./utils";
+import {
+  createAsyncThunkWrapper,
+  STATUS_FAILED,
+  STATUS_IDLE,
+  STATUS_LOADING,
+  STATUS_SUCCEEDED,
+} from "./utils";
 import { summarizeObjValuesArray } from "./utils";
 
 /**
@@ -15,7 +21,7 @@ import { summarizeObjValuesArray } from "./utils";
  *
  * @type {AsyncThunk<Promise<*>, {readonly projectId?: *}, {}>}
  */
-export const getProjectThunk = createAsyncThunk(
+export const getProjectThunk = createAsyncThunkWrapper(
   "selectedProject/getProject",
   async ({ projectId }) => {
     const body = await requestGetProject(projectId);
@@ -29,7 +35,7 @@ export const getProjectThunk = createAsyncThunk(
  *
  * @type {AsyncThunk<Promise<*>, {readonly projectId?: *}, {}>}
  */
-export const updateProjectThunk = createAsyncThunk(
+export const updateProjectThunk = createAsyncThunkWrapper(
   "selectedProject/updateProject",
   async ({
     projectId,
@@ -59,7 +65,7 @@ export const updateProjectThunk = createAsyncThunk(
  *
  * @type {AsyncThunk<Promise<*>, {readonly projectId?: *}, {}>}
  */
-export const deleteProjectThunk = createAsyncThunk(
+export const deleteProjectThunk = createAsyncThunkWrapper(
   "selectedProject/deleteProject",
   async ({ projectId }) => {
     const body = await requestDeleteProject(projectId);
@@ -93,6 +99,7 @@ const selectedProjectSlice = createSlice({
       state.status = STATUS_SUCCEEDED;
       state.val = action.payload;
       state.projectId = action.meta.arg.projectId;
+      state.error = null;
     },
     [getProjectThunk.rejected]: (state, action) => {
       state.status = STATUS_FAILED;
@@ -108,6 +115,7 @@ const selectedProjectSlice = createSlice({
       state.status = STATUS_SUCCEEDED;
       state.val = action.payload;
       state.projectId = action.meta.arg.projectId;
+      state.error = null;
     },
     [updateProjectThunk.rejected]: (state, action) => {
       state.status = STATUS_FAILED;
@@ -123,6 +131,7 @@ const selectedProjectSlice = createSlice({
       state.status = STATUS_SUCCEEDED;
       state.deleted = true;
       state.projectId = action.meta.arg.projectId;
+      state.error = null;
     },
     [deleteProjectThunk.rejected]: (state, action) => {
       state.status = STATUS_FAILED;

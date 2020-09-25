@@ -2,6 +2,7 @@ import React from "react";
 import { Route } from "react-router-dom";
 import { AnimatedSwitch } from "react-router-transition";
 import Paper from "@material-ui/core/Paper";
+import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
 
 import { makeRouteTransitionOpacity, makeSideNavRoutes } from "../../routes";
 import makeStyles from "./sidenav-styles";
@@ -9,7 +10,7 @@ import { ReactComponent as NMLogo } from "./img/logo.svg";
 
 const useStyles = makeStyles();
 
-function AppSideNav() {
+function AppSideNav({ onInfoClick }) {
   const classes = useStyles();
 
   const routes = makeSideNavRoutes();
@@ -23,6 +24,11 @@ function AppSideNav() {
         </div>
         <span className={classes.title}>Sparsify</span>
         <span className={classes.trademark}>TM</span>
+        <div className={classes.info} onClick={() => onInfoClick()}>
+          <div>
+            <InfoOutlinedIcon />
+          </div>
+        </div>
       </div>
       <div className={classes.body}>
         <AnimatedSwitch

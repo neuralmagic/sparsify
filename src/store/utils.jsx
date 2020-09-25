@@ -1,9 +1,28 @@
 import { sum } from "ramda";
+import { createAsyncThunk } from "@reduxjs/toolkit";
+import { serverOnline, serverOffline, serverLoading } from "./server-slice";
 
 export const STATUS_IDLE = "idle";
 export const STATUS_LOADING = "loading";
 export const STATUS_SUCCEEDED = "succeeded";
 export const STATUS_FAILED = "failed";
+
+export function createAsyncThunkWrapper(typePrefix, payloadCreator) {
+  return createAsyncThunk(typePrefix, async (args, thunkApi) => {
+    thunkApi.dispatch(serverLoading());
+    return payloadCreator(args, thunkApi)
+      .then((body) => {
+        thunkApi.dispatch(serverOnline());
+        return body;
+      })
+      .catch((error) => {
+        if (String(error) === "TypeError: Failed to fetch") {
+          thunkApi.dispatch(serverOffline());
+        }
+        throw error;
+      });
+  });
+}
 
 export function summarizeObjValuesArray(
   objValues,

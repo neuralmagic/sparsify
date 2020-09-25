@@ -17,7 +17,7 @@ import makeStyles from "./server-down-styles";
 const useStyles = makeStyles();
 
 function ServerDownModal() {
-  const [serverDown, setServerDown] = useState();
+  const [serverDown, setServerDown] = useState(false);
   const dispatch = useDispatch();
 
   const classes = useStyles();

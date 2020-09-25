@@ -1,10 +1,11 @@
 import React, { useEffect } from "react";
 import { Typography } from "@material-ui/core";
 import { useDispatch, useSelector } from "react-redux";
-import moment from "moment";
+import SentimentVeryDissatisfiedIcon from "@material-ui/icons/SentimentVeryDissatisfied";
 
 import ScrollerLayout from "../../components/scroller-layout";
 import makeStyles from "./project-loss-styles";
+import GenericPage from "../../components/generic-page";
 import LoaderLayout from "../../components/loader-layout";
 import {
   getOptimsBestEstimatedThunk,
@@ -110,7 +111,7 @@ function profileLossDisplayValues(
   return values;
 }
 
-function ProjectLoss() {
+function ProjectLoss({ match }) {
   const classes = useStyles();
   const dispatch = useDispatch();
 
@@ -171,8 +172,12 @@ function ProjectLoss() {
     profilesPerfState.status,
     profilesLossState.status,
   ]);
-  const overallError =
+  let overallError =
     projectState.error || profilesPerfState.error || profilesLossState.error;
+  const { lossId } = match.params;
+  if (!overallError && !profileLoss && lossId) {
+    overallError = `Profile with id ${lossId} not found.`;
+  }
 
   let displayValues;
 
@@ -196,7 +201,14 @@ function ProjectLoss() {
       <LoaderLayout
         status={overallStatus}
         error={overallError}
-        rootClass={classes.body}
+        errorComponent={
+          <GenericPage
+            title="Error Retrieving Loss Profile"
+            description={overallError}
+            logoComponent={<SentimentVeryDissatisfiedIcon />}
+          />
+        }
+        rootClass={overallError ? "" : classes.body}
         loaderClass={classes.loader}
       >
         <div className={classes.layout}>

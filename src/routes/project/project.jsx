@@ -1,9 +1,11 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import { Typography } from "@material-ui/core";
+import SentimentVeryDissatisfiedIcon from "@material-ui/icons/SentimentVeryDissatisfied";
 
 import { ReactComponent as Icon } from "./img/icon.svg";
 import AbsoluteLayout from "../../components/absolute-layout";
+import GenericPage from "../../components/generic-page";
 import { selectSelectedProjectState } from "../../store";
 import LoaderLayout from "../../components/loader-layout";
 import NullableText from "../../components/nullable-text";
@@ -26,6 +28,13 @@ function Project() {
         status={selectedProjectState.status}
         error={selectedProjectState.error}
         rootClass={classes.root}
+        errorComponent={
+          <GenericPage
+            title="Error Retrieving Model"
+            description={selectedProjectState.error}
+            logoComponent={<SentimentVeryDissatisfiedIcon />}
+          />
+        }
       >
         <div className={classes.layout}>
           <div className={classes.icon}>

@@ -11,7 +11,7 @@ export default function makeLoaderOverlayStyles() {
           top: 0,
           left: 0,
           backgroundColor: theme.palette.overlay,
-          zIndex: 1600,
+          zIndex: 1200,
         },
         loader: {
           width: "100%",

@@ -39,8 +39,8 @@ function GenericPage({ title, description, logoComponent, logoClassName }) {
 }
 
 GenericPage.propTypes = {
-  title: PropTypes.string.isRequired,
-  description: PropTypes.string.isRequired,
+  title: PropTypes.string,
+  description: PropTypes.string,
   logoComponent: PropTypes.any,
   logoClassName: PropTypes.string,
 };

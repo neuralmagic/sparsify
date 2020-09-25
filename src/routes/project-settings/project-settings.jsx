@@ -13,7 +13,6 @@ import {
   updateProjectThunk,
 } from "../../store";
 import ProjectSettingsTrainingCard from "./settings-training-card";
-import LoaderOverlay from "../../components/loader-overlay";
 import ProjectSettingsDeleteCard from "./delete-card";
 import useProjectUpdateState from "../../hooks/use-project-update-state";
 import FadeTransition from "../../components/fade-transition";
@@ -53,6 +52,7 @@ function ProjectSettings({ match }) {
 
   if (
     selectedProjectState.status === "succeeded" &&
+    selectedProjectState.val &&
     selectedProjectState.val.project_id !== values.projectId
   ) {
     projectLoaded(selectedProjectState.val);
@@ -130,12 +130,6 @@ function ProjectSettings({ match }) {
           <ProjectSettingsDeleteCard onDeleteClick={onDeleteClick} />
           <div className={classes.spacer} />
         </div>
-
-        <LoaderOverlay
-          status={selectedProjectState.status}
-          error={selectedProjectState.error}
-          errorTitle="Error with project request"
-        />
       </div>
 
       <FadeTransition show={saveOptions.dirty}>

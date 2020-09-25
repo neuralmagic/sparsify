@@ -114,6 +114,12 @@ function ProjectSideNav({ match, location }) {
     projectName = selectedProjectMetaData.name;
   }
 
+  useEffect(() => {
+    if (selectedProjectState.error && selectedProjectMetaData === undefined) {
+      history.replace("/not-found");
+    }
+  }, [selectedProjectState, selectedProjectMetaData, history]);
+
   return (
     <AbsoluteLayout layoutClass={classes.root}>
       <div className={classes.header}>
@@ -130,7 +136,11 @@ function ProjectSideNav({ match, location }) {
           <LoaderLayout
             error={selectedProjectState.error}
             status={selectedProjectState.status}
-            errorTitle="Error loading project"
+            errorComponent={
+              <List className={classes.list}>
+                <ProjectSideNavMenuSettings projectId={projectId} action={action} />
+              </List>
+            }
           >
             <List className={classes.list}>
               <ProjectSideNavMenuProfilePerf

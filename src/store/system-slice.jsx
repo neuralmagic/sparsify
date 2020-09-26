@@ -1,7 +1,8 @@
 import { createSlice, createAsyncThunk, AsyncThunk, Slice } from "@reduxjs/toolkit";
 
 import { requestGetSystemInfo } from "../api";
-import { createAsyncThunkWrapper } from "./utils";
+import {createAsyncThunkWrapper, STATUS_FAILED, STATUS_IDLE, STATUS_LOADING, STATUS_SUCCEEDED} from "./utils";
+
 /**
  * Async thunk for making a request to get the system info from the server
  *
@@ -24,20 +25,20 @@ const systemSlice = createSlice({
   name: "system",
   initialState: {
     val: null,
-    status: "idle",
+    status: STATUS_IDLE,
     error: null,
   },
   extraReducers: {
     [getSystemInfoThunk.pending]: (state, action) => {
-      state.status = "loading";
+      state.status = STATUS_LOADING;
     },
     [getSystemInfoThunk.fulfilled]: (state, action) => {
-      state.status = "succeeded";
+      state.status = STATUS_SUCCEEDED;
       state.val = action.payload;
       state.error = null;
     },
     [getSystemInfoThunk.rejected]: (state, action) => {
-      state.status = "failed";
+      state.status = STATUS_FAILED;
       state.error = action.error.message;
     },
   },

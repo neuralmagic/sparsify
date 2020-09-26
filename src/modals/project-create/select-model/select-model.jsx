@@ -103,7 +103,7 @@ function SelectModel({
               or
             </Typography>
             <TextField
-              id="projectName"
+              id="remotePath"
               variant="outlined"
               type="text"
               label="Remote path or URL"

@@ -14,7 +14,7 @@ export default function makeProjectCreateStyles() {
         content: {
           display: "flex",
           flexDirection: "column",
-          marginTop: theme.spacing(8),
+          marginTop: theme.spacing(6),
           flex: "1 0",
         },
         swipable: {

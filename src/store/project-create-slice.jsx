@@ -158,53 +158,64 @@ export const createProjectWithModelFromPathThunk = createAsyncThunk(
   }
 );
 
+export const createProjectProfilesThunk = createAsyncThunk(
+  "createProject/createProjectProfilesThunk",
+  async (
+    {
+      profileLoss,
+      profilePerf,
+      profileLossName,
+      profilePerfName,
+      profilePerfBatchSize,
+      profilePerfNumCores,
+    },
+    thunkAPI
+  ) => {}
+);
+
+const defaultCreateProjectState = {
+  // state for modal
+  slideIndex: 2,
+  modelSelectRecognized: false,
+  remotePath: "",
+  remotePathError: "",
+  selectedFile: null,
+  profileLoss: true,
+  profilePerf: true,
+  profilePerfName: "baseline",
+  profileLossName: "baseline",
+  profilePerfBatchSize: "1",
+  profilePerfNumCores: null,
+
+  // state for creation
+  val: null,
+  creationStatus: STATUS_IDLE,
+  creationError: null,
+  creationProgressStage: null,
+  creationProgressValue: null,
+
+  // state for profiling
+  profilingLossVal: null,
+  profilingPerfVal: null,
+  profilingStatus: STATUS_IDLE,
+  profilingError: null,
+  profilingProgressStage: null,
+  profilingProgressValue: null,
+};
+
 const createProjectSlice = createSlice({
   name: "createProject",
-  initialState: {
-    // state for modal
-    slideIndex: 2,
-    modelSelectRecognized: false,
-    remotePath: "",
-    remotePathError: "",
-    selectedFile: null,
-
-    // state for creation
-    val: null,
-    creationStatus: STATUS_IDLE,
-    creationError: null,
-    creationProgressStage: null,
-    creationProgressValue: null,
-  },
+  initialState: { ...defaultCreateProjectState },
   reducers: {
     clearCreateProject: (state, action) => {
-      state.slideIndex = 0;
-      state.modelSelectRecognized = false;
-      state.remotePath = "";
-      state.remotePathError = "";
-      state.selectedFileId = null;
-
-      state.creationStatus = STATUS_IDLE;
-      state.creationError = null;
-      state.val = null;
-      state.creationProgressStage = null;
-      state.creationProgressValue = null;
+      Object.keys(defaultCreateProjectState).forEach((key) => {
+        state[key] = defaultCreateProjectState[key];
+      });
     },
     updateCreateProjectModal: (state, action) => {
-      if (action.payload.hasOwnProperty("slideIndex")) {
-        state.slideIndex = action.payload.slideIndex;
-      }
-
-      if (action.payload.hasOwnProperty("modelSelectRecognized")) {
-        state.modelSelectRecognized = action.payload.modelSelectRecognized;
-      }
-
-      if (action.payload.hasOwnProperty("remotePath")) {
-        state.remotePath = action.payload.remotePath;
-      }
-
-      if (action.payload.hasOwnProperty("remotePathError")) {
-        state.remotePathError = action.payload.remotePathError;
-      }
+      Object.keys(action.payload).forEach((key) => {
+        state[key] = action.payload[key];
+      });
     },
   },
   extraReducers: {

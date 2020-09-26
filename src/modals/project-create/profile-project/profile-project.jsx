@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, IconButton, Typography } from "@material-ui/core";
+import {Button, Divider, IconButton, Typography} from "@material-ui/core";
 import TextField from "@material-ui/core/TextField";
 import CloseIcon from "@material-ui/icons/Close";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
@@ -12,8 +12,64 @@ import FadeTransitionGroup from "../../../components/fade-transition-group";
 
 const useStyles = makeStyles();
 
+function ProfileSettings({
+  title,
+  enabled,
+  error,
+  disabledText,
+  errorText,
+  children,
+  blockChanges,
+  handleEnabledChanged,
+}) {
+  const classes = useStyles();
+
+  return (
+    <div className={classes.profileSettingsRoot}>
+      <div className={classes.profileSettingsTitle}>
+        <FormControlLabel
+          control={
+            <Switch
+              checked={enabled}
+              onChange={(e) => handleEnabledChanged(e.target.checked)}
+              color="primary"
+              disabled={blockChanges}
+            />
+          }
+          label={title}
+          labelPlacement="start"
+          className={classes.profileSettingsLabel}
+        />
+      </div>
+      <Divider className={classes.profileSettingsDivider} />
+      <div className={classes.profileSettingsContainer}>
+        {enabled && error && (
+          <Typography
+            variant="subtitle2"
+            color="error"
+            className={classes.profileSettingsText}
+          >
+            {errorText}
+          </Typography>
+        )}
+        {enabled && !error && children}
+        {!enabled && (
+          <Typography
+            variant="subtitle2"
+            color="textSecondary"
+            className={classes.profileSettingsText}
+          >
+            {disabledText}
+          </Typography>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function ProfileProject({
   profileLoss,
+  profileLossName,
   profilePerf,
   profilePerfName,
   profilePerfBatchSize,
@@ -26,6 +82,7 @@ function ProfileProject({
   profilingError,
   disableInputs,
   handleProfileLoss,
+  handleLossName,
   handleProfilePerf,
   handlePerfName,
   handlePerfBatchSize,
@@ -37,7 +94,7 @@ function ProfileProject({
   const action = profilingError ? "Clear" : "Cancel";
   let profilingLabel = profilingError ? "" : "Profiling model";
 
-  profilePerf = true;
+  nmEngineAvailable = true;
 
   // if (uploadingStage === "projectCreate") {
   //   uploadingLabel = "Setting up";
@@ -61,97 +118,77 @@ function ProfileProject({
     <div className={classes.root}>
       <FadeTransitionGroup showIndex={!profiling ? 0 : 1}>
         <div className={classes.content}>
-          <Typography>
-            Measure the model's baseline and effects of optimizations on
-          </Typography>
-          <div className={classes.profileContainer}>
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={profilePerf}
-                  onChange={handleProfilePerf}
-                  color="primary"
+          <Typography>Measure the baseline and optimized model's:</Typography>
+          <div className={classes.profilesLayout}>
+            <ProfileSettings
+              title="Performance"
+              enabled={profilePerf}
+              error={!nmEngineAvailable}
+              disabledText="The model's inference performance will be approximated from the architecture"
+              errorText="The neuralmagic package must be installed for CPU performance profiling"
+              blockChanges={disableInputs}
+              handleEnabledChanged={handleProfilePerf}
+            >
+              <div className={classes.textRow}>
+                <TextField
+                  id="profilePerfName"
+                  variant="outlined"
+                  type="text"
+                  label="Performance Profile Name"
+                  value={profilePerfName}
+                  disabled={disableInputs}
+                  onChange={(e) => handlePerfName(e.target.value)}
+                  className={classes.textField}
                 />
-              }
-              label="Performance"
-              labelPlacement="start"
-            />
-            <div>
-              {!profilePerf && (
-                <Typography color="textSecondary" variant="subtitle2">
-                  The model's inference performance will be approximated from the
-                  architecture
-                </Typography>
-              )}
-              {!nmEngineAvailable && (
-                <Typography color="error" variant="subtitle2">
-                  The neuralmagic package must be installed for CPU performance
-                  profiling
-                </Typography>
-              )}
-              {profilePerf && nmEngineAvailable && (
-                <div>
-                  <TextField
-                    id="profileName"
-                    variant="outlined"
-                    type="text"
-                    label="Profile Name"
-                    value={profilePerfName}
-                    disabled={disableInputs}
-                    onChange={(e) => handlePerfName(e.target.value)}
-                    className={classes.textField}
-                  />
-                  <TextField
-                    id="batchSize"
-                    variant="outlined"
-                    type="number"
-                    label="Batch Size"
-                    value={profilePerfBatchSize}
-                    disabled={disableInputs}
-                    onChange={(e) => handlePerfBatchSize(e.target.value)}
-                    className={classes.textField}
-                  />
-                  <TextField
-                    id="numCores"
-                    variant="outlined"
-                    type="number"
-                    label="CPU Cores"
-                    value={profilePerfNumCores}
-                    disabled={disableInputs}
-                    onChange={(e) => handlePerfNumCores(e.target.value)}
-                    className={classes.textField}
-                  />
-                  <TextField
-                    id="instructionSets"
-                    variant="outlined"
-                    type="number"
-                    label="Instruction Sets"
-                    value={profilePerfNumCores}
-                    disabled={true}
-                    className={classes.textField}
-                  />
-                </div>
-              )}
-            </div>
-          </div>
+              </div>
 
-          <div className={classes.profileContainer}>
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={profileLoss}
-                  onChange={handleProfileLoss}
-                  color="primary"
+              <div className={classes.textRow}>
+                <TextField
+                  id="batchSize"
+                  variant="outlined"
+                  type="number"
+                  label="Batch Size"
+                  value={profilePerfBatchSize}
+                  disabled={disableInputs}
+                  onChange={(e) => handlePerfBatchSize(e.target.value)}
+                  className={classes.textField}
                 />
-              }
-              label="Loss"
-              labelPlacement="start"
-            />
-            {!profileLoss && (
-              <Typography color="textSecondary" variant="subtitle2">
-                The model's loss will be approximated from the architecture
-              </Typography>
-            )}
+                <div className={classes.textSpacer} />
+                <TextField
+                  id="numCores"
+                  variant="outlined"
+                  type="number"
+                  label="CPU Cores"
+                  value={profilePerfNumCores !== null ? profilePerfNumCores : ""}
+                  disabled={disableInputs}
+                  onChange={(e) => handlePerfNumCores(e.target.value)}
+                  className={classes.textField}
+                />
+              </div>
+            </ProfileSettings>
+
+            <div className={classes.profilesSpacer} />
+
+            <ProfileSettings
+              title="Loss"
+              enabled={profileLoss}
+              disabledText="The model's loss will be approximated from the architecture"
+              blockChanges={disableInputs}
+              handleEnabledChanged={handleProfileLoss}
+            >
+              <div className={classes.textRow}>
+                <TextField
+                  id="profileLossName"
+                  variant="outlined"
+                  type="text"
+                  label="Loss Profile Name"
+                  value={profileLossName}
+                  disabled={disableInputs}
+                  onChange={(e) => handleLossName(e.target.value)}
+                  className={classes.textField}
+                />
+              </div>
+            </ProfileSettings>
           </div>
         </div>
 
@@ -177,16 +214,23 @@ function ProfileProject({
 }
 
 ProfileProject.propTypes = {
-  remotePath: PropTypes.string,
-  remotePathError: PropTypes.string,
-  handleRemotePath: PropTypes.func,
-  selectedFile: PropTypes.object,
-  handleSelectedFile: PropTypes.func,
-  uploading: PropTypes.bool,
-  uploadingStage: PropTypes.string,
-  uploadingProgress: PropTypes.number,
-  uploadingError: PropTypes.string,
+  profileLoss: PropTypes.string,
+  profilePerf: PropTypes.string,
+  profilePerfName: PropTypes.string,
+  profilePerfBatchSize: PropTypes.string,
+  profilePerfNumCores: PropTypes.string,
+  instructionSets: PropTypes.string,
+  nmEngineAvailable: PropTypes.bool,
+  profiling: PropTypes.bool,
+  profilingStage: PropTypes.string,
+  profilingProgress: PropTypes.number,
+  profilingError: PropTypes.string,
   disableInputs: PropTypes.bool,
+  handleProfileLoss: PropTypes.func,
+  handleProfilePerf: PropTypes.func,
+  handlePerfName: PropTypes.func,
+  handlePerfBatchSize: PropTypes.func,
+  handlePerfNumCores: PropTypes.func,
   handleClear: PropTypes.func,
 };
 

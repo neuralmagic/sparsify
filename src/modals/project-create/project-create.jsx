@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
@@ -23,6 +23,7 @@ import {
   STATUS_FAILED,
   createProjectWithModelFromPathThunk,
   updateProjectThunk,
+  selectSystemState,
 } from "../../store";
 import DescribeProject from "./describe-project";
 import ProfileProject from "./profile-project";
@@ -35,20 +36,29 @@ function ProjectCreateDialog({ open, handleClose }) {
 
   const [selectedFile, setSelectedFile] = useState(null);
   const createProjectState = useSelector(selectCreateProjectState);
+  const systemInfoState = useSelector(selectSystemState);
 
   function updateModal(payload) {
     dispatch(updateCreateProjectModal(payload));
   }
 
-  if (
-    createProjectState.creationStatus === STATUS_SUCCEEDED &&
-    !createProjectState.modelSelectRecognized
-  ) {
-    updateModal({
-      modelSelectRecognized: true,
-      slideIndex: 1,
-    });
-  }
+  useEffect(() => {
+    if (
+      createProjectState.creationStatus === STATUS_SUCCEEDED &&
+      !createProjectState.modelSelectRecognized
+    ) {
+      updateModal({
+        modelSelectRecognized: true,
+        slideIndex: 1,
+      });
+    }
+
+    if (systemInfoState.val && createProjectState.profilePerfNumCores === null) {
+      updateModal({
+        profilePerfNumCores: `${systemInfoState.val.cores_per_socket}`,
+      });
+    }
+  }, [createProjectState, systemInfoState, updateModal, dispatch]);
 
   let currentAction = {
     label: "next",
@@ -80,9 +90,11 @@ function ProjectCreateDialog({ open, handleClose }) {
       previous: true,
     };
   } else if (createProjectState.slideIndex === 2) {
+    const profilesRun = createProjectState.profilingStatus === STATUS_SUCCEEDED;
+    const profilesToRun = createProjectState.profilePerf || createProjectState.profileLoss;
     currentAction = {
-      label: "run",
-      enabled: true,
+      label: !profilesRun && profilesToRun ? "run" : "complete",
+      enabled: profilesRun || !profilesToRun || createProjectState.profilingStatus === STATUS_IDLE,
       previous: true,
     };
   }
@@ -97,17 +109,11 @@ function ProjectCreateDialog({ open, handleClose }) {
     dispatch(clearCreateProject());
   }
 
+  function clearCurrentProfiles() {}
+
   function onClose() {
     clearCurrent();
     handleClose();
-  }
-
-  function handleRemotePath(value) {
-    updateModal({ remotePath: value });
-  }
-
-  function handleSelectedFile(value) {
-    setSelectedFile(value);
   }
 
   function handleAction() {
@@ -131,6 +137,8 @@ function ProjectCreateDialog({ open, handleClose }) {
       }
 
       updateModal({ slideIndex: createProjectState.slideIndex + 1 });
+    } else if (currentAction === "run") {
+
     } else {
       throw Error(`unknown currentAction.label ${currentAction.label}`);
     }
@@ -164,6 +172,14 @@ function ProjectCreateDialog({ open, handleClose }) {
       ? 0
       : null;
   const progressProfile = createProjectState.slideIndex < 2 ? null : 0;
+  const instructionSets =
+    systemInfoState.val && systemInfoState.val.available_instructions
+      ? systemInfoState.val.available_instructions.join(" ")
+      : "";
+  const nmEngineAvailable =
+    systemInfoState.val && systemInfoState.val.available_engines
+      ? systemInfoState.val.available_engines.indexOf("neuralmagic") > -1
+      : false;
 
   return (
     <Dialog
@@ -192,9 +208,7 @@ function ProjectCreateDialog({ open, handleClose }) {
             <SelectModel
               remotePath={createProjectState.remotePath}
               remotePathError={createProjectState.remotePathError}
-              handleRemotePath={handleRemotePath}
               selectedFile={selectedFile}
-              handleSelectedFile={handleSelectedFile}
               uploading={
                 createProjectState.creationStatus === STATUS_LOADING ||
                 createProjectState.creationStatus === STATUS_FAILED
@@ -203,6 +217,8 @@ function ProjectCreateDialog({ open, handleClose }) {
               uploadingProgress={createProjectState.creationProgressValue}
               uploadingError={createProjectState.creationError}
               disableInputs={createProjectState.creationStatus !== STATUS_IDLE}
+              handleRemotePath={(value) => updateModal({ remotePath: value })}
+              handleSelectedFile={(value) => setSelectedFile(value)}
               handleClear={clearCurrent}
             />
             <DescribeProject
@@ -213,7 +229,35 @@ function ProjectCreateDialog({ open, handleClose }) {
               handleName={handleName}
               handleDescription={handleDescription}
             />
-            <ProfileProject />
+            <ProfileProject
+              profileLoss={createProjectState.profileLoss}
+              profileLossName={createProjectState.profileLossName}
+              profilePerf={createProjectState.profilePerf}
+              profilePerfName={createProjectState.profilePerfName}
+              profilePerfBatchSize={createProjectState.profilePerfBatchSize}
+              profilePerfNumCores={createProjectState.profilePerfNumCores}
+              instructionSets={instructionSets}
+              nmEngineAvailable={nmEngineAvailable}
+              profiling={
+                createProjectState.profilingStatus === STATUS_LOADING ||
+                createProjectState.profilingStatus === STATUS_FAILED
+              }
+              profilingStage={createProjectState.profilingProgressStage}
+              profilingProgress={createProjectState.profilingProgressValue}
+              profilingError={createProjectState.profilingError}
+              disableInputs={createProjectState.profilingStatus !== STATUS_IDLE}
+              handleProfileLoss={(value) => updateModal({ profileLoss: value })}
+              handleProfilePerf={(value) => updateModal({ profilePerf: value })}
+              handlePerfName={(value) => updateModal({ profilePerfName: value })}
+              handleLossName={(value) => updateModal({ profileLossName: value })}
+              handlePerfBatchSize={(value) =>
+                updateModal({ profilePerfBatchSize: value })
+              }
+              handlePerfNumCores={(value) =>
+                updateModal({ profilePerfNumCores: value })
+              }
+              handleClear={clearCurrentProfiles}
+            />
           </SwipeableViews>
           <DialogActions>
             <Button onClick={onClose} className={classes.cancelButton}>

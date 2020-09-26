@@ -3,6 +3,7 @@ import { makeStyles } from "@material-ui/core/styles";
 export default function makeSelectModelStyles() {
   return makeStyles(
     (theme) => {
+      console.log(theme);
       return {
         root: {
           position: "relative",
@@ -15,57 +16,70 @@ export default function makeSelectModelStyles() {
           height: "100%",
           top: 0,
           left: 0,
-        },
-        selectFileContainer: {
           display: "flex",
-          justifyContent: "center",
+          flexDirection: "column",
+        },
+        profilesLayout: {
+          display: "flex",
+          flex: "1 0",
+          marginTop: theme.spacing(1),
+          marginBottom: theme.spacing(1),
+        },
+        profilesSpacer: {
+          width: theme.spacing(4),
+        },
+
+        profileSettingsRoot: {
+          height: `calc(100% - ${theme.spacing(2)})`,
+          flex: "1 0",
+          display: "flex",
+          flexDirection: "column",
+        },
+        profileSettingsTitle: {
+          display: "flex",
+          justifyContent: "space-between",
           alignItems: "center",
-          position: "relative",
-          height: "56px",
-          marginTop: theme.spacing(3),
         },
-        selectFileOr: {
-          marginLeft: theme.spacing(1),
-          marginRight: theme.spacing(1),
-          zIndex: 1,
+        profileSettingsLabel: {
+          width: "100%",
+          display: "flex",
+          justifyContent: "space-between",
+          marginRight: "1px",
         },
-        selectFileUpload: {
-          left: 1,
-          paddingTop: "15px", // match input in material ui
-          paddingBottom: "15px", // match input in material ui
-          border: "solid",
+        profileSettingsDivider: {
+          marginTop: theme.spacing(0.5),
+          marginBottom: theme.spacing(1),
+        },
+        profileSettingsContainer: {
+          flex: "1 0",
           borderRadius: "4px",
-          borderColor: theme.palette.action.disabled,
-          borderWidth: "1px",
+          padding: theme.spacing(2),
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
         },
-        selectFileUploadText: {
-          marginLeft: theme.spacing(2),
+        profileSettingsText: {},
+
+        profileLabel: {
+          marginLeft: 0,
         },
-        selectFileRemote: {
-          right: 1,
+        profileBody: {
+          width: "100%",
+          paddingLeft: theme.spacing(2),
+          paddingRight: theme.spacing(2),
+          marginTop: theme.spacing(1),
         },
-        selectFileClear: {
-          position: "absolute",
-          right: 0,
-          opacity: 1,
-          zIndex: 3,
+
+        textRow: {
+          display: "flex",
+          width: "100%",
+          marginBottom: theme.spacing(2),
         },
-        selectFileBase: {
-          position: "absolute",
-          top: 0,
-          width: "46%",
-          paddingRight: 0,
-          opacity: 1,
-          zIndex: 1,
-          transitionProperty: "width, opacity",
-          transitionDuration: "0.2s",
+        textField: {
+          flex: "1 0",
         },
-        selectFileUnselected: {
-          opacity: 0,
-        },
-        selectFileSelected: {
-          width: "99%",
-          zIndex: 2,
+        textSpacer: {
+          width: theme.spacing(2),
         },
 
         loaderContainer: {

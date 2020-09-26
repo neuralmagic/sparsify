@@ -1,7 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
-import createSagaMiddleware from 'redux-saga'
+import createSagaMiddleware from "redux-saga";
 
-import { all } from 'redux-saga/effects'
+import { all } from "redux-saga/effects";
 
 import projectsReducer from "./projects-slice";
 import selectedProjectReducer from "./project-slice";
@@ -10,16 +10,20 @@ import selectedOptimsBestEstimated from "./optims-estimated-slice";
 import selectedProfilesLoss from "./profiles-loss-slice";
 import selectedProfilesPerf from "./profiles-perf-slice";
 import selectedConfig from "./config-slice";
-import adjustableSettings, { sagas as adjustableSettingsSagas } from "./adjustable-settings-slice";
+import adjustableSettings, {
+  sagas as adjustableSettingsSagas,
+} from "./adjustable-settings-slice";
+import createdOptims from "./optims-create-slice";
 
 import system from "./system-slice";
 import serverStatus from "./server-slice";
 
-const sagaMiddleware = createSagaMiddleware()
+const sagaMiddleware = createSagaMiddleware();
 
 export default configureStore({
   reducer: {
     projects: projectsReducer,
+    createdOptims: createdOptims,
     selectedProject: selectedProjectReducer,
     selectedOptims: selectedOptims,
     selectedOptimsBestEstimated: selectedOptimsBestEstimated,
@@ -30,19 +34,20 @@ export default configureStore({
     system: system,
     serverStatus: serverStatus,
   },
-  middleware: getDefaultMiddleware => getDefaultMiddleware().concat(sagaMiddleware)
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(sagaMiddleware),
 });
 
 function* rootSaga() {
-  yield all([adjustableSettingsSagas()])
+  yield all([adjustableSettingsSagas()]);
 }
 
-sagaMiddleware.run(rootSaga)
+sagaMiddleware.run(rootSaga);
 
 export * from "./adjustable-settings-slice";
 export * from "./projects-slice";
 export * from "./project-slice";
 export * from "./optims-slice";
+export * from "./optims-create-slice";
 export * from "./optims-estimated-slice";
 export * from "./profiles-loss-slice";
 export * from "./profiles-perf-slice";

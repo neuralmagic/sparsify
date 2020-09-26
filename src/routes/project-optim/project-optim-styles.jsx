@@ -16,6 +16,9 @@ export default function createProjectOptimRootStyles() {
         fabIcon: {
           marginRight: theme.spacing(1),
         },
+        loading: {
+          height: "100%",
+        },
       };
     },
     { name: "ProjectOptim" }

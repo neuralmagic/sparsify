@@ -24,20 +24,24 @@ function ProjectOptim(props) {
 
   let errorMessage = null;
   if (selectSelectedOptimsState.error) {
-    errorMessage = selectSelectedOptimsState.error
-  } else if (!optim) {
-    errorMessage = `Optimization with id ${optimId} not found.`
+    errorMessage = selectSelectedOptimsState.error;
+  } else if (selectSelectedOptimsState.status === "succeeded" && !optim) {
+    errorMessage = `Optimization with id ${optimId} not found.`;
   }
   return (
     <AbsoluteLayout>
       <LoaderLayout
         status={selectedSelectedOptimsState.status}
+        loaderClass={classes.loading}
+        rootClass={classes.loading}
         error={errorMessage}
-        errorComponent={<GenericPage
-          title="Error Retrieving Optimization"
-          description={errorMessage}
-          logoComponent={<SentimentVeryDissatisfiedIcon />}
-        />}
+        errorComponent={
+          <GenericPage
+            title="Error Retrieving Optimization"
+            description={errorMessage}
+            logoComponent={<SentimentVeryDissatisfiedIcon />}
+          />
+        }
       >
         {optim && <OptimPruning optim={optim}></OptimPruning>}
         <Fab
@@ -57,7 +61,6 @@ function ProjectOptim(props) {
           handleClose={() => setOpenExportModal(false)}
         />
       </LoaderLayout>
-      
     </AbsoluteLayout>
   );
 }

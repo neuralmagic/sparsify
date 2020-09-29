@@ -10,7 +10,9 @@ import {
   path,
   merge,
   reject,
-  isNil
+  isNil,
+  defaultTo,
+  tap
 } from 'ramda';
 import { createSlice } from '@reduxjs/toolkit'
 import { getOptimsThunk, changeModifierSettingsThunk } from './optims-slice'
@@ -28,6 +30,34 @@ const modifierAdjustableSettings = [
   'filter_max_loss_drop'
 ]
 
+const layerAdjustableSettings = [
+  'sparsity'
+]
+
+const optimIdentifiers = [
+  'project_id',
+  'optim_id'
+]
+
+const modifierIdentifiers = [
+  'project_id',
+  'optim_id',
+  'modifier_id'
+]
+
+const getLayerAdjustableSettingsFromOptims = compose(
+  indexBy(prop('modifier_id')),
+  flatten,
+  map(modifier => compose(
+    merge({ modifier_id: modifier.modifier_id }),
+    indexBy(prop('node_id')),
+    map(compose(
+      merge(pick(modifierIdentifiers, modifier)),
+      pick(['node_id', ...layerAdjustableSettings]))))(
+    modifier.nodes)),
+  flatten,
+  map(optim => map(merge(pick(optimIdentifiers, optim)), optim.pruning_modifiers)))
+
 /**
  * Slice for handling adjustable settings for entities in the redux store.
  */
@@ -43,19 +73,32 @@ const adjustableSettingsSlice = createSlice({
       const { modifierId, settings } = action.payload
 
       state.val.modifiers[modifierId] = merge(state.val.modifiers[modifierId], settings)
+    },
+    changeLayerAdjustableSettings: (state, action) => {
+      const { modifierId, layerId, settings } = action.payload
+
+      state.val.layers[modifierId][layerId] = merge(state.val.layers[modifierId][layerId], settings)
     }
   },
   extraReducers: {
     [getOptimsThunk.fulfilled]: (state, action) => {
       const modifierSettings = compose(
         indexBy(prop('modifier_id')),
-        map(pick(['modifier_id', 'optim_id', 'project_id', ...modifierAdjustableSettings])),
+        map(pick([...modifierIdentifiers, ...modifierAdjustableSettings])),
         flatten,
-        map(optim => map(merge(pick(['optim_id', 'project_id'], optim)), optim.pruning_modifiers)))(
+        map(optim => map(merge(pick(optimIdentifiers, optim)), optim.pruning_modifiers)))(
         action.payload)
 
-      state.val.modifiers = mergeDeepRight(state.val.modifiers, modifierSettings);
+      const layerSettings = getLayerAdjustableSettingsFromOptims(action.payload)
+
+      state.val.modifiers = mergeDeepRight(state.val.modifiers, modifierSettings)
+      state.val.layers = mergeDeepRight(state.val.layers, layerSettings)
     },
+    [changeModifierSettingsThunk.fulfilled]: (state, action) => {
+      const layerSettings = getLayerAdjustableSettingsFromOptims([action.payload])
+
+      state.val.layers = mergeDeepRight(state.val.layers, layerSettings)
+    }
   },
 });
 
@@ -73,16 +116,35 @@ function* changeModifierAdjustableSettingSaga({ payload }) {
   yield put(changeModifierSettingsThunk(data))
 }
 
+function* changeLayerAdjustableSettingsSaga({ payload }) {
+  yield delay(1500)
+
+  const layerSettings = yield select(selectLayerAdjustableSettings(payload.modifierId, payload.layerId))
+
+  const data = {
+    projectId: layerSettings.project_id,
+    optimId: layerSettings.optim_id,
+    modifierId: layerSettings.modifier_id,
+    settings: {
+      nodes: [pick(['node_id', ...layerAdjustableSettings], layerSettings)]
+    }
+  }
+
+  yield put(changeModifierSettingsThunk(data))
+}
+
 /***
  * Available actions for adjustableSettings redux store
  */
 export const {
-  changeModifierAdjustableSettings
+  changeModifierAdjustableSettings,
+  changeLayerAdjustableSettings
 } = adjustableSettingsSlice.actions;
 
 export function* sagas() {
   yield all([
-    takeLatest(changeModifierAdjustableSettings, changeModifierAdjustableSettingSaga)
+    takeLatest(changeModifierAdjustableSettings, changeModifierAdjustableSettingSaga),
+    takeLatest(changeLayerAdjustableSettings, changeLayerAdjustableSettingsSaga)
   ])
 }
 
@@ -91,8 +153,15 @@ export function* sagas() {
  *
  * @param state - the redux store state
  */
-export const selectModifierAdjustableSettings = curry((modifierId, state) =>
-  path(['adjustableSettings', 'val', 'modifiers', modifierId])(state))
+export const selectModifierAdjustableSettings = curry((modifierId, state) => compose(
+  defaultTo({}),
+  path(['adjustableSettings', 'val', 'modifiers', modifierId]))(
+  state))
+
+export const selectLayerAdjustableSettings = curry((modifierId, layerId, state) => compose(
+  defaultTo({}),
+  path(['adjustableSettings', 'val', 'layers', modifierId, layerId]))(
+  state))
 
 export default adjustableSettingsSlice.reducer;
 

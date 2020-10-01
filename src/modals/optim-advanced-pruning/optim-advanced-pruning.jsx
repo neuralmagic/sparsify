@@ -11,13 +11,16 @@ import { formatWithMantissa } from '../../components'
 import PruningSettings from '../../components/pruning-settings'
 
 import makeStyles, { makeTableStyles, makeFiltersStyles } from "./optim-advanced-pruning-styles"
-import { changeModifierLayerSettingsThunk,
-  selectModifierAdjustableSettings, changeModifierAdjustableSettings } from "../../store";
+import {
+  selectModifierAdjustableSettings,
+  changeModifierAdjustableSettings,
+  changeLayerAdjustableSettings,
+  selectLayerAdjustableSettings
+} from "../../store";
 
 const useStyles = makeStyles()
 const tableStyles = makeTableStyles()
 const filtersStyles = makeFiltersStyles()
-
 
 const SummaryMetrics = ({ modifier }) =>
   <Grid container direction='column'>
@@ -104,10 +107,57 @@ const Filters = ({ modifier }) => {
   </Grid>
 }
 
-const LayersTable = ({ modifier, optim }) => {
+const LayersTableRow = ({ modifier, layer }) => {
+  const classes = tableStyles()
+  const dispatch = useDispatch()
+  const layerSettings = useSelector(selectLayerAdjustableSettings(modifier.modifier_id, layer.node_id))
+
+  return <TableRow key={layer.node_id} className={clsx(classes.row, { [classes.rowDisabled]: layerSettings.sparsity === null })}>
+    <TableCell>
+      <Typography>{layer.node_id}</Typography>
+    </TableCell>
+    <TableCell>
+      <div className={classes.sparsityCell}>
+        <Switch checked={layerSettings.sparsity !== null} color='primary'
+          onChange={e => dispatch(changeLayerAdjustableSettings({
+            modifierId: modifier.modifier_id,
+            layerId: layer.node_id,
+            settings: { sparsity: e.target.checked ? modifier.sparsity : null }
+          }))}/>
+        <Slider value={layerSettings.sparsity * 100} min={0} max={100}
+          disabled={layerSettings.sparsity === null}
+          onChange={(e, value) => dispatch(changeLayerAdjustableSettings({
+            modifierId: modifier.modifier_id,
+            layerId: layer.node_id,
+            settings: { sparsity: Number(value) / 100 }
+          }))}/>
+        <Typography className={classes.sparsityValue}>{layerSettings.sparsity ? `${formatWithMantissa(1, layerSettings.sparsity * 100)}%` : ''}</Typography>
+      </div>
+    </TableCell>
+    <TableCell>
+      <Typography>{formatWithMantissa(3, layer.est_recovery)}</Typography>
+    </TableCell>
+    <TableCell>
+      <Typography>{layer.est_perf_gain ? `${formatWithMantissa(1, layer.est_perf_gain)}x` : '--'}</Typography>
+    </TableCell>
+    <TableCell>
+      <Typography>{formatWithMantissa(4, layer.est_time)}</Typography>
+    </TableCell>
+    <TableCell>
+      <Typography>{formatWithMantissa(4, layer.est_time_baseline)}</Typography>
+    </TableCell>
+    <TableCell>
+      <Typography>{formatWithMantissa(4, layer.est_loss_sensitivity)}</Typography>
+    </TableCell>
+    <TableCell>
+      <Typography>{formatWithMantissa(4, layer.est_perf_sensitivity)}</Typography>
+    </TableCell>
+  </TableRow>
+}
+
+const LayersTable = ({ modifier }) => {
   const classes = tableStyles()
   const [searchTerm, setSearchTerm] = useState(null)
-  const dispatch = useDispatch()
 
   const filteredLayers = compose(
     when(
@@ -153,52 +203,7 @@ const LayersTable = ({ modifier, optim }) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {filteredLayers.map(layer =>
-            <TableRow key={layer.node_id} className={clsx(classes.row, { [classes.rowDisabled]: layer.sparsity === null })}>
-              <TableCell>
-                <Typography>{layer.node_id}</Typography>
-              </TableCell>
-              <TableCell>
-                <div className={classes.sparsityCell}>
-                  <Switch checked={layer.sparsity !== null} color='primary'
-                    onChange={e => dispatch(changeModifierLayerSettingsThunk({
-                      projectId: optim.project_id,
-                      optimId: optim.optim_id,
-                      modifierId: modifier.modifier_id,
-                      layer,
-                      settings: { sparsity: e.target.checked ? modifier.sparsity : null }
-                    }))}/>
-                  <Slider value={layer.sparsity * 100} min={0} max={100}
-                    disabled={layer.sparsity === null}
-                    onChange={(e, value) => dispatch(changeModifierLayerSettingsThunk({
-                      projectId: optim.project_id,
-                      optimId: optim.optim_id,
-                      modifierId: modifier.modifier_id,
-                      layer,
-                      settings: { sparsity: Number(value) / 100 }
-                    }))}/>
-                  <Typography className={classes.sparsityValue}>{layer.sparsity ? `${formatWithMantissa(1, layer.sparsity * 100)}%` : ''}</Typography>
-                </div>
-              </TableCell>
-              <TableCell>
-                <Typography>{formatWithMantissa(3, layer.est_recovery)}</Typography>
-              </TableCell>
-              <TableCell>
-                <Typography>{layer.est_perf_gain ? `${formatWithMantissa(1, layer.est_perf_gain)}x` : '--'}</Typography>
-              </TableCell>
-              <TableCell>
-                <Typography>{formatWithMantissa(4, layer.est_time)}</Typography>
-              </TableCell>
-              <TableCell>
-                <Typography>{formatWithMantissa(4, layer.est_time_baseline)}</Typography>
-              </TableCell>
-              <TableCell>
-                <Typography>{formatWithMantissa(4, layer.est_loss_sensitivity)}</Typography>
-              </TableCell>
-              <TableCell>
-                <Typography>{formatWithMantissa(4, layer.est_perf_sensitivity)}</Typography>
-              </TableCell>
-            </TableRow>)}
+          {filteredLayers.map(layer => <LayersTableRow key={layer.node_id} modifier={modifier} layer={layer}/>)}
         </TableBody>
       </Table>
     </TableContainer>)
@@ -226,7 +231,7 @@ export default ({ modifier, optim, open, onClose }) => {
           sparsityProp="sparsity"
           denseProp="est_time"
           sparseProp="est_time_baseline"/>
-        <LayersTable modifier={modifier} optim={optim}/>
+        <LayersTable modifier={modifier}/>
       </Box>
     </DialogContent>
   </Dialog>

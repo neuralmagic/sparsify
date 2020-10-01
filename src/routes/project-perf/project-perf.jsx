@@ -316,7 +316,7 @@ function ProjectPerf({ match }) {
           <ChartSummariesCard
             plotType="line"
             summaries={displayValues.analysisResults}
-            xAxisTitle="Layer Index"
+            xAxisTitle="Layer Depth"
             tooltipValues={[
               { key: "label", display: "Layer Depth" },
               { key: "id", display: "Layer ID" },

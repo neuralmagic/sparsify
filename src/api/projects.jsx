@@ -1,5 +1,42 @@
 import { API_ROOT, objToQueryString, validateAPIResponseJSON } from "./utils";
 
+function projectCreateUpdateBody(
+  name,
+  description,
+  trainingOptimizer,
+  trainingEpochs,
+  trainingLRInit,
+  trainingLRFinal
+) {
+  const body = {};
+
+  if (name !== undefined) {
+    body["name"] = name;
+  }
+
+  if (description !== undefined) {
+    body["description"] = description;
+  }
+
+  if (trainingOptimizer !== undefined) {
+    body["training_optimizer"] = trainingOptimizer;
+  }
+
+  if (trainingEpochs !== undefined) {
+    body["training_epochs"] = trainingEpochs;
+  }
+
+  if (trainingLRInit !== undefined) {
+    body["training_lr_init"] = trainingLRInit;
+  }
+
+  if (trainingLRFinal !== undefined) {
+    body["training_lr_final"] = trainingLRFinal;
+  }
+
+  return body;
+}
+
 /**
  * Request to get a list of projects currently available from the neuralmagicML.server.
  *
@@ -27,6 +64,48 @@ export function requestGetProjects(
     fetch(url, {
       method: "GET",
       cache: "no-cache",
+    })
+  );
+}
+
+/**
+ * Request to create a project with the
+ * given params in the neuralmagicML.server
+ *
+ * @param name - name of the project to use
+ * @param description - description of the project to use
+ * @param trainingOptimizer - training optimizer used for the project
+ * @param trainingEpochs - number of training epochs used for the project
+ * @param trainingLRInit - training initial learning rate used for the project
+ * @param trainingLRFinal - training final learning rate used for the project
+ * @returns {Promise<any>}
+ */
+export function requestCreateProject(
+  name = undefined,
+  description = undefined,
+  trainingOptimizer = undefined,
+  trainingEpochs = undefined,
+  trainingLRInit = undefined,
+  trainingLRFinal = undefined
+) {
+  const url = `${API_ROOT}/projects/`;
+  const body = projectCreateUpdateBody(
+    name,
+    description,
+    trainingOptimizer,
+    trainingEpochs,
+    trainingLRInit,
+    trainingLRFinal
+  );
+
+  return validateAPIResponseJSON(
+    fetch(url, {
+      method: "POST",
+      cache: "no-cache",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
     })
   );
 }
@@ -71,31 +150,14 @@ export function requestUpdateProject(
   trainingLRFinal = undefined
 ) {
   const url = `${API_ROOT}/projects/${projectId}`;
-  const body = {};
-
-  if (name !== undefined) {
-    body["name"] = name;
-  }
-
-  if (description !== undefined) {
-    body["description"] = description;
-  }
-
-  if (trainingOptimizer !== undefined) {
-    body["training_optimizer"] = trainingOptimizer;
-  }
-
-  if (trainingEpochs !== undefined) {
-    body["training_epochs"] = trainingEpochs;
-  }
-
-  if (trainingLRInit !== undefined) {
-    body["training_lr_init"] = trainingLRInit;
-  }
-
-  if (trainingLRFinal !== undefined) {
-    body["training_lr_final"] = trainingLRFinal;
-  }
+  const body = projectCreateUpdateBody(
+    name,
+    description,
+    trainingOptimizer,
+    trainingEpochs,
+    trainingLRInit,
+    trainingLRFinal
+  );
 
   return validateAPIResponseJSON(
     fetch(url, {
@@ -113,10 +175,15 @@ export function requestUpdateProject(
  * Request to delete the requested project with projectId from the neuralmagicML.server.
  *
  * @param {string} projectId - The id of the project to delete
+ * @param {boolean} force - True to force the project deletion and ignore any errors
  * @returns {Promise<any>}
  */
-export function requestDeleteProject(projectId) {
-  const url = `${API_ROOT}/projects/${projectId}`;
+export function requestDeleteProject(projectId, force = true) {
+  let url = `${API_ROOT}/projects/${projectId}`;
+
+  if (force) {
+      url += "?force=true";
+  }
 
   return validateAPIResponseJSON(
     fetch(url, {

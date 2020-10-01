@@ -6,6 +6,7 @@ import { ReactComponent as NMLogo } from "./img/logo.svg";
 import GenericPage from "../../components/generic-page";
 import makeStyles from "./home-styles";
 import AbsoluteLayout from "../../components/absolute-layout";
+import ProjectCreateDialog from "../../modals/project-create";
 
 const useStyles = makeStyles();
 const HOME_URL = null;
@@ -13,6 +14,7 @@ const HOME_URL = null;
 function Home() {
   const classes = useStyles();
   const [displayType, setDisplayType] = useState(HOME_URL ? "iframe" : "fallback");
+  const [createOpen, setCreateOpen] = useState(false);
 
   const fallbackDescription =
     "Select a project from the left or add a new project with the bottom right button to profile, " +
@@ -42,10 +44,12 @@ function Home() {
         color="secondary"
         aria-label="New Project"
         className={classes.fab}
+        onClick={() => setCreateOpen(true)}
       >
         <AddIcon className={classes.fabIcon} />
         New Project
       </Fab>
+      <ProjectCreateDialog open={createOpen} handleClose={() => setCreateOpen(false)} />
     </AbsoluteLayout>
   );
 }

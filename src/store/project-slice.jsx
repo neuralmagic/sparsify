@@ -46,6 +46,7 @@ export const updateProjectThunk = createAsyncThunkWrapper(
     trainingEpochs,
     trainingLRInit,
     trainingLRFinal,
+    noUpdateStore,
   }) => {
     const body = await requestUpdateProject(
       projectId,
@@ -108,17 +109,29 @@ const selectedProjectSlice = createSlice({
       state.projectId = action.meta.arg.projectId;
     },
     [updateProjectThunk.pending]: (state, action) => {
+      if (action.meta.arg.noUpdateStore) {
+        return;
+      }
+
       state.status = STATUS_LOADING;
       state.projectId = action.meta.arg.projectId;
       state.deleted = false;
     },
     [updateProjectThunk.fulfilled]: (state, action) => {
+      if (action.meta.arg.noUpdateStore) {
+        return;
+      }
+
       state.status = STATUS_SUCCEEDED;
       state.val = action.payload;
       state.projectId = action.meta.arg.projectId;
       state.error = null;
     },
     [updateProjectThunk.rejected]: (state, action) => {
+      if (action.meta.arg.noUpdateStore) {
+        return;
+      }
+
       state.status = STATUS_FAILED;
       state.error = action.error.message;
       state.projectId = action.meta.arg.projectId;

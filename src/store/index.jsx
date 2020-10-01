@@ -10,11 +10,11 @@ import selectedOptimsBestEstimated from "./optims-estimated-slice";
 import selectedProfilesLoss from "./profiles-loss-slice";
 import selectedProfilesPerf from "./profiles-perf-slice";
 import selectedConfig from "./config-slice";
+import createProject from "./project-create-slice";
 import adjustableSettings, {
   sagas as adjustableSettingsSagas,
 } from "./adjustable-settings-slice";
 import createdOptims from "./optims-create-slice";
-
 import system from "./system-slice";
 import serverStatus from "./server-slice";
 
@@ -30,6 +30,7 @@ export default configureStore({
     selectedProfilesLoss: selectedProfilesLoss,
     selectedProfilesPerf: selectedProfilesPerf,
     selectedConfig: selectedConfig,
+    createProject: createProject,
     adjustableSettings,
     system: system,
     serverStatus: serverStatus,
@@ -52,6 +53,7 @@ export * from "./optims-estimated-slice";
 export * from "./profiles-loss-slice";
 export * from "./profiles-perf-slice";
 export * from "./config-slice";
+export * from "./project-create-slice";
 export * from "./system-slice";
 export * from "./server-slice";
 

@@ -26,6 +26,7 @@ import {
   updateProjectThunk,
   selectSystemState,
   createProjectProfilesThunk,
+  updateCreateProjectValProps,
 } from "../../store";
 import DescribeProject from "./describe-project";
 import ProfileProject from "./profile-project";
@@ -222,13 +223,13 @@ function ProjectCreateDialog({ open, handleClose }) {
 
   function handleName(value) {
     if (createProjectState.val) {
-      createProjectState.val.name = value;
+      dispatch(updateCreateProjectValProps({ name: value }));
     }
   }
 
   function handleDescription(value) {
     if (createProjectState.val) {
-      createProjectState.val.description = value;
+      dispatch(updateCreateProjectValProps({ description: value }));
     }
   }
 

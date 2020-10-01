@@ -169,7 +169,7 @@ const createProjectProfilesProgressAction = (
     progress = progress * 0.5;
 
     if (stage.indexOf("Perf") > -1) {
-      progress += 0.5;
+      progress += 50;
     }
   }
 
@@ -350,6 +350,11 @@ const createProjectSlice = createSlice({
         state[key] = action.payload[key];
       });
     },
+    updateCreateProjectValProps: (state, action) => {
+      Object.keys(action.payload).forEach((key) => {
+        state.val[key] = action.payload[key];
+      });
+    },
   },
   extraReducers: {
     [createProjectWithModelUploadThunk.pending]: (state, action) => {
@@ -429,6 +434,7 @@ const createProjectSlice = createSlice({
 export const {
   clearCreateProject,
   updateCreateProjectModal,
+  updateCreateProjectValProps,
 } = createProjectSlice.actions;
 
 export const selectCreateProjectState = (state) => state.createProject;

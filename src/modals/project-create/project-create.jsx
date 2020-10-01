@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useHistory } from "react-router-dom";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
@@ -24,15 +25,22 @@ import {
   createProjectWithModelFromPathThunk,
   updateProjectThunk,
   selectSystemState,
+  createProjectProfilesThunk,
 } from "../../store";
 import DescribeProject from "./describe-project";
 import ProfileProject from "./profile-project";
+import {
+  createProjectLossPath,
+  createProjectPath,
+  createProjectPerfPath,
+} from "../../routes/paths";
 
 const useStyles = makeStyles();
 
 function ProjectCreateDialog({ open, handleClose }) {
   const classes = useStyles();
   const dispatch = useDispatch();
+  const history = useHistory();
 
   const [selectedFile, setSelectedFile] = useState(null);
   const createProjectState = useSelector(selectCreateProjectState);
@@ -60,6 +68,28 @@ function ProjectCreateDialog({ open, handleClose }) {
     }
   }, [createProjectState, systemInfoState, updateModal, dispatch]);
 
+  const progressModel =
+    createProjectState.creationStatus === STATUS_SUCCEEDED ||
+    ["modelAnalysis", "finalize"].indexOf(createProjectState.creationProgressStage) > -1
+      ? 100
+      : createProjectState.creationProgressValue;
+  const progressProject = createProjectState.slideIndex > 0 ? 100 : null;
+  const progressProfile =
+    createProjectState.slideIndex < 2
+      ? null
+      : createProjectState.profilingStatus === STATUS_SUCCEEDED
+      ? 100
+      : createProjectState.profilingProgressValue
+      ? createProjectState.profilingProgressValue
+      : 0;
+  const instructionSets =
+    systemInfoState.val && systemInfoState.val.available_instructions
+      ? systemInfoState.val.available_instructions.join(" ")
+      : "";
+  const nmEngineAvailable =
+    systemInfoState.val && systemInfoState.val.available_engines
+      ? systemInfoState.val.available_engines.indexOf("neural_magic") > -1
+      : false;
   let currentAction = {
     label: "next",
     id: "next",
@@ -91,16 +121,20 @@ function ProjectCreateDialog({ open, handleClose }) {
     };
   } else if (createProjectState.slideIndex === 2) {
     const profilesRun = createProjectState.profilingStatus === STATUS_SUCCEEDED;
-    const profilesToRun = createProjectState.profilePerf || createProjectState.profileLoss;
+    const profilesToRun =
+      createProjectState.profilePerf || createProjectState.profileLoss;
+    const profilesError = !nmEngineAvailable && createProjectState.profilePerf;
     currentAction = {
       label: !profilesRun && profilesToRun ? "run" : "complete",
-      enabled: profilesRun || !profilesToRun || createProjectState.profilingStatus === STATUS_IDLE,
+      enabled:
+        profilesRun ||
+        (!profilesError && createProjectState.profilingStatus === STATUS_IDLE),
       previous: true,
     };
   }
 
-  function clearCurrent() {
-    if (createProjectState.val) {
+  function clearCurrent(del = true) {
+    if (createProjectState.val && del) {
       const projectId = createProjectState.val.project_id;
       dispatch(deleteProjectThunk({ projectId }));
     }
@@ -111,8 +145,8 @@ function ProjectCreateDialog({ open, handleClose }) {
 
   function clearCurrentProfiles() {}
 
-  function onClose() {
-    clearCurrent();
+  function onClose(del = true) {
+    clearCurrent(del);
     handleClose();
   }
 
@@ -137,8 +171,46 @@ function ProjectCreateDialog({ open, handleClose }) {
       }
 
       updateModal({ slideIndex: createProjectState.slideIndex + 1 });
-    } else if (currentAction === "run") {
+    } else if (currentAction.label === "run") {
+      let profilePerfBatchSize = parseFloat(createProjectState.profilePerfBatchSize);
+      let profilePerfNumCores = parseFloat(createProjectState.profilePerfNumCores);
 
+      if (isNaN(profilePerfBatchSize)) {
+        profilePerfBatchSize = 1;
+      }
+
+      if (isNaN(profilePerfNumCores)) {
+        profilePerfNumCores = -1;
+      }
+
+      dispatch(
+        createProjectProfilesThunk({
+          projectId: createProjectState.val.project_id,
+          profileLoss: createProjectState.profileLoss,
+          profilePerf: createProjectState.profilePerf,
+          profileLossName: createProjectState.profileLossName,
+          profilePerfName: createProjectState.profilePerfName,
+          profilePerfBatchSize,
+          profilePerfNumCores,
+        })
+      );
+    } else if (currentAction.label === "complete") {
+      let path = createProjectPath(createProjectState.val.project_id);
+
+      if (createProjectState.profilingPerfVal) {
+        path = createProjectPerfPath(
+          createProjectState.val.project_id,
+          createProjectState.profilingPerfVal.profile_id
+        );
+      } else if (createProjectState.profilingLossVal) {
+        path = createProjectLossPath(
+          createProjectState.val.project_id,
+          createProjectState.profilingLossVal.profile_id
+        );
+      }
+
+      onClose(false);
+      history.push(path);
     } else {
       throw Error(`unknown currentAction.label ${currentAction.label}`);
     }
@@ -159,27 +231,6 @@ function ProjectCreateDialog({ open, handleClose }) {
       createProjectState.val.description = value;
     }
   }
-
-  const progressModel =
-    createProjectState.creationStatus === STATUS_SUCCEEDED ||
-    ["modelAnalysis", "finalize"].indexOf(createProjectState.creationProgressStage) > -1
-      ? 100
-      : createProjectState.creationProgressValue;
-  const progressProject =
-    createProjectState.slideIndex > 1
-      ? 100
-      : createProjectState.slideIndex > 0
-      ? 0
-      : null;
-  const progressProfile = createProjectState.slideIndex < 2 ? null : 0;
-  const instructionSets =
-    systemInfoState.val && systemInfoState.val.available_instructions
-      ? systemInfoState.val.available_instructions.join(" ")
-      : "";
-  const nmEngineAvailable =
-    systemInfoState.val && systemInfoState.val.available_engines
-      ? systemInfoState.val.available_engines.indexOf("neuralmagic") > -1
-      : false;
 
   return (
     <Dialog
@@ -292,7 +343,6 @@ function ProjectCreateDialog({ open, handleClose }) {
 ProjectCreateDialog.propTypes = {
   open: PropTypes.bool.isRequired,
   handleClose: PropTypes.func,
-  handleDelete: PropTypes.func,
 };
 
 export default ProjectCreateDialog;

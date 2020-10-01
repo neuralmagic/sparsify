@@ -14,7 +14,7 @@ const HOME_URL = null;
 function Home() {
   const classes = useStyles();
   const [displayType, setDisplayType] = useState(HOME_URL ? "iframe" : "fallback");
-  const [createOpen, setCreateOpen] = useState(true);
+  const [createOpen, setCreateOpen] = useState(false);
 
   const fallbackDescription =
     "Select a project from the left or add a new project with the bottom right button to profile, " +

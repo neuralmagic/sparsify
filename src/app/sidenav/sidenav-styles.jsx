@@ -34,7 +34,23 @@ export default function makeAppSideNavStyles() {
         height: "100%",
         display: "flex",
         alignItems: "flex-end",
-        cursor: "pointer",
+      },
+      infoButton: {
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "center",
+        alignItems: "center",
+        width: "32px",
+        height: "32px",
+        minWidth: "32px",
+        padding: 0,
+        margin: 0,
+
+        "& svg": {
+          fill: theme.palette.text.secondary,
+          width: "20px",
+          height: "20px",
+        },
       },
       title: {
         paddingLeft: theme.spacing(2),

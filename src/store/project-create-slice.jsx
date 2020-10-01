@@ -1,17 +1,15 @@
-import {
-  createSlice,
-  createAsyncThunk,
-  AsyncThunk,
-  Slice,
-  createSelector,
-} from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, AsyncThunk } from "@reduxjs/toolkit";
 
 import {
   jobProgressValue,
+  requestCreateProfileLoss,
+  requestCreateProfilePerf,
   requestCreateProject,
   requestCreateProjectModelAnalysis,
   requestGetJobTerminal,
   requestGetProject,
+  requestGetProjectProfileLoss,
+  requestGetProjectProfilePerf,
   requestUploadProjectModel,
   requestUploadProjectModelFromPath,
 } from "../api";
@@ -158,10 +156,39 @@ export const createProjectWithModelFromPathThunk = createAsyncThunk(
   }
 );
 
+const createProjectProfilesType = "createProject/createProjectProfilesThunk";
+const createProjectProfilesProgressType = `${createProjectProfilesType}/progress`;
+const createProjectProfilesProgressAction = (
+  stage,
+  progress,
+  numProfiles,
+  createdProfileLoss,
+  createdProfilePerf
+) => {
+  if (numProfiles > 1) {
+    progress = progress * 0.5;
+
+    if (stage.indexOf("Perf") > -1) {
+      progress += 0.5;
+    }
+  }
+
+  return {
+    type: createProjectProfilesProgressType,
+    payload: {
+      stage,
+      progress,
+      createdProfileLoss,
+      createdProfilePerf,
+    },
+  };
+};
+
 export const createProjectProfilesThunk = createAsyncThunk(
   "createProject/createProjectProfilesThunk",
   async (
     {
+      projectId,
       profileLoss,
       profilePerf,
       profileLossName,
@@ -170,12 +197,118 @@ export const createProjectProfilesThunk = createAsyncThunk(
       profilePerfNumCores,
     },
     thunkAPI
-  ) => {}
+  ) => {
+    let createdProfileLoss = null;
+    let createdProfilePerf = null;
+
+    if (profileLoss) {
+      // create the loss profile
+      thunkAPI.dispatch(
+        createProjectProfilesProgressAction(
+          "profileLossCreate",
+          0,
+          profileLoss + profilePerf,
+          createdProfileLoss,
+          createdProfilePerf
+        )
+      );
+      const createBody = await requestCreateProfileLoss(projectId, profileLossName);
+      createdProfileLoss = createBody.profile;
+      thunkAPI.dispatch(
+        createProjectProfilesProgressAction(
+          "profileLossCreate",
+          0,
+          profileLoss + profilePerf,
+          createdProfileLoss,
+          createdProfilePerf
+        )
+      );
+
+      // monitor the job for progress
+      const jobBody = await requestGetJobTerminal(
+        createdProfileLoss.job.job_id,
+        (progress) => {
+          thunkAPI.dispatch(
+            createProjectProfilesProgressAction(
+              "profileLossProgress",
+              jobProgressValue(progress),
+              profileLoss + profilePerf,
+              createdProfileLoss,
+              createdProfilePerf
+            )
+          );
+        },
+        () => false
+      );
+
+      // get the completed profile
+      const getBody = await requestGetProjectProfileLoss(
+        projectId,
+        createdProfileLoss.profile_id
+      );
+      createdProfileLoss = getBody.profile;
+    }
+
+    if (profilePerf) {
+      // create the performance profile
+      thunkAPI.dispatch(
+        createProjectProfilesProgressAction(
+          "profilePerfCreate",
+          0,
+          profileLoss + profilePerf,
+          createdProfileLoss,
+          createdProfilePerf
+        )
+      );
+      const createBody = await requestCreateProfilePerf(
+        projectId,
+        profilePerfName,
+        profilePerfBatchSize,
+        profilePerfNumCores
+      );
+      createdProfilePerf = createBody.profile;
+      thunkAPI.dispatch(
+        createProjectProfilesProgressAction(
+          "profilePerfCreate",
+          0,
+          profileLoss + profilePerf,
+          createdProfileLoss,
+          createdProfilePerf
+        )
+      );
+
+      // monitor the job for progress
+      const jobBody = await requestGetJobTerminal(
+        createdProfilePerf.job.job_id,
+        (progress) => {
+          thunkAPI.dispatch(
+            createProjectProfilesProgressAction(
+              "profilePerfProgress",
+              jobProgressValue(progress),
+              profileLoss + profilePerf,
+              createdProfileLoss,
+              createdProfilePerf
+            )
+          );
+        },
+        () => false
+      );
+
+      // get the completed profile
+      const getBody = await requestGetProjectProfilePerf(
+        projectId,
+        createdProfilePerf.profile_id
+      );
+      createdProfilePerf = getBody.profile;
+    }
+
+    return { createdProfileLoss, createdProfilePerf };
+  }
 );
 
 const defaultCreateProjectState = {
   // state for modal
-  slideIndex: 2,
+  slideIndex: 0,
   modelSelectRecognized: false,
   remotePath: "",
   remotePathError: "",
@@ -249,6 +382,43 @@ const createProjectSlice = createSlice({
 
       state.creationProgressStage = action.payload.stage;
       state.creationProgressValue = action.payload.progress;
+    },
+    [createProjectProfilesThunk.pending]: (state, action) => {
+      state.profilingStatus = STATUS_LOADING;
+      state.profilingError = null;
+      state.profilingLossVal = null;
+      state.profilingPerfVal = null;
+      state.profilingProgressStage = null;
+      state.profilingProgressValue = null;
+    },
+    [createProjectProfilesThunk.fulfilled]: (state, action) => {
+      state.profilingStatus = STATUS_SUCCEEDED;
+      state.profilingError = null;
+      state.profilingLossVal = action.payload.createdProfileLoss;
+      state.profilingPerfVal = action.payload.createdProfilePerf;
+      state.profilingProgressStage = null;
+      state.profilingProgressValue = null;
+    },
+    [createProjectProfilesThunk.rejected]: (state, action) => {
+      state.profilingStatus = STATUS_FAILED;
+      state.profilingError = action.error.message;
+      state.profilingProgressStage = null;
+      state.profilingProgressValue = null;
+    },
+    [createProjectProfilesProgressType]: (state, action) => {
+      state.profilingStatus = STATUS_LOADING;
+      state.profilingError = null;
+
+      if (action.payload.createdProfileLoss) {
+        state.profilingLossVal = action.payload.createdProfileLoss;
+      }
+
+      if (action.payload.createdProfilePerf) {
+        state.profilingPerfVal = action.payload.createdProfilePerf;
+      }
+
+      state.profilingProgressStage = action.payload.stage;
+      state.profilingProgressValue = action.payload.progress;
     },
   },
 });

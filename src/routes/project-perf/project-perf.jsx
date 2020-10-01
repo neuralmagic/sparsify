@@ -2,9 +2,11 @@ import React, { useEffect } from "react";
 import { Typography } from "@material-ui/core";
 import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
+import SentimentVeryDissatisfiedIcon from "@material-ui/icons/SentimentVeryDissatisfied";
 
 import ScrollerLayout from "../../components/scroller-layout";
 import makeStyles from "./project-perf-styles";
+import GenericPage from "../../components/generic-page";
 import LoaderLayout from "../../components/loader-layout";
 import {
   getOptimsBestEstimatedThunk,
@@ -150,7 +152,7 @@ function profilePerfDisplayValues(
   };
 }
 
-function ProjectPerf() {
+function ProjectPerf({ match }) {
   const classes = useStyles();
   const dispatch = useDispatch();
 
@@ -214,7 +216,11 @@ function ProjectPerf() {
     projectState.status,
     profilesPerfState.status,
   ]);
-  const overallError = projectState.error || profilesPerfState.error;
+  let overallError = projectState.error || profilesPerfState.error;
+  const { perfId } = match.params;
+  if (!overallError && !profilePerf && perfId) {
+    overallError = `Profile with id ${perfId} not found.`;
+  }
 
   let displayValues;
 
@@ -241,7 +247,14 @@ function ProjectPerf() {
       <LoaderLayout
         status={overallStatus}
         error={overallError}
-        rootClass={classes.body}
+        errorComponent={
+          <GenericPage
+            title="Error Retrieving Performance Profile"
+            description={overallError}
+            logoComponent={<SentimentVeryDissatisfiedIcon />}
+          />
+        }
+        rootClass={overallError ? "" : classes.body}
         loaderClass={classes.loader}
       >
         <div className={classes.layout}>

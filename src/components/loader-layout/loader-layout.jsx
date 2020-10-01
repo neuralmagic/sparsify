@@ -11,6 +11,7 @@ function LoaderLayout({
   status,
   error,
   errorTitle,
+  errorComponent,
   progress,
   loaderSize,
   rootClass,
@@ -52,11 +53,12 @@ function LoaderLayout({
 
   return (
     <div className={`${rootClass} ${classes.root}`}>
-      {showError && (
+      {showError && !errorComponent && (
         <div className={`${errorClass} ${classes.error}`}>
           <span>{`${errorTitle}${error}`}</span>
         </div>
       )}
+      {showError && errorComponent}
 
       {showLoading && (
         <div className={`${loaderClass} ${classes.loader}`}>
@@ -90,6 +92,7 @@ LoaderLayout.propTypes = {
   loading: PropTypes.bool,
   status: PropTypes.string,
   error: PropTypes.string,
+  errorComponent: PropTypes.node,
   errorTitle: PropTypes.string,
   progress: PropTypes.number,
   rootClass: PropTypes.string,

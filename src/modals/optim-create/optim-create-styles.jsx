@@ -16,7 +16,7 @@ export default function createOptimStyles() {
         margin: theme.spacing(1, 2, 1, 0),
       },
       dialog: {
-        minWidth: "600px",
+        width: "600px",
         padding: theme.spacing(2),
       },
       noPresetsLabel: {

@@ -12,10 +12,15 @@ export function jobProgressValue(progress) {
     return null;
   }
 
-  const stepProgress = progress.num_steps
-    ? progress.step_index / progress.num_steps
+  if (!progress.num_steps || progress.num_steps < 2) {
+    return progress.iter_val ? progress.iter_val * 100.0 : 0.0;
+  }
+
+  const stepProgress =
+    ((progress.step_index ? progress.step_index : 0.0) / progress.num_steps) * 100;
+  const iterValue = progress.iter_val
+    ? (progress.iter_val / progress.num_steps) * 100.0
     : 0.0;
-  const iterValue = progress.iter_val ? progress.iter_val * 100.0 : 0.0;
 
   return stepProgress + iterValue;
 }
@@ -49,16 +54,16 @@ export function requestGetJobTerminal(jobId, progressCallback, shouldCancelCallb
   return requestGetJob(jobId).then((data) => {
     const job = data.job;
 
-    if (progressCallback) {
-      progressCallback(job.progress);
-    }
-
     if (job.status === JOB_ERROR) {
       return Promise.reject(Error(job.error));
     }
 
     if (job.status === JOB_COMPLETED || job.status === JOB_CANCELED) {
       return Promise.resolve(data);
+    }
+
+    if (progressCallback) {
+      progressCallback(job.progress);
     }
 
     // job not completed yet, need to make another request

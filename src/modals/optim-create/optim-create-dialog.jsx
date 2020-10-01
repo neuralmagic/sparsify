@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { Dialog, DialogTitle } from "@material-ui/core";
 import { useDispatch, useSelector } from "react-redux";
 
 import {
   selectSelectedProjectState,
+  selectCreatedOptimsState,
+  getOptimsThunk,
   updateProjectThunk,
   createOptimThunk,
 } from "../../store";
@@ -13,11 +15,14 @@ import OptimSelectContainer from "./optim-select-container";
 import makeStyles from "./optim-create-styles";
 import useOptimSettingsState from "./hooks/optim-settings-hooks";
 import useProjectUpdateState from "../../hooks/use-project-update-state";
+import LoaderOverlay from "../../components/loader-overlay";
 
 const useStyles = makeStyles();
 
 function OptimCreateDialog({ open, handleClose, projectId }) {
   const [modalView, setModalView] = useState(0);
+  const [submitted, setSubmitted] = useState(false);
+  const [showError, setShowError] = useState(true);
   const classes = useStyles();
   const dispatch = useDispatch();
   const { pruning, setPruning } = useOptimSettingsState();
@@ -30,6 +35,7 @@ function OptimCreateDialog({ open, handleClose, projectId }) {
     validationErrors,
   } = useProjectUpdateState(projectId);
 
+  const createOptimState = useSelector(selectCreatedOptimsState);
   const selectedProjectState = useSelector(selectSelectedProjectState);
 
   if (
@@ -38,6 +44,14 @@ function OptimCreateDialog({ open, handleClose, projectId }) {
   ) {
     projectLoaded(selectedProjectState.val);
   }
+
+  useEffect(() => {
+    if (submitted && createOptimState.status === "succeeded") {
+      setSubmitted(false);
+      dispatch(getOptimsThunk({ projectId }));
+      handleClose();
+    }
+  }, [submitted, createOptimState.status]);
 
   const onSubmit = () => {
     projectSaving();
@@ -58,16 +72,32 @@ function OptimCreateDialog({ open, handleClose, projectId }) {
         add_pruning: pruning,
       })
     );
-    handleClose();
+    setSubmitted(true);
+    setShowError(true);
   };
 
   return (
     <Dialog
       open={open}
-      onClose={() => handleClose()}
-      maxWidth="sm"
+      onClose={() => {
+        setShowError(false);
+        handleClose();
+      }}
       PaperProps={{ className: classes.dialog }}
     >
+      <div
+        onClick={() => {
+          if (createOptimState.error) {
+            setShowError(false);
+          }
+        }}
+      >
+        <LoaderOverlay
+          loading={createOptimState.status === "loading"}
+          error={showError ? createOptimState.error : null}
+        />
+      </div>
+
       <DialogTitle>Model Optimization Settings</DialogTitle>
       {modalView === 0 && (
         <OptimInitContainer

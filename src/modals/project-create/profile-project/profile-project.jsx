@@ -1,7 +1,6 @@
 import React from "react";
-import {Button, Divider, IconButton, Typography} from "@material-ui/core";
+import { Button, Divider, Typography } from "@material-ui/core";
 import TextField from "@material-ui/core/TextField";
-import CloseIcon from "@material-ui/icons/Close";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Switch from "@material-ui/core/Switch";
 import PropTypes from "prop-types";
@@ -94,19 +93,17 @@ function ProfileProject({
   const action = profilingError ? "Clear" : "Cancel";
   let profilingLabel = profilingError ? "" : "Profiling model";
 
-  nmEngineAvailable = true;
-
-  // if (uploadingStage === "projectCreate") {
-  //   uploadingLabel = "Setting up";
-  // } else if (uploadingStage === "modelUpload") {
-  //   uploadingLabel = "Uploading";
-  // } else if (uploadingStage === "modelDownload") {
-  //   uploadingLabel = "Downloading";
-  // } else if (uploadingStage === "modelAnalysis") {
-  //   uploadingLabel = "Analyzing model";
-  // } else if (uploadingStage === "finalize") {
-  //   uploadingLabel = "Finalizing";
-  // }
+  if (
+    profilingStage === "profileLossCreate" ||
+    profilingStage === "profileLossProgress"
+  ) {
+    profilingLabel = "Profiling Loss";
+  } else if (
+      profilingStage === "profilePerfCreate" ||
+      profilingStage === "profilePerfProgress"
+  ) {
+    profilingLabel = "Profiling Performance";
+  }
 
   function handleAction() {
     if (profilingError && handleClear) {
@@ -214,8 +211,8 @@ function ProfileProject({
 }
 
 ProfileProject.propTypes = {
-  profileLoss: PropTypes.string,
-  profilePerf: PropTypes.string,
+  profileLoss: PropTypes.bool,
+  profilePerf: PropTypes.bool,
   profilePerfName: PropTypes.string,
   profilePerfBatchSize: PropTypes.string,
   profilePerfNumCores: PropTypes.string,
@@ -227,6 +224,7 @@ ProfileProject.propTypes = {
   profilingError: PropTypes.string,
   disableInputs: PropTypes.bool,
   handleProfileLoss: PropTypes.func,
+  handleLossName: PropTypes.func,
   handleProfilePerf: PropTypes.func,
   handlePerfName: PropTypes.func,
   handlePerfBatchSize: PropTypes.func,

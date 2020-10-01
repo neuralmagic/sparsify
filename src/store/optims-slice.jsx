@@ -1,16 +1,5 @@
-import {
-  compose,
-  path,
-  propEq,
-  find,
-  curry,
-  map,
-  when,
-  always,
-  mergeRight,
-  tap,
-} from "ramda";
-import { createSlice, createAsyncThunk, AsyncThunk, Slice } from "@reduxjs/toolkit";
+import { compose, path, propEq, find, curry, map, when, always } from "ramda";
+import { createSlice } from "@reduxjs/toolkit";
 import { createAsyncThunkWrapper } from "../store/utils";
 
 import {
@@ -18,34 +7,6 @@ import {
   requestChangeModifierSettings,
   requestCreateProjectOptimizer,
 } from "../api";
-
-/**
- * Async thunk for making a request to create a project optimizer
- *
- * @type {AsyncThunk<Promise<*>, {readonly projectId?: *, name?: string, add_pruning?: boolean, add_quantization?: boolean, add_lr_schedule?: boolean, add_trainable?: boolean}, {}>}
- */
-export const createOptimThunk = createAsyncThunkWrapper(
-  "selectedOptims/createProjectOptims",
-  async ({
-    projectId,
-    name,
-    add_pruning,
-    add_quantization,
-    add_lr_schedule,
-    add_trainable,
-  }) => {
-    const body = await requestCreateProjectOptimizer(
-      projectId,
-      name,
-      add_pruning,
-      add_quantization,
-      add_lr_schedule,
-      add_trainable
-    );
-
-    return body.optim;
-  }
-);
 
 /**
  * Async thunk for making a request to get the starting page for a project's optimizers
@@ -140,21 +101,6 @@ const selectedOptimsSlice = createSlice({
         state.val
       );
       state.error = null;
-    },
-    [createOptimThunk.pending]: (state, action) => {
-      state.status = "loading";
-      state.projectId = action.meta.arg.projectId;
-    },
-    [createOptimThunk.fulfilled]: (state, action) => {
-      state.status = "succeeded";
-      state.val.push(action.payload);
-      state.projectId = action.meta.arg.projectId;
-      state.error = null;
-    },
-    [createOptimThunk.rejected]: (state, action) => {
-      state.status = "failed";
-      state.error = action.error.message;
-      state.projectId = action.meta.arg.projectId;
     },
   },
 });

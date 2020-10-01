@@ -27,6 +27,10 @@ function ProgressLine({ progress }) {
   );
 }
 
+ProgressLine.propTypes = {
+  progress: PropTypes.number,
+};
+
 function ProgressIcon({ children, iconText, active }) {
   const classes = useStyles({ active });
 
@@ -39,6 +43,12 @@ function ProgressIcon({ children, iconText, active }) {
     </div>
   );
 }
+
+ProgressIcon.propTypes = {
+  children: PropTypes.node.isRequired,
+  iconText: PropTypes.string.isRequired,
+  active: PropTypes.bool,
+};
 
 function ProgressHeader({ progressModel, progressProject, progressProfile }) {
   const classes = useStyles();

@@ -3,7 +3,6 @@ import { makeStyles } from "@material-ui/core/styles";
 export default function makeSelectModelStyles() {
   return makeStyles(
     (theme) => {
-      console.log(theme);
       return {
         root: {
           position: "relative",

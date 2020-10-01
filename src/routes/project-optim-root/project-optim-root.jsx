@@ -44,7 +44,7 @@ function ProjectOptimRoot({ match }) {
         className={classes.fab}
         onClick={() => setIsOptimCreateOpen(true)}
       >
-        <AddIcon classes={classes.fabIcon} />
+        <AddIcon className={classes.fabIcon} />
         Create
       </Fab>
     </Box>

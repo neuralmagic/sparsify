@@ -10,7 +10,7 @@ export default function createExportStyles() {
       codeblock: {
         margin: theme.spacing(2, 0),
         height: "20vh",
-        width: "40vw",
+        width: "750px",
         overflowY: "scroll",
         borderRadius: "5px",
         borderStyle: "solid",
@@ -33,6 +33,7 @@ export default function createExportStyles() {
       },
       dialog: {
         padding: theme.spacing(2),
+        width: "800px",
       },
     };
   });

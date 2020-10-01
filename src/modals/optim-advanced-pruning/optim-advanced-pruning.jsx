@@ -3,23 +3,28 @@ import React, { useState } from 'react'
 import clsx from 'clsx'
 import { useSelector, useDispatch } from 'react-redux'
 import { Typography, IconButton, Grid, TextField, Table, TableBody, Dialog, DialogTitle,
-  TableCell, TableContainer, TableHead, TableRow, Switch, Slider, DialogContent, Box } from '@material-ui/core'
+  TableCell, TableContainer, TableHead, TableRow, Switch, Slider, DialogContent, Box,
+  Collapse } from '@material-ui/core'
 import CloseIcon from '@material-ui/icons/Close'
+import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown'
+import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp'
 import LayersChart from '../../components/layers-chart'
 import MetricItem from '../../components/metric-item'
 import { formatWithMantissa } from '../../components'
 import PruningSettings from '../../components/pruning-settings'
 
-import makeStyles, { makeTableStyles, makeFiltersStyles } from "./optim-advanced-pruning-styles"
+import makeStyles, { makeTableStyles, makeFiltersStyles, makeTableRowStyles } from "./optim-advanced-pruning-styles"
 import {
   selectModifierAdjustableSettings,
   changeModifierAdjustableSettings,
   changeLayerAdjustableSettings,
-  selectLayerAdjustableSettings
+  selectLayerAdjustableSettings,
+  selectSelectedProjectPrunableNodesById
 } from "../../store";
 
 const useStyles = makeStyles()
 const tableStyles = makeTableStyles()
+const tableRowStyles = makeTableRowStyles()
 const filtersStyles = makeFiltersStyles()
 
 const SummaryMetrics = ({ modifier }) =>
@@ -107,57 +112,123 @@ const Filters = ({ modifier }) => {
   </Grid>
 }
 
-const LayersTableRow = ({ modifier, layer }) => {
-  const classes = tableStyles()
+const LayersTableRow = ({ modifier, layer, data }) => {
+  const classes = tableRowStyles()
   const dispatch = useDispatch()
+  const [open, setOpen] = useState(false)
   const layerSettings = useSelector(selectLayerAdjustableSettings(modifier.modifier_id, layer.node_id))
 
-  return <TableRow key={layer.node_id} className={clsx(classes.row, { [classes.rowDisabled]: layerSettings.sparsity === null })}>
-    <TableCell>
-      <Typography>{layer.node_id}</Typography>
-    </TableCell>
-    <TableCell>
-      <div className={classes.sparsityCell}>
-        <Switch checked={layerSettings.sparsity !== null} color='primary'
-          onChange={e => dispatch(changeLayerAdjustableSettings({
-            modifierId: modifier.modifier_id,
-            layerId: layer.node_id,
-            settings: { sparsity: e.target.checked ? modifier.sparsity : null }
-          }))}/>
-        <Slider value={layerSettings.sparsity * 100} min={0} max={100}
-          disabled={layerSettings.sparsity === null}
-          onChange={(e, value) => dispatch(changeLayerAdjustableSettings({
-            modifierId: modifier.modifier_id,
-            layerId: layer.node_id,
-            settings: { sparsity: Number(value) / 100 }
-          }))}/>
-        <Typography className={classes.sparsityValue}>{layerSettings.sparsity ? `${formatWithMantissa(1, layerSettings.sparsity * 100)}%` : ''}</Typography>
-      </div>
-    </TableCell>
-    <TableCell>
-      <Typography>{formatWithMantissa(3, layer.est_recovery)}</Typography>
-    </TableCell>
-    <TableCell>
-      <Typography>{layer.est_perf_gain ? `${formatWithMantissa(1, layer.est_perf_gain)}x` : '--'}</Typography>
-    </TableCell>
-    <TableCell>
-      <Typography>{formatWithMantissa(4, layer.est_time)}</Typography>
-    </TableCell>
-    <TableCell>
-      <Typography>{formatWithMantissa(4, layer.est_time_baseline)}</Typography>
-    </TableCell>
-    <TableCell>
-      <Typography>{formatWithMantissa(4, layer.est_loss_sensitivity)}</Typography>
-    </TableCell>
-    <TableCell>
-      <Typography>{formatWithMantissa(4, layer.est_perf_sensitivity)}</Typography>
-    </TableCell>
-  </TableRow>
+  const SectionText = ({ children }) => <Grid item className={classes.layerDetailsSectionText}>{children}</Grid>
+
+  return <React.Fragment>
+    <TableRow key={layer.node_id} className={clsx(classes.root, { [classes.disabled]: layerSettings.sparsity === null })}>
+      <TableCell style={{ padding: 0 }}>
+        <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
+          {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+        </IconButton>
+      </TableCell>
+      <TableCell style={{ paddingLeft: 0}}>
+        <Typography>{data.weight_name}</Typography>
+      </TableCell>
+      <TableCell>
+        <div className={classes.sparsityCell}>
+          <Switch checked={layerSettings.sparsity !== null} color='primary'
+            onChange={e => dispatch(changeLayerAdjustableSettings({
+              modifierId: modifier.modifier_id,
+              layerId: layer.node_id,
+              settings: { sparsity: e.target.checked ? modifier.sparsity : null }
+            }))}/>
+          <Slider value={layerSettings.sparsity * 100} min={0} max={100}
+            disabled={layerSettings.sparsity === null}
+            onChange={(e, value) => dispatch(changeLayerAdjustableSettings({
+              modifierId: modifier.modifier_id,
+              layerId: layer.node_id,
+              settings: { sparsity: Number(value) / 100 }
+            }))}/>
+          <Typography className={classes.sparsityValue}>{layerSettings.sparsity ? `${formatWithMantissa(1, layerSettings.sparsity * 100)}%` : ''}</Typography>
+        </div>
+      </TableCell>
+      <TableCell>
+        <Typography>{formatWithMantissa(3, layer.est_recovery)}</Typography>
+      </TableCell>
+      <TableCell>
+        <Typography>{layer.est_perf_gain ? `${formatWithMantissa(1, layer.est_perf_gain)}x` : '--'}</Typography>
+      </TableCell>
+      <TableCell>
+        <Typography>{formatWithMantissa(4, layer.est_time)}</Typography>
+      </TableCell>
+      <TableCell>
+        <Typography>{formatWithMantissa(4, layer.est_time_baseline)}</Typography>
+      </TableCell>
+      <TableCell>
+        <Typography>{formatWithMantissa(4, layer.est_loss_sensitivity)}</Typography>
+      </TableCell>
+      <TableCell>
+        <Typography>{formatWithMantissa(4, layer.est_perf_sensitivity)}</Typography>
+      </TableCell>
+    </TableRow>
+    <TableRow>
+      <TableCell style={{ paddingBottom: 0, paddingTop: 0 }}/>
+      <TableCell style={{ padding: 0 }} colSpan={8}>
+        <Collapse in={open} unmountOnExit>
+          <Grid container direction="row" className={classes.layerDetails}>
+            <Grid item direction="column" className={classes.layerDetailsSection}>
+              <Grid item className={classes.layerDetailsSectionHeader}>Measures</Grid>
+              <Grid item>
+                <Grid container direction="row" spacing={2}>
+                  <Grid item direction="column">
+                    <SectionText>Current parameters</SectionText>
+                    <SectionText>Baseline parameters</SectionText>
+                    <SectionText>Current FLOPS</SectionText>
+                    <SectionText>Baseline FLOPS</SectionText>
+                  </Grid>
+                  <Grid item direction="column">
+                    <Grid item>{data.params}</Grid>
+                    <Grid item>{data.params}</Grid>
+                    <Grid item>{data.flops}</Grid>
+                    <Grid item>{data.flops}</Grid>
+                  </Grid>
+                </Grid>
+              </Grid>
+            </Grid>
+            <Grid item direction="column" spacing={4}>
+              <Grid item className={classes.layerDetailsSectionHeader}>Layer attributes</Grid>
+              <Grid item>
+                <Grid container direction="row" spacing={2}>
+                  <Grid item direction="column">
+                    <SectionText>Type</SectionText>
+                    <SectionText>Dilations</SectionText>
+                    <SectionText>Group</SectionText>
+                    <SectionText>Kernel_shape</SectionText>
+                  </Grid>
+                  <Grid item direction="column">
+                    <Grid item>{data.op_type}</Grid>
+                    <Grid item>{data.attributes.dilations?.join(', ')}</Grid>
+                    <Grid item>{data.attributes.group}</Grid>
+                    <Grid item>{data.attributes.kernel_shape?.join(', ')}</Grid>
+                  </Grid>
+                  <Grid item direction="column">
+                    <SectionText>Pads</SectionText>
+                    <SectionText>Strides</SectionText>
+                  </Grid>
+                  <Grid item direction="column">
+                    <Grid item>{data.attributes.pads?.join(', ')}</Grid>
+                    <Grid item>{data.attributes.strides?.join(', ')}</Grid>
+                  </Grid>
+                </Grid>
+              </Grid>
+            </Grid>
+          </Grid>
+        </Collapse>
+      </TableCell>
+    </TableRow>
+  </React.Fragment>
 }
 
 const LayersTable = ({ modifier }) => {
   const classes = tableStyles()
   const [searchTerm, setSearchTerm] = useState(null)
+  const layerData = useSelector(selectSelectedProjectPrunableNodesById)
 
   const filteredLayers = compose(
     when(
@@ -171,7 +242,9 @@ const LayersTable = ({ modifier }) => {
       <Table size='small'>
         <TableHead className={classes.header}>
           <TableRow>
-            <TableCell>
+            <TableCell size="small" style={{ padding: 0 }}>
+            </TableCell>
+            <TableCell style={{ paddingLeft: 0 }}>
               <TextField
                 variant='outlined'
                 label='Search Layers'
@@ -203,13 +276,13 @@ const LayersTable = ({ modifier }) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {filteredLayers.map(layer => <LayersTableRow key={layer.node_id} modifier={modifier} layer={layer}/>)}
+          {filteredLayers.map(layer => <LayersTableRow key={layer.node_id} modifier={modifier} layer={layer} data={layerData[layer.node_id]}/>)}
         </TableBody>
       </Table>
     </TableContainer>)
 }
 
-export default ({ modifier, optim, open, onClose }) => {
+export default ({ modifier, open, onClose }) => {
   const classes = useStyles()
 
   return <Dialog

@@ -11,6 +11,7 @@ export default function makeTheme(darkMode) {
       type: darkMode ? "dark" : "light",
       primary: { main: "#4652B1", contrastText: "#FFFFFF" },
       secondary: { main: "#ff9900", contrastText: "#FFFFFF" },
+      disabled: { main: '#777777' }
     },
     typography: {
       fontFamily: ["Roboto", "Open Sans", "sans-serif"].join(","),

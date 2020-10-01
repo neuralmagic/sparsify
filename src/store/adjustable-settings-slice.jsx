@@ -117,7 +117,7 @@ function* changeModifierAdjustableSettingSaga({ payload }) {
 }
 
 function* changeLayerAdjustableSettingsSaga({ payload }) {
-  yield delay(1500)
+  yield delay(1000)
 
   const layerSettings = yield select(selectLayerAdjustableSettings(payload.modifierId, payload.layerId))
 

@@ -1,3 +1,4 @@
+import { compose, prop, propEq, filter, indexBy } from 'ramda';
 import {
   createSlice,
   createAsyncThunk,
@@ -233,6 +234,13 @@ export const selectSelectedProjectModelAnalysisNodeParams = createSelector(
     };
   }
 );
+
+export const selectSelectedProjectPrunableNodesById = createSelector(
+  [selectSelectedProjectModelAnalysis],
+  compose(
+    indexBy(prop('id')),
+    filter(propEq('prunable', true)),
+    prop('nodes')))
 
 export const selectSelectedProjectModelAnalysisPerfNodeSummaries = createSelector(
   [selectSelectedProjectModelAnalysis],

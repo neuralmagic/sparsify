@@ -41,14 +41,25 @@ export const makeTableStyles = () => makeStyles(
           textTransform: 'uppercase'
         },
         backgroundColor: '#f4f4f8'
-      },
-      row: {
+      }
+    };
+  },
+  { name: "OptimAdvancedPruningTableStyles" }
+)
+
+export const makeTableRowStyles = () => makeStyles(
+  (theme) => {
+    return {
+      root: {
         '& .MuiTypography-root': {
           fontSize: 14
         },
+        '& > *': {
+          borderBottom: 'unset',
+        },
         height: 40
       },
-      rowDisabled: {
+      disabled: {
         opacity: 0.4
       },
       sparsityCell: {
@@ -58,17 +69,31 @@ export const makeTableStyles = () => makeStyles(
       },
       sparsityValue: {
         marginLeft: 10
+      },
+      layerDetails: {
+        paddingTop: theme.spacing(1),
+        paddingBottom: theme.spacing(2)
+      },
+      layerDetailsSection: {
+        paddingRight: theme.spacing(5)
+      },
+      layerDetailsSectionHeader: {
+        borderBottom: '1px solid #E0E0E0',
+        marginBottom: 10
+      },
+      layerDetailsSectionText: {
+        color: theme.palette.disabled.main
       }
     };
   },
-  { name: "OptimAdvancedPruningTableStyles" }
+  { name: "OptimAdvancedPruningTableRowStyles" }
 )
 
 export const makeFiltersStyles = () => makeStyles(
   (theme) => {
     return {
       input: {
-        width: 100
+        width: 200
       }
     }
   },

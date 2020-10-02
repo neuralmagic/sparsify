@@ -22,6 +22,8 @@ import {
   selectSelectedProjectPrunableNodesById
 } from "../../store";
 
+import { readableNumber } from "../../components";
+
 const useStyles = makeStyles()
 const tableStyles = makeTableStyles()
 const tableRowStyles = makeTableRowStyles()
@@ -183,10 +185,10 @@ const LayersTableRow = ({ modifier, layer, data }) => {
                     <SectionText>Baseline FLOPS</SectionText>
                   </Grid>
                   <Grid item direction="column">
-                    <Grid item>{data.params}</Grid>
-                    <Grid item>{data.params}</Grid>
-                    <Grid item>{data.flops}</Grid>
-                    <Grid item>{data.flops}</Grid>
+                    <Grid item>{readableNumber(layer.params)}</Grid>
+                    <Grid item>{readableNumber(layer.params_baseline)}</Grid>
+                    <Grid item>{readableNumber(layer.flops)}</Grid>
+                    <Grid item>{readableNumber(layer.flops_baseline)}</Grid>
                   </Grid>
                 </Grid>
               </Grid>

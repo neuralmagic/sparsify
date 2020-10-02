@@ -1,12 +1,20 @@
-import { compose, path, propEq, find, curry, map, when, always } from "ramda";
+import { compose, path, propEq, find, curry, map, when,
+  always, indexBy, prop, filter, defaultTo, mergeRight } from "ramda";
 import { createSlice } from "@reduxjs/toolkit";
 import { createAsyncThunkWrapper } from "../store/utils";
 
 import {
+  createSelector,
+} from "@reduxjs/toolkit"
+
+import {
   requestGetProjectOptims,
   requestChangeModifierSettings,
-  requestCreateProjectOptimizer,
 } from "../api";
+
+import { selectSelectedProjectModelAnalysis } from './project-slice'
+import { selectSelectedProfileLoss } from './profiles-loss-slice'
+import { selectSelectedProfilePerf } from './profiles-perf-slice'
 
 /**
  * Async thunk for making a request to get the starting page for a project's optimizers
@@ -125,5 +133,32 @@ export const selectSelectedOptimsState = (state) => state.selectedOptims;
 export const selectedOptimById = curry((id, state) =>
   compose(find(propEq("optim_id", id)), path(["selectedOptims", "val"]))(state)
 );
+
+export const selectSelectedProjectPrunableNodesById = createSelector(
+  [selectSelectedProjectModelAnalysis, selectSelectedProfileLoss, selectSelectedProfilePerf],
+  (modelAnalysis, loss, perf) => compose(
+    indexBy(prop('id')),
+    map(layer => mergeRight({
+      measurements: {
+        loss: compose(
+          defaultTo({ 0: 0, 1: layer.prunable_equation_sensitivity }),
+          prop('measurements'),
+          find(propEq('id', layer.id)),
+          defaultTo([]),
+          path(['analysis', 'pruning', 'ops']))(
+          loss),
+        perf: compose(
+          defaultTo({ 0: layer.flops, 1: 0 }),
+          prop('measurements'),
+          find(propEq('id', layer.id)),
+          defaultTo([]),
+          path(['analysis', 'pruning', 'ops']))(
+          perf),
+      }
+    })(
+    layer)),
+    filter(propEq('prunable', true)),
+    prop('nodes'))(
+    modelAnalysis))
 
 export default selectedOptimsSlice.reducer;

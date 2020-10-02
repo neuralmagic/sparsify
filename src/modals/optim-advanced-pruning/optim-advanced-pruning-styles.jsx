@@ -75,7 +75,7 @@ export const makeTableRowStyles = () => makeStyles(
         paddingBottom: theme.spacing(2)
       },
       layerDetailsSection: {
-        paddingRight: theme.spacing(5)
+        paddingRight: theme.spacing(8)
       },
       layerDetailsSectionHeader: {
         borderBottom: '1px solid #E0E0E0',
@@ -83,6 +83,10 @@ export const makeTableRowStyles = () => makeStyles(
       },
       layerDetailsSectionText: {
         color: theme.palette.disabled.main
+      },
+      chart: {
+        width: 200,
+        height: 120
       }
     };
   },

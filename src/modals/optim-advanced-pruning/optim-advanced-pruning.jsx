@@ -1,6 +1,9 @@
-import { compose, filter, contains, prop, defaultTo, when, always, not, isNil } from 'ramda'
+import { compose, filter, contains, prop, defaultTo, sortBy,
+  when, always, not, isNil, toPairs, map, objOf, of as rof,
+  head, last } from 'ramda'
 import React, { useState } from 'react'
 import clsx from 'clsx'
+import { ResponsiveLine } from "@nivo/line"
 import { useSelector, useDispatch } from 'react-redux'
 import { Typography, IconButton, Grid, TextField, Table, TableBody, Dialog, DialogTitle,
   TableCell, TableContainer, TableHead, TableRow, Switch, Slider, DialogContent, Box,
@@ -19,7 +22,7 @@ import {
   changeModifierAdjustableSettings,
   changeLayerAdjustableSettings,
   selectLayerAdjustableSettings,
-  selectSelectedProjectPrunableNodesById
+  selectSelectedProjectPrunableNodesById,
 } from "../../store";
 
 import { readableNumber } from "../../components";
@@ -114,11 +117,45 @@ const Filters = ({ modifier }) => {
   </Grid>
 }
 
+const LayerMeasurementsChart = ({ data }) => (
+  <ResponsiveLine
+      data={data}
+      margin={{ top: 20, right: 20, bottom: 20, left: 10 }}
+      xScale={{ type: 'point' }}
+      yScale={{ type: 'linear', min: 'auto', max: 'auto', reverse: false }}
+      axisTop={null}
+      axisRight={null}
+      axisBottom={{
+        orient: 'bottom',
+        tickSize: 0,
+        tickPadding: 5,
+        tickRotation: 0,
+        tickValues: [head(data[0].data).x, last(data[0].data).x]
+      }}
+      axisLeft={null}
+      enableGridX={false}
+      colors={['#86C368']}
+      enablePoints={false}
+      enableArea={true}
+      useMesh={true}
+      enableCrosshair={false}
+      areaOpacity={0.3}
+      isInteractive={true}
+      enableCrosshair={false}
+      animate={false}/>)
+
 const LayersTableRow = ({ modifier, layer, data }) => {
   const classes = tableRowStyles()
   const dispatch = useDispatch()
   const [open, setOpen] = useState(false)
   const layerSettings = useSelector(selectLayerAdjustableSettings(modifier.modifier_id, layer.node_id))
+
+  const asChartData = compose(
+    rof,
+    objOf('data'),
+    sortBy(prop('x')),
+    map(values => ({ x: values[0], y: defaultTo(0, values[1]) })),
+    toPairs)
 
   const SectionText = ({ children }) => <Grid item className={classes.layerDetailsSectionText}>{children}</Grid>
 
@@ -193,7 +230,7 @@ const LayersTableRow = ({ modifier, layer, data }) => {
                 </Grid>
               </Grid>
             </Grid>
-            <Grid item direction="column" spacing={4}>
+            <Grid item direction="column" className={classes.layerDetailsSection}>
               <Grid item className={classes.layerDetailsSectionHeader}>Layer attributes</Grid>
               <Grid item>
                 <Grid container direction="row" spacing={2}>
@@ -218,6 +255,22 @@ const LayersTableRow = ({ modifier, layer, data }) => {
                     <Grid item>{data.attributes.strides?.join(', ')}</Grid>
                   </Grid>
                 </Grid>
+              </Grid>
+            </Grid>
+            <Grid item direction="column" className={classes.layerDetailsSection}>
+              <Grid item>Recoverability vs Sparsity</Grid>
+              <Grid item>
+                <div className={classes.chart}>
+                  <LayerMeasurementsChart data={asChartData(data.measurements.loss)}/>
+                </div>
+              </Grid>
+            </Grid>
+            <Grid item direction="column" className={classes.layerDetailsSection}>
+              <Grid item>Performance density</Grid>
+              <Grid item>
+                <div className={classes.chart}>
+                  <LayerMeasurementsChart data={asChartData(data.measurements.perf)}/>
+                </div>
               </Grid>
             </Grid>
           </Grid>

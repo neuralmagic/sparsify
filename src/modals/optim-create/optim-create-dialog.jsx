@@ -47,12 +47,11 @@ function OptimCreateDialog({ open, handleClose, projectId }) {
 
   useEffect(() => {
     if (submitted && createOptimState.status === "succeeded") {
-      setSubmitted(false);
       dispatch(getOptimsThunk({ projectId }));
       handleClose();
+      setSubmitted(false);
     }
   }, [submitted, createOptimState.status]);
-
   const onSubmit = () => {
     projectSaving();
     dispatch(

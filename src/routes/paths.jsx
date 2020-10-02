@@ -4,7 +4,6 @@ export const PATH_HOME = "/";
 export const PATH_PROJECT = "/project/:projectId";
 export const PATH_PROJECT_ACTION = `${PATH_PROJECT}/:action?/:actionId?`;
 export const PATH_PROJECT_BENCHMARK = `${PATH_PROJECT}/bench`;
-export const PATH_PROJECT_OPTIM_ROOT = `${PATH_PROJECT}/optim`;
 export const PATH_PROJECT_OPTIM = `${PATH_PROJECT}/optim/:optimId?`;
 export const PATH_PROJECT_PERF = `${PATH_PROJECT}/perf/:perfId?`;
 export const PATH_PROJECT_LOSS = `${PATH_PROJECT}/loss/:lossId?`;

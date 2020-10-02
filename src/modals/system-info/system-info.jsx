@@ -30,7 +30,7 @@ function SystemInfoField({ label, value }) {
         <Typography color="textSecondary">{label}</Typography>
       </Grid>
       <Grid item xs={6}>
-        <Typography>{value ? `v${value}` : "Not Detected"}</Typography>
+        <Typography>{value ? `${value}` : "Not Detected"}</Typography>
       </Grid>
     </Grid>
   );
@@ -48,7 +48,10 @@ function SystemInfoModal({ open, handleClose, isDarkMode, toggleDarkMode }) {
     onnxruntime: null,
   });
 
-  const { available_instructions } = selectedSystemState;
+  const available_instructions = _.get(
+    selectedSystemState,
+    "val.available_instructions"
+  );
 
   useEffect(() => {
     if (open) {
@@ -70,8 +73,8 @@ function SystemInfoModal({ open, handleClose, isDarkMode, toggleDarkMode }) {
               <Box className={classes.logo}>
                 <NMLogo />
               </Box>
-              <span className={classes.title}>Sparsify</span>
-              <span className={classes.trademark}>TM</span>
+              <Typography className={classes.title}>Sparsify</Typography>
+              <Typography className={classes.trademark}>TM</Typography>
             </Box>
             <Typography variant="subtitle2">{`v${process.env.REACT_APP_VERSION}`}</Typography>
           </Box>
@@ -115,8 +118,8 @@ function SystemInfoModal({ open, handleClose, isDarkMode, toggleDarkMode }) {
         <Button
           onClick={() => handleClose()}
           color="secondary"
-          className={classes.containedButton}
           variant="contained"
+          disableElevation
         >
           Close
         </Button>

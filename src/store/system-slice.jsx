@@ -1,7 +1,13 @@
 import { createSlice, createAsyncThunk, AsyncThunk, Slice } from "@reduxjs/toolkit";
 
 import { requestGetSystemInfo } from "../api";
-import {createAsyncThunkWrapper, STATUS_FAILED, STATUS_IDLE, STATUS_LOADING, STATUS_SUCCEEDED} from "./utils";
+import {
+  createAsyncThunkWrapper,
+  STATUS_FAILED,
+  STATUS_IDLE,
+  STATUS_LOADING,
+  STATUS_SUCCEEDED,
+} from "./utils";
 
 /**
  * Async thunk for making a request to get the system info from the server

@@ -59,8 +59,8 @@ function ServerDownModal() {
           <Button
             onClick={() => dispatch(getSystemInfoThunk())}
             color="secondary"
-            className={classes.containedButton}
             variant="contained"
+            disableElevation
           >
             Refresh
           </Button>

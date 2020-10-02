@@ -111,7 +111,7 @@ function profileLossDisplayValues(
   return values;
 }
 
-function ProjectLoss({ match }) {
+function ProjectLoss() {
   const classes = useStyles();
   const dispatch = useDispatch();
 
@@ -174,11 +174,7 @@ function ProjectLoss({ match }) {
   ]);
   let overallError =
     projectState.error || profilesPerfState.error || profilesLossState.error;
-  const { lossId } = match.params;
-  if (!overallError && !profileLoss && lossId) {
-    overallError = `Profile with id ${lossId} not found.`;
-  }
-
+  
   let displayValues;
 
   if (!profilesLossState.selectedId) {

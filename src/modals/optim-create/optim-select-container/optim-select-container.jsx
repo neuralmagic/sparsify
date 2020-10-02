@@ -47,6 +47,7 @@ function OptimSelectContainer({
           <Button
             onClick={() => onCancel()}
             className={`${classes.button} ${classes.cancelButton}`}
+            disableElevation
           >
             Cancel
           </Button>
@@ -54,11 +55,10 @@ function OptimSelectContainer({
         <Box marginRight={1}>
           <Button
             onClick={() => onPrevious()}
-            color="secondary"
-            variant="contained"
-            className={classes.button}
+            className={`${classes.cancelButton} ${classes.previousButton}`}
+            disableElevation
           >
-            Previous
+            Back
           </Button>
         </Box>
         <Box>
@@ -67,6 +67,7 @@ function OptimSelectContainer({
             color="secondary"
             variant="contained"
             className={classes.button}
+            disableElevation
           >
             Apply
           </Button>

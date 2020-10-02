@@ -8,6 +8,7 @@ import {
   Tab,
   Tabs,
 } from "@material-ui/core";
+
 import makeStyles from "../optim-create-styles";
 import CustomOptimSelect from "./custom-optim-select";
 import PresetOptimSelect from "./preset-optim-select";
@@ -38,7 +39,8 @@ function OptimInitContainer({ onCancel, onNext, pruning, setPruning }) {
         <Box paddingRight={1}>
           <Button
             onClick={() => onCancel()}
-            className={`${classes.button} ${classes.cancelButton}`}
+            className={classes.cancelButton}
+            disableElevation
           >
             Cancel
           </Button>
@@ -48,7 +50,7 @@ function OptimInitContainer({ onCancel, onNext, pruning, setPruning }) {
             onClick={() => onNext()}
             color="secondary"
             variant="contained"
-            className={classes.button}
+            disableElevation
           >
             Next
           </Button>

@@ -13,6 +13,7 @@ export default function makeAppSideNavStyles() {
         fontSize: theme.typography.fontSize,
         fontFamily: theme.typography.fontFamily,
         borderRadius: 0,
+        position: "relative"
       },
       header: {
         display: "flex",
@@ -30,26 +31,18 @@ export default function makeAppSideNavStyles() {
         },
       },
       info: {
-        padding: theme.spacing(0, 0, 0, 2),
-        height: "100%",
-        display: "flex",
-        alignItems: "flex-end",
+        top: "0px",
+        right: "0px",
+        position: "absolute",
+        margin: theme.spacing(0.5)
       },
       infoButton: {
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "center",
-        alignItems: "center",
-        width: "32px",
-        height: "32px",
-        minWidth: "32px",
         padding: 0,
         margin: 0,
-
         "& svg": {
           fill: theme.palette.text.secondary,
-          width: "20px",
-          height: "20px",
+          width: "15px",
+          height: "15px",
         },
       },
       title: {

@@ -92,7 +92,6 @@ function ProjectSideNav({ match, location }) {
     selectedProfilesPerfState,
     selectedProfilesLossState,
     selectedOptimsState,
-    selectedOptimsState,
   ]);
 
   function handleBackClick() {
@@ -147,13 +146,17 @@ function ProjectSideNav({ match, location }) {
                 selectedState={selectedProfilesPerfState}
                 projectId={projectId}
                 action={action}
-                profileId={action === "perf" ? actionId : null}
+                profileId={
+                  action === "perf" ? actionId : selectedProfilesPerfState.selectedId
+                }
               />
               <ProjectSideNavMenuProfileLoss
                 selectedState={selectedProfilesLossState}
                 projectId={projectId}
                 action={action}
-                profileId={action === "loss" ? actionId : null}
+                profileId={
+                  action === "loss" ? actionId : selectedProfilesLossState.selectedId
+                }
               />
               <ProjectSideNavMenuOptim
                 selectedOptimsState={selectedOptimsState}
@@ -161,7 +164,7 @@ function ProjectSideNav({ match, location }) {
                 selectedProfilesLossState={selectedProfilesLossState}
                 projectId={projectId}
                 action={action}
-                optimId={action === "optim" ? actionId : null}
+                optimId={action === "optim" ? actionId : selectedOptimsState.selectedId}
                 profilePerfId={profilePerfId}
                 profileLossId={profileLossId}
               />

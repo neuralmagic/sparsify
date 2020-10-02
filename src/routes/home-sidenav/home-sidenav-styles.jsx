@@ -19,6 +19,9 @@ export default function makeHomeSideNavStyles() {
         projectCardTitle: {
           width: "100%",
         },
+        noProjectTitle: {
+          marginLeft: theme.spacing(1)
+        },
         projectCardSubTitle: {
           width: "100%",
         },

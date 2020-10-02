@@ -152,7 +152,7 @@ function profilePerfDisplayValues(
   };
 }
 
-function ProjectPerf({ match }) {
+function ProjectPerf() {
   const classes = useStyles();
   const dispatch = useDispatch();
 
@@ -217,10 +217,6 @@ function ProjectPerf({ match }) {
     profilesPerfState.status,
   ]);
   let overallError = projectState.error || profilesPerfState.error;
-  const { perfId } = match.params;
-  if (!overallError && !profilePerf && perfId) {
-    overallError = `Profile with id ${perfId} not found.`;
-  }
 
   let displayValues;
 

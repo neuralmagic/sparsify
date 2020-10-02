@@ -39,11 +39,6 @@ function ProjectSideNavMenuProfileLoss({
       >
         <ProjectSideNavSubMenuTitle title="Profile" showAdd={true} />
         <Divider light className={classes.divider} />
-        <ProjectSideNavSubMenuItem
-          path={createProjectLossPath(projectId, null)}
-          selected={!profileId}
-          value="Approximated"
-        />
         {selectedState.val.map((profile) => (
           <ProjectSideNavSubMenuItem
             key={profile.profile_id}
@@ -53,6 +48,11 @@ function ProjectSideNavMenuProfileLoss({
             extraValue={`(${moment(profile.created).fromNow()})`}
           />
         ))}
+        <ProjectSideNavSubMenuItem
+          path={createProjectLossPath(projectId, null)}
+          selected={!profileId}
+          value="Approximated"
+        />
       </LoaderLayout>
     </ProjectSideNavMenu>
   );

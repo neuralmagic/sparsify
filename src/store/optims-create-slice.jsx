@@ -43,6 +43,12 @@ const createdOptimsSlice = createSlice({
     status: "idle",
     error: null,
     projectId: null,
+    modalOpen: false,
+  },
+  reducers: {
+    setCreateOptimModalOpen: (state, action) => {
+      state.modalOpen = action.payload;
+    },
   },
   extraReducers: {
     [createOptimThunk.pending]: (state, action) => {
@@ -66,7 +72,7 @@ const createdOptimsSlice = createSlice({
 /***
  * Available actions for cretedOptims redux store
  */
-export const {} = createdOptimsSlice.actions;
+export const { setCreateOptimModalOpen } = createdOptimsSlice.actions;
 
 /**
  * Simple selector to get the created optimizations state

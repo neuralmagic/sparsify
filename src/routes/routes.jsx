@@ -3,7 +3,6 @@ import NotFound from "./not-found";
 import Project from "./project";
 import ProjectBenchmark from "./project-benchmark";
 import ProjectOptim from "./project-optim";
-import ProjectOptimRoot from "./project-optim-root";
 import ProjectPerf from "./project-perf";
 import ProjectLoss from "./project-loss";
 import ProjectSettings from "./project-settings";
@@ -19,7 +18,6 @@ import {
   PATH_PROJECT_BENCHMARK,
   PATH_PROJECT_PERF,
   PATH_PROJECT_LOSS,
-  PATH_PROJECT_OPTIM_ROOT,
   PATH_PROJECT_OPTIM,
   PATH_PROJECT_SETTINGS,
   PATH_NOT_FOUND,
@@ -71,11 +69,6 @@ export function makeContentRoutes() {
       path: PATH_PROJECT_BENCHMARK,
       exact: true,
       component: ProjectBenchmark,
-    },
-    {
-      path: PATH_PROJECT_OPTIM_ROOT,
-      exact: true,
-      component: ProjectOptimRoot,
     },
     {
       path: PATH_PROJECT_OPTIM,

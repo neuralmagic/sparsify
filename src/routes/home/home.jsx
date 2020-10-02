@@ -2,12 +2,10 @@ import React, { useState } from "react";
 import { Fab } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 
-import { ReactComponent as NMLogo } from "./img/logo.svg";
-import GenericPage from "../../components/generic-page";
 import makeStyles from "./home-styles";
 import AbsoluteLayout from "../../components/absolute-layout";
 import ProjectCreateDialog from "../../modals/project-create";
-
+import DefaultHome from "./default-home";
 const useStyles = makeStyles();
 const HOME_URL = null;
 
@@ -31,13 +29,7 @@ function Home() {
           onError={() => setDisplayType("fallback")}
         />
       )}
-      {displayType === "fallback" && (
-        <GenericPage
-          title="Sparsify"
-          description={fallbackDescription}
-          logoComponent={<NMLogo />}
-        />
-      )}
+      {displayType === "fallback" && <DefaultHome />}
 
       <Fab
         variant="extended"

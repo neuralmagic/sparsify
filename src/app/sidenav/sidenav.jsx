@@ -1,7 +1,7 @@
 import React from "react";
 import { Route } from "react-router-dom";
 import { AnimatedSwitch } from "react-router-transition";
-import { Paper, Button } from "@material-ui/core";
+import { Paper, Button, Typography, IconButton } from "@material-ui/core";
 import InfoOutlinedIcon from "@material-ui/icons/InfoOutlined";
 
 import { makeRouteTransitionOpacity, makeSideNavRoutes } from "../../routes";
@@ -18,17 +18,18 @@ function AppSideNav({ onInfoClick }) {
 
   return (
     <Paper className={classes.root} elevation={20}>
+      <div className={classes.info}>
+        <IconButton size="small" className={classes.infoButton} onClick={() => onInfoClick()}>
+          <InfoOutlinedIcon />
+        </IconButton>
+      </div>
       <div className={classes.header}>
         <div className={classes.logo}>
           <NMLogo />
         </div>
-        <span className={classes.title}>Sparsify</span>
-        <span className={classes.trademark}>TM</span>
-        <div className={classes.info}>
-          <Button className={classes.infoButton} onClick={() => onInfoClick()}>
-            <InfoOutlinedIcon />
-          </Button>
-        </div>
+        <Typography className={classes.title}>Sparsify</Typography>
+        <Typography className={classes.trademark}>TM</Typography>
+
       </div>
       <div className={classes.body}>
         <AnimatedSwitch

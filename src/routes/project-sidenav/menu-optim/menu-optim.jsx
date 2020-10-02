@@ -1,9 +1,11 @@
 import React from "react";
+import { useDispatch } from "react-redux";
 import { Divider } from "@material-ui/core";
 import { ReactComponent as Icon } from "./img/icon.svg";
 import PropTypes from "prop-types";
 import moment from "moment";
 
+import { setCreateOptimModalOpen } from "../../../store";
 import makeStyles from "./menu-optim-styles";
 import { createProjectOptimPath } from "../../paths";
 import ProjectSideNavMenu from "../menu";
@@ -23,6 +25,7 @@ function ProjectSideNavMenuOptim({
   profilePerfId,
   profileLossId,
 }) {
+  const dispatch = useDispatch();
   const classes = useStyles();
   const selected = action === "optim";
 
@@ -40,7 +43,11 @@ function ProjectSideNavMenuOptim({
     >
       <Icon />
       <div>
-        <ProjectSideNavSubMenuTitle title="Version" showAdd={true} />
+        <ProjectSideNavSubMenuTitle
+          onClick={() => dispatch(setCreateOptimModalOpen(true))}
+          title="Version"
+          showAdd={true}
+        />
         <Divider light className={classes.divider} />
         <LoaderLayout
           status={selectedOptimsState.status}
@@ -80,11 +87,6 @@ function ProjectSideNavMenuOptim({
           loaderSize={28}
           rootClass={classes.loaderLayout}
         >
-          <ProjectSideNavSubMenuItem
-            path={createProjectOptimPath(projectId, optimId, null, profileLossId)}
-            selected={!profilePerfId}
-            value="FLOPS"
-          />
           {selectedProfilesPerfState.val.map((profile) => (
             <ProjectSideNavSubMenuItem
               key={profile.profile_id}
@@ -99,6 +101,11 @@ function ProjectSideNavMenuOptim({
               extraValue={`(${moment(profile.created).fromNow()})`}
             />
           ))}
+          <ProjectSideNavSubMenuItem
+            path={createProjectOptimPath(projectId, optimId, null, profileLossId)}
+            selected={!profilePerfId}
+            value="FLOPS"
+          />
         </LoaderLayout>
 
         <div className={classes.spacer} />
@@ -112,11 +119,6 @@ function ProjectSideNavMenuOptim({
           loaderSize={28}
           rootClass={classes.loaderLayout}
         >
-          <ProjectSideNavSubMenuItem
-            path={createProjectOptimPath(projectId, optimId, profilePerfId, null)}
-            selected={!profileLossId}
-            value="Approximated"
-          />
           {selectedProfilesLossState.val.map((profile) => (
             <ProjectSideNavSubMenuItem
               key={profile.profile_id}
@@ -131,6 +133,11 @@ function ProjectSideNavMenuOptim({
               extraValue={`(${moment(profile.created).fromNow()})`}
             />
           ))}
+          <ProjectSideNavSubMenuItem
+            path={createProjectOptimPath(projectId, optimId, profilePerfId, null)}
+            selected={!profileLossId}
+            value="Approximated"
+          />
         </LoaderLayout>
       </div>
     </ProjectSideNavMenu>

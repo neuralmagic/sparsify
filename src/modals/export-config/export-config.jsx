@@ -129,6 +129,7 @@ function ExportDialog({ projectId, optimId, open, handleClose }) {
           color="secondary"
           className={classes.containedButton}
           variant="contained"
+          disableElevation
         >
           Close
         </Button>

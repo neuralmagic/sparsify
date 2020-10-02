@@ -1,13 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import _ from "lodash";
 
 import { Box, Fab } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 
-import { selectSelectedOptimsState } from "../../store";
+import {
+  selectSelectedOptimsState,
+  selectCreatedOptimsState,
+  setCreateOptimModalOpen,
+  selectSelectedProjectState,
+} from "../../../store";
 import { ReactComponent as Icon } from "./img/icon.svg";
-import OptimCreate from "../../modals/optim-create";
-import GenericPage from "../../components/generic-page";
+import GenericPage from "../../../components/generic-page";
 
 import makeStyles from "./project-optim-root-styles";
 
@@ -15,15 +20,16 @@ const useStyles = makeStyles();
 
 function ProjectOptimRoot({ match }) {
   const optimsState = useSelector(selectSelectedOptimsState);
-  const [isOptimCreateOpen, setIsOptimCreateOpen] = useState(false);
+  const createOptimState = useSelector(selectCreatedOptimsState);
+  const dispatch = useDispatch();
 
   const classes = useStyles();
 
-  useEffect(() => {
-    if (optimsState.status === "succeeded" && optimsState.val.length === 0) {
-      setIsOptimCreateOpen(true);
-    }
-  }, [optimsState]);
+  // useEffect(() => {
+  //   if (optimsState.status === "succeeded" && createOptimState.status === "idle" && optimsState.val.length === 0) {
+  //     dispatch(setCreateOptimModalOpen(true));
+  //   }
+  // }, [optimsState.status, createOptimState.status, _.get(optimsState,"val.length")]);
 
   return (
     <Box>
@@ -32,17 +38,12 @@ function ProjectOptimRoot({ match }) {
         title="Optimization"
         description="Optimize, retrain, and utilize Neural Magic's runtime engine to achieve faster inference timings."
       />
-      <OptimCreate
-        open={isOptimCreateOpen}
-        handleClose={() => setIsOptimCreateOpen(false)}
-        projectId={match.params.projectId}
-      />
       <Fab
         variant="extended"
         color="secondary"
         aria-label="New Project"
         className={classes.fab}
-        onClick={() => setIsOptimCreateOpen(true)}
+        onClick={() => dispatch(setCreateOptimModalOpen(true))}
       >
         <AddIcon className={classes.fabIcon} />
         Create

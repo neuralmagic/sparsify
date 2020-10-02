@@ -39,11 +39,6 @@ function ProjectSideNavMenuProfilePerf({
       >
         <ProjectSideNavSubMenuTitle title="Profile" showAdd={true} />
         <Divider light className={classes.divider} />
-        <ProjectSideNavSubMenuItem
-          path={createProjectPerfPath(projectId, null)}
-          selected={!profileId}
-          value="FLOPS"
-        />
         {selectedState.val.map((profile) => (
           <ProjectSideNavSubMenuItem
             key={profile.profile_id}
@@ -53,6 +48,11 @@ function ProjectSideNavMenuProfilePerf({
             extraValue={`(${moment(profile.created).fromNow()})`}
           />
         ))}
+        <ProjectSideNavSubMenuItem
+          path={createProjectPerfPath(projectId, null)}
+          selected={!profileId}
+          value="FLOPS"
+        />
       </LoaderLayout>
     </ProjectSideNavMenu>
   );

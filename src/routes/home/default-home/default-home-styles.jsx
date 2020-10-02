@@ -1,6 +1,6 @@
 import { makeStyles } from "@material-ui/core/styles";
 
-export default function makeGenericPageStyles() {
+export default function makeDefaultHomeStyles() {
   return makeStyles(
     (theme) => {
       return {
@@ -22,26 +22,18 @@ export default function makeGenericPageStyles() {
           paddingRight: "10%",
         },
         icon: {
-          fill: theme.palette.text.secondary,
-          marginBottom: theme.spacing(6),
           width: "200px",
           height: "200px",
         },
-        name: {
-          display: "-webkit-box",
-          lineClamp: 2,
-          boxOrient: "vertical",
-          overflow: "hidden",
+        title: {
+          textTransform: "uppercase",
+          fontWeight: "bold",
         },
         desc: {
           marginTop: theme.spacing(2),
-          display: "-webkit-box",
-          lineClamp: 3,
-          boxOrient: "vertical",
-          overflow: "hidden",
         },
       };
     },
-    { name: "GenericPage" }
+    { name: "DefaultHome" }
   );
 }

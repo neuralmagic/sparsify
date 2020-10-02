@@ -1,8 +1,9 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Paper, Typography } from "@material-ui/core";
+import { Card, Typography } from "@material-ui/core";
 
-import AbsoluteLayout from "../../../components/absolute-layout";
+import ScrollerLayout from "../../../components/scroller-layout";
+import LoaderLayout from "../../../components/loader-layout";
 import PruningModifier from "../pruning-modifier";
 
 import makeStyles from "./optim-pruning-styles";
@@ -13,19 +14,30 @@ const OptimPruning = ({ optim }) => {
   const classes = useStyles();
 
   return (
-    <AbsoluteLayout spacingTop={4} spacingBottom={4} spacingRight={4} spacingLeft={4}>
-      <Typography variant="h6">Pruning</Typography>
-      <Paper elevation={4} className={classes.root}>
-        {optim &&
-          optim.pruning_modifiers.map((modifier) => (
-            <PruningModifier
-              key={modifier.modifier_id}
-              modifier={modifier}
-              optim={optim}
-            />
-          ))}
-      </Paper>
-    </AbsoluteLayout>
+    <ScrollerLayout
+      layoutClass={classes.root}>
+      <LoaderLayout
+        rootClass={classes.body}
+        loaderClass={classes.loader}>
+        <div className={classes.layout}>
+          <div className={classes.title}>
+            <Typography color="textSecondary" variant="h5">
+              Pruning
+            </Typography>
+          </div>
+          <Card elevation={1} className={classes.root}>
+            {optim &&
+              optim.pruning_modifiers.map((modifier) => (
+                <PruningModifier
+                  key={modifier.modifier_id}
+                  modifier={modifier}
+                  optim={optim}
+                />
+              ))}
+          </Card>
+        </div>
+      </LoaderLayout>
+    </ScrollerLayout>
   );
 };
 

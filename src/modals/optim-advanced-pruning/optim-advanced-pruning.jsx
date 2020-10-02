@@ -84,7 +84,7 @@ const Filters = ({ modifier }) => {
         />
       </Grid>
     </Grid>
-    <Grid item>Preset filters</Grid>
+    <Grid item><Typography>Preset filters</Typography></Grid>
     {[{ name: 'filter_min_sparsity', label: 'Min sparsity', value: Math.round(adjustableSettings.filter_min_sparsity * 100), suffix: '%' },
       { name: 'filter_min_perf_gain', label: 'Performance', value: Math.round(adjustableSettings.filter_min_perf_gain * 100), suffix: '%' },
       { name: 'filter_max_loss_drop', label: 'Loss', value: adjustableSettings.filter_max_loss_drop, divideBy100: false, max: 1, step: 0.01 }]

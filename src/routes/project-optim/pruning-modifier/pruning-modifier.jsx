@@ -21,7 +21,7 @@ const PruningModifier = ({ modifier, optim }) => {
 
   return (
     <Grid container key={modifier.modifier_id} direction="row" className={classes.root}>
-      <Grid direction="column" xs={1}>
+      <Grid direction="column" xs={2}>
         <MetricItem
           label="Est. Speedup"
           value={formatWithMantissa(2, modifier.est_perf_gain)}
@@ -35,7 +35,7 @@ const PruningModifier = ({ modifier, optim }) => {
           value={formatWithMantissa(4, modifier.est_recovery)}
         />
       </Grid>
-      <Grid item xs={8}>
+      <Grid item xs={7}>
         <LayersChart
           data={modifier.nodes}
           sparsityProp="sparsity"
@@ -45,7 +45,7 @@ const PruningModifier = ({ modifier, optim }) => {
       </Grid>
       <Grid item container xs={3} direction="column">
         <Grid item container justify="flex-end">
-          <IconButton className={classes.closeButton} onClick={() => setAdvancedModalOpen(true)}>
+          <IconButton className={classes.editButton} onClick={() => setAdvancedModalOpen(true)}>
             <EditIcon/>
           </IconButton>
         </Grid>

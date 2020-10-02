@@ -6,7 +6,7 @@ import * as d3 from "d3";
 const useStyles = makeStyles();
 
 const LayersChart = (props) => {
-  const margin = { top: 20, bottom: 20, left: 25, right: 20 };
+  const margin = { top: 10, bottom: 20, left: 25, right: 20 };
   const chartHeight = 250;
   const ref = useRef();
   const classes = useStyles();

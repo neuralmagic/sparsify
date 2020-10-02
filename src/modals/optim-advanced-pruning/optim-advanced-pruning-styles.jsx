@@ -97,7 +97,7 @@ export const makeFiltersStyles = () => makeStyles(
   (theme) => {
     return {
       input: {
-        width: 200
+        width: 100
       }
     }
   },

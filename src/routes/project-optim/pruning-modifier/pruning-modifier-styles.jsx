@@ -5,15 +5,24 @@ export default function makePruningModifierStyles() {
     (theme) => {
       return {
         root: {
-          paddingRight: 20
+          paddingRight: theme.spacing(4),
+          paddingTop: theme.spacing(4),
+          paddingLeft: theme.spacing(4),
+          position: 'relative'
         },
         sparsitySliderRoot: {
-          marginBottom: 20
+          marginTop: theme.spacing(2),
+          marginBottom: theme.spacing(2)
         },
         sparsityInput: {
           width: 80,
           marginRight: 20,
         },
+        editButton: {
+          position: 'absolute',
+          right: 0,
+          top: 0
+        }
       };
     },
     { name: "PruningModifier" }

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import PropTypes from "prop-types";
 import {
@@ -21,6 +21,8 @@ import {
   createLossProfileThunk,
   clearCreateLossProfile,
   selectCreateLossProfile,
+  cancelAndDeleteLossProfileThunk,
+  STATUS_IDLE,
 } from "../../store";
 
 import makeStyles from "./loss-profile-create-styles";
@@ -40,24 +42,57 @@ function LossProfileCreateDialog({ open, handleClose, projectId }) {
     createLossProfileState.status === STATUS_LOADING ||
     createLossProfileState.status === STATUS_FAILED;
 
+  const cancelling = createLossProfileState.cancellingStatus === STATUS_LOADING;
+
   const action =
     createLossProfileState.status === STATUS_SUCCEEDED ? "Completed" : "Add";
 
-  const profilingLabel = createLossProfileState.error ? "" : "Profiling Loss";
+  let profilingLabel = createLossProfileState.error ? "" : "Profiling Loss";
+  if (cancelling && !createLossProfileState.error) {
+    profilingLabel = "Cancelling...";
+  }
+
+  const handleClear = () => {
+    dispatch(clearCreateLossProfile());
+    setName("");
+    handleClose();
+  };
+
+  useEffect(() => {
+    if (
+      createLossProfileState.cancellingStatus === STATUS_SUCCEEDED &&
+      createLossProfileState.status !== STATUS_LOADING
+    ) {
+      handleClear();
+    }
+  }, [createLossProfileState]);
+
+  const handleCancel = () => {
+    if (createLossProfileState.val) {
+      dispatch(
+        cancelAndDeleteLossProfileThunk({
+          projectId,
+          profileId: createLossProfileState.profileId,
+        })
+      );
+    } else {
+      handleClear();
+    }
+  };
 
   const handleAction = () => {
     const completed = createLossProfileState.status === STATUS_SUCCEEDED;
     if (!createLossProfileState.error && !profiling && !completed) {
       dispatch(
         createLossProfileThunk({
-          projectId: projectId,
+          projectId,
           name,
         })
       );
     } else if (completed) {
-      handleClose();
       history.push(`/project/${projectId}/loss/${createLossProfileState.profileId}`);
 
+      handleClear();
       dispatch(clearCreateLossProfile());
       dispatch(
         getProfilesLossThunk({
@@ -75,17 +110,16 @@ function LossProfileCreateDialog({ open, handleClose, projectId }) {
       fullWidth={true}
       maxWidth="md"
       open={open}
-      onClose={handleClose}
       PaperProps={{ className: classes.dialog }}
     >
       <div className={classes.root}>
         <DialogTitle>New Loss Profile</DialogTitle>
-        <DialogContent>
+        <DialogContent classes={{ root: classes.dialogContent }}>
           <FadeTransitionGroup
-            className={classes.dialogContent}
-            showIndex={profiling ? 1 : 0}
+            className={classes.transitionGroup}
+            showIndex={profiling || cancelling ? 1 : 0}
           >
-            <div className={classes.content}>
+            <div>
               <Typography>Measure the model's loss</Typography>
               <Grid className={classes.profileBody} container spacing={2}>
                 <Grid item xs={4}>
@@ -101,10 +135,10 @@ function LossProfileCreateDialog({ open, handleClose, projectId }) {
                 </Grid>
               </Grid>
             </div>
-            <div className={`${classes.loaderContainer} ${classes.content}`}>
+            <div className={classes.loaderContainer}>
               <LoaderLayout
-                loading={createLossProfileState.status === STATUS_LOADING}
-                progress={createLossProfileState.progressValue}
+                loading={createLossProfileState.status === STATUS_LOADING || cancelling}
+                progress={!cancelling ? createLossProfileState.progressValue : null}
                 error={createLossProfileState.error}
               />
               <Typography
@@ -121,8 +155,12 @@ function LossProfileCreateDialog({ open, handleClose, projectId }) {
           </FadeTransitionGroup>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} className={classes.cancelButton}>
-            Close
+          <Button
+            onClick={handleCancel}
+            className={classes.cancelButton}
+            disabled={createLossProfileState.cancellingStatus === STATUS_LOADING}
+          >
+            Cancel
           </Button>
           <Button
             onClick={handleAction}

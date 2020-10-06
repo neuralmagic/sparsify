@@ -37,7 +37,7 @@ export function requestGetJob(jobId) {
 }
 
 export function requestCancelJob(jobId) {
-  const url = `${API_ROOT}/job/${jobId}/cancel`;
+  const url = `${API_ROOT}/jobs/${jobId}/cancel`;
 
   return validateAPIResponseJSON(
     fetch(url, {

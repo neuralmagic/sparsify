@@ -35,6 +35,18 @@ export function requestGetProjectProfileLoss(projectId, profileId) {
   );
 }
 
+
+export function requestDeleteProjectProfileLoss(projectId, profileId) {
+  const url = `${API_ROOT}/projects/${projectId}/profiles/loss/${profileId}`;
+
+  return validateAPIResponseJSON(
+    fetch(url, {
+      method: "DELETE",
+      cache: "no-cache",
+    })
+  );
+}
+
 export function requestCreateProfileLoss(
   projectId,
   name,
@@ -93,6 +105,18 @@ export function requestGetProjectProfilePerf(projectId, profileId) {
   return validateAPIResponseJSON(
     fetch(url, {
       method: "GET",
+      cache: "no-cache",
+    })
+  );
+}
+
+
+export function requestDeleteProjectProfilePerf(projectId, profileId) {
+  const url = `${API_ROOT}/projects/${projectId}/profiles/perf/${profileId}`;
+
+  return validateAPIResponseJSON(
+    fetch(url, {
+      method: "DELETE",
       cache: "no-cache",
     })
   );

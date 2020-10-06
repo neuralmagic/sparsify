@@ -23,7 +23,9 @@ import {
   STATUS_SUCCEEDED,
   clearCreatePerfProfile,
   createPerfProfileThunk,
+  cancelAndDeletePerfProfileThunk,
   selectCreatePerfProfile,
+  STATUS_IDLE,
 } from "../../store";
 import makeStyles from "./perf-profile-create-styles";
 import LoaderLayout from "../../components/loader-layout";
@@ -47,11 +49,15 @@ function PerfProfileCreateDialog({ open, handleClose, projectId }) {
     createPerfProfileState.status === STATUS_LOADING ||
     createPerfProfileState.status === STATUS_FAILED;
 
+  const cancelling = createPerfProfileState.cancellingStatus === STATUS_LOADING;
+
   const action =
     createPerfProfileState.status === STATUS_SUCCEEDED ? "Completed" : "Add";
 
-  const profilingLabel = createPerfProfileState.error ? "" : "Profiling Performance";
-
+  let profilingLabel = createPerfProfileState.error ? "" : "Profiling Performance";
+  if (cancelling && !createPerfProfileState.error) {
+    profilingLabel = "Cancelling...";
+  }
   const available_instructions = _.get(systemInfoState, "val.available_instructions");
 
   const nmEngineAvailable =
@@ -59,22 +65,51 @@ function PerfProfileCreateDialog({ open, handleClose, projectId }) {
       ? systemInfoState.val.available_engines.indexOf("neural_magic") > -1
       : false;
 
+  const handleClear = () => {
+    dispatch(clearCreatePerfProfile());
+    setName("");
+    setBatchSize(1);
+    setNumCores(1);
+    handleClose();
+  };
+
+  useEffect(() => {
+    if (
+      createPerfProfileState.cancellingStatus === STATUS_SUCCEEDED &&
+      createPerfProfileState.status !== STATUS_LOADING
+    ) {
+      handleClear();
+    }
+  }, [createPerfProfileState]);
+
+  const handleCancel = () => {
+    if (createPerfProfileState.val) {
+      dispatch(
+        cancelAndDeletePerfProfileThunk({
+          projectId,
+          profileId: createPerfProfileState.profileId,
+        })
+      );
+    } else {
+      handleClear();
+    }
+  };
+
   const handleAction = () => {
     const completed = createPerfProfileState.status === STATUS_SUCCEEDED;
     if (!createPerfProfileState.error && !profiling && !completed) {
       dispatch(
         createPerfProfileThunk({
-          projectId: projectId,
+          projectId,
           name,
           batchSize,
           numCores,
         })
       );
     } else if (completed) {
-      handleClose();
       history.push(`/project/${projectId}/perf/${createPerfProfileState.profileId}`);
 
-      dispatch(clearCreatePerfProfile());
+      handleClear();
       dispatch(
         getProfilesPerfThunk({
           projectId,
@@ -97,17 +132,16 @@ function PerfProfileCreateDialog({ open, handleClose, projectId }) {
       fullWidth={true}
       maxWidth="md"
       open={open}
-      onClose={handleClose}
       PaperProps={{ className: classes.dialog }}
     >
       <div className={classes.root}>
         <DialogTitle>New Performance Profile</DialogTitle>
-        <DialogContent>
+        <DialogContent classes={{ root: classes.dialogContent }}>
           <FadeTransitionGroup
-            className={classes.dialogContent}
-            showIndex={profiling ? 1 : 0}
+            className={classes.transitionGroup}
+            showIndex={profiling || cancelling ? 1 : 0}
           >
-            <div className={classes.content}>
+            <div>
               <Typography>Measure the model's performace</Typography>
               {nmEngineAvailable && (
                 <Grid className={classes.profileBody} container spacing={2}>
@@ -165,10 +199,10 @@ function PerfProfileCreateDialog({ open, handleClose, projectId }) {
               )}
             </div>
 
-            <div className={`${classes.loaderContainer} ${classes.content}`}>
+            <div className={classes.loaderContainer}>
               <LoaderLayout
-                loading={createPerfProfileState.status === STATUS_LOADING}
-                progress={createPerfProfileState.progressValue}
+                loading={createPerfProfileState.status === STATUS_LOADING || cancelling}
+                progress={!cancelling ? createPerfProfileState.progressValue : null}
                 error={createPerfProfileState.error}
               />
               <Typography
@@ -185,8 +219,12 @@ function PerfProfileCreateDialog({ open, handleClose, projectId }) {
           </FadeTransitionGroup>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} className={classes.cancelButton}>
-            Close
+          <Button
+            onClick={handleCancel}
+            className={classes.cancelButton}
+            disabled={cancelling}
+          >
+            Cancel
           </Button>
           <Button
             onClick={handleAction}

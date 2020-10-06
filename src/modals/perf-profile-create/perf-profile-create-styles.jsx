@@ -21,6 +21,7 @@ export default function makePerfProfileCreateStyles() {
           flexDirection: "column",
           justifyContent: "center",
           alignItems: "center",
+          overflow: "hidden",
         },
         loaderText: {
           marginTop: theme.spacing(3),
@@ -29,6 +30,12 @@ export default function makePerfProfileCreateStyles() {
           marginTop: theme.spacing(1),
         },
         dialogContent: {
+          height: "100%",
+          flex: "1 1 auto",
+          padding: theme.spacing(1, 3),
+          overflowY: "hidden",
+        },
+        transitionGroup: {
           height: "100%",
         },
         textRow: {
@@ -42,11 +49,6 @@ export default function makePerfProfileCreateStyles() {
         },
         textSpacer: {
           width: theme.spacing(2),
-        },
-        content: {
-          display: "flex",
-          flexDirection: "column",
-          flex: "1 0",
         },
         cancelButton: {
           color: theme.palette.text.secondary,

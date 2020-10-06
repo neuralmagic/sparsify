@@ -1,8 +1,11 @@
 import React from "react";
+import { useDispatch } from "react-redux";
 import { Divider } from "@material-ui/core";
 import { ReactComponent as Icon } from "./img/icon.svg";
 import PropTypes from "prop-types";
 import moment from "moment";
+
+import { setPerfModalOpen } from "../../../store";
 
 import makeStyles from "./menu-profile-perf-styles";
 import { createProjectPerfPath } from "../../paths";
@@ -19,6 +22,7 @@ function ProjectSideNavMenuProfilePerf({
   action,
   profileId,
 }) {
+  const dispatch = useDispatch();
   const classes = useStyles();
   const selected = action === "perf";
 
@@ -37,16 +41,22 @@ function ProjectSideNavMenuProfilePerf({
         loaderSize={28}
         rootClass={classes.loaderLayout}
       >
-        <ProjectSideNavSubMenuTitle title="Profile" showAdd={true} />
+        <ProjectSideNavSubMenuTitle
+          onClick={() => dispatch(setPerfModalOpen(true))}
+          title="Profile"
+          showAdd={true}
+        />
         <Divider light className={classes.divider} />
         {selectedState.val.map((profile) => (
-          <ProjectSideNavSubMenuItem
-            key={profile.profile_id}
-            path={createProjectPerfPath(projectId, profile.profile_id)}
-            selected={profileId === profile.profile_id}
-            value={profile.name}
-            extraValue={`(${moment(profile.created).fromNow()})`}
-          />
+          <div key={profile.profile_id}>
+            <ProjectSideNavSubMenuItem
+              key={profile.profile_id}
+              path={createProjectPerfPath(projectId, profile.profile_id)}
+              selected={profileId === profile.profile_id}
+              value={profile.name}
+              extraValue={`(${moment(profile.created).fromNow()})`}
+            />
+          </div>
         ))}
         <ProjectSideNavSubMenuItem
           path={createProjectPerfPath(projectId, null)}

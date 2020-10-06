@@ -20,12 +20,14 @@ import {
   selectSelectedProjectModelAnalysisPerfNodeResults,
   selectSelectedProjectModelAnalysisPerfNodeSummaries,
   selectSelectedProjectState,
+  selectModalsState,
+  setPerfModalOpen,
   STATUS_SUCCEEDED,
 } from "../../store";
 import { combineStatuses, readableNumber } from "../../components";
 import ChartSummariesCard from "../../components/chart-summaries-card";
 import ProfileSummaryCard from "../../components/profile-summary-card";
-
+import PerfProfileCreateDialog from "../../modals/perf-profile-create";
 const useStyles = makeStyles();
 
 function baselineDisplayValues() {
@@ -152,7 +154,8 @@ function profilePerfDisplayValues(
   };
 }
 
-function ProjectPerf() {
+function ProjectPerf(props) {
+  const { projectId } = props.match.params;
   const classes = useStyles();
   const dispatch = useDispatch();
 
@@ -172,7 +175,7 @@ function ProjectPerf() {
   );
   const profilePerfNodeSummaries = useSelector(selectSelectedProfilePerfNodeSummaries);
   const profilePerfNodeResults = useSelector(selectSelectedProfilePerfNodeResults);
-
+  const modalsState = useSelector(selectModalsState);
   const profilePerfId = profilePerf ? profilePerf.profile_id : null;
   const firstLossProfile =
     profilesLossState.val && profilesLossState.val.length > 0
@@ -254,6 +257,11 @@ function ProjectPerf() {
         loaderClass={classes.loader}
       >
         <div className={classes.layout}>
+          <PerfProfileCreateDialog
+            open={modalsState.perfModalOpen || false}
+            handleClose={() => dispatch(setPerfModalOpen(false))}
+            projectId={projectId}
+          />
           <div className={classes.title}>
             <Typography color="textSecondary" variant="h5">
               Performance Profile{" "}

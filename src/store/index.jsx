@@ -3,12 +3,14 @@ import createSagaMiddleware from "redux-saga";
 
 import { all } from "redux-saga/effects";
 
+import modalsReducer from "./modal-slice";
 import projectsReducer from "./projects-slice";
 import selectedProjectReducer from "./project-slice";
 import selectedOptims from "./optims-slice";
 import selectedOptimsBestEstimated from "./optims-estimated-slice";
 import selectedProfilesLoss from "./profiles-loss-slice";
 import selectedProfilesPerf from "./profiles-perf-slice";
+import createPerfProfile from "./profiles-perf-create-slice";
 import selectedConfig from "./config-slice";
 import createProject from "./project-create-slice";
 import adjustableSettings, {
@@ -34,6 +36,8 @@ export default configureStore({
     adjustableSettings,
     system: system,
     serverStatus: serverStatus,
+    modals: modalsReducer,
+    createPerfProfile: createPerfProfile,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(sagaMiddleware),
 });
@@ -52,9 +56,11 @@ export * from "./optims-create-slice";
 export * from "./optims-estimated-slice";
 export * from "./profiles-loss-slice";
 export * from "./profiles-perf-slice";
+export * from "./profiles-perf-create-slice";
 export * from "./config-slice";
 export * from "./project-create-slice";
 export * from "./system-slice";
 export * from "./server-slice";
+export * from "./modal-slice";
 
 export * from "./utils";

@@ -1,15 +1,12 @@
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React from "react";
+import { useDispatch } from "react-redux";
 import _ from "lodash";
 
 import { Box, Fab } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 
 import {
-  selectSelectedOptimsState,
-  selectCreatedOptimsState,
   setCreateOptimModalOpen,
-  selectSelectedProjectState,
 } from "../../../store";
 import { ReactComponent as Icon } from "./img/icon.svg";
 import GenericPage from "../../../components/generic-page";
@@ -18,18 +15,10 @@ import makeStyles from "./project-optim-root-styles";
 
 const useStyles = makeStyles();
 
-function ProjectOptimRoot({ match }) {
-  const optimsState = useSelector(selectSelectedOptimsState);
-  const createOptimState = useSelector(selectCreatedOptimsState);
+function ProjectOptimRoot() {
   const dispatch = useDispatch();
 
   const classes = useStyles();
-
-  // useEffect(() => {
-  //   if (optimsState.status === "succeeded" && createOptimState.status === "idle" && optimsState.val.length === 0) {
-  //     dispatch(setCreateOptimModalOpen(true));
-  //   }
-  // }, [optimsState.status, createOptimState.status, _.get(optimsState,"val.length")]);
 
   return (
     <Box>

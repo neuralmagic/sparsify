@@ -101,7 +101,7 @@ export function requestGetProjectProfilePerf(projectId, profileId) {
 export function requestCreateProfilePerf(
   projectId,
   name,
-  bathSize,
+  batchSize,
   coreCount,
   warmupIterations = 5,
   iterations = 10,
@@ -119,7 +119,7 @@ export function requestCreateProfilePerf(
       },
       body: JSON.stringify({
         name,
-        batch_size: bathSize,
+        batch_size: batchSize,
         core_count: coreCount,
         iterations_per_check: iterations,
         warmup_iterations_per_check: warmupIterations,

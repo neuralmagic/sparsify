@@ -22,7 +22,9 @@ function FadeTransition({ show, children }) {
         exitActive: classes.transitionExitActive,
       }}
     >
-      {children}
+      <div className={classes.child}>
+        {children}
+      </div>
     </CSSTransition>
   );
 }

@@ -16,12 +16,15 @@ import {
   selectSelectedProjectModelAnalysisNodeParams,
   selectSelectedProjectModelAnalysisLossSensitivityNodeResults,
   selectSelectedProjectState,
+  selectModalsState,
+  setLossModalOpen,
   STATUS_SUCCEEDED,
   selectSelectedProfileLossNodeResults,
 } from "../../store";
 import { combineStatuses, readableNumber } from "../../components";
 import ChartSummariesCard from "../../components/chart-summaries-card";
 import ProfileSummaryCard from "../../components/profile-summary-card";
+import LossProfileCreateDialog from "../../modals/loss-profile-create";
 
 const useStyles = makeStyles();
 
@@ -111,7 +114,8 @@ function profileLossDisplayValues(
   return values;
 }
 
-function ProjectLoss() {
+function ProjectLoss(props) {
+  const { projectId } = props.match.params;
   const classes = useStyles();
   const dispatch = useDispatch();
 
@@ -134,6 +138,8 @@ function ProjectLoss() {
       ? profilesPerfState.val[0]
       : null;
   const firstPerfProfileId = firstPerfProfile ? firstPerfProfile.profile_id : null;
+
+  const modalsState = useSelector(selectModalsState);
 
   useEffect(() => {
     // make sure all desired requests are finished first,
@@ -174,7 +180,7 @@ function ProjectLoss() {
   ]);
   let overallError =
     projectState.error || profilesPerfState.error || profilesLossState.error;
-  
+
   let displayValues;
 
   if (!profilesLossState.selectedId) {
@@ -208,6 +214,11 @@ function ProjectLoss() {
         loaderClass={classes.loader}
       >
         <div className={classes.layout}>
+          <LossProfileCreateDialog
+            open={modalsState.lossModalOpen || false}
+            handleClose={() => dispatch(setLossModalOpen(false))}
+            projectId={projectId}
+          />
           <div className={classes.title}>
             <Typography color="textSecondary" variant="h5">
               Loss Profile{" "}

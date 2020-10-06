@@ -3,17 +3,17 @@ import { createSlice, createAsyncThunk, AsyncThunk } from "@reduxjs/toolkit";
 import {
   jobProgressValue,
   requestGetJobTerminal,
-  requestCreateProfilePerf,
-  requestGetProjectProfilePerf,
+  requestCreateProfileLoss,
+  requestGetProjectProfileLoss,
 } from "../api";
 import { STATUS_FAILED, STATUS_IDLE, STATUS_LOADING, STATUS_SUCCEEDED } from "./utils";
 
-const SLICE_ID = "createPerfProfile";
-const createPerfProfileThunkType = `${SLICE_ID}/createPerfProfileThunk`;
-const createPerfProfileProgressType = `${createPerfProfileThunkType}/progress`;
+const SLICE_ID = "createLossProfile";
+const createLossProfileThunkType = `${SLICE_ID}/createLossProfileThunk`;
+const createLossProfileProgressType = `${createLossProfileThunkType}/progress`;
 
-const createPerfProfileProgress = (stage, progress, profile) => ({
-  type: createPerfProfileProgressType,
+const createLossProfileProgress = (stage, progress, profile) => ({
+  type: createLossProfileProgressType,
   payload: {
     stage,
     progress,
@@ -21,43 +21,39 @@ const createPerfProfileProgress = (stage, progress, profile) => ({
   },
 });
 
-export const createPerfProfileThunk = createAsyncThunk(
-  createPerfProfileThunkType,
+export const createLossProfileThunk = createAsyncThunk(
+  createLossProfileThunkType,
   async (
     {
       projectId,
       name,
-      batchSize,
-      coreCount,
-      warmupIterations = 5,
-      iterations = 10,
       pruningEstimations = true,
+      pruningEstimationType = "weight_magnitude",
+      pruningStructure = "unstructured",
       quantizedEstimations = false,
     },
     thunkAPI
   ) => {
-    const createBody = await requestCreateProfilePerf(
+    const createBody = await requestCreateProfileLoss(
       projectId,
       name,
-      batchSize,
-      coreCount,
-      warmupIterations,
-      iterations,
       pruningEstimations,
+      pruningEstimationType,
+      pruningStructure,
       quantizedEstimations
     );
 
     const createdProfile = createBody.profile;
 
     thunkAPI.dispatch(
-      createPerfProfileProgress("profilePerfCreate", 0, createdProfile)
+      createLossProfileProgress("profileLossCreate", 0, createdProfile)
     );
     await requestGetJobTerminal(
       createdProfile.job.job_id,
       (progress) => {
         thunkAPI.dispatch(
-          createPerfProfileProgress(
-            "profilePerfProgress",
+          createLossProfileProgress(
+            "profileLossProgress",
             jobProgressValue(progress),
             createdProfile
           )
@@ -67,7 +63,7 @@ export const createPerfProfileThunk = createAsyncThunk(
     );
 
     // get the completed profile
-    const getBody = await requestGetProjectProfilePerf(
+    const getBody = await requestGetProjectProfileLoss(
       projectId,
       createdProfile.profile_id
     );
@@ -75,7 +71,7 @@ export const createPerfProfileThunk = createAsyncThunk(
   }
 );
 
-const createPerfProfileSlice = createSlice({
+const createLossProfileSlice = createSlice({
   name: SLICE_ID,
   initialState: {
     val: null,
@@ -86,7 +82,7 @@ const createPerfProfileSlice = createSlice({
     profileId: null,
   },
   reducers: {
-    clearCreatePerfProfile: (state, action) => {
+    clearCreateLossProfile: (state, action) => {
       state.error = null;
       state.val = null;
       state.progressStage = null;
@@ -96,7 +92,7 @@ const createPerfProfileSlice = createSlice({
     },
   },
   extraReducers: {
-    [createPerfProfileThunk.pending]: (state, action) => {
+    [createLossProfileThunk.pending]: (state, action) => {
       state.status = STATUS_LOADING;
       state.error = null;
       state.val = null;
@@ -104,7 +100,7 @@ const createPerfProfileSlice = createSlice({
       state.progressValue = null;
       state.profileId = null;
     },
-    [createPerfProfileThunk.fulfilled]: (state, action) => {
+    [createLossProfileThunk.fulfilled]: (state, action) => {
       state.status = STATUS_SUCCEEDED;
       state.error = null;
       state.val = action.payload;
@@ -112,7 +108,7 @@ const createPerfProfileSlice = createSlice({
       state.progressValue = null;
       state.profileId = action.payload.profile_id;
     },
-    [createPerfProfileThunk.rejected]: (state, action) => {
+    [createLossProfileThunk.rejected]: (state, action) => {
       state.status = STATUS_FAILED;
       state.error = action.error.message;
       state.val = null;
@@ -120,7 +116,7 @@ const createPerfProfileSlice = createSlice({
       state.progressValue = null;
       state.profileId = null;
     },
-    [createPerfProfileProgressType]: (state, action) => {
+    [createLossProfileProgressType]: (state, action) => {
       state.status = STATUS_LOADING;
       state.error = null;
       state.val = action.payload.profile;
@@ -133,17 +129,17 @@ const createPerfProfileSlice = createSlice({
 });
 
 /**
- * Available actions for createPerfProfileSlice redux store
+ * Available actions for createLossProfileSlice redux store
  */
-export const { clearCreatePerfProfile } = createPerfProfileSlice.actions;
+export const { clearCreateLossProfile } = createLossProfileSlice.actions;
 
 /**
- * Simple selector to get perf profile being created state
+ * Simple selector to get loss profile being created state
  * including the val, status, error, progressStage, and progressVal
  *
  * @param state - the redux store state
  * @returns {Reducer<State> | Reducer<{val: *[], error: null,progressStage: null, progressVal: null, status: string}>}
  */
-export const selectCreatePerfProfile = (state) => state.createPerfProfile;
+export const selectCreateLossProfile = (state) => state.createLossProfile;
 
-export default createPerfProfileSlice.reducer;
+export default createLossProfileSlice.reducer;

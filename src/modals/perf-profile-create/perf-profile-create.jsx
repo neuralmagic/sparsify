@@ -19,30 +19,30 @@ import {
   getSystemInfoThunk,
   getProfilesPerfThunk,
   STATUS_FAILED,
-  STATUS_IDLE,
   STATUS_LOADING,
   STATUS_SUCCEEDED,
-  createProjectProfilesThunk,
   clearCreatePerfProfile,
   createPerfProfileThunk,
-  selectCreatePerfProfileSlice,
+  selectCreatePerfProfile,
 } from "../../store";
 import makeStyles from "./perf-profile-create-styles";
 import LoaderLayout from "../../components/loader-layout";
 import FadeTransitionGroup from "../../components/fade-transition-group";
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles();
 
 function PerfProfileCreateDialog({ open, handleClose, projectId }) {
-  const selectedSystemState = useSelector(selectSystemState);
+  const systemInfoState = useSelector(selectSystemState);
   const dispatch = useDispatch();
+  const history = useHistory();
   const classes = useStyles();
 
   const [name, setName] = useState("");
   const [batchSize, setBatchSize] = useState(1);
   const [numCores, setNumCores] = useState(1);
 
-  const createPerfProfileState = useSelector(selectCreatePerfProfileSlice);
+  const createPerfProfileState = useSelector(selectCreatePerfProfile);
   const profiling =
     createPerfProfileState.status === STATUS_LOADING ||
     createPerfProfileState.status === STATUS_FAILED;
@@ -52,10 +52,12 @@ function PerfProfileCreateDialog({ open, handleClose, projectId }) {
 
   const profilingLabel = createPerfProfileState.error ? "" : "Profiling Performance";
 
-  const available_instructions = _.get(
-    selectedSystemState,
-    "val.available_instructions"
-  );
+  const available_instructions = _.get(systemInfoState, "val.available_instructions");
+
+  const nmEngineAvailable =
+    systemInfoState.val && systemInfoState.val.available_engines
+      ? systemInfoState.val.available_engines.indexOf("neural_magic") > -1
+      : false;
 
   const handleAction = () => {
     const completed = createPerfProfileState.status === STATUS_SUCCEEDED;
@@ -70,6 +72,8 @@ function PerfProfileCreateDialog({ open, handleClose, projectId }) {
       );
     } else if (completed) {
       handleClose();
+      history.push(`/project/${projectId}/perf/${createPerfProfileState.profileId}`);
+
       dispatch(clearCreatePerfProfile());
       dispatch(
         getProfilesPerfThunk({
@@ -89,7 +93,7 @@ function PerfProfileCreateDialog({ open, handleClose, projectId }) {
 
   return (
     <Dialog
-      aria-labelledby="project-create-dialog-title"
+      aria-labelledby="profile-perf-create-dialog-title"
       fullWidth={true}
       maxWidth="md"
       open={open}
@@ -105,50 +109,60 @@ function PerfProfileCreateDialog({ open, handleClose, projectId }) {
           >
             <div className={classes.content}>
               <Typography>Measure the model's performace</Typography>
-              <Grid className={classes.profileBody} container spacing={2}>
-                <Grid item xs={4}>
-                  <TextField
-                    id="name"
-                    variant="outlined"
-                    type="text"
-                    fullWidth
-                    label="Performance Profile Name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                  />
-                </Grid>
-                <Grid item xs={2}>
-                  <TextField
-                    id="batchSize"
-                    variant="outlined"
-                    type="number"
-                    label="Batch Size"
-                    value={batchSize}
-                    onChange={(e) => setBatchSize(e.target.value)}
-                  />
-                </Grid>
-                <Grid item xs={2}>
-                  <TextField
-                    id="numCores"
-                    variant="outlined"
-                    type="number"
-                    label="CPU Cores"
-                    value={numCores !== null ? numCores : ""}
-                    onChange={(e) => setNumCores(e.target.value)}
-                  />
-                </Grid>
-                <Grid item xs={2}>
-                  <InputLabel className={classes.textLabel}>
-                    Instruction Sets
-                  </InputLabel>
+              {nmEngineAvailable && (
+                <Grid className={classes.profileBody} container spacing={2}>
+                  <Grid item xs={4}>
+                    <TextField
+                      id="name"
+                      variant="outlined"
+                      type="text"
+                      fullWidth
+                      label="Performance Profile Name"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                    />
+                  </Grid>
+                  <Grid item xs={2}>
+                    <TextField
+                      id="batchSize"
+                      variant="outlined"
+                      type="number"
+                      label="Batch Size"
+                      value={batchSize}
+                      onChange={(e) => setBatchSize(e.target.value)}
+                    />
+                  </Grid>
+                  <Grid item xs={2}>
+                    <TextField
+                      id="numCores"
+                      variant="outlined"
+                      type="number"
+                      label="CPU Cores"
+                      value={numCores !== null ? numCores : ""}
+                      onChange={(e) => setNumCores(e.target.value)}
+                    />
+                  </Grid>
+                  <Grid item xs={2}>
+                    <InputLabel className={classes.textLabel}>
+                      Instruction Sets
+                    </InputLabel>
 
-                  <Typography>
-                    {available_instructions
-                      ? available_instructions.join(", ")
-                      : available_instructions}
-                  </Typography>
+                    <Typography>
+                      {available_instructions
+                        ? available_instructions.join(", ")
+                        : available_instructions}
+                    </Typography>
+                  </Grid>
                 </Grid>
-              </Grid>
+              )}
+              {!nmEngineAvailable && (
+                <div className={classes.profileBody}>
+                  <Typography variant="subtitle2" color="error">
+                    The neuralmagic package must be installed for CPU performance
+                    profiling
+                  </Typography>
+                </div>
+              )}
             </div>
 
             <div className={`${classes.loaderContainer} ${classes.content}`}>
@@ -192,6 +206,7 @@ function PerfProfileCreateDialog({ open, handleClose, projectId }) {
 PerfProfileCreateDialog.propTypes = {
   open: PropTypes.bool.isRequired,
   handleClose: PropTypes.func,
+  projectId: PropTypes.string.isRequired,
 };
 
 export default PerfProfileCreateDialog;

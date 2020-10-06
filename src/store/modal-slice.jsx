@@ -3,16 +3,26 @@ import { createSlice } from "@reduxjs/toolkit";
 /**
  * Slice for handling the modals' open status in the redux store
  *
- * @type {Slice<{error: null}, {}, string>}
+ * @type {Slice<{perfModalOpen: boolean, lossModalOpen: boolean}, {}, string>}
  */
 const modalsSlice = createSlice({
   name: "modals",
   initialState: {
     perfModalOpen: false,
+    lossModalOpen: false,
   },
   reducers: {
     setPerfModalOpen: (state, action) => {
       state.perfModalOpen = action.payload;
+      if (state.perfModalOpen) {
+        state.lossModalOpen = false;
+      }
+    },
+    setLossModalOpen: (state, action) => {
+      state.lossModalOpen = action.payload;
+      if (state.lossModalOpen) {
+        state.perfModalOpen = false;
+      }
     },
   },
 });
@@ -20,13 +30,13 @@ const modalsSlice = createSlice({
 /**
  * Available actions for modalsSlice redux store
  */
-export const { setPerfModalOpen } = modalsSlice.actions;
+export const { setPerfModalOpen, setLossModalOpen } = modalsSlice.actions;
 
 /**
  * Simple selector to get the modals' open status
  *
  * @param state - the redux store state
- * @returns {Reducer<State> | Reducer<{perfModalOpen: boolean}>}
+ * @returns {Reducer<State> | Reducer<{perfModalOpen: boolean, lossModalOpen: boolean}>}
  */
 export const selectModalsState = (state) => state.modals;
 

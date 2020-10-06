@@ -53,7 +53,11 @@ function ProjectSideNavMenuProfilePerf({
               key={profile.profile_id}
               path={createProjectPerfPath(projectId, profile.profile_id)}
               selected={profileId === profile.profile_id}
-              value={profile.name}
+              value={
+                profile.name
+                  ? profile.name
+                  : moment(profile.created).format("MM/DD/YYYY h:mma")
+              }
               extraValue={`(${moment(profile.created).fromNow()})`}
             />
           </div>

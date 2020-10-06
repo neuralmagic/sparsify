@@ -1,8 +1,11 @@
 import React from "react";
+import { useDispatch } from "react-redux";
 import { Divider } from "@material-ui/core";
 import { ReactComponent as Icon } from "./img/icon.svg";
 import PropTypes from "prop-types";
 import moment from "moment";
+
+import { setLossModalOpen } from "../../../store";
 
 import makeStyles from "./menu-profile-loss-styles";
 import { createProjectLossPath } from "../../paths";
@@ -19,6 +22,7 @@ function ProjectSideNavMenuProfileLoss({
   action,
   profileId,
 }) {
+  const dispatch = useDispatch();
   const classes = useStyles();
   const selected = action === "loss";
 
@@ -37,16 +41,25 @@ function ProjectSideNavMenuProfileLoss({
         loaderSize={28}
         rootClass={classes.loaderLayout}
       >
-        <ProjectSideNavSubMenuTitle title="Profile" showAdd={true} />
+        <ProjectSideNavSubMenuTitle
+          onClick={() => dispatch(setLossModalOpen(true))}
+          title="Profile"
+          showAdd={true}
+        />
         <Divider light className={classes.divider} />
         {selectedState.val.map((profile) => (
-          <ProjectSideNavSubMenuItem
-            key={profile.profile_id}
-            path={createProjectLossPath(projectId, profile.profile_id)}
-            selected={profileId === profile.profile_id}
-            value={profile.name}
-            extraValue={`(${moment(profile.created).fromNow()})`}
-          />
+          <div key={profile.profile_id}>
+            <ProjectSideNavSubMenuItem
+              path={createProjectLossPath(projectId, profile.profile_id)}
+              selected={profileId === profile.profile_id}
+              value={
+                profile.name
+                  ? profile.name
+                  : moment(profile.created).format("MM/DD/YYYY h:mma")
+              }
+              extraValue={`(${moment(profile.created).fromNow()})`}
+            />
+          </div>
         ))}
         <ProjectSideNavSubMenuItem
           path={createProjectLossPath(projectId, null)}

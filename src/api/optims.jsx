@@ -10,6 +10,7 @@ import { API_ROOT, objToQueryString, validateAPIResponseJSON } from "./utils";
  * @param {boolean} add_quantization - Using quantization in created optimizer
  * @param {boolean} add_lr_schedule - Using lr schedule in created optimizer
  * @param {boolean} add_trainable - Using trainable in created optimizer
+ * @param {AbortController} abortController - Optional control to control whether to cancel
  */
 export function requestCreateProjectOptimizer(
   projectId,
@@ -17,7 +18,8 @@ export function requestCreateProjectOptimizer(
   add_pruning = undefined,
   add_quantization = undefined,
   add_lr_schedule = undefined,
-  add_trainable = undefined
+  add_trainable = undefined,
+  abortController = undefined
 ) {
   const url = `${API_ROOT}/projects/${projectId}/optim/`;
   const body = {};
@@ -41,6 +43,13 @@ export function requestCreateProjectOptimizer(
     body["add_trainable"] = add_trainable;
   }
 
+  let signalOptions = {};
+  if (abortController) {
+    signalOptions = {
+      signal: abortController.signal,
+    };
+  }
+
   return validateAPIResponseJSON(
     fetch(url, {
       method: "POST",
@@ -49,6 +58,7 @@ export function requestCreateProjectOptimizer(
         "Content-Type": "application/json",
       },
       body: JSON.stringify(body),
+      ...signalOptions,
     })
   );
 }

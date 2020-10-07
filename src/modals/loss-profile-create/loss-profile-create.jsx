@@ -49,7 +49,7 @@ function LossProfileCreateDialog({ open, handleClose, projectId }) {
     createLossProfileState.status === STATUS_SUCCEEDED ? "Completed" : "Add";
 
   let profilingLabel = "Profiling Loss";
-  if (canceling || createLossProfileState.status === STATUS_SUCCEEDED) {
+  if (canceling || createLossProfileState.cancelingStatus === STATUS_SUCCEEDED) {
     profilingLabel = "Canceling";
   } else if (createLossProfileState.error) {
     profilingLabel = "";
@@ -164,9 +164,10 @@ function LossProfileCreateDialog({ open, handleClose, projectId }) {
               >
                 {profilingLabel}
               </Typography>
-              {createLossProfileState.error && (
-                <Button onClick={handleAction}>Clear</Button>
-              )}
+              {createLossProfileState.error &&
+                createLossProfileState.cancelingStatus !== STATUS_SUCCEEDED && (
+                  <Button onClick={handleAction}>Clear</Button>
+                )}
             </div>
           </FadeTransitionGroup>
         </DialogContent>

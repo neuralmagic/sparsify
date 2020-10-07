@@ -9,7 +9,7 @@ import { requestCreateProjectOptimizer } from "../api";
  * @type {AsyncThunk<Promise<*>, {readonly projectId?: *, name?: string, add_pruning?: boolean, add_quantization?: boolean, add_lr_schedule?: boolean, add_trainable?: boolean}, {}>}
  */
 export const createOptimThunk = createAsyncThunkWrapper(
-  "selectedOptims/createProjectOptims",
+  "createOptims/createProjectOptimsThunk",
   async ({
     projectId,
     name,
@@ -17,6 +17,7 @@ export const createOptimThunk = createAsyncThunkWrapper(
     add_quantization,
     add_lr_schedule,
     add_trainable,
+    abortController = undefined,
   }) => {
     const body = await requestCreateProjectOptimizer(
       projectId,
@@ -24,7 +25,8 @@ export const createOptimThunk = createAsyncThunkWrapper(
       add_pruning,
       add_quantization,
       add_lr_schedule,
-      add_trainable
+      add_trainable,
+      abortController
     );
 
     return body.optim;
@@ -37,7 +39,7 @@ export const createOptimThunk = createAsyncThunkWrapper(
  * @type {Slice<{val: [], error: null, projectId: null, status: string}, {}, string>}
  */
 const createdOptimsSlice = createSlice({
-  name: "createdOptims",
+  name: "createOptims",
   initialState: {
     val: null,
     status: "idle",
@@ -49,10 +51,17 @@ const createdOptimsSlice = createSlice({
     setCreateOptimModalOpen: (state, action) => {
       state.modalOpen = action.payload;
     },
+    clearOptim: (state, action) => {
+      state.val = null;
+      state.status = "idle";
+      state.error = null;
+      state.projectId = null;
+    },
   },
   extraReducers: {
     [createOptimThunk.pending]: (state, action) => {
       state.status = "loading";
+      state.val = null;
       state.projectId = action.meta.arg.projectId;
     },
     [createOptimThunk.fulfilled]: (state, action) => {
@@ -72,7 +81,7 @@ const createdOptimsSlice = createSlice({
 /***
  * Available actions for cretedOptims redux store
  */
-export const { setCreateOptimModalOpen } = createdOptimsSlice.actions;
+export const { setCreateOptimModalOpen, clearOptim } = createdOptimsSlice.actions;
 
 /**
  * Simple selector to get the created optimizations state

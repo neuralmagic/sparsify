@@ -56,7 +56,7 @@ function PerfProfileCreateDialog({ open, handleClose, projectId }) {
     createPerfProfileState.status === STATUS_SUCCEEDED ? "Completed" : "Add";
 
   let profilingLabel = "Profiling Performance";
-  if (canceling || createPerfProfileState.status === STATUS_SUCCEEDED) {
+  if (canceling || createPerfProfileState.cancelingStatus === STATUS_SUCCEEDED) {
     profilingLabel = "Canceling";
   } else if (createPerfProfileState.error) {
     profilingLabel = "";
@@ -229,9 +229,10 @@ function PerfProfileCreateDialog({ open, handleClose, projectId }) {
               >
                 {profilingLabel}
               </Typography>
-              {createPerfProfileState.error && (
-                <Button onClick={handleAction}>Clear</Button>
-              )}
+              {createPerfProfileState.error &&
+                createPerfProfileState.cancelingStatus !== STATUS_SUCCEEDED && (
+                  <Button onClick={handleAction}>Clear</Button>
+                )}
             </div>
           </FadeTransitionGroup>
         </DialogContent>

@@ -20,11 +20,12 @@ function ProjectSettingsContainer({
   finalLR,
   finalLRValError,
   finalLROnChange,
+  marginTop = true,
 }) {
   const classes = useStyles();
   return (
     <div>
-      <div className={classes.section}>
+      <div className={marginTop ? classes.section : ""}>
         <Typography color="textPrimary" className={classes.title}>
           What optimizer was used for training?
         </Typography>
@@ -110,6 +111,7 @@ ProjectSettingsContainer.propTypes = {
   finalLR: PropTypes.string,
   finalLRValError: PropTypes.string,
   finalLROnChange: PropTypes.func,
+  marginTop: PropTypes.bool,
 };
 
 export default ProjectSettingsContainer;

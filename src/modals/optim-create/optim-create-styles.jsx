@@ -15,10 +15,34 @@ export default function createOptimStyles() {
         },
         dialog: {
           width: "600px",
+          overflowY: "hidden",
+          height: "53vh",
           padding: theme.spacing(2),
+        },
+        hidden: {
+          visibility: "hidden",
+        },
+        loaderText: {
+          marginTop: theme.spacing(3),
+        },
+        loaderContainer: {
+          width: "100%",
+          height: "100%",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          overflow: "hidden",
         },
         noPresetsLabel: {
           verticalAlign: "middle",
+        },
+        tabContainer: {
+          padding: theme.spacing(2, 0, 4),
+          height: "30vh",
+        },
+        transitionGroup: {
+          height: "100%",
         },
       };
     },

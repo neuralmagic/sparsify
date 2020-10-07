@@ -12,7 +12,8 @@ import {
   reject,
   isNil,
   defaultTo,
-  tap,
+  values,
+  omit,
 } from "ramda";
 import { createSlice } from "@reduxjs/toolkit";
 import { getOptimsThunk, changeModifierSettingsThunk } from "./optims-slice";
@@ -132,13 +133,19 @@ function* changeLayerAdjustableSettingsSaga({ payload }) {
   const layerSettings = yield select(
     selectLayerAdjustableSettings(payload.modifierId, payload.layerId)
   );
+  const allLayers = yield select(selectAllLayersAdjustableSettings(payload.modifierId))
+  const nodes = compose(
+    map(pick(["node_id", ...layerAdjustableSettings])),
+    values,
+    omit(['modifier_id']),
+  )(allLayers)
 
   const data = {
     projectId: layerSettings.project_id,
     optimId: layerSettings.optim_id,
     modifierId: layerSettings.modifier_id,
     settings: {
-      nodes: [pick(["node_id", ...layerAdjustableSettings], layerSettings)],
+      nodes
     },
   };
 
@@ -172,10 +179,18 @@ export const selectModifierAdjustableSettings = curry((modifierId, state) =>
   )(state)
 );
 
+export const selectAllLayersAdjustableSettings = curry((modifierId, state) =>
+  compose(
+    defaultTo({}),
+    path(["adjustableSettings", "val", "layers", modifierId])
+  )(state)
+);
+
 export const selectLayerAdjustableSettings = curry((modifierId, layerId, state) =>
   compose(
     defaultTo({}),
-    path(["adjustableSettings", "val", "layers", modifierId, layerId])
+    prop(layerId),
+    selectAllLayersAdjustableSettings(modifierId)
   )(state)
 );
 

@@ -20,8 +20,30 @@ export default function makePruningModifierStyles() {
         },
         editButton: {
           position: 'absolute',
-          right: 0,
-          top: 0
+          right: 45,
+          top: theme.spacing(1)
+        },
+        menuButton: {
+          position: 'absolute',
+          right: 10,
+          top: theme.spacing(1)
+        },
+        popoverMenu: {
+          padding: 25,
+        },
+        popoverInput: {
+          width: 100
+        },
+        popoverSlider: {
+          width: 150
+        },
+        pruningTypeSelect: {
+          display: 'flex',
+          flex: 1
+        },
+        presetFiltersTitle: {
+          marginTop: theme.spacing(2),
+          marginBottom: theme.spacing(2)
         }
       };
     },

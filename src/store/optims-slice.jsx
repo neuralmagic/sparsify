@@ -52,22 +52,6 @@ export const changeModifierSettingsThunk = createAsyncThunkWrapper(
   }
 );
 
-export const changeModifierLayerSettingsThunk = createAsyncThunkWrapper(
-  "selectedOptims/changeModifierSettings",
-  async ({ projectId, modifierId, optimId, layer, settings }) => {
-    const body = await requestChangeModifierSettings(projectId, optimId, modifierId, {
-      nodes: [
-        {
-          node_id: layer.node_id,
-          ...settings,
-        },
-      ],
-    });
-
-    return body.optim;
-  }
-);
-
 /**
  * Slice for handling the selected project's optimizations state in the redux store.
  *

@@ -1,18 +1,26 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import {
   atomOneDark,
   atomOneLight,
 } from "react-syntax-highlighter/dist/esm/styles/hljs";
 
-import { Box, Button, useTheme } from "@material-ui/core";
+import { Box, Button, Tooltip, useTheme } from "@material-ui/core";
 
 import makeStyles from "./export-styles";
 
 function CodeContainer({ language, text, defaultFileName }) {
   const isDarkMode = useTheme().palette.type === "dark";
+  const [showCopiedTooltip, setShowCopiedTooltip] = useState(false);
   const useStyles = makeStyles();
   const classes = useStyles();
+
+  useEffect(() => {
+    if (showCopiedTooltip) {
+      setTimeout(() => setShowCopiedTooltip(false), 1000)
+    }
+  }, [showCopiedTooltip])
+
   return (
     <div>
       <SyntaxHighlighter
@@ -36,14 +44,18 @@ function CodeContainer({ language, text, defaultFileName }) {
           </Button>
         </Box>
         <Box>
-          <Button
-            className={classes.textButton}
-            onClick={() => {
-              navigator.clipboard.writeText(text);
-            }}
-          >
-            Copy to clipboard
-          </Button>
+          <Tooltip open={showCopiedTooltip} onClose={() => setShowCopiedTooltip(false)} title="Copied to clipboard">
+            <Button
+              className={classes.textButton}
+              onClick={() => {
+                setShowCopiedTooltip(true);
+                navigator.clipboard.writeText(text);
+              }}
+            >
+              Copy to clipboard
+            </Button>
+          </Tooltip>
+          
         </Box>
       </Box>
     </div>

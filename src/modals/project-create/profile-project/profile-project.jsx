@@ -87,6 +87,8 @@ function ProfileProject({
   handlePerfBatchSize,
   handlePerfNumCores,
   handleClear,
+  cancelProfiling,
+  canceledProfiling,
 }) {
   const classes = useStyles();
 
@@ -99,10 +101,14 @@ function ProfileProject({
   ) {
     profilingLabel = "Profiling Loss";
   } else if (
-      profilingStage === "profilePerfCreate" ||
-      profilingStage === "profilePerfProgress"
+    profilingStage === "profilePerfCreate" ||
+    profilingStage === "profilePerfProgress"
   ) {
     profilingLabel = "Profiling Performance";
+  }
+
+  if (cancelProfiling || canceledProfiling) {
+    profilingLabel = "Canceling";
   }
 
   function handleAction() {
@@ -113,7 +119,7 @@ function ProfileProject({
 
   return (
     <div className={classes.root}>
-      <FadeTransitionGroup showIndex={!profiling ? 0 : 1}>
+      <FadeTransitionGroup showIndex={profiling || cancelProfiling ? 1 : 0}>
         <div className={classes.content}>
           <Typography>Measure the baseline and optimized model's:</Typography>
           <div className={classes.profilesLayout}>
@@ -191,8 +197,8 @@ function ProfileProject({
 
         <div className={`${classes.loaderContainer} ${classes.content}`}>
           <LoaderLayout
-            loading={true}
-            progress={profilingProgress}
+            loading={profiling || cancelProfiling}
+            progress={cancelProfiling ? null : profilingProgress}
             error={profilingError}
             loaderSize={96}
           />
@@ -203,7 +209,11 @@ function ProfileProject({
           >
             {profilingLabel}
           </Typography>
-          {profilingError && <Button onClick={handleAction}>{action}</Button>}
+          {profilingError && !cancelProfiling && (
+            <Button disabled={cancelProfiling} onClick={handleAction}>
+              {action}
+            </Button>
+          )}
         </div>
       </FadeTransitionGroup>
     </div>
@@ -230,6 +240,8 @@ ProfileProject.propTypes = {
   handlePerfBatchSize: PropTypes.func,
   handlePerfNumCores: PropTypes.func,
   handleClear: PropTypes.func,
+  cancelProfiling: PropTypes.bool,
+  canceledProfiling: PropTypes.bool,
 };
 
 export default ProfileProject;

@@ -14,10 +14,6 @@ function Home() {
   const [displayType, setDisplayType] = useState(HOME_URL ? "iframe" : "fallback");
   const [createOpen, setCreateOpen] = useState(false);
 
-  const fallbackDescription =
-    "Select a project from the left or add a new project with the bottom right button to profile, " +
-    "benchmark, and optimize your Neural Network for production.";
-
   return (
     <AbsoluteLayout>
       {displayType === "iframe" && (

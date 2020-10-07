@@ -27,6 +27,7 @@ import {
   selectSystemState,
   createProjectProfilesThunk,
   updateCreateProjectValProps,
+  deleteProjectProfilesThunk,
 } from "../../store";
 import DescribeProject from "./describe-project";
 import ProfileProject from "./profile-project";
@@ -35,6 +36,7 @@ import {
   createProjectPath,
   createProjectPerfPath,
 } from "../../routes/paths";
+import _ from "lodash";
 
 const useStyles = makeStyles();
 
@@ -44,6 +46,7 @@ function ProjectCreateDialog({ open, handleClose }) {
   const history = useHistory();
 
   const [selectedFile, setSelectedFile] = useState(null);
+  const [isClosing, setIsClose] = useState(false);
   const createProjectState = useSelector(selectCreateProjectState);
   const systemInfoState = useSelector(selectSystemState);
 
@@ -144,11 +147,37 @@ function ProjectCreateDialog({ open, handleClose }) {
     dispatch(clearCreateProject());
   }
 
-  function clearCurrentProfiles() {}
+  function clearCurrentProfiles() {
+    const { val, profilingLossVal, profilingPerfVal } = createProjectState;
+    const projectId = _.get(val, "project_id");
+    const profileLossId = _.get(profilingLossVal, "profile_id");
+    const profilePerfId = _.get(profilingPerfVal, "profile_id");
+    dispatch(
+      deleteProjectProfilesThunk({
+        projectId,
+        profileLossId,
+        profilePerfId,
+      })
+    );
+  }
+
+  // Will wait until canceling is finished before closing
+  useEffect(() => {
+    if (createProjectState.cancelingProfileStatus !== STATUS_LOADING && isClosing) {
+      setIsClose(false);
+      clearCurrent(true);
+      handleClose();
+    }
+  }, [isClosing, createProjectState]);
 
   function onClose(del = true) {
-    clearCurrent(del);
-    handleClose();
+    if (del) {
+      clearCurrentProfiles();
+      setIsClose(true);
+    } else {
+      clearCurrent(false);
+      handleClose();
+    }
   }
 
   function handleAction() {
@@ -292,7 +321,8 @@ function ProjectCreateDialog({ open, handleClose }) {
               nmEngineAvailable={nmEngineAvailable}
               profiling={
                 createProjectState.profilingStatus === STATUS_LOADING ||
-                createProjectState.profilingStatus === STATUS_FAILED
+                createProjectState.profilingStatus === STATUS_FAILED ||
+                createProjectState.cancelingProfileStatus === STATUS_LOADING
               }
               profilingStage={createProjectState.profilingProgressStage}
               profilingProgress={createProjectState.profilingProgressValue}
@@ -309,10 +339,20 @@ function ProjectCreateDialog({ open, handleClose }) {
                 updateModal({ profilePerfNumCores: value })
               }
               handleClear={clearCurrentProfiles}
+              cancelProfiling={
+                createProjectState.cancelingProfileStatus === STATUS_LOADING
+              }
+              canceledProfiling={
+                createProjectState.cancelingProfileStatus === STATUS_SUCCEEDED
+              }
             />
           </SwipeableViews>
           <DialogActions>
-            <Button onClick={onClose} className={classes.cancelButton}>
+            <Button
+              onClick={onClose}
+              className={classes.cancelButton}
+              disabled={isClosing}
+            >
               Cancel
             </Button>
             <Button

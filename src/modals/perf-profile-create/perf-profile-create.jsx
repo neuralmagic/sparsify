@@ -40,6 +40,7 @@ function PerfProfileCreateDialog({ open, handleClose, projectId }) {
   const history = useHistory();
   const classes = useStyles();
 
+  const [closing, setClosing] = useState(false);
   const [name, setName] = useState("");
   const [batchSize, setBatchSize] = useState(1);
   const [numCores, setNumCores] = useState(1);
@@ -49,15 +50,18 @@ function PerfProfileCreateDialog({ open, handleClose, projectId }) {
     createPerfProfileState.status === STATUS_LOADING ||
     createPerfProfileState.status === STATUS_FAILED;
 
-  const cancelling = createPerfProfileState.cancellingStatus === STATUS_LOADING;
+  const canceling = createPerfProfileState.cancelingStatus === STATUS_LOADING;
 
   const action =
     createPerfProfileState.status === STATUS_SUCCEEDED ? "Completed" : "Add";
 
-  let profilingLabel = createPerfProfileState.error ? "" : "Profiling Performance";
-  if (cancelling && !createPerfProfileState.error) {
-    profilingLabel = "Cancelling...";
+  let profilingLabel = "Profiling Performance";
+  if (canceling || createPerfProfileState.status === STATUS_SUCCEEDED) {
+    profilingLabel = "Canceling";
+  } else if (createPerfProfileState.error) {
+    profilingLabel = "";
   }
+
   const available_instructions = _.get(systemInfoState, "val.available_instructions");
 
   const nmEngineAvailable =
@@ -70,17 +74,19 @@ function PerfProfileCreateDialog({ open, handleClose, projectId }) {
     setName("");
     setBatchSize(1);
     setNumCores(1);
-    handleClose();
   };
 
+  // Will wait until canceling is finished before closing
   useEffect(() => {
     if (
-      createPerfProfileState.cancellingStatus === STATUS_SUCCEEDED &&
-      createPerfProfileState.status !== STATUS_LOADING
+      createPerfProfileState.cancelingStatus === STATUS_SUCCEEDED &&
+      createPerfProfileState.status !== STATUS_LOADING &&
+      closing
     ) {
+      handleClose();
       handleClear();
     }
-  }, [createPerfProfileState]);
+  }, [createPerfProfileState, closing]);
 
   const handleCancel = () => {
     if (createPerfProfileState.val) {
@@ -90,7 +96,9 @@ function PerfProfileCreateDialog({ open, handleClose, projectId }) {
           profileId: createPerfProfileState.profileId,
         })
       );
+      setClosing(true);
     } else {
+      handleClose();
       handleClear();
     }
   };
@@ -115,8 +123,17 @@ function PerfProfileCreateDialog({ open, handleClose, projectId }) {
           projectId,
         })
       );
+      handleClose();
     } else if (createPerfProfileState.error) {
-      dispatch(clearCreatePerfProfile());
+      if (createPerfProfileState.val) {
+        dispatch(
+          cancelAndDeletePerfProfileThunk({
+            projectId,
+            profileId: createPerfProfileState.profileId,
+          })
+        );
+      }
+      handleClear();
     }
   };
 
@@ -139,7 +156,7 @@ function PerfProfileCreateDialog({ open, handleClose, projectId }) {
         <DialogContent classes={{ root: classes.dialogContent }}>
           <FadeTransitionGroup
             className={classes.transitionGroup}
-            showIndex={profiling || cancelling ? 1 : 0}
+            showIndex={profiling || canceling ? 1 : 0}
           >
             <div>
               <Typography>Measure the model's performace</Typography>
@@ -201,8 +218,8 @@ function PerfProfileCreateDialog({ open, handleClose, projectId }) {
 
             <div className={classes.loaderContainer}>
               <LoaderLayout
-                loading={createPerfProfileState.status === STATUS_LOADING || cancelling}
-                progress={!cancelling ? createPerfProfileState.progressValue : null}
+                loading={createPerfProfileState.status === STATUS_LOADING || canceling}
+                progress={!canceling ? createPerfProfileState.progressValue : null}
                 error={createPerfProfileState.error}
               />
               <Typography
@@ -222,7 +239,7 @@ function PerfProfileCreateDialog({ open, handleClose, projectId }) {
           <Button
             onClick={handleCancel}
             className={classes.cancelButton}
-            disabled={cancelling}
+            disabled={canceling}
           >
             Cancel
           </Button>

@@ -35,7 +35,7 @@ export default function makeProjectCreateStyles() {
         },
         previousButtonHidden: {
           opacity: 0,
-        }
+        },
       };
     },
     { name: "ProjectCreateDialog" }

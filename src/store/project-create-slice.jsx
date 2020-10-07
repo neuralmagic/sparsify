@@ -2,10 +2,13 @@ import { createSlice, createAsyncThunk, AsyncThunk } from "@reduxjs/toolkit";
 
 import {
   jobProgressValue,
+  JOB_CANCELED,
   requestCreateProfileLoss,
   requestCreateProfilePerf,
   requestCreateProject,
   requestCreateProjectModelAnalysis,
+  requestDeleteAndCancelProjectProfileLoss,
+  requestDeleteAndCancelProjectProfilePerf,
   requestGetJobTerminal,
   requestGetProject,
   requestGetProjectProfileLoss,
@@ -184,6 +187,18 @@ const createProjectProfilesProgressAction = (
   };
 };
 
+export const deleteProjectProfilesThunk = createAsyncThunk(
+  "createProject/deleteProjectProfilesThunk",
+  async ({ projectId, profileLossId, profilePerfId }) => {
+    if (profileLossId) {
+      await requestDeleteAndCancelProjectProfileLoss(projectId, profileLossId);
+    }
+    if (profilePerfId) {
+      await requestDeleteAndCancelProjectProfilePerf(projectId, profilePerfId);
+    }
+  }
+);
+
 export const createProjectProfilesThunk = createAsyncThunk(
   "createProject/createProjectProfilesThunk",
   async (
@@ -241,6 +256,10 @@ export const createProjectProfilesThunk = createAsyncThunk(
         () => false
       );
 
+      if (jobBody.job.status === JOB_CANCELED) {
+        throw Error("Job Cancelled");
+      }
+
       // get the completed profile
       const getBody = await requestGetProjectProfileLoss(
         projectId,
@@ -294,6 +313,10 @@ export const createProjectProfilesThunk = createAsyncThunk(
         () => false
       );
 
+      if (jobBody.job.status === JOB_CANCELED) {
+        throw Error("Job Cancelled");
+      }
+
       // get the completed profile
       const getBody = await requestGetProjectProfilePerf(
         projectId,
@@ -305,6 +328,16 @@ export const createProjectProfilesThunk = createAsyncThunk(
     return { createdProfileLoss, createdProfilePerf };
   }
 );
+
+const defaultCreateProfilingState = {
+  profilingLossVal: null,
+  profilingPerfVal: null,
+  profilingStatus: STATUS_IDLE,
+  profilingError: null,
+  profilingProgressStage: null,
+  profilingProgressValue: null,
+  cancelingProfileStatus: STATUS_IDLE,
+};
 
 const defaultCreateProjectState = {
   // state for modal
@@ -327,13 +360,7 @@ const defaultCreateProjectState = {
   creationProgressStage: null,
   creationProgressValue: null,
 
-  // state for profiling
-  profilingLossVal: null,
-  profilingPerfVal: null,
-  profilingStatus: STATUS_IDLE,
-  profilingError: null,
-  profilingProgressStage: null,
-  profilingProgressValue: null,
+  ...defaultCreateProfilingState,
 };
 
 const createProjectSlice = createSlice({
@@ -353,6 +380,11 @@ const createProjectSlice = createSlice({
     updateCreateProjectValProps: (state, action) => {
       Object.keys(action.payload).forEach((key) => {
         state.val[key] = action.payload[key];
+      });
+    },
+    clearCreateProfiling: (state, action) => {
+      Object.keys(defaultCreateProfilingState).forEach((key) => {
+        state[key] = defaultCreateProfilingState[key];
       });
     },
   },
@@ -390,6 +422,7 @@ const createProjectSlice = createSlice({
     },
     [createProjectProfilesThunk.pending]: (state, action) => {
       state.profilingStatus = STATUS_LOADING;
+      state.cancelingProfileStatus = STATUS_IDLE;
       state.profilingError = null;
       state.profilingLossVal = null;
       state.profilingPerfVal = null;
@@ -425,6 +458,26 @@ const createProjectSlice = createSlice({
       state.profilingProgressStage = action.payload.stage;
       state.profilingProgressValue = action.payload.progress;
     },
+    [deleteProjectProfilesThunk.pending]: (state, action) => {
+      state.cancelingProfileStatus = STATUS_LOADING;
+    },
+    [deleteProjectProfilesThunk.fulfilled]: (state, action) => {
+      state.cancelingProfileStatus = STATUS_SUCCEEDED;
+      Object.keys(defaultCreateProfilingState).forEach((key) => {
+        if (key !== "cancelingProfileStatus") {
+          state[key] = defaultCreateProfilingState[key];
+        }
+      });
+    },
+    [deleteProjectProfilesThunk.rejected]: (state, action) => {
+      state.cancelingProfileStatus = STATUS_FAILED;
+      state.profilingProgressStage = null;
+      state.profilingProgressValue = null;
+      state.profilingLossVal = null;
+      state.profilingPerfVal = null;
+      state.profilingError = action.error.message;
+      state.profilingStatus = STATUS_IDLE;
+    },
   },
 });
 
@@ -435,6 +488,7 @@ export const {
   clearCreateProject,
   updateCreateProjectModal,
   updateCreateProjectValProps,
+  clearCreateProfiling,
 } = createProjectSlice.actions;
 
 export const selectCreateProjectState = (state) => state.createProject;

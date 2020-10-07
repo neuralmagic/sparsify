@@ -5,11 +5,8 @@ import {
   requestGetJobTerminal,
   requestCreateProfilePerf,
   requestGetProjectProfilePerf,
-  requestDeleteProjectProfilePerf,
-  JOB_COMPLETED,
   JOB_CANCELED,
-  JOB_ERROR,
-  requestCancelJob,
+  requestDeleteAndCancelProjectProfilePerf,
 } from "../api";
 import {
   STATUS_FAILED,
@@ -75,7 +72,11 @@ export const createPerfProfileThunk = createAsyncThunkWrapper(
         );
       },
       () => false
-    ).then(async () => {
+    ).then(async (jobBody) => {
+      if (jobBody.job.status === JOB_CANCELED) {
+        throw Error("Job Cancelled");
+      }
+
       // get the completed profile
       const getBody = await requestGetProjectProfilePerf(
         projectId,
@@ -91,21 +92,7 @@ const cancelAndDeletePerfProfileThunkType = `${SLICE_ID}/cancelAndDeletePerfProf
 export const cancelAndDeletePerfProfileThunk = createAsyncThunk(
   cancelAndDeletePerfProfileThunkType,
   async ({ projectId, profileId }) => {
-    const getBody = await requestGetProjectProfilePerf(projectId, profileId);
-    const profile = getBody.profile;
-    const jobStatus = profile.job.job_status;
-    try {
-      if (
-        !(
-          jobStatus === JOB_COMPLETED ||
-          jobStatus === JOB_CANCELED ||
-          jobStatus === JOB_ERROR
-        )
-      ) {
-        await requestCancelJob(profile.job.job_id);
-      }
-    } catch (error) {}
-    return requestDeleteProjectProfilePerf(projectId, profileId);
+    return await requestDeleteAndCancelProjectProfilePerf(projectId, profileId);
   }
 );
 
@@ -118,7 +105,7 @@ const createPerfProfileSlice = createSlice({
     progressStage: null,
     progressValue: null,
     profileId: null,
-    cancellingStatus: STATUS_IDLE,
+    cancelingStatus: STATUS_IDLE,
   },
   reducers: {
     clearCreatePerfProfile: (state, action) => {
@@ -128,29 +115,23 @@ const createPerfProfileSlice = createSlice({
       state.progressValue = null;
       state.status = STATUS_IDLE;
       state.profileId = null;
-      state.cancellingStatus = STATUS_IDLE;
+      state.cancelingStatus = STATUS_IDLE;
     },
   },
   extraReducers: {
     [cancelAndDeletePerfProfileThunk.fulfilled]: (state, action) => {
       state.error = null;
-      state.val = null;
-      state.progressStage = null;
-      state.progressValue = null;
-      state.profileId = null;
-      state.cancellingStatus = STATUS_SUCCEEDED;
+      state.cancelingStatus = STATUS_SUCCEEDED;
     },
     [cancelAndDeletePerfProfileThunk.pending]: (state, action) => {
-      state.cancellingStatus = STATUS_LOADING;
+      state.cancelingStatus = STATUS_LOADING;
     },
     [cancelAndDeletePerfProfileThunk.rejected]: (state, action) => {
       state.status = STATUS_FAILED;
       state.error = action.error.message;
-      state.val = null;
       state.progressStage = null;
       state.progressValue = null;
-      state.profileId = null;
-      state.cancellingStatus = STATUS_FAILED;
+      state.cancelingStatus = STATUS_FAILED;
     },
     [createPerfProfileThunk.pending]: (state, action) => {
       state.status = STATUS_LOADING;
@@ -162,7 +143,7 @@ const createPerfProfileSlice = createSlice({
     },
     [createPerfProfileThunk.fulfilled]: (state, action) => {
       state.status = STATUS_SUCCEEDED;
-      if (state.cancellingStatus === STATUS_IDLE) {
+      if (state.cancelingStatus === STATUS_IDLE) {
         state.error = null;
         state.val = action.payload;
         state.progressStage = null;
@@ -172,23 +153,17 @@ const createPerfProfileSlice = createSlice({
     },
     [createPerfProfileThunk.rejected]: (state, action) => {
       state.status = STATUS_FAILED;
-      if (state.cancellingStatus === STATUS_IDLE) {
-        state.error = action.error.message;
-        state.val = null;
-        state.progressStage = null;
-        state.progressValue = null;
-        state.profileId = null;
-      }
+      state.error = action.error.message;
+      state.progressStage = null;
+      state.progressValue = null;
     },
     [createPerfProfileProgressType]: (state, action) => {
       state.status = STATUS_LOADING;
-      if (state.cancellingStatus === STATUS_IDLE) {
-        state.error = null;
-        state.val = action.payload.profile;
-        state.progressStage = action.payload.stage;
-        state.progressValue = action.payload.progress;
-        state.profileId = action.payload.profile.profile_id;
-      }
+      state.error = null;
+      state.val = action.payload.profile;
+      state.progressStage = action.payload.stage;
+      state.progressValue = action.payload.progress;
+      state.profileId = action.payload.profile.profile_id;
     },
   },
 });

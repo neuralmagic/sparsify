@@ -1,3 +1,4 @@
+import { JOB_COMPLETED, JOB_CANCELED, JOB_ERROR, requestCancelJob } from "./jobs";
 import { API_ROOT, objToQueryString, validateAPIResponseJSON } from "./utils";
 
 /**
@@ -24,6 +25,13 @@ export function requestGetProjectProfilesLoss(projectId, page = 1, pageLength = 
   );
 }
 
+/**
+ * Request to get the requested loss profile with profile_id from
+ * the neuralmagicML.server
+ *
+ * @param {string} projectId - The project id of the profile to get
+ * @param {string} profileId - The profile id of the profile to get
+ */
 export function requestGetProjectProfileLoss(projectId, profileId) {
   const url = `${API_ROOT}/projects/${projectId}/profiles/loss/${profileId}`;
 
@@ -35,7 +43,13 @@ export function requestGetProjectProfileLoss(projectId, profileId) {
   );
 }
 
-
+/**
+ * Request to delete the requested loss profile with profile_id from
+ * the neuralmagicML.server
+ *
+ * @param {string} projectId - The project id of the profile to get
+ * @param {string} profileId - The profile id of the profile to get
+ */
 export function requestDeleteProjectProfileLoss(projectId, profileId) {
   const url = `${API_ROOT}/projects/${projectId}/profiles/loss/${profileId}`;
 
@@ -46,6 +60,34 @@ export function requestDeleteProjectProfileLoss(projectId, profileId) {
     })
   );
 }
+
+/**
+ * Request to cancel and delete the requested loss profile
+ * with profile_id from the neuralmagicML.server
+ *
+ * @param {string} projectId - The project id of the profile to get
+ * @param {string} profileId - The profile id of the profile to get
+ */
+export const requestDeleteAndCancelProjectProfileLoss = async (
+  projectId,
+  profileId
+) => {
+  const getBody = await requestGetProjectProfileLoss(projectId, profileId);
+  const profile = getBody.profile;
+  const jobStatus = profile.job.status;
+  try {
+    if (
+      !(
+        jobStatus === JOB_COMPLETED ||
+        jobStatus === JOB_CANCELED ||
+        jobStatus === JOB_ERROR
+      )
+    ) {
+      await requestCancelJob(profile.job.job_id);
+    }
+  } catch {}
+  return requestDeleteProjectProfileLoss(projectId, profileId);
+};
 
 export function requestCreateProfileLoss(
   projectId,
@@ -99,6 +141,13 @@ export function requestGetProjectProfilesPerf(projectId, page = 1, pageLength = 
   );
 }
 
+/**
+ * Request to get the requested perf profile with profile_id from
+ * the neuralmagicML.server
+ *
+ * @param {string} projectId - The project id of the profile to get
+ * @param {string} profileId - The profile id of the profile to get
+ */
 export function requestGetProjectProfilePerf(projectId, profileId) {
   const url = `${API_ROOT}/projects/${projectId}/profiles/perf/${profileId}`;
 
@@ -110,7 +159,13 @@ export function requestGetProjectProfilePerf(projectId, profileId) {
   );
 }
 
-
+/**
+ * Request to get the requested perf profile with profile_id from
+ * the neuralmagicML.server
+ *
+ * @param {string} projectId - The project id of the profile to get
+ * @param {string} profileId - The profile id of the profile to get
+ */
 export function requestDeleteProjectProfilePerf(projectId, profileId) {
   const url = `${API_ROOT}/projects/${projectId}/profiles/perf/${profileId}`;
 
@@ -121,6 +176,27 @@ export function requestDeleteProjectProfilePerf(projectId, profileId) {
     })
   );
 }
+
+export const requestDeleteAndCancelProjectProfilePerf = async (
+  projectId,
+  profileId
+) => {
+  const getBody = await requestGetProjectProfilePerf(projectId, profileId);
+  const profile = getBody.profile;
+  const jobStatus = profile.job.status;
+  try {
+    if (
+      !(
+        jobStatus === JOB_COMPLETED ||
+        jobStatus === JOB_CANCELED ||
+        jobStatus === JOB_ERROR
+      )
+    ) {
+      await requestCancelJob(profile.job.job_id);
+    }
+  } catch {}
+  return requestDeleteProjectProfilePerf(projectId, profileId);
+};
 
 export function requestCreateProfilePerf(
   projectId,

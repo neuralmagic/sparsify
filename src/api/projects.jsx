@@ -182,7 +182,7 @@ export function requestDeleteProject(projectId, force = true) {
   let url = `${API_ROOT}/projects/${projectId}`;
 
   if (force) {
-      url += "?force=true";
+    url += "?force=true";
   }
 
   return validateAPIResponseJSON(

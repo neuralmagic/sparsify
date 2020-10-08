@@ -8,8 +8,20 @@ export default function createExportStyles() {
         contentHeader: {
           padding: theme.spacing(1, 0),
         },
-        codeblock: {
+        container: {
+          height: "24vh",
+          width:"770px",
+          overflow: "hidden",
           margin: theme.spacing(2, 0),
+        },
+        otherblock: {
+          height: "20vh",
+          width: "750px",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        },
+        codeblock: {
           height: "20vh",
           width: "750px",
           overflowY: "scroll",

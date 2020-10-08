@@ -27,7 +27,6 @@ function OptimSelectContainer({
   const classes = useStyles();
 
   return (
-    <DialogContent>
       <ProjectSettingsContainer
         optimizer={optimizer}
         optimizerValError={optimizerValError}
@@ -43,7 +42,6 @@ function OptimSelectContainer({
         finalLROnChange={finalLROnChange}
         marginTop={false}
       />
-    </DialogContent>
   );
 }
 

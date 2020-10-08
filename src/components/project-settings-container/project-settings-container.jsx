@@ -60,7 +60,6 @@ function ProjectSettingsContainer({
           error={!!epochsValError}
           helperText={epochsValError}
           onChange={epochsOnChange}
-          className={classes.inputNumber}
         />
       </div>
       <div className={classes.section}>

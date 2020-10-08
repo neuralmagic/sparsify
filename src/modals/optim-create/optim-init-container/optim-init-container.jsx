@@ -12,7 +12,7 @@ function OptimInitContainer({ onCancel, onNext, pruning, setPruning }) {
   const [optimizerSelectTab, setOptimizerSelectTab] = useState(0);
   const classes = useStyles();
   return (
-    <DialogContent>
+    <Box>
       <Tabs
         indicatorColor="primary"
         textColor="primary"
@@ -58,7 +58,7 @@ function OptimInitContainer({ onCancel, onNext, pruning, setPruning }) {
           </Box>
         </SwipeableViews>
       </Box>
-    </DialogContent>
+    </Box>
   );
 }
 

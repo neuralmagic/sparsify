@@ -6,8 +6,8 @@ export default function makePerfProfileCreateStyles() {
       return {
         root: {
           width: "100%",
-          height: "30vh",
-          maxHeight: "512px",
+          // height: "30vh",
+          height: "450px",
           display: "flex",
           flexDirection: "column",
         },

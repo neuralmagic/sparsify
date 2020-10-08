@@ -5,6 +5,7 @@ import {
   Button,
   Dialog,
   DialogActions,
+  DialogContent,
   DialogTitle,
   Typography,
 } from "@material-ui/core";
@@ -27,14 +28,15 @@ import OptimSelectContainer from "./optim-select-container";
 import makeStyles from "./optim-create-styles";
 import useOptimSettingsState from "./hooks/optim-settings-hooks";
 import useProjectUpdateState from "../../hooks/use-project-update-state";
-import LoaderOverlay from "../../components/loader-overlay";
 import FadeTransitionGroup from "../../components/fade-transition-group";
 import LoaderLayout from "../../components/loader-layout";
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles();
 
 function OptimCreateDialog({ open, handleClose, projectId }) {
   const [modalView, setModalView] = useState(0);
+  const history = useHistory();
   const classes = useStyles();
   const dispatch = useDispatch();
   const [abortController, setAbortController] = useState();
@@ -67,10 +69,10 @@ function OptimCreateDialog({ open, handleClose, projectId }) {
   let label = createOptimState.error ? "" : "Creating Optimization";
   if (completed) {
     label = "Completed";
-    action = "Completed";
+    action = "Run";
   }
 
-  const onClear = () => {
+  const handleClear = () => {
     dispatch(clearOptim());
     setModalView(0);
     setDefault();
@@ -83,8 +85,19 @@ function OptimCreateDialog({ open, handleClose, projectId }) {
     }
     handleClose();
 
-    onClear();
+    handleClear();
   };
+
+  useEffect(() => {
+    if (completed) {
+      history.push(`/project/${projectId}/optim/${createOptimState.val.optim_id}`) 
+      dispatch(
+        getOptimsThunk({projectId})
+      )
+      handleClose();
+      handleClear();
+    }
+  })
 
   const onSubmit = () => {
     if (completed) {
@@ -127,12 +140,13 @@ function OptimCreateDialog({ open, handleClose, projectId }) {
     <Dialog
       open={open}
       onClose={() => {
-        onClear();
+        handleClear();
         handleClose();
       }}
       PaperProps={{ className: classes.dialog }}
     >
       <DialogTitle>Model Optimization Settings</DialogTitle>
+      <DialogContent>
       <SwipeableViews
         index={modalView}
         disabled={true}
@@ -177,10 +191,12 @@ function OptimCreateDialog({ open, handleClose, projectId }) {
             >
               {label}
             </Typography>
-            {createOptimState.error && <Button onClick={onClear}>Clear</Button>}
+            {createOptimState.error && <Button onClick={handleClear}>Clear</Button>}
           </Box>
         </FadeTransitionGroup>
       </SwipeableViews>
+      </DialogContent>
+
       <DialogActions>
         <Box paddingRight={1}>
           <Button

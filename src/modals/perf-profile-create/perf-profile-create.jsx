@@ -40,10 +40,11 @@ function PerfProfileCreateDialog({ open, handleClose, projectId }) {
   const history = useHistory();
   const classes = useStyles();
 
+  const defaultCore = _.get(systemInfoState, "val.cores_per_socket", 1) * _.get(systemInfoState, "val.num_sockets", 1)
   const [closing, setClosing] = useState(false);
   const [name, setName] = useState("");
   const [batchSize, setBatchSize] = useState(1);
-  const [numCores, setNumCores] = useState(1);
+  const [coreCount, setNumCores] = useState(defaultCore);
 
   const createPerfProfileState = useSelector(selectCreatePerfProfile);
   const profiling =
@@ -51,9 +52,9 @@ function PerfProfileCreateDialog({ open, handleClose, projectId }) {
     createPerfProfileState.status === STATUS_FAILED;
 
   const canceling = createPerfProfileState.cancelingStatus === STATUS_LOADING;
-
+  const completed = createPerfProfileState.status === STATUS_SUCCEEDED;
   const action =
-    createPerfProfileState.status === STATUS_SUCCEEDED ? "Completed" : "Add";
+    createPerfProfileState.status === STATUS_SUCCEEDED ? "Run" : "Add";
 
   let profilingLabel = "Profiling Performance";
   if (canceling || createPerfProfileState.cancelingStatus === STATUS_SUCCEEDED) {
@@ -73,20 +74,31 @@ function PerfProfileCreateDialog({ open, handleClose, projectId }) {
     dispatch(clearCreatePerfProfile());
     setName("");
     setBatchSize(1);
-    setNumCores(1);
+    setNumCores(defaultCore);
   };
+
+  const handleComplete = () => {
+    history.push(`/project/${projectId}/perf/${createPerfProfileState.profileId}`);
+    handleClose();
+    dispatch(
+      getProfilesPerfThunk({
+        projectId,
+      })
+    );
+    handleClear();
+  }
 
   // Will wait until canceling is finished before closing
   useEffect(() => {
-    if (
-      createPerfProfileState.cancelingStatus === STATUS_SUCCEEDED &&
-      createPerfProfileState.status !== STATUS_LOADING &&
-      closing
+    if (completed && !canceling) {
+      handleComplete()
+    } else if (
+      createPerfProfileState.cancelingStatus === STATUS_SUCCEEDED
     ) {
       handleClose();
       handleClear();
     }
-  }, [createPerfProfileState, closing]);
+  }, [createPerfProfileState]);
 
   const handleCancel = () => {
     if (createPerfProfileState.val) {
@@ -111,20 +123,10 @@ function PerfProfileCreateDialog({ open, handleClose, projectId }) {
           projectId,
           name,
           batchSize,
-          numCores,
+          coreCount,
         })
       );
-    } else if (completed) {
-      history.push(`/project/${projectId}/perf/${createPerfProfileState.profileId}`);
-
-      handleClear();
-      dispatch(
-        getProfilesPerfThunk({
-          projectId,
-        })
-      );
-      handleClose();
-    } else if (createPerfProfileState.error) {
+    } else if (createPerfProfileState.error && !canceling) {
       if (createPerfProfileState.val) {
         dispatch(
           cancelAndDeletePerfProfileThunk({
@@ -147,7 +149,7 @@ function PerfProfileCreateDialog({ open, handleClose, projectId }) {
     <Dialog
       aria-labelledby="profile-perf-create-dialog-title"
       fullWidth={true}
-      maxWidth="md"
+      maxWidth="sm"
       open={open}
       PaperProps={{ className: classes.dialog }}
     >
@@ -161,8 +163,8 @@ function PerfProfileCreateDialog({ open, handleClose, projectId }) {
             <div>
               <Typography>Measure the model's performace</Typography>
               {nmEngineAvailable && (
-                <Grid className={classes.profileBody} container spacing={2}>
-                  <Grid item xs={4}>
+                <Grid className={classes.profileBody} container spacing={3} direction="column">
+                  <Grid item xs={8}>
                     <TextField
                       id="name"
                       variant="outlined"
@@ -173,7 +175,7 @@ function PerfProfileCreateDialog({ open, handleClose, projectId }) {
                       onChange={(e) => setName(e.target.value)}
                     />
                   </Grid>
-                  <Grid item xs={2}>
+                  <Grid item xs={3}>
                     <TextField
                       id="batchSize"
                       variant="outlined"
@@ -183,17 +185,17 @@ function PerfProfileCreateDialog({ open, handleClose, projectId }) {
                       onChange={(e) => setBatchSize(e.target.value)}
                     />
                   </Grid>
-                  <Grid item xs={2}>
+                  <Grid item xs={3}>
                     <TextField
                       id="numCores"
                       variant="outlined"
                       type="number"
                       label="CPU Cores"
-                      value={numCores !== null ? numCores : ""}
+                      value={coreCount !== null ? coreCount : ""}
                       onChange={(e) => setNumCores(e.target.value)}
                     />
                   </Grid>
-                  <Grid item xs={2}>
+                  <Grid item xs={8}>
                     <InputLabel className={classes.textLabel}>
                       Instruction Sets
                     </InputLabel>

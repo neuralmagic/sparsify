@@ -8,8 +8,10 @@ import {
 import { Box, Button, Tooltip, useTheme } from "@material-ui/core";
 
 import makeStyles from "./export-styles";
+import LoaderLayout from "../../components/loader-layout";
+import FadeTransitionGroup from "../../components/fade-transition-group";
 
-function CodeContainer({ language, text, defaultFileName }) {
+function CodeContainer({ language, text, defaultFileName, loading, error }) {
   const isDarkMode = useTheme().palette.type === "dark";
   const [showCopiedTooltip, setShowCopiedTooltip] = useState(false);
   const useStyles = makeStyles();
@@ -23,15 +25,24 @@ function CodeContainer({ language, text, defaultFileName }) {
 
   return (
     <div>
-      <SyntaxHighlighter
-        language={language}
-        style={isDarkMode ? atomOneDark : atomOneLight}
-        className={classes.codeblock}
-        showLineNumbers
-        wrapLines
-      >
-        {text}
-      </SyntaxHighlighter>
+      <Box className={classes.container}>
+        <FadeTransitionGroup showIndex={loading || !text ? 1 : 0}>
+          <SyntaxHighlighter
+            language={language}
+            style={isDarkMode ? atomOneDark : atomOneLight}
+            className={classes.codeblock}
+            showLineNumbers
+            wrapLines
+          >
+            {text}
+          </SyntaxHighlighter>
+          <div className={classes.otherblock}>
+            <LoaderLayout loading={loading} error={error}/>
+          </div>
+        </FadeTransitionGroup>
+      </Box>
+      
+      
       <Box display="flex" justifyContent="flex-end">
         <Box>
           <Button

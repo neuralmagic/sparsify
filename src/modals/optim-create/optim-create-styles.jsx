@@ -16,7 +16,7 @@ export default function createOptimStyles() {
         dialog: {
           width: "600px",
           overflowY: "hidden",
-          height: "53vh",
+          height: "530px",
           padding: theme.spacing(2),
         },
         hidden: {

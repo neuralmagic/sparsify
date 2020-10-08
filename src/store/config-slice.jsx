@@ -77,6 +77,8 @@ const selectedConfigSlice = createSlice({
     availableFrameworks: [],
     availableCodeSamples: {},
     status: "idle",
+    configStatus: "idle",
+    codeSampleStatus: "idle",
     error: null,
     projectId: null,
     optimId: null,
@@ -84,19 +86,19 @@ const selectedConfigSlice = createSlice({
   reducers: {},
   extraReducers: {
     [getConfigThunk.pending]: (state, action) => {
-      state.status = "loading";
+      state.configStatus = "loading";
       state.projectId = action.meta.arg.projectId;
       state.optimId = action.meta.arg.optimId;
     },
     [getConfigThunk.fulfilled]: (state, action) => {
-      state.status = "succeeded";
+      state.configStatus = "succeeded";
       state.projectId = action.meta.arg.projectId;
       state.optimId = action.meta.arg.optimId;
       state.config[action.meta.arg.framework] = action.payload;
       state.error = null;
     },
     [getConfigThunk.rejected]: (state, action) => {
-      state.status = "failed";
+      state.configStatus = "failed";
       state.error = action.error.message;
       state.projectId = action.meta.arg.projectId;
       state.optimId = action.meta.arg.optimId;
@@ -132,11 +134,11 @@ const selectedConfigSlice = createSlice({
       state.projectId = action.meta.arg.projectId;
     },
     [getCodeSampleThunk.pending]: (state, action) => {
-      state.status = "loading";
+      state.codeSampleStatus = "loading";
       state.projectId = action.meta.arg.projectId;
     },
     [getCodeSampleThunk.fulfilled]: (state, action) => {
-      state.status = "succeeded";
+      state.codeSampleStatus = "succeeded";
       state.projectId = action.meta.arg.projectId;
       if (!(action.meta.arg.framework in state.codeSamples)) {
         state.codeSamples[action.meta.arg.framework] = {};
@@ -146,7 +148,7 @@ const selectedConfigSlice = createSlice({
       state.error = null;
     },
     [getCodeSampleThunk.rejected]: (state, action) => {
-      state.status = "failed";
+      state.codeSampleStatus = "failed";
       state.error = action.error.message;
       state.projectId = action.meta.arg.projectId;
     },

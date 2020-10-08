@@ -90,6 +90,12 @@ export const selectSelectedProfilesLoss = (state) => {
   return profilesLossState.status !== STATUS_SUCCEEDED ? null : profilesLossState.val;
 };
 
+export const selectDefaultProfilesLoss = (state) => {
+  if (state.selectedProfilesLoss.val.length > 0) {
+    return state.selectedProfilesLoss.val[0];
+  }
+};
+
 export const selectSelectedProfilesLossAnyStatus = (state) => {
   return selectSelectedProfilesLossState(state).val;
 };

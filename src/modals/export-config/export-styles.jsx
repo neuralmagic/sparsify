@@ -10,7 +10,7 @@ export default function createExportStyles() {
         },
         container: {
           height: "24vh",
-          width:"770px",
+          width: "770px",
           overflow: "hidden",
           margin: theme.spacing(2, 0),
         },
@@ -36,8 +36,7 @@ export default function createExportStyles() {
         textButton: {
           color: theme.palette.primary.main,
         },
-        containedButton: {
-        },
+        containedButton: {},
         anchorOverride: {
           textDecoration: "none",
           color: theme.palette.primary.main,

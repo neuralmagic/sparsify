@@ -58,24 +58,6 @@ function ProjectOptim(props) {
   }, [optimsState.status, createOptimState.status, _.get(optimsState, "val.length")]);
 
   useEffect(() => {
-    if (
-      optimsState.status === "succeeded" &&
-      createOptimState.status === "succeeded" &&
-      optimsState.val.length > 0
-    ) {
-      const createdOptim = createOptimState.val;
-      history.push(
-        createProjectOptimPath(
-          projectId,
-          createdOptim.optim_id,
-          createdOptim.profile_perf_id,
-          createdOptim.profile_loss_id
-        )
-      );
-    }
-  }, [optimsState.status, createOptimState.status, _.get(optimsState, "val.length")]);
-
-  useEffect(() => {
     if (optimsState.status === "succeeded" && optimsState.val.length > 0 && !optimId) {
       const createdOptim = optimsState.val[0];
       history.push(

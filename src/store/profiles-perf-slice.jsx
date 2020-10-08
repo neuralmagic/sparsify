@@ -84,6 +84,12 @@ export const { setSelectedProfilePerf } = selectedProfilesPerfSlice.actions;
  */
 export const selectSelectedProfilesPerfState = (state) => state.selectedProfilesPerf;
 
+export const selectDefaultProfilesPerf = (state) => {
+  if (state.selectedProfilesPerf.val.length > 0) {
+    return state.selectedProfilesPerf.val[0];
+  }
+};
+
 export const selectSelectedProfilesPerf = (state) => {
   const profilesPerfState = selectSelectedProfilesPerfState(state);
 

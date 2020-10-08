@@ -38,7 +38,7 @@ function ExportDialog({ projectId, optimId, open, handleClose }) {
     config,
     codeSampleStatus,
     configStatus,
-    error
+    error,
   } = configState;
   useExportEffects(dispatch, projectId, optimId, frameworkTab, sampleType);
 
@@ -59,9 +59,11 @@ function ExportDialog({ projectId, optimId, open, handleClose }) {
   const codeExists =
     _.get(availableFrameworks, frameworkTab) &&
     sampleType in _.get(codeSamples, `${availableFrameworks[frameworkTab]}`, {});
-  
-  const loadingConfig = configStatus === STATUS_LOADING || configStatus === STATUS_FAILED;
-  const loadingCodeSample = codeSampleStatus === STATUS_LOADING || codeSampleStatus === STATUS_FAILED;
+
+  const loadingConfig =
+    configStatus === STATUS_LOADING || configStatus === STATUS_FAILED;
+  const loadingCodeSample =
+    codeSampleStatus === STATUS_LOADING || codeSampleStatus === STATUS_FAILED;
   return (
     <Dialog
       open={open}
@@ -136,9 +138,7 @@ function ExportDialog({ projectId, optimId, open, handleClose }) {
       <DialogActions>
         <Button
           onClick={() => handleClose()}
-          color="secondary"
           className={classes.containedButton}
-          variant="contained"
           disableElevation
         >
           Close

@@ -27,21 +27,21 @@ function OptimSelectContainer({
   const classes = useStyles();
 
   return (
-      <ProjectSettingsContainer
-        optimizer={optimizer}
-        optimizerValError={optimizerValError}
-        optimizerOnChange={optimizerOnChange}
-        epochs={epochs}
-        epochsValError={epochsValError}
-        epochsOnChange={epochsOnChange}
-        initLR={initLR}
-        initLRValError={initLRValError}
-        initLROnChange={initLROnChange}
-        finalLR={finalLR}
-        finalLRValError={finalLRValError}
-        finalLROnChange={finalLROnChange}
-        marginTop={false}
-      />
+    <ProjectSettingsContainer
+      optimizer={optimizer}
+      optimizerValError={optimizerValError}
+      optimizerOnChange={optimizerOnChange}
+      epochs={epochs}
+      epochsValError={epochsValError}
+      epochsOnChange={epochsOnChange}
+      initLR={initLR}
+      initLRValError={initLRValError}
+      initLROnChange={initLROnChange}
+      finalLR={finalLR}
+      finalLRValError={finalLRValError}
+      finalLROnChange={finalLROnChange}
+      marginTop={false}
+    />
   );
 }
 

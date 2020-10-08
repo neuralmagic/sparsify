@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Button, Divider, List, Typography } from "@material-ui/core";
 import ChevronLeft from "@material-ui/icons/ChevronLeft";
@@ -36,9 +36,9 @@ import ProjectSideNavMenuOptim from "./menu-optim";
 const useStyles = makeStyles();
 
 function ProjectSideNav({ match, location }) {
+  const other = useLocation();
   const classes = useStyles();
   const history = useHistory();
-
   const projectId = match.params.projectId;
   const action = match.params.action ? match.params.action : null;
   const actionId = match.params.actionId ? match.params.actionId : null;

@@ -4,11 +4,14 @@ import { Divider } from "@material-ui/core";
 import { ReactComponent as Icon } from "./img/icon.svg";
 import PropTypes from "prop-types";
 import moment from "moment";
-
+import _ from "lodash";
 import {
   clearOptim,
   createOptimThunk,
+  getOptimsThunk,
   selectCreatedOptimsState,
+  selectDefaultProfilesLoss,
+  selectDefaultProfilesPerf,
   STATUS_IDLE,
   STATUS_SUCCEEDED,
   updateOptimsThunk,
@@ -34,6 +37,8 @@ function ProjectSideNavMenuOptim({
   profileLossId,
 }) {
   const createOptimState = useSelector(selectCreatedOptimsState);
+  const defaultPerf = useSelector(selectDefaultProfilesPerf);
+  const defaultLoss = useSelector(selectDefaultProfilesLoss);
   const history = useHistory();
   const dispatch = useDispatch();
   const classes = useStyles();
@@ -46,7 +51,11 @@ function ProjectSideNavMenuOptim({
   } = selectedOptimsState;
 
   useEffect(() => {
+    const selectedOptim = selectedOptimsState.val.find(
+      (optim) => optim.optim_id === optimId
+    );
     if (
+      selectedOptim &&
       optimId !== null &&
       (!selectedId ||
         (selectedId === optimId &&
@@ -73,10 +82,18 @@ function ProjectSideNavMenuOptim({
 
   useEffect(() => {
     if (createOptimState.status === STATUS_SUCCEEDED) {
-      history.push(`/project/${projectId}/optim/${createOptimState.val.optim_id}`);
+      dispatch(getOptimsThunk({ projectId }));
+      history.push(
+        createProjectOptimPath(
+          projectId,
+          createOptimState.val.optim_id,
+          _.get(defaultPerf, "profile_id"),
+          _.get(defaultLoss, "profile_id")
+        )
+      );
       dispatch(clearOptim());
     }
-  }, [createOptimState.status]);
+  }, [createOptimState.status, defaultLoss, defaultPerf, dispatch]);
 
   return (
     <ProjectSideNavMenu

@@ -213,6 +213,7 @@ function ProjectPerf(props) {
     dispatch,
     profilePerfId,
     firstLossProfileId,
+    bestEstimatedState,
   ]);
 
   const overallStatus = combineStatuses([

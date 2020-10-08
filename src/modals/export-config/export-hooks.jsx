@@ -9,9 +9,6 @@ import {
   selectSelectedConfigState,
   selectSelectedOptimsState,
   getCodeSampleThunk,
-  STATUS_LOADING,
-  STATUS_IDLE,
-  STATUS_SUCCEEDED,
 } from "../../store";
 
 export const useExportEffects = (
@@ -60,11 +57,5 @@ export const useExportEffects = (
         })
       );
     }
-  }, [
-    dispatch,
-    projectId,
-    availableFrameworks,
-    frameworkTab,
-    sampleType,
-  ]);
+  }, [dispatch, projectId, availableFrameworks, frameworkTab, sampleType]);
 };

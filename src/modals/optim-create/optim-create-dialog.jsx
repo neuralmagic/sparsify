@@ -11,10 +11,13 @@ import {
 } from "@material-ui/core";
 import { useDispatch, useSelector } from "react-redux";
 import SwipeableViews from "react-swipeable-views";
+import _ from "lodash";
 
 import {
   selectSelectedProjectState,
   selectCreatedOptimsState,
+  selectDefaultProfilesLoss,
+  selectDefaultProfilesPerf,
   getOptimsThunk,
   updateProjectThunk,
   createOptimThunk,
@@ -27,6 +30,7 @@ import OptimInitContainer from "./optim-init-container";
 import OptimSelectContainer from "./optim-select-container";
 import makeStyles from "./optim-create-styles";
 import useOptimSettingsState from "./hooks/optim-settings-hooks";
+import { createProjectOptimPath } from "../../routes/paths";
 import useProjectUpdateState from "../../hooks/use-project-update-state";
 import FadeTransitionGroup from "../../components/fade-transition-group";
 import LoaderLayout from "../../components/loader-layout";
@@ -40,6 +44,8 @@ function OptimCreateDialog({ open, handleClose, projectId }) {
   const classes = useStyles();
   const dispatch = useDispatch();
   const [abortController, setAbortController] = useState();
+  const defaultPerf = useSelector(selectDefaultProfilesPerf);
+  const defaultLoss = useSelector(selectDefaultProfilesLoss);
   const { pruning, setPruning, setDefault } = useOptimSettingsState();
   const {
     changeValue,
@@ -89,15 +95,20 @@ function OptimCreateDialog({ open, handleClose, projectId }) {
   };
 
   useEffect(() => {
-    if (completed) {
-      history.push(`/project/${projectId}/optim/${createOptimState.val.optim_id}`) 
-      dispatch(
-        getOptimsThunk({projectId})
-      )
+    if (completed && open) {
+      history.push(
+        createProjectOptimPath(
+          projectId,
+          createOptimState.val.optim_id,
+          _.get(defaultPerf, "profile_id"),
+          _.get(defaultLoss, "profile_id")
+        )
+      );
+      dispatch(getOptimsThunk({ projectId }));
       handleClose();
       handleClear();
     }
-  })
+  }, [completed, open, defaultLoss, defaultPerf, dispatch]);
 
   const onSubmit = () => {
     if (completed) {
@@ -147,54 +158,56 @@ function OptimCreateDialog({ open, handleClose, projectId }) {
     >
       <DialogTitle>Model Optimization Settings</DialogTitle>
       <DialogContent>
-      <SwipeableViews
-        index={modalView}
-        disabled={true}
-        containerStyle={{ width: "100%", height: "100%" }}
-      >
-        <OptimInitContainer
-          onCancel={() => handleClose()}
-          onNext={() => setModalView(1)}
-          pruning={pruning}
-          setPruning={setPruning}
-        />
-        <FadeTransitionGroup
-          showIndex={loading ? 1 : 0}
-          className={classes.transitionGroup}
+        <SwipeableViews
+          index={modalView}
+          disabled={true}
+          containerStyle={{ width: "100%", height: "100%" }}
         >
-          <OptimSelectContainer
+          <OptimInitContainer
             onCancel={() => handleClose()}
-            onPrevious={() => setModalView(0)}
-            optimizer={values.trainingOptimizer}
-            optimizerValError={validationErrors.trainingOptimizer}
-            optimizerOnChange={(e) => changeValue("trainingOptimizer", e.target.value)}
-            epochs={values.trainingEpochs}
-            epochsValError={validationErrors.trainingEpochs}
-            epochsOnChange={(e) => changeValue("trainingEpochs", e.target.value)}
-            initLR={values.trainingLRInit}
-            initLRValError={validationErrors.trainingLRInit}
-            initLROnChange={(e) => changeValue("trainingLRInit", e.target.value)}
-            finalLR={values.trainingLRFinal}
-            finalLRValError={validationErrors.trainingLRFinal}
-            finalLROnChange={(e) => changeValue("trainingLRFinal", e.target.value)}
-            onSubmit={() => onSubmit()}
+            onNext={() => setModalView(1)}
+            pruning={pruning}
+            setPruning={setPruning}
           />
-          <Box className={classes.loaderContainer}>
-            <LoaderLayout
-              loading={createOptimState.status === STATUS_LOADING}
-              error={createOptimState.error}
+          <FadeTransitionGroup
+            showIndex={loading ? 1 : 0}
+            className={classes.transitionGroup}
+          >
+            <OptimSelectContainer
+              onCancel={() => handleClose()}
+              onPrevious={() => setModalView(0)}
+              optimizer={values.trainingOptimizer}
+              optimizerValError={validationErrors.trainingOptimizer}
+              optimizerOnChange={(e) =>
+                changeValue("trainingOptimizer", e.target.value)
+              }
+              epochs={values.trainingEpochs}
+              epochsValError={validationErrors.trainingEpochs}
+              epochsOnChange={(e) => changeValue("trainingEpochs", e.target.value)}
+              initLR={values.trainingLRInit}
+              initLRValError={validationErrors.trainingLRInit}
+              initLROnChange={(e) => changeValue("trainingLRInit", e.target.value)}
+              finalLR={values.trainingLRFinal}
+              finalLRValError={validationErrors.trainingLRFinal}
+              finalLROnChange={(e) => changeValue("trainingLRFinal", e.target.value)}
+              onSubmit={() => onSubmit()}
             />
-            <Typography
-              variant="body1"
-              color="textPrimary"
-              className={classes.loaderText}
-            >
-              {label}
-            </Typography>
-            {createOptimState.error && <Button onClick={handleClear}>Clear</Button>}
-          </Box>
-        </FadeTransitionGroup>
-      </SwipeableViews>
+            <Box className={classes.loaderContainer}>
+              <LoaderLayout
+                loading={createOptimState.status === STATUS_LOADING}
+                error={createOptimState.error}
+              />
+              <Typography
+                variant="body1"
+                color="textPrimary"
+                className={classes.loaderText}
+              >
+                {label}
+              </Typography>
+              {createOptimState.error && <Button onClick={handleClear}>Clear</Button>}
+            </Box>
+          </FadeTransitionGroup>
+        </SwipeableViews>
       </DialogContent>
 
       <DialogActions>

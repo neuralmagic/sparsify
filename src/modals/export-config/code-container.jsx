@@ -19,9 +19,9 @@ function CodeContainer({ language, text, defaultFileName, loading, error }) {
 
   useEffect(() => {
     if (showCopiedTooltip) {
-      setTimeout(() => setShowCopiedTooltip(false), 1000)
+      setTimeout(() => setShowCopiedTooltip(false), 1000);
     }
-  }, [showCopiedTooltip])
+  }, [showCopiedTooltip]);
 
   return (
     <div>
@@ -37,12 +37,11 @@ function CodeContainer({ language, text, defaultFileName, loading, error }) {
             {text}
           </SyntaxHighlighter>
           <div className={classes.otherblock}>
-            <LoaderLayout loading={loading} error={error}/>
+            <LoaderLayout loading={loading} error={error} />
           </div>
         </FadeTransitionGroup>
       </Box>
-      
-      
+
       <Box display="flex" justifyContent="flex-end">
         <Box>
           <Button
@@ -55,7 +54,11 @@ function CodeContainer({ language, text, defaultFileName, loading, error }) {
           </Button>
         </Box>
         <Box>
-          <Tooltip open={showCopiedTooltip} onClose={() => setShowCopiedTooltip(false)} title="Copied to clipboard">
+          <Tooltip
+            open={showCopiedTooltip}
+            onClose={() => setShowCopiedTooltip(false)}
+            title="Copied to clipboard"
+          >
             <Button
               className={classes.textButton}
               onClick={() => {
@@ -66,7 +69,6 @@ function CodeContainer({ language, text, defaultFileName, loading, error }) {
               Copy to clipboard
             </Button>
           </Tooltip>
-          
         </Box>
       </Box>
     </div>

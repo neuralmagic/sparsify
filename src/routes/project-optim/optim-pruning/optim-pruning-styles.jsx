@@ -14,6 +14,9 @@ export default function makeOptimPruningStyles() {
           display: "flex",
           justifyContent: "center",
         },
+        card: {
+          height: "312px",
+        },
         layout: {
           height: "fit-content",
           width: `calc(100% - 2 * ${theme.spacing(3)}px)`,

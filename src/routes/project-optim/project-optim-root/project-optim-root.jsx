@@ -1,13 +1,10 @@
 import React from "react";
 import { useDispatch } from "react-redux";
-import _ from "lodash";
 
 import { Box, Fab } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 
-import {
-  setCreateOptimModalOpen,
-} from "../../../store";
+import { setCreateOptimModalOpen } from "../../../store";
 import { ReactComponent as Icon } from "./img/icon.svg";
 import GenericPage from "../../../components/generic-page";
 

@@ -75,7 +75,7 @@ function ProjectOptim(props) {
     }
   }, [optimsState.status, createOptimState.status, _.get(optimsState, "val.length")]);
 
-  useEffect( () => {
+  useEffect(() => {
     if (optimsState.status === "succeeded" && optimsState.val.length > 0 && !optimId) {
       const createdOptim = optimsState.val[0];
       history.push(
@@ -85,9 +85,9 @@ function ProjectOptim(props) {
           createdOptim.profile_perf_id,
           createdOptim.profile_loss_id
         )
-      )
+      );
     }
-  }, [optimsState.status, _.get(optimsState, "val.length"), optimId])
+  }, [optimsState.status, _.get(optimsState, "val.length"), optimId]);
 
   if (!optimId && optimsState.status === "succeeded" && optimsState.val.length === 0) {
     return (

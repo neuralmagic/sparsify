@@ -13,10 +13,10 @@ export const createOptimThunk = createAsyncThunkWrapper(
   async ({
     projectId,
     name,
-    add_pruning,
-    add_quantization,
-    add_lr_schedule,
-    add_trainable,
+    add_pruning = true,
+    add_quantization = false,
+    add_lr_schedule = false,
+    add_trainable = false,
     abortController = undefined,
   }) => {
     const body = await requestCreateProjectOptimizer(

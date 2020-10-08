@@ -18,7 +18,11 @@ import { createAsyncThunkWrapper } from "../store/utils";
 
 import { createSelector } from "@reduxjs/toolkit";
 
-import { requestGetProjectOptims, requestChangeModifierSettings } from "../api";
+import {
+  requestGetProjectOptims,
+  requestChangeModifierSettings,
+  requestUpdateOptim,
+} from "../api";
 
 import { selectSelectedProjectModelAnalysis } from "./project-slice";
 import { selectSelectedProfileLoss } from "./profiles-loss-slice";
@@ -35,6 +39,31 @@ export const getOptimsThunk = createAsyncThunkWrapper(
     const body = await requestGetProjectOptims(projectId);
 
     return body.optims;
+  }
+);
+
+export const updateOptimsThunk = createAsyncThunkWrapper(
+  "selectedOptims/updateProjectOptims",
+  async ({
+    projectId,
+    optimId,
+    name = undefined,
+    profilePerfId = undefined,
+    profileLossId = undefined,
+    startEpoch = undefined,
+    endEpoch = undefined,
+  }) => {
+    const body = await requestUpdateOptim(
+      projectId,
+      optimId,
+      name,
+      profilePerfId,
+      profileLossId,
+      startEpoch,
+      endEpoch
+    );
+    const optimsBody = await requestGetProjectOptims(projectId);
+    return { optim: body.optim, optims: optimsBody.optims };
   }
 );
 
@@ -67,10 +96,19 @@ const selectedOptimsSlice = createSlice({
     selectedId: null,
     selectedProfilePerfId: null,
     selectedProfileLossId: null,
+    updateStatus: "idle",
   },
   reducers: {
     setSelectedOptim: (state, action) => {
-      state.selectedId = action.payload;
+      const selectedOptim = state.val.find(
+        (optim) => optim.optim_id === action.payload
+      );
+
+      if (selectedOptim) {
+        state.selectedId = selectedOptim.optim_id;
+        state.selectedProfileLossId = selectedOptim.profile_loss_id;
+        state.selectedProfilePerfId = selectedOptim.profile_perf_id;
+      }
     },
     setSelectedOptimProfilePerf: (state, action) => {
       state.selectedProfilePerfId = action.payload;
@@ -91,10 +129,32 @@ const selectedOptimsSlice = createSlice({
       state.error = null;
       if (state.val && state.val.length > 0) {
         state.selectedId = state.val[0].optim_id;
+        state.selectedProfilePerfId = state.val[0].profile_perf_id;
+        state.selectedProfileLossId = state.val[0].profile_loss_id;
       }
     },
     [getOptimsThunk.rejected]: (state, action) => {
       state.status = "failed";
+      state.error = action.error.message;
+      state.projectId = action.meta.arg.projectId;
+    },
+    [updateOptimsThunk.pending]: (state, action) => {
+      state.updateStatus = "loading";
+      state.projectId = action.meta.arg.projectId;
+    },
+    [updateOptimsThunk.fulfilled]: (state, action) => {
+      state.updateStatus = "succeeded";
+      state.val = action.payload.optims;
+      state.projectId = action.meta.arg.projectId;
+      state.error = null;
+
+      const selectedOptim = action.payload.optim;
+      state.selectedId = selectedOptim.optim_id;
+      state.selectedProfilePerfId = selectedOptim.profile_perf_id;
+      state.selectedProfileLossId = selectedOptim.profile_loss_id;
+    },
+    [updateOptimsThunk.rejected]: (state, action) => {
+      state.updateStatus = "failed";
       state.error = action.error.message;
       state.projectId = action.meta.arg.projectId;
     },

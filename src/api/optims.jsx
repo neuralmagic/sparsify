@@ -87,6 +87,45 @@ export function requestGetProjectOptims(projectId, page = 1, pageLength = 100) {
   );
 }
 
+export function requestUpdateOptim(
+  projectId,
+  optimId,
+  name,
+  profilePerfId,
+  profileLossId,
+  startEpoch,
+  endEpoch
+) {
+  const url = `${API_ROOT}/projects/${projectId}/optim/${optimId}`;
+  const body = {};
+  if (name !== undefined) {
+    body.name = name;
+  }
+  if (profilePerfId !== undefined) {
+    body.profile_perf_id = profilePerfId;
+  }
+  if (profileLossId !== undefined) {
+    body.profile_loss_id = profileLossId;
+  }
+  if (startEpoch !== undefined) {
+    body.start_epoch = startEpoch;
+  }
+  if (endEpoch !== undefined) {
+    body.end_epoch = endEpoch;
+  }
+
+  return validateAPIResponseJSON(
+    fetch(url, {
+      method: "PUT",
+      cache: "no-cache",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    })
+  );
+}
+
 /**
  * Request to change a modifier's settings
  *

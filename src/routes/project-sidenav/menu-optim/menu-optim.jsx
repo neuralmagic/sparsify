@@ -1,17 +1,25 @@
-import React from "react";
-import { useDispatch } from "react-redux";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Divider } from "@material-ui/core";
 import { ReactComponent as Icon } from "./img/icon.svg";
 import PropTypes from "prop-types";
 import moment from "moment";
 
-import { setCreateOptimModalOpen } from "../../../store";
+import {
+  clearOptim,
+  createOptimThunk,
+  selectCreatedOptimsState,
+  STATUS_IDLE,
+  STATUS_SUCCEEDED,
+  updateOptimsThunk,
+} from "../../../store";
 import makeStyles from "./menu-optim-styles";
 import { createProjectOptimPath } from "../../paths";
 import ProjectSideNavMenu from "../menu";
 import ProjectSideNavSubMenuTitle from "../sub-menu-title";
 import ProjectSideNavSubMenuItem from "../sub-menu-item";
 import LoaderLayout from "../../../components/loader-layout";
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles();
 
@@ -25,9 +33,50 @@ function ProjectSideNavMenuOptim({
   profilePerfId,
   profileLossId,
 }) {
+  const createOptimState = useSelector(selectCreatedOptimsState);
+  const history = useHistory();
   const dispatch = useDispatch();
   const classes = useStyles();
   const selected = action === "optim";
+
+  const {
+    selectedId,
+    selectedProfileLossId,
+    selectedProfilePerfId,
+  } = selectedOptimsState;
+
+  useEffect(() => {
+    if (
+      optimId !== null &&
+      (!selectedId ||
+        (selectedId === optimId &&
+          (selectedProfileLossId !== profileLossId ||
+            selectedProfilePerfId !== profilePerfId)))
+    ) {
+      dispatch(
+        updateOptimsThunk({
+          projectId,
+          optimId,
+          profilePerfId,
+          profileLossId,
+        })
+      );
+    }
+  }, [
+    selectedId,
+    selectedProfileLossId,
+    selectedProfilePerfId,
+    optimId,
+    profilePerfId,
+    profileLossId,
+  ]);
+
+  useEffect(() => {
+    if (createOptimState.status === STATUS_SUCCEEDED) {
+      history.push(`/project/${projectId}/optim/${createOptimState.val.optim_id}`);
+      dispatch(clearOptim());
+    }
+  }, [createOptimState.status]);
 
   return (
     <ProjectSideNavMenu
@@ -44,14 +93,26 @@ function ProjectSideNavMenuOptim({
       <Icon />
       <div>
         <ProjectSideNavSubMenuTitle
-          onClick={() => dispatch(setCreateOptimModalOpen(true))}
+          onClick={() => {
+            dispatch(
+              createOptimThunk({
+                projectId,
+              })
+            );
+          }}
           title="Version"
           showAdd={true}
         />
         <Divider light className={classes.divider} />
         <LoaderLayout
-          status={selectedOptimsState.status}
-          error={selectedOptimsState.error}
+          status={
+            createOptimState.status !== STATUS_IDLE
+              ? createOptimState.status
+              : selectedOptimsState.status
+          }
+          error={
+            createOptimState.error ? createOptimState.error : selectedOptimsState.error
+          }
           errorTitle="Error loading optims"
           loaderSize={28}
           rootClass={classes.loaderLayout}

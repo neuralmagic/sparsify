@@ -113,6 +113,21 @@ export const selectSelectedProfilePerf = (state) => {
   )(profilesPerfState.val);
 };
 
+const getOpType = (node, nodeLookup) => {
+  const analysisNode = nodeLookup.hasOwnProperty(node.id) ? nodeLookup[node.id] : null;
+
+  let opType;
+  if (analysisNode) {
+    opType = analysisNode.op_type;
+  } else if (node.name.includes("ORT Subgraph")) {
+    opType = "ORT Subgraph";
+  } else {
+    opType = node.name.split("_")[0];
+    opType = opType.charAt(0).toUpperCase() + opType.slice(1);
+  }
+  return opType;
+};
+
 export const selectSelectedProfilePerfNodeSummaries = createSelector(
   [selectSelectedProjectModelAnalysis, selectSelectedProfilePerf],
   (analysis, profilePerf) => {
@@ -134,21 +149,13 @@ export const selectSelectedProfilePerfNodeSummaries = createSelector(
       summaries["Baseline MS"] = summarizeObjValuesArray(
         profilePerf.analysis.baseline.ops,
         (node) => {
-          const analysisNode = nodeLookup.hasOwnProperty(node.id)
-            ? nodeLookup[node.id]
-            : null;
-
-          return analysisNode ? analysisNode.op_type : "Other";
+          return getOpType(node, nodeLookup);
         },
         (node) => {
           return node.measurement ? node.measurement * 1000.0 : node.measurement;
         },
         (node) => {
-          const analysisNode = nodeLookup.hasOwnProperty(node.id)
-            ? nodeLookup[node.id]
-            : null;
-
-          return { opType: analysisNode ? analysisNode.op_type : "Other" };
+          return { opType: getOpType(node, nodeLookup) };
         }
       );
     }
@@ -160,11 +167,7 @@ export const selectSelectedProfilePerfNodeSummaries = createSelector(
           summaries[`Pruned ${pruningLevel} MS`] = summarizeObjValuesArray(
             profilePerf.analysis.pruning.ops,
             (node) => {
-              const analysisNode = nodeLookup.hasOwnProperty(node.id)
-                ? nodeLookup[node.id]
-                : null;
-
-              return analysisNode ? analysisNode.op_type : "Other";
+              return getOpType(node, nodeLookup);
             },
             (node) => {
               return node.measurements[pruningLevel]
@@ -172,11 +175,7 @@ export const selectSelectedProfilePerfNodeSummaries = createSelector(
                 : node.measurements[pruningLevel];
             },
             (node) => {
-              const analysisNode = nodeLookup.hasOwnProperty(node.id)
-                ? nodeLookup[node.id]
-                : null;
-
-              return { opType: analysisNode ? analysisNode.op_type : "Other" };
+              return { opType: getOpType(node, nodeLookup) };
             }
           );
         }
@@ -218,9 +217,11 @@ export const selectSelectedProfilePerfNodeResults = createSelector(
             ? nodeLookup[node.id]
             : null;
 
+          let opType = getOpType(node, nodeLookup);
+
           return {
             id: analysisNode ? analysisNode.id : node.name,
-            opType: analysisNode ? analysisNode.op_type : "Other",
+            opType,
             weightName: analysisNode ? analysisNode.weight_name : null,
           };
         },
@@ -247,9 +248,11 @@ export const selectSelectedProfilePerfNodeResults = createSelector(
                 ? nodeLookup[node.id]
                 : null;
 
+              let opType = getOpType(node, nodeLookup);
+
               return {
                 id: analysisNode ? analysisNode.id : node.name,
-                opType: analysisNode ? analysisNode.op_type : "Other",
+                opType,
                 weightName: analysisNode ? analysisNode.weight_name : null,
               };
             },

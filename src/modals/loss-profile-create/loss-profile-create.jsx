@@ -36,7 +36,6 @@ function LossProfileCreateDialog({ open, handleClose, projectId }) {
   const history = useHistory();
   const classes = useStyles();
 
-  const [closing, setClosing] = useState(false);
   const [name, setName] = useState("");
   const createLossProfileState = useSelector(selectCreateLossProfile);
   const profiling =
@@ -44,12 +43,12 @@ function LossProfileCreateDialog({ open, handleClose, projectId }) {
     createLossProfileState.status === STATUS_FAILED;
 
   const canceling = createLossProfileState.cancelingStatus === STATUS_LOADING;
-
+  const completed = createLossProfileState.status === STATUS_SUCCEEDED;
   const action =
-    createLossProfileState.status === STATUS_SUCCEEDED ? "Completed" : "Add";
+    createLossProfileState.status === STATUS_SUCCEEDED ? "Run" : "Add";
 
   let profilingLabel = "Profiling Loss";
-  if (canceling || createLossProfileState.status === STATUS_SUCCEEDED) {
+  if (canceling || createLossProfileState.cancelingStatus === STATUS_SUCCEEDED) {
     profilingLabel = "Canceling";
   } else if (createLossProfileState.error) {
     profilingLabel = "";
@@ -60,15 +59,24 @@ function LossProfileCreateDialog({ open, handleClose, projectId }) {
     setName("");
   };
 
+  const handleComplete = () => {
+    history.push(`/project/${projectId}/loss/${createLossProfileState.profileId}`);
+    handleClose();
+    dispatch(
+      getProfilesLossThunk({
+        projectId,
+      })
+    );
+    handleClear();
+  }
+
   // Will wait until canceling is finished before closing
   useEffect(() => {
-    if (
-      createLossProfileState.cancelingStatus === STATUS_SUCCEEDED &&
-      createLossProfileState.status !== STATUS_LOADING &&
-      closing
-    ) {
-      handleClose();
+    if (completed && !canceling) {
+      handleComplete()
+    } else if (createLossProfileState.cancelingStatus === STATUS_SUCCEEDED) {
       handleClear();
+      handleClose();
     }
   }, [createLossProfileState]);
 
@@ -80,7 +88,6 @@ function LossProfileCreateDialog({ open, handleClose, projectId }) {
           profileId: createLossProfileState.profileId,
         })
       );
-      setClosing(true);
     } else {
       handleClose();
       handleClear();
@@ -88,7 +95,7 @@ function LossProfileCreateDialog({ open, handleClose, projectId }) {
   };
 
   const handleAction = () => {
-    const completed = createLossProfileState.status === STATUS_SUCCEEDED;
+    
     if (!createLossProfileState.error && !profiling && !completed) {
       dispatch(
         createLossProfileThunk({
@@ -96,18 +103,7 @@ function LossProfileCreateDialog({ open, handleClose, projectId }) {
           name,
         })
       );
-    } else if (completed) {
-      history.push(`/project/${projectId}/loss/${createLossProfileState.profileId}`);
-
-      handleClear();
-      dispatch(clearCreateLossProfile());
-      dispatch(
-        getProfilesLossThunk({
-          projectId,
-        })
-      );
-      handleClose();
-    } else if (createLossProfileState.error) {
+    } else if (createLossProfileState.error && !canceling) {
       if (createLossProfileState.val) {
         dispatch(
           cancelAndDeleteLossProfileThunk({
@@ -117,6 +113,8 @@ function LossProfileCreateDialog({ open, handleClose, projectId }) {
         );
       }
       handleClear();
+    } else if (completed) {
+      handleComplete();
     }
   };
 
@@ -124,7 +122,7 @@ function LossProfileCreateDialog({ open, handleClose, projectId }) {
     <Dialog
       aria-labelledby="profile-perf-create-dialog-title"
       fullWidth={true}
-      maxWidth="md"
+      maxWidth="sm"
       open={open}
       PaperProps={{ className: classes.dialog }}
     >
@@ -137,8 +135,8 @@ function LossProfileCreateDialog({ open, handleClose, projectId }) {
           >
             <div>
               <Typography>Measure the model's loss</Typography>
-              <Grid className={classes.profileBody} container spacing={2}>
-                <Grid item xs={4}>
+              <Grid className={classes.profileBody} container spacing={3}>
+                <Grid item xs={8} direction="column">
                   <TextField
                     id="name"
                     variant="outlined"
@@ -164,9 +162,10 @@ function LossProfileCreateDialog({ open, handleClose, projectId }) {
               >
                 {profilingLabel}
               </Typography>
-              {createLossProfileState.error && (
-                <Button onClick={handleAction}>Clear</Button>
-              )}
+              {createLossProfileState.error &&
+                createLossProfileState.cancelingStatus !== STATUS_SUCCEEDED && (
+                  <Button onClick={handleAction}>Clear</Button>
+                )}
             </div>
           </FadeTransitionGroup>
         </DialogContent>

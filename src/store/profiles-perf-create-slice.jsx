@@ -153,7 +153,9 @@ const createPerfProfileSlice = createSlice({
     },
     [createPerfProfileThunk.rejected]: (state, action) => {
       state.status = STATUS_FAILED;
-      state.error = action.error.message;
+      if (state.cancelingStatus === STATUS_IDLE) {
+        state.error = action.error.message;
+      }
       state.progressStage = null;
       state.progressValue = null;
     },

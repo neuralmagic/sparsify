@@ -133,19 +133,19 @@ function* changeLayerAdjustableSettingsSaga({ payload }) {
   const layerSettings = yield select(
     selectLayerAdjustableSettings(payload.modifierId, payload.layerId)
   );
-  const allLayers = yield select(selectAllLayersAdjustableSettings(payload.modifierId))
+  const allLayers = yield select(selectAllLayersAdjustableSettings(payload.modifierId));
   const nodes = compose(
     map(pick(["node_id", ...layerAdjustableSettings])),
     values,
-    omit(['modifier_id']),
-  )(allLayers)
+    omit(["modifier_id"])
+  )(allLayers);
 
   const data = {
     projectId: layerSettings.project_id,
     optimId: layerSettings.optim_id,
     modifierId: layerSettings.modifier_id,
     settings: {
-      nodes
+      nodes,
     },
   };
 

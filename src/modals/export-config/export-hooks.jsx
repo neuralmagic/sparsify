@@ -7,6 +7,7 @@ import {
   getConfigThunk,
   getAvailableCodeSamplesThunk,
   selectSelectedConfigState,
+  selectSelectedOptimsState,
   getCodeSampleThunk,
 } from "../../store";
 
@@ -17,9 +18,10 @@ export const useExportEffects = (
   frameworkTab,
   sampleType
 ) => {
+  const selectedOptimsState = useSelector(selectSelectedOptimsState);
   const configState = useSelector(selectSelectedConfigState);
 
-  const { availableFrameworks, availableCodeSamples, config } = configState;
+  const { availableFrameworks } = configState;
 
   useEffect(() => {
     dispatch(getAvailableFrameworksThunk({ projectId }));
@@ -29,11 +31,11 @@ export const useExportEffects = (
     availableFrameworks.forEach((framework) => {
       dispatch(getAvailableCodeSamplesThunk({ projectId, framework }));
     });
-  }, [dispatch, projectId, availableFrameworks]);
+  }, [dispatch, projectId, availableFrameworks, selectedOptimsState]);
 
   useEffect(() => {
     const framework = _.get(availableFrameworks, frameworkTab);
-    if (framework && !(framework in config)) {
+    if (framework) {
       dispatch(
         getConfigThunk({
           projectId,
@@ -42,12 +44,11 @@ export const useExportEffects = (
         })
       );
     }
-  }, [dispatch, projectId, optimId, availableFrameworks, frameworkTab, config]);
+  }, [dispatch, projectId, optimId, availableFrameworks, frameworkTab]);
 
   useEffect(() => {
     const framework = _.get(availableFrameworks, frameworkTab);
-    const codeSample = _.get(availableCodeSamples, `${framework}.${sampleType}`);
-    if (framework && sampleType !== "" && !codeSample) {
+    if (framework && sampleType !== "") {
       dispatch(
         getCodeSampleThunk({
           projectId,
@@ -56,12 +57,5 @@ export const useExportEffects = (
         })
       );
     }
-  }, [
-    dispatch,
-    projectId,
-    availableFrameworks,
-    availableCodeSamples,
-    frameworkTab,
-    sampleType,
-  ]);
+  }, [dispatch, projectId, availableFrameworks, frameworkTab, sampleType]);
 };

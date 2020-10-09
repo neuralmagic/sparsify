@@ -2,11 +2,7 @@ import axios from "axios";
 
 import { API_ROOT, validateAPIResponseJSON } from "./utils";
 
-export function requestUploadProjectModel(
-  projectId,
-  modelFile,
-  progressCallback
-) {
+export function requestUploadProjectModel(projectId, modelFile, progressCallback) {
   const path = `/projects/${projectId}/model/upload`;
   const formPayload = new FormData();
   formPayload.append("model_file", modelFile);

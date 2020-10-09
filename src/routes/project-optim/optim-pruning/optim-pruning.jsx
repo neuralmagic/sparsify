@@ -14,18 +14,15 @@ const OptimPruning = ({ optim }) => {
   const classes = useStyles();
 
   return (
-    <ScrollerLayout
-      layoutClass={classes.root}>
-      <LoaderLayout
-        rootClass={classes.body}
-        loaderClass={classes.loader}>
+    <ScrollerLayout layoutClass={classes.root}>
+      <LoaderLayout rootClass={classes.body} loaderClass={classes.loader}>
         <div className={classes.layout}>
           <div className={classes.title}>
             <Typography color="textSecondary" variant="h5">
               Pruning
             </Typography>
           </div>
-          <Card elevation={1} className={classes.root}>
+          <Card elevation={1} className={classes.card}>
             {optim &&
               optim.pruning_modifiers.map((modifier) => (
                 <PruningModifier

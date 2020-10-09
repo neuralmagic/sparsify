@@ -18,7 +18,7 @@ import {
 } from "@material-ui/core";
 import _ from "lodash";
 
-import { selectSelectedConfigState } from "../../store";
+import { selectSelectedConfigState, STATUS_FAILED, STATUS_LOADING } from "../../store";
 import makeStyles from "./export-styles";
 import { useExportEffects } from "./export-hooks";
 import CodeContainer from "./code-container";
@@ -36,6 +36,9 @@ function ExportDialog({ projectId, optimId, open, handleClose }) {
     availableCodeSamples,
     codeSamples,
     config,
+    codeSampleStatus,
+    configStatus,
+    error,
   } = configState;
   useExportEffects(dispatch, projectId, optimId, frameworkTab, sampleType);
 
@@ -56,6 +59,11 @@ function ExportDialog({ projectId, optimId, open, handleClose }) {
   const codeExists =
     _.get(availableFrameworks, frameworkTab) &&
     sampleType in _.get(codeSamples, `${availableFrameworks[frameworkTab]}`, {});
+
+  const loadingConfig =
+    configStatus === STATUS_LOADING || configStatus === STATUS_FAILED;
+  const loadingCodeSample =
+    codeSampleStatus === STATUS_LOADING || codeSampleStatus === STATUS_FAILED;
   return (
     <Dialog
       open={open}
@@ -90,6 +98,8 @@ function ExportDialog({ projectId, optimId, open, handleClose }) {
           language="yaml"
           text={configExists ? _.get(config, availableFrameworks[frameworkTab]) : ""}
           defaultFileName="recal.config.yaml"
+          loading={loadingConfig}
+          error={error}
         />
         <Typography className={classes.contentHeader} gutterBottom>
           Code for optimization
@@ -121,14 +131,14 @@ function ExportDialog({ projectId, optimId, open, handleClose }) {
               : ""
           }
           defaultFileName="sample.py"
+          loading={loadingCodeSample}
+          error={error}
         />
       </DialogContent>
       <DialogActions>
         <Button
           onClick={() => handleClose()}
-          color="secondary"
           className={classes.containedButton}
-          variant="contained"
           disableElevation
         >
           Close

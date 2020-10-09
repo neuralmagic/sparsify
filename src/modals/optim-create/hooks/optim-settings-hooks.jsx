@@ -12,6 +12,11 @@ function useOptimSettingsState() {
     setQuantization,
     training,
     setTraining,
+    setDefault: () => {
+      setPruning(true);
+      setQuantization(false);
+      setTraining(false);
+    },
   };
 }
 

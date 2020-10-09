@@ -27,53 +27,21 @@ function OptimSelectContainer({
   const classes = useStyles();
 
   return (
-    <DialogContent>
-      <ProjectSettingsContainer
-        optimizer={optimizer}
-        optimizerValError={optimizerValError}
-        optimizerOnChange={optimizerOnChange}
-        epochs={epochs}
-        epochsValError={epochsValError}
-        epochsOnChange={epochsOnChange}
-        initLR={initLR}
-        initLRValError={initLRValError}
-        initLROnChange={initLROnChange}
-        finalLR={finalLR}
-        finalLRValError={finalLRValError}
-        finalLROnChange={finalLROnChange}
-      />
-      <DialogActions>
-        <Box paddingRight={1}>
-          <Button
-            onClick={() => onCancel()}
-            className={`${classes.button} ${classes.cancelButton}`}
-            disableElevation
-          >
-            Cancel
-          </Button>
-        </Box>
-        <Box marginRight={1}>
-          <Button
-            onClick={() => onPrevious()}
-            className={`${classes.cancelButton} ${classes.previousButton}`}
-            disableElevation
-          >
-            Back
-          </Button>
-        </Box>
-        <Box>
-          <Button
-            onClick={() => onSubmit()}
-            color="secondary"
-            variant="contained"
-            className={classes.button}
-            disableElevation
-          >
-            Apply
-          </Button>
-        </Box>
-      </DialogActions>
-    </DialogContent>
+    <ProjectSettingsContainer
+      optimizer={optimizer}
+      optimizerValError={optimizerValError}
+      optimizerOnChange={optimizerOnChange}
+      epochs={epochs}
+      epochsValError={epochsValError}
+      epochsOnChange={epochsOnChange}
+      initLR={initLR}
+      initLRValError={initLRValError}
+      initLROnChange={initLROnChange}
+      finalLR={finalLR}
+      finalLRValError={finalLRValError}
+      finalLROnChange={finalLROnChange}
+      marginTop={false}
+    />
   );
 }
 

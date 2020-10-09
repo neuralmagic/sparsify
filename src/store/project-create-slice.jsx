@@ -439,7 +439,9 @@ const createProjectSlice = createSlice({
     },
     [createProjectProfilesThunk.rejected]: (state, action) => {
       state.profilingStatus = STATUS_FAILED;
-      state.profilingError = action.error.message;
+      if (state.cancelingProfileStatus === STATUS_IDLE) {
+        state.profilingError = action.error.message;
+      }
       state.profilingProgressStage = null;
       state.profilingProgressValue = null;
     },

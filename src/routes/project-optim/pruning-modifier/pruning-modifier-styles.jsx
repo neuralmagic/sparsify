@@ -8,43 +8,43 @@ export default function makePruningModifierStyles() {
           paddingRight: theme.spacing(4),
           paddingTop: theme.spacing(4),
           paddingLeft: theme.spacing(4),
-          position: 'relative'
+          position: "relative",
         },
         sparsitySliderRoot: {
           marginTop: theme.spacing(2),
-          marginBottom: theme.spacing(2)
+          marginBottom: theme.spacing(2),
         },
         sparsityInput: {
           width: 80,
           marginRight: 20,
         },
         editButton: {
-          position: 'absolute',
+          position: "absolute",
           right: 45,
-          top: theme.spacing(1)
+          top: theme.spacing(1),
         },
         menuButton: {
-          position: 'absolute',
+          position: "absolute",
           right: 10,
-          top: theme.spacing(1)
+          top: theme.spacing(1),
         },
         popoverMenu: {
           padding: 25,
         },
         popoverInput: {
-          width: 100
+          width: 100,
         },
         popoverSlider: {
-          width: 150
+          width: 150,
         },
         pruningTypeSelect: {
-          display: 'flex',
-          flex: 1
+          display: "flex",
+          flex: 1,
         },
         presetFiltersTitle: {
           marginTop: theme.spacing(2),
-          marginBottom: theme.spacing(2)
-        }
+          marginBottom: theme.spacing(2),
+        },
       };
     },
     { name: "PruningModifier" }

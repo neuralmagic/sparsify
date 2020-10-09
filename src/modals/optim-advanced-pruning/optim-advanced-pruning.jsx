@@ -280,10 +280,9 @@ const LayersTableRow = ({ modifier, layer, data }) => {
   </React.Fragment>
 }
 
-const LayersTable = ({ modifier }) => {
+const LayersTable = ({ modifier, layerData }) => {
   const classes = tableStyles()
   const [searchTerm, setSearchTerm] = useState(null)
-  const layerData = useSelector(selectSelectedProjectPrunableNodesById)
 
   const filteredLayers = compose(
     when(
@@ -339,6 +338,7 @@ const LayersTable = ({ modifier }) => {
 
 export default ({ modifier, open, onClose }) => {
   const classes = useStyles()
+  const layerData = useSelector(selectSelectedProjectPrunableNodesById)
 
   return <Dialog
     open={open}
@@ -356,10 +356,11 @@ export default ({ modifier, open, onClose }) => {
         </Grid>
         <LayersChart
           data={modifier.nodes}
+          layerData={layerData}
           sparsityProp="sparsity"
           denseProp="est_time"
           sparseProp="est_time_baseline"/>
-        <LayersTable modifier={modifier}/>
+        <LayersTable modifier={modifier} layerData={layerData}/>
       </Box>
     </DialogContent>
   </Dialog>

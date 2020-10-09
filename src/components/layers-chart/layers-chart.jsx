@@ -9,6 +9,7 @@ const LayersChart = (props) => {
   const margin = { top: 10, bottom: 20, left: 25, right: 20 };
   const chartHeight = 250;
   const ref = useRef();
+  const tooltipRef = useRef();
   const classes = useStyles();
 
   useEffect(() => {
@@ -70,6 +71,7 @@ const LayersChart = (props) => {
   const draw = ({ data, sparsityProp, denseProp, sparseProp }) => {
     const root = d3.select(ref.current);
     const chartWidth = ref.current.parentElement.offsetWidth - 50;
+    const tooltip = d3.select(tooltipRef.current);
 
     root
       .attr("width", chartWidth + margin.left + margin.right)
@@ -209,7 +211,42 @@ const LayersChart = (props) => {
       .append("circle")
       .attr("class", "sparsityCircle")
       .attr("cx", (d, index) => x(index + 1))
-      .attr("cy", (d) => sparsityY(d[sparsityProp] * 100));
+      .attr("cy", d => sparsityY(d[sparsityProp] * 100))
+      .attr("id", d => d.node_id);
+
+    root
+      .append('rect')
+      .style("fill", "none")
+      .style("pointer-events", "all")
+      .attr("width", chartWidth)
+      .attr("height", chartHeight)
+      .on('mouseover', () => tooltip.style("visibility", "visible"))
+      .on('mousemove', event => {
+        const index = Math.round(x.invert(d3.pointer(event)[0]));
+        const selectedData = data[index - 1];
+
+        if (selectedData) {
+          tooltip.html(
+            `<div class="${classes.tooltipTitle}">${props.layerData[selectedData.node_id].weight_name}</div>
+             <div><span class="${classes.tooltipPropertyLabel}">Layer</span>${Math.max(index, 1)}</div>
+             <div><span class="${classes.tooltipPropertyLabel}">Sparsity</span>${Math.round(selectedData.sparsity * 100)}%</div>`)
+            .style("margin-left", x(index) + 10 + "px")
+            .style("margin-top", sparsityY(selectedData.sparsity * 100) + 10 + "px");
+
+          circles
+            .attr("r", 3)
+            .attr("fill", "white")
+            .filter((d, i) => i === index - 1)
+            .attr("r", 6)
+            .attr("fill", "#E79824");
+        }
+      })
+      .on('mouseout', () => {
+        tooltip.style("visibility", "hidden")
+        circles
+          .attr("fill", 'white')
+          .attr("r", 3);
+      });
 
     root
       .selectAll("circle")
@@ -228,12 +265,14 @@ const LayersChart = (props) => {
   return (
     <div className={classes.root}>
       <svg ref={ref} />
+      <div ref={tooltipRef} className={classes.tooltip}/>
     </div>
   );
 };
 
 LayersChart.propTypes = {
   data: PropTypes.array.isRequired,
+  layerData: PropTypes.array.isRequired,
   sparsityProp: PropTypes.string.isRequired,
   denseProp: PropTypes.string.isRequired,
   sparseProp: PropTypes.string.isRequired,

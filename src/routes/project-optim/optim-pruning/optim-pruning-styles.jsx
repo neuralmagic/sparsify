@@ -6,6 +6,7 @@ export default function makeOptimPruningStyles() {
       return {
         root: {
           display: "flex",
+          overflow: "visible"
         },
         body: {
           position: "relative",

@@ -48,6 +48,28 @@ export default function makeLayersChartStyles() {
           justifyContent: "flex-end",
           paddingRight: 20,
         },
+        tooltip: {
+          position: 'absolute',
+          visibility: 'hidden',
+          pointerEvents: 'none',
+          backgroundColor: 'white',
+          boxShadow: theme.shadows[1],
+          padding: theme.spacing(2),
+          zIndex: theme.zIndex.tooltip,
+          fontFamily: theme.typography.fontFamily,
+          fontSize: 14
+        },
+        tooltipTitle: {
+          fontSize: 20,
+          marginBottom: theme.spacing(2)
+        },
+        tooltipPropertyLabel: {
+          width: 50,
+          fontSize: 12,
+          color: '#76769C',
+          display: 'inline-block',
+          marginBottom: theme.spacing(1)
+        }
       };
     },
     { name: "LayersChart" }

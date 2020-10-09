@@ -1,6 +1,6 @@
 import { compose, filter, contains, prop, defaultTo, sortBy,
   when, always, not, isNil, toPairs, map, objOf, of as rof,
-  head, last } from 'ramda'
+  head, last, __ } from 'ramda'
 import React, { useState } from 'react'
 import clsx from 'clsx'
 import { ResponsiveLine } from "@nivo/line"
@@ -162,6 +162,7 @@ const LayersTableRow = ({ modifier, layer, data }) => {
   return <React.Fragment>
     <TableRow key={layer.node_id} className={clsx(classes.root, { [classes.disabled]: layerSettings.sparsity === null })}>
       <TableCell style={{ padding: 0 }}>
+        <Typography className={classes.layerIndexText}>{data.index + 1}.</Typography>
         <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
           {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
         </IconButton>
@@ -280,15 +281,18 @@ const LayersTableRow = ({ modifier, layer, data }) => {
   </React.Fragment>
 }
 
-const LayersTable = ({ modifier }) => {
+const LayersTable = ({ modifier, layerData }) => {
   const classes = tableStyles()
   const [searchTerm, setSearchTerm] = useState(null)
-  const layerData = useSelector(selectSelectedProjectPrunableNodesById)
 
   const filteredLayers = compose(
     when(
       always(compose(not, isNil)(searchTerm)),
-      filter(compose(contains(searchTerm), prop('node_id')))),
+      filter(compose(
+        contains(searchTerm),
+        prop("weight_name"),
+        prop(__, layerData),
+        prop('node_id')))),
     defaultTo([]))(
     modifier.nodes)
 
@@ -339,6 +343,7 @@ const LayersTable = ({ modifier }) => {
 
 export default ({ modifier, open, onClose }) => {
   const classes = useStyles()
+  const layerData = useSelector(selectSelectedProjectPrunableNodesById)
 
   return <Dialog
     open={open}
@@ -356,10 +361,11 @@ export default ({ modifier, open, onClose }) => {
         </Grid>
         <LayersChart
           data={modifier.nodes}
+          layerData={layerData}
           sparsityProp="sparsity"
           denseProp="est_time"
           sparseProp="est_time_baseline"/>
-        <LayersTable modifier={modifier}/>
+        <LayersTable modifier={modifier} layerData={layerData}/>
       </Box>
     </DialogContent>
   </Dialog>

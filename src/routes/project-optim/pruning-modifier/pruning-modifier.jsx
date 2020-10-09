@@ -23,6 +23,7 @@ import makeStyles from "./pruning-modifier-styles";
 import {
   selectModifierAdjustableSettings,
   changeModifierAdjustableSettings,
+  selectSelectedProjectPrunableNodesById
 } from "../../../store";
 
 const useStyles = makeStyles();
@@ -35,6 +36,7 @@ const PruningModifier = ({ modifier, optim }) => {
   const adjustableSettings = useSelector(
     selectModifierAdjustableSettings(modifier.modifier_id)
   );
+  const layerData = useSelector(selectSelectedProjectPrunableNodesById);
 
   return (
     <Grid container key={modifier.modifier_id} direction="row" className={classes.root}>
@@ -55,6 +57,7 @@ const PruningModifier = ({ modifier, optim }) => {
       <Grid item xs={7}>
         <LayersChart
           data={modifier.nodes}
+          layerData={layerData}
           sparsityProp="sparsity"
           denseProp="est_time"
           sparseProp="est_time_baseline"

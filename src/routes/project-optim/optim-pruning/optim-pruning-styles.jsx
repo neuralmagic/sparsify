@@ -5,7 +5,7 @@ export default function makeOptimPruningStyles() {
     (theme) => {
       return {
         root: {
-          display: "flex",
+          display: "flex"
         },
         body: {
           position: "relative",
@@ -16,6 +16,7 @@ export default function makeOptimPruningStyles() {
         },
         card: {
           height: "312px",
+          overflow: "visible"
         },
         layout: {
           height: "fit-content",

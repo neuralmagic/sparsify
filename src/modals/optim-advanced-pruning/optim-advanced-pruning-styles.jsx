@@ -70,6 +70,11 @@ export const makeTableRowStyles = () => makeStyles(
       sparsityValue: {
         marginLeft: 10
       },
+      layerIndexText: {
+        display: 'inline-flex',
+        fontSize: '9px!important',
+        color: '#2B2B2B'
+      },
       layerDetails: {
         paddingTop: theme.spacing(1),
         paddingBottom: theme.spacing(2)

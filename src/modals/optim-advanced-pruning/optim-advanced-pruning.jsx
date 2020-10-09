@@ -162,12 +162,13 @@ const LayersTableRow = ({ modifier, layer, data }) => {
   return <React.Fragment>
     <TableRow key={layer.node_id} className={clsx(classes.root, { [classes.disabled]: layerSettings.sparsity === null })}>
       <TableCell style={{ padding: 0 }}>
+        <Typography className={classes.layerIndexText}>{data.index + 1}.</Typography>
         <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
           {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
         </IconButton>
       </TableCell>
       <TableCell style={{ paddingLeft: 0}}>
-        <Typography>{data.index + 1}. {data.weight_name}</Typography>
+        <Typography>{data.weight_name}</Typography>
       </TableCell>
       <TableCell>
         <div className={classes.sparsityCell}>

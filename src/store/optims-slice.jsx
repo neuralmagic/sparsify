@@ -217,7 +217,7 @@ export const selectSelectedProjectPrunableNodesById = createSelector(
               profileLayerPruningMeasurements(layer)
             )(loss),
             perf: compose(
-              defaultTo({ 0: layer.flops, 1: layer.flops *3/4, 2: layer.flops *2/4, 3: layer.flops *1/4, 4: 0 }),
+              defaultTo({ 0: layer.flops, 1: 0 }),
               profileLayerPruningMeasurements(layer)
             )(perf),
           },

@@ -7,7 +7,7 @@ import { ResponsiveLine } from "@nivo/line"
 import { useSelector, useDispatch } from 'react-redux'
 import { Typography, IconButton, Grid, TextField, Table, TableBody, Dialog, DialogTitle,
   TableCell, TableContainer, TableHead, TableRow, Switch, Slider, DialogContent, Box,
-  Collapse } from '@material-ui/core'
+  Collapse, Divider } from '@material-ui/core'
 import CloseIcon from '@material-ui/icons/Close'
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown'
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp'
@@ -41,7 +41,7 @@ const SummaryMetrics = ({ modifier }) =>
   </Grid>
 
 const DetailedMetrics = ({ modifier }) =>
-  <Grid container direction='row' spacing={3} justify='flex-end'>
+  <Grid container direction='row' spacing={6} justify='flex-end'>
     <Grid item direction='column'>
       {[{ label: 'Est. Baseline Time', value: formatWithMantissa(3, modifier.est_time_baseline) },
         { label: 'Baseline Parameters', value: '--' },
@@ -349,15 +349,18 @@ export default ({ modifier, open, onClose }) => {
     open={open}
     maxWidth="xl"
     onClose={onClose}>
-    <DialogTitle>Pruning Editor</DialogTitle>
+    <DialogTitle className={classes.dialogTitle}>Pruning Editor</DialogTitle>
     <DialogContent>
-      <Box marginY={2}>
+      <Box margin={5}>
         <IconButton className={classes.closeButton} onClick={onClose}><CloseIcon/></IconButton>
-        <Grid container direction='row' spacing={6}>
-          <Grid item xs={1}><SummaryMetrics modifier={modifier}/></Grid>
-          <Grid item xs={3}><DetailedMetrics modifier={modifier}/></Grid>
-          <Grid item xs={3}><Filters modifier={modifier}/></Grid>
-          <Grid item xs={4}><PruningSettings modifier={modifier}/></Grid>
+        <Grid container direction='row' className={classes.metricsContainer}>
+          <Grid item><SummaryMetrics modifier={modifier}/></Grid>
+          <Divider orientation="vertical" flexItem className={classes.divider} />
+          <Grid item><DetailedMetrics modifier={modifier}/></Grid>
+          <Divider orientation="vertical" flexItem className={classes.divider} />
+          <Grid item xs><Filters modifier={modifier}/></Grid>
+          <Divider orientation="vertical" flexItem className={classes.divider} />
+          <Grid item><PruningSettings modifier={modifier}/></Grid>
         </Grid>
         <LayersChart
           data={modifier.nodes}

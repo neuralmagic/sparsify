@@ -1,6 +1,6 @@
 import { compose, filter, contains, prop, defaultTo, sortBy,
   when, always, not, isNil, toPairs, map, objOf, of as rof,
-  head, last } from 'ramda'
+  head, last, __ } from 'ramda'
 import React, { useState } from 'react'
 import clsx from 'clsx'
 import { ResponsiveLine } from "@nivo/line"
@@ -167,7 +167,7 @@ const LayersTableRow = ({ modifier, layer, data }) => {
         </IconButton>
       </TableCell>
       <TableCell style={{ paddingLeft: 0}}>
-        <Typography>{data.weight_name}</Typography>
+        <Typography>{data.index + 1}. {data.weight_name}</Typography>
       </TableCell>
       <TableCell>
         <div className={classes.sparsityCell}>
@@ -287,7 +287,11 @@ const LayersTable = ({ modifier, layerData }) => {
   const filteredLayers = compose(
     when(
       always(compose(not, isNil)(searchTerm)),
-      filter(compose(contains(searchTerm), prop('node_id')))),
+      filter(compose(
+        contains(searchTerm),
+        prop("weight_name"),
+        prop(__, layerData),
+        prop('node_id')))),
     defaultTo([]))(
     modifier.nodes)
 

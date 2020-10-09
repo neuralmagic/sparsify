@@ -6,13 +6,14 @@ export default function createExportStyles() {
     (theme) => {
       return {
         contentHeader: {
-          padding: theme.spacing(1, 0),
+          flexGrow: 1,
+          display: "flex",
+          alignItems: "center",
         },
         container: {
           height: "24vh",
           width: "770px",
           overflow: "hidden",
-          margin: theme.spacing(2, 0),
         },
         otherblock: {
           height: "20vh",
@@ -44,6 +45,10 @@ export default function createExportStyles() {
         dialog: {
           padding: theme.spacing(2),
           width: "800px",
+        },
+        optimizationRow: {
+          display: "flex",
+          marginTop: theme.spacing(1),
         },
       };
     },

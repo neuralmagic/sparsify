@@ -21,8 +21,6 @@ import AbsoluteLayout from "../../components/absolute-layout";
 import ExportDialog from "../../modals/export-config";
 import OptimCreate from "../../modals/optim-create";
 import ProjectOptimRoot from "./project-optim-root";
-import { useHistory } from "react-router-dom";
-import { createProjectOptimPath } from "../paths";
 
 const useStyles = makeStyles();
 
@@ -30,7 +28,6 @@ function ProjectOptim(props) {
   const { optimId, projectId } = props.match.params;
   const optim = useSelector(selectedOptimById(optimId));
   const dispatch = useDispatch();
-  const history = useHistory();
 
   const optimsState = useSelector(selectSelectedOptimsState);
   const selectedProjectState = useSelector(selectSelectedProjectState);
@@ -56,20 +53,6 @@ function ProjectOptim(props) {
       dispatch(setCreateOptimModalOpen(true));
     }
   }, [optimsState.status, createOptimState.status, _.get(optimsState, "val.length")]);
-
-  useEffect(() => {
-    if (optimsState.status === "succeeded" && optimsState.val.length > 0 && !optimId) {
-      const createdOptim = optimsState.val[0];
-      history.push(
-        createProjectOptimPath(
-          projectId,
-          createdOptim.optim_id,
-          createdOptim.profile_perf_id,
-          createdOptim.profile_loss_id
-        )
-      );
-    }
-  }, [optimsState.status, _.get(optimsState, "val.length"), optimId]);
 
   if (!optimId && optimsState.status === "succeeded" && optimsState.val.length === 0) {
     return (
@@ -103,7 +86,7 @@ function ProjectOptim(props) {
         <OptimCreate
           open={createOptimState.modalOpen || false}
           handleClose={() => dispatch(setCreateOptimModalOpen(false))}
-          projectId={selectedProjectState.projectId}
+          projectId={selectedProjectState.projectId || ""}
         />
         <Fab
           variant="extended"
@@ -115,12 +98,14 @@ function ProjectOptim(props) {
           <OpenInNewIcon className={classes.fabIcon} />
           Export
         </Fab>
-        <ExportDialog
-          projectId={projectId}
-          optimId={optimId}
-          open={openExportModal}
-          handleClose={() => setOpenExportModal(false)}
-        />
+        {optim && projectId && (
+          <ExportDialog
+            projectId={projectId}
+            optimId={optimId}
+            open={openExportModal}
+            handleClose={() => setOpenExportModal(false)}
+          />
+        )}
       </LoaderLayout>
     </AbsoluteLayout>
   );

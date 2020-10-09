@@ -5,6 +5,7 @@ import { ReactComponent as Icon } from "./img/icon.svg";
 import PropTypes from "prop-types";
 import moment from "moment";
 import _ from "lodash";
+
 import {
   clearOptim,
   createOptimThunk,
@@ -55,6 +56,7 @@ function ProjectSideNavMenuOptim({
       (optim) => optim.optim_id === optimId
     );
     if (
+      selected &&
       selectedOptim &&
       optimId !== null &&
       (!selectedId ||
@@ -80,6 +82,8 @@ function ProjectSideNavMenuOptim({
     profileLossId,
   ]);
 
+  const dateUtcToLocal = (date) => moment.utc(date).local();
+
   useEffect(() => {
     if (createOptimState.status === STATUS_SUCCEEDED) {
       dispatch(getOptimsThunk({ projectId }));
@@ -100,8 +104,8 @@ function ProjectSideNavMenuOptim({
       titlePath={createProjectOptimPath(
         projectId,
         optimId,
-        profilePerfId,
-        profileLossId
+        _.get(defaultPerf, "profile_id"),
+        _.get(defaultLoss, "profile_id")
       )}
       title="Optimization"
       selected={selected}
@@ -145,11 +149,11 @@ function ProjectSideNavMenuOptim({
               )}
               selected={optimId === optim.optim_id}
               value={
-                optim.name
-                  ? optim.name
-                  : moment(optim.created).format("MM/DD/YYYY h:mma")
+                optim.name || dateUtcToLocal(optim.created).format("MM/DD/YYYY h:mma")
               }
-              extraValue={`(${moment(optim.created).fromNow()})`}
+              extraValue={
+                optim.name ? `(${dateUtcToLocal(optim.created).fromNow()})` : ""
+              }
             />
           ))}
         </LoaderLayout>
@@ -175,8 +179,13 @@ function ProjectSideNavMenuOptim({
                 profileLossId
               )}
               selected={profilePerfId === profile.profile_id}
-              value={profile.name}
-              extraValue={`(${moment(profile.created).fromNow()})`}
+              value={
+                profile.name ||
+                dateUtcToLocal(profile.created).format("MM/DD/YYYY h:mma")
+              }
+              extraValue={
+                profile.name ? `(${dateUtcToLocal(profile.created).fromNow()})` : ""
+              }
             />
           ))}
           <ProjectSideNavSubMenuItem
@@ -207,8 +216,13 @@ function ProjectSideNavMenuOptim({
                 profile.profile_id
               )}
               selected={profileLossId === profile.profile_id}
-              value={profile.name}
-              extraValue={`(${moment(profile.created).fromNow()})`}
+              value={
+                profile.name ||
+                dateUtcToLocal(profile.created).format("MM/DD/YYYY h:mma")
+              }
+              extraValue={
+                profile.name ? `(${dateUtcToLocal(profile.created).fromNow()})` : ""
+              }
             />
           ))}
           <ProjectSideNavSubMenuItem

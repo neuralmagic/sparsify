@@ -108,7 +108,18 @@ function OptimCreateDialog({ open, handleClose, projectId }) {
       handleClose();
       handleClear();
     }
-  }, [completed, open, defaultLoss, defaultPerf, dispatch]);
+  }, [
+    completed,
+    open,
+    defaultLoss,
+    defaultPerf,
+    dispatch,
+    createOptimState.val,
+    history,
+    projectId,
+    handleClose,
+    handleClear,
+  ]);
 
   const onSubmit = () => {
     if (completed) {

@@ -16,7 +16,8 @@ export const useExportEffects = (
   projectId,
   optimId,
   frameworkTab,
-  sampleType
+  sampleType,
+  open
 ) => {
   const selectedOptimsState = useSelector(selectSelectedOptimsState);
   const configState = useSelector(selectSelectedConfigState);
@@ -25,17 +26,19 @@ export const useExportEffects = (
 
   useEffect(() => {
     dispatch(getAvailableFrameworksThunk({ projectId }));
-  }, [dispatch, projectId]);
+  }, [dispatch, projectId, open]);
 
   useEffect(() => {
-    availableFrameworks.forEach((framework) => {
-      dispatch(getAvailableCodeSamplesThunk({ projectId, framework }));
-    });
-  }, [dispatch, projectId, availableFrameworks, selectedOptimsState]);
+    if (open) {
+      availableFrameworks.forEach((framework) => {
+        dispatch(getAvailableCodeSamplesThunk({ projectId, framework }));
+      });
+    }
+  }, [dispatch, projectId, availableFrameworks, selectedOptimsState, open]);
 
   useEffect(() => {
     const framework = _.get(availableFrameworks, frameworkTab);
-    if (framework) {
+    if (framework && open) {
       dispatch(
         getConfigThunk({
           projectId,
@@ -44,11 +47,11 @@ export const useExportEffects = (
         })
       );
     }
-  }, [dispatch, projectId, optimId, availableFrameworks, frameworkTab]);
+  }, [dispatch, projectId, optimId, availableFrameworks, frameworkTab, open]);
 
   useEffect(() => {
     const framework = _.get(availableFrameworks, frameworkTab);
-    if (framework && sampleType !== "") {
+    if (framework && sampleType !== "" && open) {
       dispatch(
         getCodeSampleThunk({
           projectId,
@@ -57,5 +60,5 @@ export const useExportEffects = (
         })
       );
     }
-  }, [dispatch, projectId, availableFrameworks, frameworkTab, sampleType]);
+  }, [dispatch, projectId, availableFrameworks, frameworkTab, sampleType, open]);
 };

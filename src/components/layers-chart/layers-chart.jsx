@@ -144,7 +144,7 @@ const LayersChart = (props) => {
 
     if (props.secondPlot !== 'none') {
       secondAxis = (g) =>
-        g.attr("transform", `translate(${chartWidth - margin.left}, 0)`)
+        g.attr("transform", `translate(${chartWidth - margin.left + margin.right}, 0)`)
           .call(d3.axisRight(timingY).ticks(10));
     }
 

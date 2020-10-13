@@ -35,9 +35,11 @@ function HomeSideNav() {
         >
           <List className={classes.listRoot}>
             {projectsState && projectsState.val.length === 0 && (
-              <Typography color="textPrimary"
-              variant="body1"
-              className={classes.noProjectTitle}>
+              <Typography
+                color="textPrimary"
+                variant="body1"
+                className={classes.noProjectTitle}
+              >
                 No projects found, add one using the New Project button
               </Typography>
             )}
@@ -63,7 +65,7 @@ function HomeSideNav() {
                     noWrap
                     className={classes.projectCardSubTitle}
                   >
-                    {moment(project.modified).fromNow()}
+                    {moment.utc(project.modified).local().fromNow()}
                   </Typography>
                 </Link>
               </ListItem>

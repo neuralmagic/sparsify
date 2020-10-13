@@ -26,6 +26,8 @@ function ProjectSideNavMenuProfilePerf({
   const classes = useStyles();
   const selected = action === "perf";
 
+  const dateUtcToLocal = (date) => moment.utc(date).local();
+
   return (
     <ProjectSideNavMenu
       titlePath={createProjectPerfPath(projectId, profileId)}
@@ -54,11 +56,12 @@ function ProjectSideNavMenuProfilePerf({
               path={createProjectPerfPath(projectId, profile.profile_id)}
               selected={profileId === profile.profile_id}
               value={
-                profile.name
-                  ? profile.name
-                  : moment(profile.created).format("MM/DD/YYYY h:mma")
+                profile.name ||
+                dateUtcToLocal(profile.created).format("MM/DD/YYYY h:mma")
               }
-              extraValue={`(${moment(profile.created).fromNow()})`}
+              extraValue={
+                profile.name ? `(${dateUtcToLocal(profile.created).fromNow()})` : ""
+              }
             />
           </div>
         ))}

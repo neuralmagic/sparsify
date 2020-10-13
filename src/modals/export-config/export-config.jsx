@@ -40,7 +40,7 @@ function ExportDialog({ projectId, optimId, open, handleClose }) {
     configStatus,
     error,
   } = configState;
-  useExportEffects(dispatch, projectId, optimId, frameworkTab, sampleType);
+  useExportEffects(dispatch, projectId, optimId, frameworkTab, sampleType, open);
 
   useEffect(() => {
     const codeSamples = _.get(
@@ -71,14 +71,9 @@ function ExportDialog({ projectId, optimId, open, handleClose }) {
       maxWidth="md"
       PaperProps={{ className: classes.dialog }}
     >
-      <DialogTitle>Export</DialogTitle>
-      <DialogContent>
+      <DialogTitle>
         <Box display="flex">
-          <Box flexGrow="1">
-            <Typography className={classes.contentHeader}>
-              Optimization config file
-            </Typography>
-          </Box>
+          <Box flexGrow="1">Export</Box>
           <Box>
             <Tabs
               onChange={(event, value) => {
@@ -94,6 +89,15 @@ function ExportDialog({ projectId, optimId, open, handleClose }) {
             </Tabs>
           </Box>
         </Box>
+      </DialogTitle>
+      <DialogContent>
+        <Box>
+          <Box>
+            <Typography className={classes.contentHeader}>
+              Optimization config file
+            </Typography>
+          </Box>
+        </Box>
         <CodeContainer
           language="yaml"
           text={configExists ? _.get(config, availableFrameworks[frameworkTab]) : ""}
@@ -101,28 +105,33 @@ function ExportDialog({ projectId, optimId, open, handleClose }) {
           loading={loadingConfig}
           error={error}
         />
-        <Typography className={classes.contentHeader} gutterBottom>
-          Code for optimization
-        </Typography>
-        <FormControl variant="outlined" className={classes.select}>
-          <InputLabel id="code-type-label">Code type</InputLabel>
-          <Select
-            labelId="code-type-label"
-            value={sampleType}
-            onChange={(event) => {
-              setSampleType(event.target.value);
-            }}
-            label="Code type"
-          >
-            {_.get(availableCodeSamples, availableFrameworks[frameworkTab], []).map(
-              (sampleTypeOption) => (
-                <MenuItem value={sampleTypeOption} key={sampleTypeOption}>
-                  {sampleTypeOption}
-                </MenuItem>
-              )
-            )}
-          </Select>
-        </FormControl>
+        <Box className={classes.optimizationRow}>
+          <Typography className={classes.contentHeader}>
+            Code for optimization
+          </Typography>
+          <Box>
+            <FormControl variant="outlined" className={classes.select}>
+              <InputLabel id="code-type-label">Code type</InputLabel>
+              <Select
+                labelId="code-type-label"
+                value={sampleType}
+                onChange={(event) => {
+                  setSampleType(event.target.value);
+                }}
+                label="Code type"
+              >
+                {_.get(availableCodeSamples, availableFrameworks[frameworkTab], []).map(
+                  (sampleTypeOption) => (
+                    <MenuItem value={sampleTypeOption} key={sampleTypeOption}>
+                      {sampleTypeOption}
+                    </MenuItem>
+                  )
+                )}
+              </Select>
+            </FormControl>
+          </Box>
+        </Box>
+
         <CodeContainer
           language="python"
           text={

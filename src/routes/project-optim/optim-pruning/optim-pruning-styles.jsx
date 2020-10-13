@@ -16,7 +16,8 @@ export default function makeOptimPruningStyles() {
         },
         card: {
           height: "312px",
-          overflow: "visible"
+          overflow: "visible",
+          paddingBottom: theme.spacing(4)
         },
         layout: {
           height: "fit-content",

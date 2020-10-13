@@ -10,9 +10,15 @@ export default function makePruningModifierStyles() {
           paddingLeft: theme.spacing(4),
           position: "relative",
         },
+        metricsRoot: {
+          width: 85
+        },
         sparsitySliderRoot: {
           marginTop: theme.spacing(2),
           marginBottom: theme.spacing(2),
+          '& .MuiSlider-root': {
+            width: 130
+          }
         },
         sparsityInput: {
           width: 80,
@@ -20,13 +26,17 @@ export default function makePruningModifierStyles() {
         },
         editButton: {
           position: "absolute",
-          right: 45,
-          top: theme.spacing(1),
+          right: theme.spacing(8),
+          top: theme.spacing(2),
+        },
+        divider: {
+          marginLeft: theme.spacing(3),
+          marginRight: theme.spacing(3),
         },
         menuButton: {
           position: "absolute",
-          right: 10,
-          top: theme.spacing(1),
+          right: theme.spacing(3),
+          top: theme.spacing(2),
         },
         popoverMenu: {
           padding: 25,
@@ -45,6 +55,10 @@ export default function makePruningModifierStyles() {
           marginTop: theme.spacing(2),
           marginBottom: theme.spacing(2),
         },
+        filtersRoot: {
+          minWidth: 240,
+          marginTop: theme.spacing(3)
+        }
       };
     },
     { name: "PruningModifier" }

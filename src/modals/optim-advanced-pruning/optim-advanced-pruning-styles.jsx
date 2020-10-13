@@ -7,6 +7,11 @@ export default function makeOptimAdvancedPruningStyles() {
         dialogTitle: {
           marginLeft: theme.spacing(5)
         },
+        dialogBox: {
+          display: 'flex',
+          alignItems: 'flex-end',
+          flexDirection: 'column'
+        },
         closeButton: {
           position: 'absolute',
           top: 15,
@@ -23,6 +28,15 @@ export default function makeOptimAdvancedPruningStyles() {
         },
         metricsContainer: {
           marginBottom: theme.spacing(6)
+        },
+        layersChart: {
+          width: '100%'
+        },
+        layersTable: {
+          marginTop: 30
+        },
+        secondPlotSelect: {
+          minWidth: 120
         }
       };
     },

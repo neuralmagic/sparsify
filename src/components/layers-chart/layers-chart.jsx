@@ -1,3 +1,4 @@
+import { isNil, reject, map, compose, join } from 'ramda';
 import React, { useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 import makeStyles from "./layers-chart-styles";
@@ -6,7 +7,7 @@ import * as d3 from "d3";
 const useStyles = makeStyles();
 
 const LayersChart = (props) => {
-  const margin = { top: 10, bottom: 20, left: 25, right: 20 };
+  const margin = { top: 10, bottom: 12, left: 40, right: props.secondPlot !== 'none' ? 20 : 0 };
   const chartHeight = 250;
   const ref = useRef();
   const tooltipRef = useRef();
@@ -17,12 +18,15 @@ const LayersChart = (props) => {
 
     root.append("g").attr("class", "xAxis");
     root.append("g").attr("class", "sparsityAxis");
-    root.append("g").attr("class", "timingAxis");
-    root.append("path").attr("class", "denseAreaPath");
-    root.append("path").attr("class", "sparseAreaPath");
     root.append("path").attr("class", "sparsityPath");
-    root.append("path").attr("class", "denseLinePath");
-    root.append("path").attr("class", "sparseLinePath");
+
+    if (props.secondPlot !== 'none') {
+      root.append("g").attr("class", "secondAxis");
+      root.append("path").attr("class", "denseLinePath");
+      root.append("path").attr("class", "denseAreaPath");
+      root.append("path").attr("class", "sparseLinePath");
+      root.append("path").attr("class", "sparseAreaPath");
+    }
     root.append("g").attr("class", "sparsityCircles");
 
     root
@@ -62,6 +66,9 @@ const LayersChart = (props) => {
       .attr("offset", (d) => d.offset)
       .attr("stop-color", (d) => d.color)
       .attr("stop-opacity", (d) => (d.offset === "100%" ? 0.1 : 1));
+
+    root.append('text').attr("class", "xAxisLabel");
+    root.append('text').attr("class", "yAxisLabel");
   }, []);
 
   useEffect(() => {
@@ -70,7 +77,7 @@ const LayersChart = (props) => {
 
   const draw = ({ data, sparsityProp, denseProp, sparseProp }) => {
     const root = d3.select(ref.current);
-    const chartWidth = ref.current.parentElement.offsetWidth - 50;
+    const chartWidth = ref.current.parentElement.offsetWidth - margin.left - margin.right;
     const tooltip = d3.select(tooltipRef.current);
 
     root
@@ -128,16 +135,18 @@ const LayersChart = (props) => {
 
     const sparsityAxis = (g) =>
       g.attr("transform", `translate(${margin.left},0)`).call(
-        d3
-          .axisLeft(sparsityY)
+        d3.axisLeft(sparsityY)
           .ticks(10)
-          .tickSize(-chartWidth + margin.right + margin.left + 5)
+          .tickSize(-chartWidth + margin.right + margin.left)
       );
 
-    const timingAxis = (g) =>
-      g
-        .attr("transform", `translate(${chartWidth - margin.left}, 0)`)
-        .call(d3.axisRight(timingY).ticks(10));
+    let secondAxis;
+
+    if (props.secondPlot !== 'none') {
+      secondAxis = (g) =>
+        g.attr("transform", `translate(${chartWidth - margin.left}, 0)`)
+          .call(d3.axisRight(timingY).ticks(10));
+    }
 
     const sparsityPath = root
       .selectAll(".sparsityPath")
@@ -202,7 +211,9 @@ const LayersChart = (props) => {
 
     root.selectAll(".xAxis").call(xAxis);
     root.selectAll(".sparsityAxis").call(sparsityAxis);
-    root.selectAll(".timingAxis").call(timingAxis);
+
+    if (secondAxis)
+      root.selectAll(".secondAxis").call(secondAxis);
 
     const circles = root
       .selectAll(".sparsityCircle")
@@ -226,14 +237,31 @@ const LayersChart = (props) => {
         const selectedData = data[index - 1];
 
         if (selectedData) {
+          const labels = compose(
+            join(''),
+            map(label => `<div><span class="${classes.tooltipPropertyLabel}">${label}</span></div>`),
+            reject(isNil))(
+            ['Layer', 'Sparsity', props.denseProp, props.sparseProp])
+
+          const values = compose(
+            join(''),
+            map(value => `<div><span class="${classes.tooltipPropertyValue}">${value}</span></div>`),
+            reject(isNil))([
+            Math.max(index, 1),
+            `${Math.round(selectedData.sparsity * 100)}%`,
+            selectedData[props.denseProp],
+            selectedData[props.sparseProp]
+          ])
+
           tooltip.html(
             `<div class="${classes.tooltipTitle}">${props.layerData[selectedData.node_id].weight_name}</div>
-             <div><span class="${classes.tooltipPropertyLabel}">Layer</span>${Math.max(index, 1)}</div>
-             <div><span class="${classes.tooltipPropertyLabel}">Sparsity</span>${Math.round(selectedData.sparsity * 100)}%</div>`)
+             <div class="${classes.tooltipLabels}">${labels}</div>
+             <div class="${classes.tooltipValues}">${values}</div>`)
             .style("margin-left", x(index) + 10 + "px")
             .style("margin-top", sparsityY(selectedData.sparsity * 100) + 10 + "px");
 
-          circles
+          root
+            .selectAll(".sparsityCircle")
             .attr("r", 3)
             .attr("fill", "white")
             .filter((d, i) => i === index - 1)
@@ -260,22 +288,38 @@ const LayersChart = (props) => {
       .attr("stroke-width", 1);
 
     circles.exit().remove();
+
+    root.select(".xAxisLabel")
+      .attr("transform", "translate(" + chartWidth / 2 + " ," +(chartHeight + margin.top + margin.bottom) + ")")
+      .text("Layer Index");
+
+    root.select(".yAxisLabel")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 0)
+      .attr("x", 0 - chartHeight / 2)
+      .attr("dy", "1em")
+      .text("Layer Sparsity %");
   };
 
   return (
-    <div className={classes.root}>
+    <div className={`${classes.root} ${props.className}`}>
       <svg ref={ref} />
       <div ref={tooltipRef} className={classes.tooltip}/>
     </div>
   );
 };
 
+LayersChart.defaultProps = {
+  secondPlot: 'none'
+}
+
 LayersChart.propTypes = {
   data: PropTypes.array.isRequired,
-  layerData: PropTypes.array.isRequired,
+  layerData: PropTypes.object.isRequired,
   sparsityProp: PropTypes.string.isRequired,
   denseProp: PropTypes.string.isRequired,
   sparseProp: PropTypes.string.isRequired,
+  secondPlot: PropTypes.string.isRequired
 };
 
 export default LayersChart;

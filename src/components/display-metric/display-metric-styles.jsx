@@ -9,7 +9,7 @@ export default function makeDisplayMetricStyles() {
           flexDirection: "column",
         },
         title: {
-          marginBottom: theme.spacing(1),
+          marginBottom: theme.spacing(0.5),
         },
         metric: {},
         metricReduceFontWeight: {

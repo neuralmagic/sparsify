@@ -51,6 +51,19 @@ export function readableNumber(num, digits = 2) {
   return `${shiftedNum.toFixed(digits)} ${lookup[index].symbol}`;
 }
 
+export function scientificNumber(num, digits = 2) {
+  if (!num && num !== 0) {
+    return "";
+  }
+
+  let coefficient;
+  let exponent;
+  [coefficient, exponent] =
+      num.toExponential().split('e').map(item => Number(item));
+
+  return `${parseFloat(coefficient).toFixed(digits)}e${exponent}`;
+}
+
 export function adjustColorOpacity(color, opacity) {
   let red;
   let green;

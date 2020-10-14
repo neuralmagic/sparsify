@@ -172,3 +172,81 @@ export function summarizeObjValuesArray(
 
   return summary;
 }
+
+export function summarizeLearningRateValues(
+  modifier,
+  globalStartEpoch,
+  globalEndEpoch
+) {
+  const startEpoch = Math.round(
+    modifier.start_epoch > -1 ? modifier.start_epoch : globalStartEpoch
+  );
+  const endEpoch = Math.round(
+    modifier.end_epoch > -1 ? modifier.end_epoch : globalEndEpoch
+  );
+  const values = [];
+  const lrMods = modifier.lr_mods
+    ? [...modifier.lr_mods].sort((a, b) => a.start_epoch - b.start_epoch)
+    : [];
+
+  function getLRModAtEpoch(epoch) {
+    let mod = null;
+
+    lrMods.forEach((check) => {
+      if (
+        epoch >= check.start_epoch &&
+        (epoch <= check.end_epoch || check.end_epoch < 0)
+      ) {
+        mod = check;
+      }
+    });
+
+    return mod;
+  }
+
+  function getLRValueFromMod(mod, epoch) {
+    if (!mod) {
+      return null;
+    }
+
+    if (mod.clazz === "step" || mod.clazz === "exponential") {
+      const epochsPassed = mod.start_epoch > -1 ? epoch - mod.start_epoch : epoch;
+      const stepSize = mod.clazz === "step" ? mod.args.step_size : 1.0;
+      const numSteps = Math.floor(epochsPassed / stepSize);
+      const gamma = mod.args.gamma;
+
+      return mod.init_lr * Math.pow(gamma, numSteps);
+    }
+
+    if (mod.clazz === "multi_step") {
+      let numSteps = 0;
+      mod.args.milestones.forEach((mile) => {
+        if (mile >= epoch) {
+          numSteps += 1;
+        }
+      });
+      const gamma = mod.args.gamma;
+
+      return mod.init_lr * Math.pow(gamma, numSteps);
+    }
+
+    return mod.init_lr;
+  }
+
+  for (let epoch = startEpoch; epoch <= endEpoch; epoch++) {
+    const mod = getLRModAtEpoch(epoch);
+    const lr = getLRValueFromMod(mod, epoch);
+    values.push({
+      epoch,
+      lr,
+      mod,
+    });
+  }
+
+  return summarizeObjValuesArray(
+    values,
+    (val) => val.epoch,
+    (val) => val.lr,
+    (val) => val.mod
+  );
+}

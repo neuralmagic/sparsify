@@ -31,8 +31,8 @@ export default function makeAppSideNavStyles() {
         },
       },
       info: {
-        top: "0px",
-        right: "0px",
+        top: theme.spacing(1),
+        right: theme.spacing(1),
         position: "absolute",
         margin: theme.spacing(0.5)
       },

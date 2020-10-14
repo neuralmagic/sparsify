@@ -1,6 +1,6 @@
 import { makeStyles } from "@material-ui/core/styles";
 
-export default function createProjectOptimRootStyles() {
+export default function createProjectOptimStyles() {
   return makeStyles(
     (theme) => {
       const paddingButton = theme.spacing(3);
@@ -15,9 +15,6 @@ export default function createProjectOptimRootStyles() {
         },
         fabIcon: {
           marginRight: theme.spacing(1),
-        },
-        loading: {
-          height: "100%",
         },
       };
     },

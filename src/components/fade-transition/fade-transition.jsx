@@ -6,7 +6,7 @@ import CSSTransition from "react-transition-group/CSSTransition";
 
 const useStyles = makeStyles();
 
-function FadeTransition({ show, children }) {
+function FadeTransition({ show, children, className }) {
   const transTime = 300;
   const classes = useStyles({ transTime });
 
@@ -15,6 +15,7 @@ function FadeTransition({ show, children }) {
       in={show}
       timeout={transTime}
       unmountOnExit
+      className={className}
       classNames={{
         enter: classes.transitionEnter,
         enterActive: classes.transitionEnterActive,
@@ -22,9 +23,7 @@ function FadeTransition({ show, children }) {
         exitActive: classes.transitionExitActive,
       }}
     >
-      <div className={classes.child}>
-        {children}
-      </div>
+      <div className={classes.child}>{children}</div>
     </CSSTransition>
   );
 }

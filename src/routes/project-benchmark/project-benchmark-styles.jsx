@@ -1,50 +1,44 @@
 import { makeStyles } from "@material-ui/core/styles";
 
-export default function makeProjectStyles() {
+export default function makeBenchmarkStyles() {
   return makeStyles(
     (theme) => {
       return {
         root: {
-          width: "100%",
-          height: "100%",
           display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
         },
-        layout: {
-          width: "80%",
+        fab: {
+          position: "fixed",
+          right: theme.spacing(4),
+          bottom: theme.spacing(4),
+          padding: theme.spacing(3),
+        },
+        body: {
+          position: "relative",
+          height: "fit-content",
+          width: "100%",
           display: "flex",
           flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+        },
+        layout: {
+          height: "fit-content",
+          width: `calc(100% - 2 * ${theme.spacing(3)}px)`,
+          maxWidth: "1024px",
+          display: "flex",
+          flexDirection: "column",
+          margin: theme.spacing(3),
+        },
+        loader: {
+          width: "100%",
+          display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          paddingBottom: "10%",
-          paddingLeft: "10%",
-          paddingRight: "10%",
-        },
-        icon: {
-          fill: theme.palette.text.secondary,
-          marginBottom: theme.spacing(6),
-
-          "& svg": {
-            width: "200px",
-            height: "200px",
-          },
-        },
-        name: {
-          display: "-webkit-box",
-          lineClamp: 2,
-          boxOrient: "vertical",
-          overflow: "hidden",
-        },
-        desc: {
-          marginTop: theme.spacing(2),
-          display: "-webkit-box",
-          lineClamp: 3,
-          boxOrient: "vertical",
-          overflow: "hidden",
+          marginTop: theme.spacing(8),
         },
       };
     },
-    { name: "Project" }
+    { name: "Benchmark" }
   );
 }

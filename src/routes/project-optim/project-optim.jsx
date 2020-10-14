@@ -52,7 +52,7 @@ function ProjectOptim(props) {
     ) {
       dispatch(setCreateOptimModalOpen(true));
     }
-  }, [optimsState.status, createOptimState.status, _.get(optimsState, "val.length")]);
+  }, [optimsState.status, createOptimState.status, optimsState.val, dispatch]);
 
   if (!optimId && optimsState.status === "succeeded" && optimsState.val.length === 0) {
     return (

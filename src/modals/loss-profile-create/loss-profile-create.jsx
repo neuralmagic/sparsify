@@ -21,7 +21,6 @@ import {
   clearCreateLossProfile,
   selectCreateLossProfile,
   cancelAndDeleteLossProfileThunk,
-  STATUS_IDLE,
 } from "../../store";
 
 import makeStyles from "./loss-profile-create-styles";

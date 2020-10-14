@@ -103,9 +103,9 @@ function ProjectSideNavMenuOptim({
     <ProjectSideNavMenu
       titlePath={createProjectOptimPath(
         projectId,
-        optimId,
-        _.get(defaultPerf, "profile_id"),
-        _.get(defaultLoss, "profile_id")
+        selectedId,
+        selectedProfilePerfId,
+        selectedProfileLossId,
       )}
       title="Optimization"
       selected={selected}

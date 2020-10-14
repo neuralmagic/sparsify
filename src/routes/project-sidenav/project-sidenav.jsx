@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useHistory, useLocation } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Button, Divider, List, Typography } from "@material-ui/core";
 import ChevronLeft from "@material-ui/icons/ChevronLeft";
@@ -18,9 +18,12 @@ import {
   selectSelectedProjectState,
   setSelectedProfilePerf,
   setSelectedProfileLoss,
+  selectDefaultProfilesLoss,
+  selectDefaultProfilesPerf,
   setSelectedOptim,
   setSelectedOptimProfilePerf,
   setSelectedOptimProfileLoss,
+  STATUS_SUCCEEDED,
 } from "../../store";
 import { createHomePath } from "../paths";
 import makeStyles from "./project-sidenav-styles";
@@ -36,7 +39,6 @@ import ProjectSideNavMenuOptim from "./menu-optim";
 const useStyles = makeStyles();
 
 function ProjectSideNav({ match, location }) {
-  const other = useLocation();
   const classes = useStyles();
   const history = useHistory();
   const projectId = match.params.projectId;
@@ -52,6 +54,8 @@ function ProjectSideNav({ match, location }) {
   const selectedProfilesPerfState = useSelector(selectSelectedProfilesPerfState);
   const selectedProfilesLossState = useSelector(selectSelectedProfilesLossState);
   const selectedOptimsState = useSelector(selectSelectedOptimsState);
+  const defaultPerf = useSelector(selectDefaultProfilesPerf);
+  const defaultLoss = useSelector(selectDefaultProfilesLoss);
 
   useEffect(() => {
     if (selectedProjectState.projectId !== projectId) {
@@ -60,8 +64,22 @@ function ProjectSideNav({ match, location }) {
       dispatch(getProfilesPerfThunk({ projectId }));
       dispatch(getProfilesLossThunk({ projectId }));
       dispatch(getOptimsThunk({ projectId }));
+      dispatch(setSelectedOptim(null));
+      dispatch(setSelectedProfileLoss(null));
+      dispatch(setSelectedOptimProfileLoss(null));
+      dispatch(setSelectedProfilePerf(null));
+      dispatch(setSelectedOptimProfilePerf(null));
     }
   }, [dispatch, selectProjectsState, projectId]);
+
+  useEffect(() => {
+    if (selectedOptimsState.status === STATUS_SUCCEEDED) {
+      console.log(defaultLoss ? defaultLoss.profile_id : null, defaultPerf ? defaultPerf.profile_id : null)
+      dispatch(setSelectedOptimProfileLoss(defaultLoss ? defaultLoss.profile_id : null));
+      dispatch(setSelectedOptimProfilePerf(defaultPerf ? defaultPerf.profile_id : null));
+    }
+    
+  }, [selectedOptimsState.status, projectId])
 
   // handle redux store and state setup for the current route
   // todo, move out to central location to work with store

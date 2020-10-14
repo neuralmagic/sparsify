@@ -74,7 +74,6 @@ function ProjectSideNav({ match, location }) {
 
   useEffect(() => {
     if (selectedOptimsState.status === STATUS_SUCCEEDED) {
-      console.log(defaultLoss ? defaultLoss.profile_id : null, defaultPerf ? defaultPerf.profile_id : null)
       dispatch(setSelectedOptimProfileLoss(defaultLoss ? defaultLoss.profile_id : null));
       dispatch(setSelectedOptimProfilePerf(defaultPerf ? defaultPerf.profile_id : null));
     }

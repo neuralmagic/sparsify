@@ -5,11 +5,11 @@ export default function makeGettingStartedStyles() {
     (theme) => {
       return {
         root: {
-          height: "490px",
-          padding: theme.spacing(2),
+          padding: theme.spacing(4, 2, 2),
         },
         dialog: {
           height: "100%",
+
           display: "flex",
         },
         dialogContent: {
@@ -20,7 +20,7 @@ export default function makeGettingStartedStyles() {
           flexGrow: 1,
         },
         progress: {
-          width: "10%",
+          width: "100%",
         },
         content: {
           height: "90%",

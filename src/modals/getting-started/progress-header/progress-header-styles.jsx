@@ -7,12 +7,14 @@ export default function makeProjectHeaderStyles() {
         root: {
           display: "flex",
           flexDirection: "column",
-          alignItems: "center",
+          alignItems: "flex-start",
+          width: "100%",
         },
 
         progressLineContainer: {
           flex: "0 1",
           position: "relative",
+          marginLeft: "24px",
         },
         backgroundLine: {
           width: "4px",
@@ -31,10 +33,6 @@ export default function makeProjectHeaderStyles() {
         },
 
         iconContainer: {
-          // display: "flex",
-          // flexDirection: "column",
-          // alignItems: "center",
-          // position: "relative",
           border: "solid",
           borderWidth: "2px",
           borderRadius: "100%",
@@ -44,6 +42,7 @@ export default function makeProjectHeaderStyles() {
           transitionDuration: "0.2s",
           height: "48px",
           width: "48px",
+          marginRight: theme.spacing(2),
         },
         iconWrapper: {
           width: "48px",
@@ -62,17 +61,12 @@ export default function makeProjectHeaderStyles() {
           },
         },
         iconText: {
-          // position: "absolute",
-          // bottom: -1 * theme.spacing(4),
-          color: ({ active }) =>
-            active ? theme.palette.primary.main : theme.palette.text.disabled,
           transitionProperty: "color",
           transitionDuration: "0.2s",
         },
         iconGroup: {
+          width: "100%",
           display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
           alignItems: "center",
         },
       };

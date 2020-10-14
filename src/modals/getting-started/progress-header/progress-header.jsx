@@ -43,11 +43,14 @@ function ProgressIcon({ children, iconText, active }) {
       <div className={classes.iconContainer}>
         <div className={classes.iconWrapper}>{children}</div>
       </div>
-      <div>
-        <Typography className={classes.iconText} variant="subtitle2" noWrap>
-          {iconText}
-        </Typography>
-      </div>
+
+      {active && (
+        <div>
+          <Typography className={classes.iconText} variant="subtitle2" noWrap>
+            {iconText}
+          </Typography>
+        </div>
+      )}
     </div>
   );
 }
@@ -63,26 +66,33 @@ function ProgressHeader({ progress }) {
 
   return (
     <div className={classes.root}>
-      <ProgressLine progress={progress > 0 ? 100 : 1} />
-
-      <ProgressIcon iconText="Model" active={progress > 0}>
+      <ProgressIcon iconText="Upload your model into a new project" active={true}>
         <ModelIcon />
       </ProgressIcon>
 
-      <ProgressLine progress={progress > 1 ? 100 : 0} />
+      <ProgressLine progress={progress > 0 ? 100 : 0} />
 
-      <ProgressIcon iconText="Profile" active={progress > 1}>
+      <ProgressIcon
+        iconText="Profile your model for the effects of model optimizations on loss and performance"
+        active={progress > 0}
+      >
         <ProfileIcon />
       </ProgressIcon>
 
-      <ProgressLine progress={progress > 2 ? 100 : 0} />
-      <ProgressIcon iconText="Optimization" active={progress > 2}>
+      <ProgressLine progress={progress > 1 ? 100 : 0} />
+      <ProgressIcon
+        iconText="Create an automatic model optimization configuration and edit further if desired"
+        active={progress > 1}
+      >
         <OptimIcon />
       </ProgressIcon>
 
-      <ProgressLine progress={progress > 3 ? 100 : 0} />
+      <ProgressLine progress={progress > 2 ? 100 : 0} />
 
-      <ProgressIcon iconText="Export" active={progress > 3}>
+      <ProgressIcon
+        iconText="Export the configuration and integrate it into your current training flow"
+        active={progress > 2}
+      >
         <OpenInNewIcon />
       </ProgressIcon>
     </div>

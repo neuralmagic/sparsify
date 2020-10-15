@@ -1,11 +1,9 @@
-import React from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, {useState} from "react";
+import { useSelector } from "react-redux";
 import { Fab } from "@material-ui/core";
 
 import {
-  selectCreatedOptimsState,
   selectSelectedProjectState,
-  setCreateOptimModalOpen,
 } from "../../store";
 import makeStyles from "./project-optim-styles";
 import GenericPage from "../../components/generic-page";
@@ -18,10 +16,9 @@ const useStyles = makeStyles();
 
 function ProjectOptim() {
   const classes = useStyles();
-  const dispatch = useDispatch();
+  const [modalOpen, setModalOpen] = useState(true);
 
   const selectedProjectState = useSelector(selectSelectedProjectState);
-  const createOptimState = useSelector(selectCreatedOptimsState);
 
   return (
     <AbsoluteLayout>
@@ -35,14 +32,14 @@ function ProjectOptim() {
         color="secondary"
         aria-label="New Project"
         className={classes.fab}
-        onClick={() => dispatch(setCreateOptimModalOpen(true))}
+        onClick={() => setModalOpen(true)}
       >
         <AddIcon className={classes.fabIcon} />
         Create
       </Fab>
       <OptimCreateDialog
-        open={createOptimState.modalOpen || false}
-        handleClose={() => dispatch(setCreateOptimModalOpen(false))}
+        open={modalOpen}
+        handleClose={() => setModalOpen(false)}
         projectId={selectedProjectState.projectId}
       />
     </AbsoluteLayout>

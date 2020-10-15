@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import {
   Typography,
   IconButton,
@@ -18,30 +18,19 @@ import HighlightOffIcon from "@material-ui/icons/HighlightOff";
 import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
 
 import {
-  formatWithMantissa,
   lrModsTypes,
   scientificNumber,
-  trainingOptimizers,
 } from "../../components";
-import PruningSettings from "../../components/pruning-settings";
 
 import makeStyles from "./optim-advanced-lr-styles";
 import {
-  selectModifierAdjustableSettings,
-  changeModifierAdjustableSettings,
-  changeLayerAdjustableSettings,
-  selectLayerAdjustableSettings,
-  selectSelectedProjectPrunableNodesById,
   summarizeLearningRateValues,
   updateOptimsModifierThunk,
 } from "../../store";
 import DisplayMetric from "../../components/display-metric";
 import LearningRateChart from "../../components/learning-rate-chart";
-import EditIcon from "@material-ui/icons/Edit";
-import MoreVertIcon from "@material-ui/icons/MoreVert";
 import ScrollerLayout from "../../components/scroller-layout";
 import useLRModState from "./hooks/use-lr-mod-state";
-import { func } from "prop-types";
 import CloseIcon from "@material-ui/icons/Close";
 
 const useStyles = makeStyles();

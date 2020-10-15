@@ -20,9 +20,7 @@ function GettingStartedModal({ open, handleClose, userDoNotShow, setUserDoNotSho
 
   return (
     <Dialog fullWidth={true} maxWidth="sm" open={open} onClose={handleClose}>
-      <DialogTitle>
-        <Typography variant="h6">Getting Started Workflow</Typography>
-      </DialogTitle>
+      <DialogTitle variant="h6">Getting Started Workflow</DialogTitle>
 
       <DialogContent className={classes.content}>
         <div className={classes.instruction}>
@@ -99,7 +97,7 @@ function GettingStartedModal({ open, handleClose, userDoNotShow, setUserDoNotSho
                 onChange={(e) => setUserDoNotShow(e.target.checked)}
               />
             }
-            label="Don't Show Again"
+            label="Do Not Show Again"
             labelPlacement="end"
           />
         </div>

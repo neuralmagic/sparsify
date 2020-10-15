@@ -8,50 +8,10 @@ import AbsoluteLayout from "../../components/absolute-layout";
 import ProjectCreateDialog from "../../modals/project-create";
 import GettingStartedDialog from "../../modals/getting-started";
 import DefaultHome from "./default-home";
-import { localStorageAvailable } from "../../components";
+import useGettingStarted from "./hooks/use-getting-started";
+
 const useStyles = makeStyles();
 const HOME_URL = null;
-
-const useGettingStarted = () => {
-  const userShownKey = "nmGettingStartedUserShown";
-  const userDoNotShowKey = "nmGettingStartedUserDoNotShow";
-  let initUserShown = false;
-  let initUserDoNotShow = false;
-
-  if (localStorageAvailable()) {
-    const tmpUserShown = localStorage.getItem(userShownKey);
-    const tmpUserDoNotShow = localStorage.getItem(userDoNotShowKey);
-
-    if (tmpUserShown !== null) {
-      initUserShown = true;
-    } else {
-      localStorage.setItem(userDoNotShowKey, "true");
-    }
-
-    if (tmpUserDoNotShow !== null) {
-      initUserDoNotShow = tmpUserDoNotShow === "true";
-    } else {
-      localStorage.setItem(userDoNotShowKey, "true");
-      initUserDoNotShow = true;
-    }
-  }
-
-  const [userDoNotShow, setStateUserDoNotShow] = useState(initUserDoNotShow);
-  const [open, setOpen] = useState(!initUserShown && !initUserDoNotShow);
-
-  return {
-    userDoNotShow,
-    setUserDoNotShow: (val) => {
-      setStateUserDoNotShow(val);
-
-      if (localStorageAvailable()) {
-        localStorage.setItem(userDoNotShowKey, val ? "true" : "false");
-      }
-    },
-    gettingStartedOpen: open,
-    setGettingStartedOpen: setOpen,
-  };
-};
 
 function Home() {
   const classes = useStyles();

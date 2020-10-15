@@ -113,6 +113,19 @@ export function localStorageAvailable(){
   }
 }
 
+export function sessionStorageAvailable(){
+  const test = 'test';
+
+  try {
+    sessionStorage.setItem(test, test);
+    sessionStorage.removeItem(test);
+
+    return true;
+  } catch(e) {
+    return false;
+  }
+}
+
 export const trainingOptimizers = [
   {
     value: "",

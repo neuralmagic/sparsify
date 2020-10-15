@@ -9,6 +9,7 @@ import {
   Popover,
   Typography,
   MenuItem,
+  Divider
 } from "@material-ui/core";
 import LayersChart from "../../../components/layers-chart";
 import PruningSettings from "../../../components/pruning-settings";
@@ -40,7 +41,7 @@ const PruningModifier = ({ modifier, optim }) => {
 
   return (
     <Grid container key={modifier.modifier_id} direction="row" className={classes.root}>
-      <Grid direction="column" xs={2}>
+      <Grid direction="column" className={classes.metricsRoot}>
         <DisplayMetric title="Est. Speedup" size="large">
           {formatWithMantissa(2, modifier.est_perf_gain)}
         </DisplayMetric>
@@ -51,16 +52,15 @@ const PruningModifier = ({ modifier, optim }) => {
           {formatWithMantissa(4, modifier.est_recovery)}
         </DisplayMetric>
       </Grid>
-      <Grid item xs={7}>
+      <Divider orientation="vertical" flexItem className={classes.divider} />
+      <Grid item xs>
         <LayersChart
           data={modifier.nodes}
           layerData={layerData}
           sparsityProp="sparsity"
-          denseProp="est_time"
-          sparseProp="est_time_baseline"
         />
       </Grid>
-      <Grid item container xs={3} direction="column">
+      <Grid item container direction="column" xs={1} className={classes.filtersRoot}>
         <Grid item container justify="flex-end">
           <IconButton
             className={classes.editButton}

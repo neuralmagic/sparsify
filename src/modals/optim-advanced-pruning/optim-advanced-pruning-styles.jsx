@@ -4,28 +4,40 @@ export default function makeOptimAdvancedPruningStyles() {
   return makeStyles(
     (theme) => {
       return {
-        paper: {
-          position: 'absolute',
-          top: 20,
-          maxWidth: 1200,
-          paddingTop: 30,
-          paddingLeft: 60,
-          paddingRight: 60,
-          marginBottom: 20
+        dialogTitle: {
+          marginLeft: theme.spacing(5)
         },
-        title: {
-          marginBottom: 50
+        dialogBox: {
+          display: 'flex',
+          alignItems: 'flex-end',
+          flexDirection: 'column'
         },
         closeButton: {
           position: 'absolute',
           top: 15,
           right: 15
         },
+        divider: {
+          marginLeft: theme.spacing(6),
+          marginRight: theme.spacing(6),
+        },
         layersChartContainer: {
           flexGrow: 1,
           marginTop: 20,
           marginBottom: 20
         },
+        metricsContainer: {
+          marginBottom: theme.spacing(6)
+        },
+        layersChart: {
+          width: '100%'
+        },
+        layersTable: {
+          marginTop: 30
+        },
+        secondPlotSelect: {
+          minWidth: 120
+        }
       };
     },
     { name: "OptimAdvancedPruning" }

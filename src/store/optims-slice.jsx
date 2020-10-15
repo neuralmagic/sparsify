@@ -12,17 +12,24 @@ import {
   filter,
   defaultTo,
   mergeRight,
-  addIndex
+  addIndex,
+  findIndex,
 } from "ramda";
 import { createSlice } from "@reduxjs/toolkit";
-import { createAsyncThunkWrapper } from "../store/utils";
+import {
+  createAsyncThunkWrapper,
+  STATUS_FAILED,
+  STATUS_LOADING,
+  STATUS_SUCCEEDED,
+} from "../store/utils";
 
 import { createSelector } from "@reduxjs/toolkit";
 
 import {
   requestGetProjectOptims,
-  requestChangeModifierSettings,
   requestUpdateOptim,
+  requestUpdateOptimModifierPruning,
+  requestUpdateOptimModifierLRSchedule,
 } from "../api";
 
 import { selectSelectedProjectModelAnalysis } from "./project-slice";
@@ -70,10 +77,37 @@ export const updateOptimsThunk = createAsyncThunkWrapper(
   }
 );
 
+export const updateOptimsModifierThunk = createAsyncThunkWrapper(
+  "selectedOptims/updateOptimsModifier",
+  async ({ projectId, optimId, modifierId, modifierType, properties }) => {
+    let body;
+
+    if (modifierType === "pruning") {
+      body = await requestUpdateOptimModifierPruning(
+        projectId,
+        optimId,
+        modifierId,
+        properties
+      );
+    } else if (modifierType === "lr") {
+      body = await requestUpdateOptimModifierLRSchedule(
+        projectId,
+        optimId,
+        modifierId,
+        properties
+      );
+    } else {
+      throw Error(`unknown modifierType given of ${modifierType}`);
+    }
+
+    return body.optim;
+  }
+);
+
 export const changeModifierSettingsThunk = createAsyncThunkWrapper(
   "selectedOptims/changeModifierSettings",
   async ({ projectId, modifierId, optimId, settings }) => {
-    const body = await requestChangeModifierSettings(
+    const body = await requestUpdateOptimModifierPruning(
       projectId,
       optimId,
       modifierId,
@@ -99,7 +133,12 @@ const selectedOptimsSlice = createSlice({
     selectedId: null,
     selectedProfilePerfId: null,
     selectedProfileLossId: null,
-    updateStatus: "idle",
+    update: {
+      globalStatus: "idle",
+      globalError: null,
+      modifiersStatus: {},
+      modifiersError: {},
+    },
   },
   reducers: {
     setSelectedOptim: (state, action) => {
@@ -122,11 +161,11 @@ const selectedOptimsSlice = createSlice({
   },
   extraReducers: {
     [getOptimsThunk.pending]: (state, action) => {
-      state.status = "loading";
+      state.status = STATUS_LOADING;
       state.projectId = action.meta.arg.projectId;
     },
     [getOptimsThunk.fulfilled]: (state, action) => {
-      state.status = "succeeded";
+      state.status = STATUS_SUCCEEDED;
       state.val = action.payload;
       state.projectId = action.meta.arg.projectId;
       state.error = null;
@@ -137,30 +176,56 @@ const selectedOptimsSlice = createSlice({
       }
     },
     [getOptimsThunk.rejected]: (state, action) => {
-      state.status = "failed";
+      state.status = STATUS_FAILED;
       state.error = action.error.message;
       state.projectId = action.meta.arg.projectId;
     },
     [updateOptimsThunk.pending]: (state, action) => {
-      state.updateStatus = "loading";
+      state.update.globalStatus = STATUS_LOADING;
+      state.update.globalError = null;
       state.projectId = action.meta.arg.projectId;
     },
     [updateOptimsThunk.fulfilled]: (state, action) => {
-      state.updateStatus = "succeeded";
+      state.update.globalStatus = STATUS_SUCCEEDED;
+      state.update.globalError = null;
       state.val = action.payload.optims;
       state.projectId = action.meta.arg.projectId;
-      state.error = null;
 
-      const selectedOptim = action.payload.optim;
-      state.selectedId = selectedOptim.optim_id;
-      state.selectedProfilePerfId = selectedOptim.profile_perf_id;
-      state.selectedProfileLossId = selectedOptim.profile_loss_id;
+      const selectedIndex = findIndex(
+        propEq("optim_id", action.payload.optim.optim_id)
+      )(state.val);
+
+      if (selectedIndex > -1) {
+        state.val[selectedIndex] = action.payload.optim;
+      }
     },
     [updateOptimsThunk.rejected]: (state, action) => {
-      state.updateStatus = "failed";
-      state.error = action.error.message;
+      state.update.globalStatus = STATUS_FAILED;
+      state.update.globalError = action.error.message;
       state.projectId = action.meta.arg.projectId;
     },
+
+    [updateOptimsModifierThunk.pending]: (state, action) => {
+      state.update.modifiersStatus[action.meta.arg.modifierId] = STATUS_LOADING;
+      state.update.modifiersError[action.meta.arg.modifierId] = null;
+    },
+    [updateOptimsModifierThunk.fulfilled]: (state, action) => {
+      state.update.modifiersStatus[action.meta.arg.modifierId] = STATUS_SUCCEEDED;
+      state.update.modifiersError[action.meta.arg.modifierId] = null;
+
+      const selectedIndex = findIndex(
+        propEq("optim_id", action.payload.optim.optim_id)
+      )(state.val);
+
+      if (selectedIndex > -1) {
+        state.val[selectedIndex] = action.payload.optim;
+      }
+    },
+    [updateOptimsModifierThunk.rejected]: (state, action) => {
+      state.update.modifiersStatus[action.meta.arg.modifierId] = STATUS_FAILED;
+      state.update.modifiersError[action.meta.arg.modifierId] = action.error.message;
+    },
+
     [changeModifierSettingsThunk.fulfilled]: (state, action) => {
       state.val = map(
         when(propEq("optim_id", action.payload.optim_id), always(action.payload)),
@@ -199,12 +264,13 @@ export const selectSelectedProjectPrunableNodesById = createSelector(
     selectSelectedProfilePerf,
   ],
   (modelAnalysis, loss, perf) => {
-    const profileLayerPruningMeasurements = layer => compose(
-      prop("measurements"),
-      find(propEq("id", layer.id)),
-      defaultTo([]),
-      path(["analysis", "pruning", "ops"])
-    )
+    const profileLayerPruningMeasurements = (layer) =>
+      compose(
+        prop("measurements"),
+        find(propEq("id", layer.id)),
+        defaultTo([]),
+        path(["analysis", "pruning", "ops"])
+      );
 
     return compose(
       indexBy(prop("id")),
@@ -217,7 +283,7 @@ export const selectSelectedProjectPrunableNodesById = createSelector(
               profileLayerPruningMeasurements(layer)
             )(loss),
             perf: compose(
-              defaultTo({ 0: layer.flops, 1: layer.flops *3/4, 2: layer.flops *2/4, 3: layer.flops *1/4, 4: 0 }),
+              defaultTo({ 0: layer.flops, 1: 0 }),
               profileLayerPruningMeasurements(layer)
             )(perf),
           },
@@ -225,7 +291,7 @@ export const selectSelectedProjectPrunableNodesById = createSelector(
       ),
       filter(propEq("prunable", true)),
       prop("nodes")
-    )(modelAnalysis)
+    )(modelAnalysis);
   }
 );
 

@@ -6,7 +6,7 @@ export default function makeOptimAdvancedPruningStyles() {
       return {
         root: {
           '& .MuiTextField-root': {
-            width: 80,
+            width: 60,
           }
         },
         title: {

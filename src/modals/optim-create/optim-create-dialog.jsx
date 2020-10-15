@@ -144,6 +144,7 @@ function OptimCreateDialog({ open, handleClose, projectId }) {
         createOptimThunk({
           projectId,
           add_pruning: pruning,
+          add_lr_schedule: saveValues.trainingLRInit !== null,
           abortController,
         })
       );

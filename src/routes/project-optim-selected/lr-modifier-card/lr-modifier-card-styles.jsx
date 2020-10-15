@@ -1,5 +1,5 @@
 import { makeStyles } from "@material-ui/core/styles";
-import {adjustColorOpacity} from "../../../components";
+import { adjustColorOpacity } from "../../../components";
 
 export default function makeLRModifierCardStyles() {
   return makeStyles(
@@ -11,17 +11,25 @@ export default function makeLRModifierCardStyles() {
           overflow: "unset",
         },
         layout: {
-          height: `calc(100% - 2 * ${theme.spacing(4)}px)`,
+          height: `calc(100% - 2 * ${theme.spacing(3)}px)`,
           display: "flex",
           flexDirection: "row",
-          padding: theme.spacing(4),
+          padding: theme.spacing(3),
         },
         metrics: {
-          width: `calc(192px - ${theme.spacing(6)}px)`,
+          width: `calc(192px - ${theme.spacing(4)}px)`,
           height: "100%",
-          paddingRight: theme.spacing(6),
+          paddingRight: theme.spacing(4),
           display: "flex",
           flexDirection: "column",
+          position: "relative",
+        },
+        metricsDiv: {
+          position: "absolute",
+          width: "1px",
+          height: "100%",
+          backgroundColor: theme.palette.divider,
+          right: theme.spacing(2),
         },
         metric: {
           marginBottom: theme.spacing(2),
@@ -36,10 +44,17 @@ export default function makeLRModifierCardStyles() {
           paddingLeft: theme.spacing(6),
           display: "flex",
           flexDirection: "column",
-          justifyContent: "center",
+        },
+        actionButtons: {
+          display: "flex",
+          justifyContent: "flex-end",
+          marginBottom: theme.spacing(3),
+        },
+        actionButton: {
+          marginLeft: theme.spacing(1),
         },
         epochLabel: {
-          marginBottom: theme.spacing(2)
+          marginBottom: theme.spacing(2),
         },
         epochRange: {
           display: "flex",
@@ -56,7 +71,7 @@ export default function makeLRModifierCardStyles() {
           "& input": {
             paddingTop: theme.spacing(1.5),
             paddingBottom: theme.spacing(1.5),
-          }
+          },
         },
 
         modifier: {

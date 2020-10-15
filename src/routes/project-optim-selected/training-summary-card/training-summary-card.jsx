@@ -5,7 +5,6 @@ import { TextField, Typography, Card, CardContent } from "@material-ui/core";
 
 import makeStyles from "./training-summary-card-styles";
 import { updateOptimsThunk } from "../../../store";
-import GenericPage from "../../../components/generic-page";
 
 const useStyles = makeStyles();
 
@@ -217,7 +216,7 @@ const TrainingSummaryCard = ({ projectId, optim }) => {
     setStartEpoch(`${newStartEpoch}`);
     setEndEpoch(`${newEndEpoch}`);
 
-    if (`${newStartEpoch}` !== startEpoch || `${newEndEpoch}` !== endEpoch) {
+    if (newStartEpoch !== optim.start_epoch || newEndEpoch !== optim.end_epoch) {
       dispatch(
         updateOptimsThunk({
           projectId,

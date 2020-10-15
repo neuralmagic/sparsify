@@ -17,7 +17,7 @@ export default function makeLayersChartStyles() {
           "& .sparsityAxis line": {
             stroke: "#F0F0F0",
           },
-          "& .timingAxis line": {
+          "& .secondAxis line": {
             stroke: "none",
           },
           "& .xAxis line": {
@@ -32,14 +32,19 @@ export default function makeLayersChartStyles() {
           "& .sparsityAxis text": {
             ...axisTextStyle,
           },
-          "& .timingAxis text": {
+          "& .secondAxis text": {
             ...axisTextStyle,
           },
           "& .sparsityAxis path": {
             stroke: "none",
           },
-          "& .timingAxis path": {
+          "& .secondAxis path": {
             stroke: "none",
+          },
+          "& .xAxisLabel, & .yAxisLabel": {
+            ...axisTextStyle,
+            fill: "#C0C0C0",
+            textAnchor: 'middle',
           },
         },
         legend: {
@@ -63,12 +68,27 @@ export default function makeLayersChartStyles() {
           fontSize: 20,
           marginBottom: theme.spacing(2)
         },
+        tooltipLabels: {
+          display: 'inline-block',
+          verticalAlign: 'top'
+        },
+        tooltipValues: {
+          display: 'inline-block',
+          verticalAlign: 'top'
+        },
         tooltipPropertyLabel: {
-          width: 50,
           fontSize: 12,
           color: '#76769C',
           display: 'inline-block',
-          marginBottom: theme.spacing(1)
+          marginBottom: theme.spacing(1),
+          marginRight: theme.spacing(1),
+          height: 20
+        },
+        tooltipPropertyValue: {
+          display: 'inline-block',
+          height: 20,
+          fontSize: 12,
+          marginBottom: theme.spacing(1),
         }
       };
     },

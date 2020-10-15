@@ -1,6 +1,6 @@
 import { makeStyles } from "@material-ui/core/styles";
 
-export default function createProjectOptimRootStyles() {
+export default function createProjectOptimSelectedStyles() {
   return makeStyles(
     (theme) => {
       const paddingButton = theme.spacing(3);
@@ -46,6 +46,6 @@ export default function createProjectOptimRootStyles() {
         },
       };
     },
-    { name: "ProjectOptim" }
+    { name: "ProjectOptimSelected" }
   );
 }

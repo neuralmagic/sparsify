@@ -1,13 +1,13 @@
 import { compose, filter, contains, prop, defaultTo, sortBy,
   when, always, not, isNil, toPairs, map, objOf, of as rof,
-  head, last, __ } from 'ramda'
+  head, last, cond, equals, T, __ } from 'ramda'
 import React, { useState } from 'react'
 import clsx from 'clsx'
 import { ResponsiveLine } from "@nivo/line"
 import { useSelector, useDispatch } from 'react-redux'
 import { Typography, IconButton, Grid, TextField, Table, TableBody, Dialog, DialogTitle,
   TableCell, TableContainer, TableHead, TableRow, Switch, Slider, DialogContent, Box,
-  Collapse } from '@material-ui/core'
+  Collapse, Divider, MenuItem } from '@material-ui/core'
 import CloseIcon from '@material-ui/icons/Close'
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown'
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp'
@@ -41,7 +41,7 @@ const SummaryMetrics = ({ modifier }) =>
   </Grid>
 
 const DetailedMetrics = ({ modifier }) =>
-  <Grid container direction='row' spacing={3} justify='flex-end'>
+  <Grid container direction='row' spacing={6} justify='flex-end'>
     <Grid item direction='column'>
       {[{ label: 'Est. Baseline Time', value: formatWithMantissa(3, modifier.est_time_baseline) },
         { label: 'Baseline Parameters', value: '--' },
@@ -281,7 +281,7 @@ const LayersTableRow = ({ modifier, layer, data }) => {
   </React.Fragment>
 }
 
-const LayersTable = ({ modifier, layerData }) => {
+const LayersTable = ({ modifier, layerData, className }) => {
   const classes = tableStyles()
   const [searchTerm, setSearchTerm] = useState(null)
 
@@ -297,7 +297,7 @@ const LayersTable = ({ modifier, layerData }) => {
     modifier.nodes)
 
   return (
-    <TableContainer>
+    <TableContainer className={className}>
       <Table size='small'>
         <TableHead className={classes.header}>
           <TableRow>
@@ -344,28 +344,52 @@ const LayersTable = ({ modifier, layerData }) => {
 export default ({ modifier, open, onClose }) => {
   const classes = useStyles()
   const layerData = useSelector(selectSelectedProjectPrunableNodesById)
+  const [secondPlot, setSecondPlot] = useState("timing")
+
+  const [denseProp, sparseProp] = cond([
+    [equals('timing'), always(['est_time', 'est_time_baseline'])],
+    [equals('flops'), always(['flops', 'flops_baseline'])],
+    [T, always([null, null])]
+  ])(secondPlot)
 
   return <Dialog
     open={open}
     maxWidth="xl"
     onClose={onClose}>
-    <DialogTitle>Pruning Editor</DialogTitle>
+    <DialogTitle className={classes.dialogTitle}>Pruning Editor</DialogTitle>
     <DialogContent>
-      <Box marginY={2}>
+      <Box margin={5} className={classes.dialogBox}>
         <IconButton className={classes.closeButton} onClick={onClose}><CloseIcon/></IconButton>
-        <Grid container direction='row' spacing={6}>
-          <Grid item xs={1}><SummaryMetrics modifier={modifier}/></Grid>
-          <Grid item xs={3}><DetailedMetrics modifier={modifier}/></Grid>
-          <Grid item xs={3}><Filters modifier={modifier}/></Grid>
-          <Grid item xs={4}><PruningSettings modifier={modifier}/></Grid>
+        <Grid container direction='row' className={classes.metricsContainer}>
+          <Grid item><SummaryMetrics modifier={modifier}/></Grid>
+          <Divider orientation="vertical" flexItem className={classes.divider} />
+          <Grid item><DetailedMetrics modifier={modifier}/></Grid>
+          <Divider orientation="vertical" flexItem className={classes.divider} />
+          <Grid item xs><Filters modifier={modifier}/></Grid>
+          <Divider orientation="vertical" flexItem className={classes.divider} />
+          <Grid item><PruningSettings modifier={modifier}/></Grid>
         </Grid>
+        <TextField
+          select
+          className={classes.secondPlotSelect}
+          value={secondPlot}
+          variant="outlined"
+          label="Chart 2nd plot"
+          onChange={e => setSecondPlot(e.target.value)}>
+          <MenuItem value="none">None</MenuItem>
+          <MenuItem value="timing">Dense vs Sparse Execution Time</MenuItem>
+          <MenuItem value="flops">Dense vs Sparse Flops</MenuItem>
+        </TextField>
         <LayersChart
+          key={secondPlot}
+          className={classes.layersChart}
           data={modifier.nodes}
           layerData={layerData}
           sparsityProp="sparsity"
-          denseProp="est_time"
-          sparseProp="est_time_baseline"/>
-        <LayersTable modifier={modifier} layerData={layerData}/>
+          denseProp={denseProp}
+          sparseProp={sparseProp}
+          secondPlot={secondPlot}/>
+        <LayersTable className={classes.layersTable} modifier={modifier} layerData={layerData}/>
       </Box>
     </DialogContent>
   </Dialog>

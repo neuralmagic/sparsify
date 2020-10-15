@@ -126,31 +126,39 @@ export function requestUpdateOptim(
   );
 }
 
-/**
- * Request to change a modifier's settings
- *
- * @param projectId - The id of the project
- * @param optimId - The id of the optimization
- * @param modifierId - The id of the modifier
- * @param settings - Object with modifier settings to be updated
- * @returns {Promise<any>}
- */
-export const requestChangeModifierSettings = (
+export function requestUpdateOptimModifierPruning(
   projectId,
   optimId,
   modifierId,
-  settings
-) => {
+  properties
+) {
   const url = `${API_ROOT}/projects/${projectId}/optim/${optimId}/modifiers/${modifierId}/pruning`;
 
   return validateAPIResponseJSON(
     fetch(url, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(settings),
+      body: JSON.stringify(properties),
     })
   );
-};
+}
+
+export function requestUpdateOptimModifierLRSchedule(
+  projectId,
+  optimId,
+  modifierId,
+  properties
+) {
+  const url = `${API_ROOT}/projects/${projectId}/optim/${optimId}/modifiers/${modifierId}/lr-schedule`;
+
+  return validateAPIResponseJSON(
+    fetch(url, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(properties),
+    })
+  );
+}
 
 /**
  * Request to get the requested project's best estimated optimization meta data

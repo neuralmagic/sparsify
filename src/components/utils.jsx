@@ -131,6 +131,25 @@ export const trainingOptimizers = [
   },
 ];
 
+export const lrModsTypes = [
+  {
+    value: "set",
+    label: "Set LR",
+  },
+  {
+    value: "step",
+    label: "Step LR",
+  },
+  {
+    value: "multi_step",
+    label: "Multi Step LR",
+  },
+  {
+    value: "exponential",
+    label: "Exponential LR",
+  },
+]
+
 export const formatMetricValue = curry(({ mantissaLength }, value) =>
   value ? value.toFixed(mantissaLength) : "--"
 );

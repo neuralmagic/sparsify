@@ -14,7 +14,7 @@ import {
   selectSelectedProjectState,
 } from "../../store";
 import OptimPruning from "./optim-pruning";
-import makeStyles from "./project-optim-styles";
+import makeStyles from "./project-optim-selected-styles";
 import GenericPage from "../../components/generic-page";
 import LoaderLayout from "../../components/loader-layout";
 import AbsoluteLayout from "../../components/absolute-layout";
@@ -75,9 +75,10 @@ function ProjectOptimSelected(props) {
           <div className={classes.layout}>
             <OptimPruning optim={optim}></OptimPruning>
 
-            <div className={classes.spacer} />
-            {optim.lr_schedule_modifiers && (
+            {optim.lr_schedule_modifiers && optim.lr_schedule_modifiers.length > 0 && (
               <div>
+                <div className={classes.spacer} />
+
                 <Typography
                   color="textSecondary"
                   variant="h5"
@@ -99,8 +100,8 @@ function ProjectOptimSelected(props) {
               </div>
             )}
 
-            <div className={classes.spacer} />
             <div>
+              <div className={classes.spacer} />
               <Typography color="textSecondary" variant="h5" className={classes.title}>
                 Training Summary
               </Typography>

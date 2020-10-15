@@ -11,7 +11,7 @@ export default function makeTrainingSummaryCardStyles() {
         layout: {
           display: "flex",
           flexDirection: "row",
-          padding: theme.spacing(4),
+          padding: theme.spacing(3),
         },
         rowsLayout: {
           flex: "1 0",
@@ -37,7 +37,6 @@ export default function makeTrainingSummaryCardStyles() {
           paddingLeft: theme.spacing(6),
           display: "flex",
           flexDirection: "column",
-          justifyContent: "center",
         },
         epochLabel: {
           marginBottom: theme.spacing(2)

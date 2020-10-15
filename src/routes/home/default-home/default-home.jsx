@@ -13,7 +13,7 @@ function DefaultHome() {
     <AbsoluteLayout spacingTop={4} spacingBottom={4} spacingRight={4} spacingLeft={4}>
       <div className={classes.root}>
         <div className={classes.layout}>
-          <div>
+          <div className={classes.logoHeader}>
             <Grid container spacing={1} alignItems="center">
               <Grid item xs={6}>
                 <NMLogo className={classes.icon} />

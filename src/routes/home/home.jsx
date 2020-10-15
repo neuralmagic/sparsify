@@ -8,26 +8,48 @@ import AbsoluteLayout from "../../components/absolute-layout";
 import ProjectCreateDialog from "../../modals/project-create";
 import GettingStartedDialog from "../../modals/getting-started";
 import DefaultHome from "./default-home";
+import { localStorageAvailable } from "../../components";
 const useStyles = makeStyles();
 const HOME_URL = null;
 
 const useGettingStarted = () => {
-  if (localStorage.getItem("nmHideGettingStarted") === null) {
-    localStorage.setItem("nmHideGettingStarted", false);
+  const userShownKey = "nmGettingStartedUserShown";
+  const userDoNotShowKey = "nmGettingStartedUserDoNotShow";
+  let initUserShown = false;
+  let initUserDoNotShow = false;
+
+  if (localStorageAvailable()) {
+    const tmpUserShown = localStorage.getItem(userShownKey);
+    const tmpUserDoNotShow = localStorage.getItem(userDoNotShowKey);
+
+    if (tmpUserShown !== null) {
+      initUserShown = true;
+    } else {
+      localStorage.setItem(userDoNotShowKey, "true");
+    }
+
+    if (tmpUserDoNotShow !== null) {
+      initUserDoNotShow = tmpUserDoNotShow === "true";
+    } else {
+      localStorage.setItem(userDoNotShowKey, "true");
+      initUserDoNotShow = true;
+    }
   }
 
-  const _hideGettingStarted =
-    localStorage.getItem("nmHideGettingStarted") === "true" ? true : false;
-  const [hideGettingStarted, _setHideGettingStarted] = useState(_hideGettingStarted);
-  const [gettingStarted, setGettingStarted] = useState(!hideGettingStarted);
+  const [userDoNotShow, setStateUserDoNotShow] = useState(initUserDoNotShow);
+  const [open, setOpen] = useState(!initUserShown && !initUserDoNotShow);
+
   return {
-    gettingStarted,
-    setGettingStarted,
-    setHideGettingStarted: (hide) => {
-      _setHideGettingStarted(hide);
-      localStorage.setItem("nmHideGettingStarted", hide);
+    userDoNotShow,
+    setUserDoNotShow: (val) => {
+      setStateUserDoNotShow(val);
+
+      if (localStorageAvailable()) {
+        localStorage.setItem(userDoNotShowKey, val ? "true" : "false");
+      }
     },
-    hideGettingStarted,
+    gettingStartedOpen: open,
+    setGettingStartedOpen: setOpen,
   };
 };
 
@@ -37,10 +59,10 @@ function Home() {
   const [createOpen, setCreateOpen] = useState(false);
 
   const {
-    gettingStarted,
-    setGettingStarted,
-    hideGettingStarted,
-    setHideGettingStarted,
+    userDoNotShow,
+    setUserDoNotShow,
+    gettingStartedOpen,
+    setGettingStartedOpen,
   } = useGettingStarted();
 
   return (
@@ -49,11 +71,12 @@ function Home() {
         <IconButton
           size="medium"
           className={classes.infoButton}
-          onClick={() => setGettingStarted(true)}
+          onClick={() => setGettingStartedOpen(true)}
         >
           <HelpOutlineIcon />
         </IconButton>
       </div>
+
       {displayType === "iframe" && (
         <iframe
           title={"Home"}
@@ -75,12 +98,13 @@ function Home() {
         <AddIcon className={classes.fabIcon} />
         New Project
       </Fab>
+
       <ProjectCreateDialog open={createOpen} handleClose={() => setCreateOpen(false)} />
       <GettingStartedDialog
-        setHideGettingStarted={setHideGettingStarted}
-        open={gettingStarted}
-        handleClose={() => setGettingStarted(false)}
-        hideGettingStarted={hideGettingStarted}
+        open={gettingStartedOpen}
+        handleClose={() => setGettingStartedOpen(false)}
+        userDoNotShow={userDoNotShow}
+        setUserDoNotShow={setUserDoNotShow}
       />
     </AbsoluteLayout>
   );

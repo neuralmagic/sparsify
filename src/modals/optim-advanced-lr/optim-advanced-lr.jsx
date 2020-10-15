@@ -273,7 +273,7 @@ function OptimAdvancedLRDialog({
 
   return (
     <Dialog open={open} maxWidth="xl" onClose={onClose}>
-      <DialogTitle className={classes.dialogTitle}>Learning Rate Editor</DialogTitle>
+      <DialogTitle>Learning Rate Editor</DialogTitle>
       <IconButton className={classes.closeButton} onClick={onClose}>
         <CloseIcon />
       </IconButton>

@@ -13,6 +13,7 @@ export default function makeDefaultHomeStyles() {
         },
         layout: {
           width: "80%",
+          maxWidth: "960px",
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
@@ -20,6 +21,9 @@ export default function makeDefaultHomeStyles() {
           paddingBottom: "10%",
           paddingLeft: "10%",
           paddingRight: "10%",
+        },
+        logoHeader: {
+          marginBottom: theme.spacing(6),
         },
         icon: {
           width: "200px",

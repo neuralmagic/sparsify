@@ -69,7 +69,7 @@ function SystemInfoModal({ open, handleClose, isDarkMode, toggleDarkMode }) {
       <DialogContent>
         <Box textAlign="left">
           <Box className={classes.block} textAlign="center">
-            <Box display="flex" justifyContent="center">
+            <Box display="flex" justifyContent="center" alignItems="center">
               <Box className={classes.logo}>
                 <NMLogo />
               </Box>
@@ -110,15 +110,13 @@ function SystemInfoModal({ open, handleClose, isDarkMode, toggleDarkMode }) {
               size="small"
               checked={isDarkMode}
               onClick={() => toggleDarkMode()}
-            ></Switch>
+            />
           </Box>
         </Box>
       </DialogContent>
       <DialogActions>
         <Button
           onClick={() => handleClose()}
-          color="secondary"
-          variant="contained"
           disableElevation
         >
           Close

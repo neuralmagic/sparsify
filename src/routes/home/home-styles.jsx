@@ -18,8 +18,8 @@ export default function createHomeStyles() {
           marginRight: theme.spacing(1),
         },
         info: {
-          top: "0px",
-          right: "0px",
+          top: theme.spacing(2),
+          right: theme.spacing(2),
           position: "absolute",
           margin: theme.spacing(0.5),
           zIndex: 10,

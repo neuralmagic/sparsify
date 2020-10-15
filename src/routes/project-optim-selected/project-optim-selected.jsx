@@ -1,40 +1,33 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Box, Fab, Typography } from "@material-ui/core";
+import { Fab, Typography } from "@material-ui/core";
 import OpenInNewIcon from "@material-ui/icons/OpenInNew";
 import SentimentVeryDissatisfiedIcon from "@material-ui/icons/SentimentVeryDissatisfied";
 
-import _ from "lodash";
-
 import {
-  selectedOptimById,
+  selectSelectedOptim,
   selectSelectedOptimsState,
-  setCreateOptimModalOpen,
-  selectCreatedOptimsState,
   selectSelectedProjectState,
 } from "../../store";
-import OptimPruning from "./optim-pruning";
 import makeStyles from "./project-optim-selected-styles";
 import GenericPage from "../../components/generic-page";
 import LoaderLayout from "../../components/loader-layout";
-import AbsoluteLayout from "../../components/absolute-layout";
 import ExportDialog from "../../modals/export-config";
-import OptimCreate from "../../modals/optim-create";
 import TrainingSummaryCard from "./training-summary-card";
 import ScrollerLayout from "../../components/scroller-layout";
 import LRModifierCard from "./lr-modifier-card";
+import PruningModifierCard from "./pruning-modifier-card";
 
 const useStyles = makeStyles();
 
 function ProjectOptimSelected(props) {
   const { optimId, projectId } = props.match.params;
-  const optim = useSelector(selectedOptimById(optimId));
+  const optim = useSelector(selectSelectedOptim);
   const dispatch = useDispatch();
 
   const optimsState = useSelector(selectSelectedOptimsState);
   const selectedProjectState = useSelector(selectSelectedProjectState);
-  const createOptimState = useSelector(selectCreatedOptimsState);
-  const selectedSelectedOptimsState = useSelector(selectSelectedOptimsState);
+  const selectedOptimsState = useSelector(selectSelectedOptimsState);
   const [openExportModal, setOpenExportModal] = useState(false);
 
   const classes = useStyles();
@@ -46,20 +39,10 @@ function ProjectOptimSelected(props) {
     errorMessage = `Optimization with id ${optimId} not found.`;
   }
 
-  useEffect(() => {
-    if (
-      optimsState.status === "succeeded" &&
-      createOptimState.status === "idle" &&
-      optimsState.val.length === 0
-    ) {
-      dispatch(setCreateOptimModalOpen(true));
-    }
-  }, [optimsState.status, createOptimState.status, _.get(optimsState, "val.length")]);
-
   return (
     <ScrollerLayout layoutClass={classes.root}>
       <LoaderLayout
-        status={selectedSelectedOptimsState.status}
+        status={selectedOptimsState.status}
         loaderClass={classes.loading}
         rootClass={classes.body}
         error={errorMessage}
@@ -73,7 +56,25 @@ function ProjectOptimSelected(props) {
       >
         {optim && (
           <div className={classes.layout}>
-            <OptimPruning optim={optim}></OptimPruning>
+            {optim.pruning_modifiers && optim.pruning_modifiers.length > 0 && (
+              <div>
+                <Typography
+                  color="textSecondary"
+                  variant="h5"
+                  className={classes.title}
+                >
+                  Pruning Modifier
+                </Typography>
+
+                {optim.pruning_modifiers.map((mod) => (
+                  <PruningModifierCard
+                    key={mod.modifier_id}
+                    modifier={mod}
+                    optim={optim}
+                  />
+                ))}
+              </div>
+            )}
 
             {optim.lr_schedule_modifiers && optim.lr_schedule_modifiers.length > 0 && (
               <div>

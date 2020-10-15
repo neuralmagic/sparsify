@@ -100,6 +100,8 @@ export const updateOptimsModifierThunk = createAsyncThunkWrapper(
       throw Error(`unknown modifierType given of ${modifierType}`);
     }
 
+    console.log(body);
+
     return body.optim;
   }
 );
@@ -214,11 +216,11 @@ const selectedOptimsSlice = createSlice({
       state.update.modifiersError[action.meta.arg.modifierId] = null;
 
       const selectedIndex = findIndex(
-        propEq("optim_id", action.payload.optim.optim_id)
+        propEq("optim_id", action.payload.optim_id)
       )(state.val);
 
       if (selectedIndex > -1) {
-        state.val[selectedIndex] = action.payload.optim;
+        state.val[selectedIndex] = action.payload;
       }
     },
     [updateOptimsModifierThunk.rejected]: (state, action) => {
@@ -253,9 +255,9 @@ export const {
  * @returns {Reducer<State> | Reducer<{val: *[], error: null, projectId: null, status: string}>}
  */
 export const selectSelectedOptimsState = (state) => state.selectedOptims;
-export const selectedOptimById = curry((id, state) =>
-  compose(find(propEq("optim_id", id)), path(["selectedOptims", "val"]))(state)
-);
+
+export const selectSelectedOptim = (state) =>
+  find(propEq("optim_id", state.selectedOptims.selectedId))(state.selectedOptims.val);
 
 export const selectSelectedProjectPrunableNodesById = createSelector(
   [

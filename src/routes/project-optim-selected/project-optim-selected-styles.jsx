@@ -43,6 +43,7 @@ export default function createProjectOptimSelectedStyles() {
         },
         loading: {
           height: "100%",
+          marginTop: theme.spacing(5),
         },
       };
     },

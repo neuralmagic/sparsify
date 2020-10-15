@@ -5,14 +5,39 @@ export default function makePruningModifierStyles() {
     (theme) => {
       return {
         root: {
+          position: "relative",
+          height: "320px",
+          overflow: "unset",
+        },
+        layout: {
+          height: `calc(100% - 2 * ${theme.spacing(3)}px)`,
+          display: "flex",
+          flexDirection: "row",
+          padding: theme.spacing(3),
+        },
+        metrics: {
+          width: `calc(192px - ${theme.spacing(4)}px)`,
+          height: "100%",
           paddingRight: theme.spacing(4),
-          paddingTop: theme.spacing(4),
-          paddingLeft: theme.spacing(4),
+          display: "flex",
+          flexDirection: "column",
           position: "relative",
         },
-        metricsRoot: {
-          width: 85
+        metricsDiv: {
+          position: "absolute",
+          width: "1px",
+          height: "100%",
+          backgroundColor: theme.palette.divider,
+          right: theme.spacing(2),
         },
+        metric: {
+          marginBottom: theme.spacing(2),
+        },
+        chart: {
+          flex: "1 0",
+          height: "100%",
+        },
+
         sparsitySliderRoot: {
           marginTop: theme.spacing(2),
           marginBottom: theme.spacing(2),
@@ -28,10 +53,6 @@ export default function makePruningModifierStyles() {
           position: "absolute",
           right: theme.spacing(8),
           top: theme.spacing(2),
-        },
-        divider: {
-          marginLeft: theme.spacing(3),
-          marginRight: theme.spacing(3),
         },
         menuButton: {
           position: "absolute",

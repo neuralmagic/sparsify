@@ -4,7 +4,7 @@ import { Card, Typography } from "@material-ui/core";
 
 import ScrollerLayout from "../../../components/scroller-layout";
 import LoaderLayout from "../../../components/loader-layout";
-import PruningModifier from "../pruning-modifier";
+import PruningModifierCard from "../pruning-modifier-card";
 
 import makeStyles from "./optim-pruning-styles";
 
@@ -23,7 +23,7 @@ const OptimPruning = ({ optim }) => {
       <Card elevation={1} className={classes.card}>
         {optim &&
           optim.pruning_modifiers.map((modifier) => (
-            <PruningModifier
+            <PruningModifierCard
               key={modifier.modifier_id}
               modifier={modifier}
               optim={optim}

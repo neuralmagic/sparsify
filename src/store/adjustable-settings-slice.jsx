@@ -109,7 +109,7 @@ const adjustableSettingsSlice = createSlice({
 });
 
 function* changeModifierAdjustableSettingSaga({ payload }) {
-  yield delay(1500);
+  yield delay(100);
 
   const modifierSettings = yield select(
     selectModifierAdjustableSettings(payload.modifierId)
@@ -128,7 +128,7 @@ function* changeModifierAdjustableSettingSaga({ payload }) {
 }
 
 function* changeLayerAdjustableSettingsSaga({ payload }) {
-  yield delay(1000);
+  yield delay(100);
 
   const layerSettings = yield select(
     selectLayerAdjustableSettings(payload.modifierId, payload.layerId)

@@ -271,7 +271,8 @@ const LayersChart = (props) => {
       })
       .on('mouseout', () => {
         tooltip.style("visibility", "hidden")
-        circles
+        root
+          .selectAll(".sparsityCircle")
           .attr("fill", 'white')
           .attr("r", 3);
       });

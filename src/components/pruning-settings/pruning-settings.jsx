@@ -15,6 +15,12 @@ const PruningSettings = ({ showRecovery = true, className, modifier }) => {
   const classes = useStyles()
   const dispatch = useDispatch()
   const adjustableSettings = useSelector(selectModifierAdjustableSettings(modifier.modifier_id))
+  const changeAdjustableSettings = (settings, commit) =>
+    dispatch(changeModifierAdjustableSettings({
+      modifierId: modifier.modifier_id,
+      settings,
+      commit
+    }))
 
   return <div className={`${classes.root} ${className}`} key={modifier.modifier_id}>
     <Typography className={classes.title}>Pruning range</Typography>
@@ -43,18 +49,21 @@ const PruningSettings = ({ showRecovery = true, className, modifier }) => {
         </Grid>
       </Grid>
       {showRecovery &&
-        <Grid className={classes.recoveryContainer} container direction='row' spacing={3} alignItems="center">
+        <Grid className={classes.recoveryContainer} container direction='column' spacing={3}>
           <Grid item>
-            <TextField variant='outlined' size='small' label='Recovery' value={adjustableSettings.balance_perf_loss}></TextField>
+            <Typography className={classes.balanceTitle}>Pruning Balance</Typography>
           </Grid>
           <Grid item>
-            <Slider className={classes.slider} min={0} max={1} value={adjustableSettings.balance_perf_loss} step={0.01}
-              onChange={(e, value) =>
-                dispatch(changeModifierAdjustableSettings({
-                  modifierId: modifier.modifier_id,
-                  settings: { balance_perf_loss: Number(value) }
-                })
-                )}/>
+            <Slider classes={{
+              root: classes.slider,
+              markLabel: classes.sliderMarkLabel,
+              markLabelActive: classes.sliderMarkLabelActive }}
+            min={0}
+            max={1}
+            value={adjustableSettings.balance_perf_loss} step={0.01}
+            marks={[{ value: 0, label: 'Performance' }, { value: 1, label: 'Loss' }]}
+            onChange={(e, value) => changeAdjustableSettings({ balance_perf_loss: Number(value) })}
+            onChangeCommitted={(e, value) => changeAdjustableSettings({ balance_perf_loss: Number(value) }, true)}/>
           </Grid>
         </Grid>}
     </Grid>

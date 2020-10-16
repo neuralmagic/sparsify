@@ -10,11 +10,22 @@ export default function makeOptimAdvancedPruningStyles() {
           }
         },
         title: {
-          fontSize: 12,
-          marginBottom: 15
+          fontSize: 14,
+          marginBottom: theme.spacing(2)
+        },
+        balanceTitle: {
+          fontSize: 14,
         },
         slider: {
-          width: 200
+          width: 200,
+          marginLeft: 30
+        },
+        sliderMarkLabel: {
+          top: -10,
+          fontSize: 10
+        },
+        sliderMarkLabelActive: {
+          color: 'rgba(0, 0, 0, 0.54)'
         },
         recoveryContainer: {
           marginTop: 30

@@ -39,6 +39,12 @@ const PruningModifierCard = ({ modifier, optim }) => {
     selectModifierAdjustableSettings(modifier.modifier_id)
   );
   const layerData = useSelector(selectSelectedProjectPrunableNodesById);
+  const changeAdjustableSettings = (settings, commit) =>
+    dispatch(changeModifierAdjustableSettings({
+      modifierId: modifier.modifier_id,
+      settings,
+      commit
+    }))
 
   return (
     <Card elevation={1} className={classes.root}>
@@ -133,44 +139,56 @@ const PruningModifierCard = ({ modifier, optim }) => {
                   step = 1,
                   divideBy100 = true,
                   suffix = "",
-                }) => (
-                  <Grid
-                    key={name}
-                    item
-                    container
-                    direction="row"
-                    spacing={2}
-                    alignItems="center"
-                  >
-                    <Grid item>
-                      <TextField
-                        value={`${value || 0}${suffix}`}
-                        className={classes.popoverInput}
-                        size="small"
-                        variant="outlined"
-                        label={label}
-                      />
+                }) => {
+                  const valueChange = (value, commit = false) =>
+                    changeAdjustableSettings({ [name]: divideBy100 ? value / 100 : value }, commit)
+
+                  return (
+                    <Grid
+                      key={name}
+                      item
+                      container
+                      direction="row"
+                      spacing={2}
+                      alignItems="center"
+                    >
+                      <Grid item>
+                        <TextField
+                          value={`${value || 0}${suffix}`}
+                          className={classes.popoverInput}
+                          size="small"
+                          variant="outlined"
+                          label={label}
+                        />
+                      </Grid>
+                      <Grid item xs>
+                        <Slider
+                          className={classes.popoverSlider}
+                          value={value}
+                          min={min}
+                          max={max}
+                          step={step}
+                          onChange={(e, value) => valueChange(value)}
+                          onChangeCommitted={(e, value) => valueChange(value, true)}
+                        />
+                      </Grid>
                     </Grid>
-                    <Grid item xs>
-                      <Slider
-                        className={classes.popoverSlider}
-                        value={value}
-                        min={min}
-                        max={max}
-                        step={step}
-                        onChange={(e, value) =>
-                          dispatch(
-                            changeModifierAdjustableSettings({
-                              modifierId: modifier.modifier_id,
-                              settings: { [name]: divideBy100 ? value / 100 : value },
-                            })
-                          )
-                        }
-                      />
-                    </Grid>
-                  </Grid>
-                )
-              )}
+                  )
+                })}
+              <Typography className={classes.presetFiltersTitle}>
+                Pruning Balance
+              </Typography>
+              <Slider classes={{
+                root: classes.perfSlider,
+                markLabel: classes.perfSliderMarkLabel,
+                markLabelActive: classes.perfSliderMarkLabelActive }}
+              min={0}
+              max={1}
+              value={adjustableSettings.balance_perf_loss}
+              step={0.01}
+              marks={[{ value: 0, label: 'Performance' }, { value: 1, label: 'Loss' }]}
+              onChange={(e, value) => changeAdjustableSettings({ balance_perf_loss: Number(value) })}
+              onChangeCommitted={(e, value) => changeAdjustableSettings({ balance_perf_loss: Number(value) }, true)}/>
             </Popover>
           </Grid>
           <ModifierSparsitySlider modifier={modifier} classes={classes} />
@@ -192,6 +210,14 @@ const ModifierSparsitySlider = ({ modifier, classes }) => {
   const adjustableSettings = useSelector(
     selectModifierAdjustableSettings(modifier.modifier_id)
   );
+  const changeSparsity = (value, commit = false) =>
+    dispatch(
+      changeModifierAdjustableSettings({
+        commit,
+        modifierId: modifier.modifier_id,
+        settings: { sparsity: value },
+      })
+    )
 
   return (
     <Grid
@@ -213,14 +239,8 @@ const ModifierSparsitySlider = ({ modifier, classes }) => {
       <Grid item xs>
         <Slider
           value={adjustableSettings.sparsity * 100}
-          onChange={(e, value) =>
-            dispatch(
-              changeModifierAdjustableSettings({
-                modifierId: modifier.modifier_id,
-                settings: { sparsity: value / 100 },
-              })
-            )
-          }
+          onChange={(e, value) => changeSparsity(value / 100)}
+          onChangeCommitted={(e, value) => changeSparsity(value / 100, true)}
         />
       </Grid>
     </Grid>

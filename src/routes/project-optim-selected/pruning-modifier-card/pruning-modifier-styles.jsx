@@ -79,6 +79,17 @@ export default function makePruningModifierStyles() {
         filtersRoot: {
           minWidth: 240,
           marginTop: theme.spacing(3)
+        },
+        perfSlider: {
+          width: 230,
+          marginLeft: 30
+        },
+        perfSliderMarkLabel: {
+          top: -10,
+          fontSize: 10
+        },
+        perfSliderMarkLabelActive: {
+          color: 'rgba(0, 0, 0, 0.54)'
         }
       };
     },

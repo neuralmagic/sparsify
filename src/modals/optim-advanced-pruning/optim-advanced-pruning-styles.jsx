@@ -104,7 +104,15 @@ export const makeTableRowStyles = () => makeStyles(
       chart: {
         width: 200,
         height: 120
-      }
+      },
+      sensitivityLabel: {
+        '&.top': {
+          color: theme.palette.primary.light
+        },
+        '&.low': {
+          color: theme.palette.warning.light
+        }
+      },
     };
   },
   { name: "OptimAdvancedPruningTableRowStyles" }

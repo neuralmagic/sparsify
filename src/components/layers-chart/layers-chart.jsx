@@ -6,7 +6,7 @@ import * as d3 from "d3";
 
 const useStyles = makeStyles();
 
-const LayersChart = (props) => {
+const LayersChart = props => {
   const margin = { top: 10, bottom: 12, left: 40, right: props.secondPlot !== 'none' ? 20 : 0 };
   const chartHeight = 250;
   const ref = useRef();
@@ -302,10 +302,26 @@ const LayersChart = (props) => {
       .text("Layer Sparsity %");
   };
 
+  let secondPlotLegend;
+
+  if (props.secondPlot !== 'none') {
+    secondPlotLegend = <React.Fragment>
+      <div className={classes.denseLegend}/>
+      <span className={classes.legendText}>{props.denseProp}</span>
+      <div className={classes.sparseLegend}/>
+      <span className={classes.legendText}>{props.sparseProp}</span>
+    </React.Fragment>
+  }
+
   return (
     <div className={`${classes.root} ${props.className}`}>
       <svg ref={ref} />
       <div ref={tooltipRef} className={classes.tooltip}/>
+      <div className={classes.legend}>
+        <div className={classes.sparsityLegend}/>
+        <span className={classes.legendText}>Sparsity</span>
+        {secondPlotLegend}
+      </div>
     </div>
   );
 };

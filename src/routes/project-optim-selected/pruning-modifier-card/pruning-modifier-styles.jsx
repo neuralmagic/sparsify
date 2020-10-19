@@ -6,7 +6,7 @@ export default function makePruningModifierStyles() {
       return {
         root: {
           position: "relative",
-          height: "320px",
+          height: "340px",
           overflow: "unset",
         },
         layout: {

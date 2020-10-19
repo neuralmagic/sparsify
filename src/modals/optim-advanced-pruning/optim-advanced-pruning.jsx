@@ -1,6 +1,6 @@
 import { compose, filter, contains, prop, defaultTo, sortBy,
-  when, always, not, isNil, toPairs, map, objOf, of as rof,
-  head, last, cond, equals, T, test, gt, reduce, min, max, __ } from 'ramda'
+  when, always, not, isNil, toPairs, map, objOf, of as rof, indexOf,
+  head, last, cond, equals, T, test, gt, __, times, identity } from 'ramda'
 import React, { useState } from 'react'
 import clsx from 'clsx'
 import { ResponsiveLine } from "@nivo/line"
@@ -153,7 +153,7 @@ const LayerMeasurementsChart = withTheme(({ data, xAxisLabel, yAxisLabel, theme 
       enableCrosshair={false}
       animate={false}/>))
 
-const LayersTableRow = ({ modifier, layer, data, lossInterval, perfInterval }) => {
+const LayersTableRow = ({ modifier, layer, data, lossLayerIndex, perfLayerIndex, totalLayers }) => {
   const classes = tableRowStyles()
   const dispatch = useDispatch()
   const [open, setOpen] = useState(false)
@@ -173,6 +173,7 @@ const LayersTableRow = ({ modifier, layer, data, lossInterval, perfInterval }) =
     map(values => ({ x: values[0], y: defaultTo(0, values[1]) })),
     toPairs)
 
+  const interval = times(identity, totalLayers)
   const sensitivityLabel = (interval, value) => cond([
     [gt(d3.quantile(interval, 0.33)), v => ({ value: `Low (${formatWithMantissa(2, v)})`, type: 'low' })],
     [gt(d3.quantile(interval, 0.66)), v => ({ value: `Medium (${formatWithMantissa(2, v)})`, type: 'medium' })],
@@ -180,8 +181,9 @@ const LayersTableRow = ({ modifier, layer, data, lossInterval, perfInterval }) =
     [T, v => ({ value: `Top 5% (${formatWithMantissa(2, v)})`, type: 'top' })]
   ])(value)
 
-  const lossSensitivity = sensitivityLabel(lossInterval, layer.est_loss_sensitivity)
-  const perfSensitivity = sensitivityLabel(perfInterval, layer.est_perf_sensitivity)
+  const lossSensitivity = sensitivityLabel(interval, lossLayerIndex)
+  const perfSensitivity = sensitivityLabel(interval, perfLayerIndex)
+
   const SectionText = ({ children }) => <Grid item className={classes.layerDetailsSectionText}>{children}</Grid>
 
   return <React.Fragment>
@@ -303,17 +305,8 @@ const LayersTableRow = ({ modifier, layer, data, lossInterval, perfInterval }) =
 const LayersTable = ({ modifier, layerData, className }) => {
   const classes = tableStyles()
   const [searchTerm, setSearchTerm] = useState(null)
-
-  const lossSensitivities = map(prop('est_loss_sensitivity'), modifier.nodes)
-  const perfSensitivities = map(prop('est_perf_sensitivity'), modifier.nodes)
-
-  const lossInterval = [
-    reduce(min, Infinity, lossSensitivities),
-    reduce(max, -Infinity, lossSensitivities)]
-
-  const perfInterval = [
-    reduce(min, Infinity, perfSensitivities),
-    reduce(max, -Infinity, perfSensitivities)]
+  const sortedByLossSensitivity = sortBy(prop('est_loss_sensitivity'), modifier.nodes)
+  const sortedByPerfSensitivity = sortBy(prop('est_perf_sensitivity'), modifier.nodes)
 
   const filteredLayers = compose(
     when(
@@ -371,8 +364,9 @@ const LayersTable = ({ modifier, layerData, className }) => {
               modifier={modifier}
               layer={layer}
               data={layerData[layer.node_id]}
-              lossInterval={lossInterval}
-              perfInterval={perfInterval}/>)}
+              lossLayerIndex={indexOf(layer, sortedByLossSensitivity)}
+              perfLayerIndex={indexOf(layer, sortedByPerfSensitivity)}
+              totalLayers={modifier.nodes.length}/>)}
         </TableBody>
       </Table>
     </TableContainer>)

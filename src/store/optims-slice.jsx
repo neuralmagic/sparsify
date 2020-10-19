@@ -100,8 +100,6 @@ export const updateOptimsModifierThunk = createAsyncThunkWrapper(
       throw Error(`unknown modifierType given of ${modifierType}`);
     }
 
-    console.log(body);
-
     return body.optim;
   }
 );

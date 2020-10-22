@@ -18,6 +18,19 @@ export default function makeHomeSideNavStyles() {
         },
         projectCardTitle: {
           width: "100%",
+          '& textarea': {
+            color: theme.palette.text.primary,
+            cursor: "pointer",
+            overflow: "hidden"
+          },
+          '& .Mui-disabled': {
+            cursor: 'pointer',
+            paddingBottom: 0,
+            lineHeight: "1.25em",
+            '&::before': {
+              borderBottom: 'none',
+            }
+          }
         },
         noProjectTitle: {
           marginLeft: theme.spacing(1)

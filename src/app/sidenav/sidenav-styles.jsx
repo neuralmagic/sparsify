@@ -41,8 +41,8 @@ export default function makeAppSideNavStyles() {
         margin: 0,
         "& svg": {
           fill: theme.palette.text.secondary,
-          width: "15px",
-          height: "15px",
+          width: "22px",
+          height: "22px",
         },
       },
       title: {

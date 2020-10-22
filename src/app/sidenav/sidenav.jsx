@@ -19,7 +19,7 @@ function AppSideNav({ onInfoClick }) {
   return (
     <Paper className={classes.root} elevation={20}>
       <div className={classes.info}>
-        <IconButton size="small" className={classes.infoButton} onClick={() => onInfoClick()}>
+        <IconButton className={classes.infoButton} onClick={() => onInfoClick()}>
           <InfoOutlinedIcon />
         </IconButton>
       </div>

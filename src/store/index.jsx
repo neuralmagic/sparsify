@@ -4,6 +4,8 @@ import createSagaMiddleware from "redux-saga";
 import { all } from "redux-saga/effects";
 
 import modalsReducer from "./modal-slice";
+import benchmarksReducer from "./benchmarks-slice";
+import createBenchmarksReducer from "./benchmarks-create-slice";
 import projectsReducer from "./projects-slice";
 import selectedProjectReducer from "./project-slice";
 import selectedOptims from "./optims-slice";
@@ -25,6 +27,8 @@ const sagaMiddleware = createSagaMiddleware();
 
 export default configureStore({
   reducer: {
+    benchmarks: benchmarksReducer,
+    createdBenchmarks: createBenchmarksReducer,
     projects: projectsReducer,
     createdOptims: createdOptims,
     selectedProject: selectedProjectReducer,
@@ -51,6 +55,8 @@ function* rootSaga() {
 sagaMiddleware.run(rootSaga);
 
 export * from "./adjustable-settings-slice";
+export * from "./benchmarks-slice";
+export * from "./benchmarks-create-slice";
 export * from "./projects-slice";
 export * from "./project-slice";
 export * from "./optims-slice";

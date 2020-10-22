@@ -5,7 +5,10 @@ import Typography from '@material-ui/core/Typography'
 import Grid from '@material-ui/core/Grid'
 import TextField from '@material-ui/core/TextField'
 import Slider from '@material-ui/core/Slider'
-import { changeModifierAdjustableSettings, selectModifierAdjustableSettings } from '../../store'
+import {
+  changeModifierAdjustableSettings,
+  selectModifierAdjustableSettings,
+  selectModifierHasCustomLayerEdits } from '../../store'
 
 import makeStyles from "./pruning-settings-styles"
 
@@ -15,27 +18,51 @@ const PruningSettings = ({ showRecovery = true, className, modifier }) => {
   const classes = useStyles()
   const dispatch = useDispatch()
   const adjustableSettings = useSelector(selectModifierAdjustableSettings(modifier.modifier_id))
+  const hasCustomLayerEdits = useSelector(
+    selectModifierHasCustomLayerEdits(modifier.modifier_id)
+  );
+  const changeAdjustableSettings = (settings, commit) =>
+    dispatch(changeModifierAdjustableSettings({
+      modifierId: modifier.modifier_id,
+      settings,
+      commit
+    }))
 
   return <div className={`${classes.root} ${className}`} key={modifier.modifier_id}>
     <Typography className={classes.title}>Pruning range</Typography>
     <Grid container direction='column'>
       <Grid item container direction='row' spacing={3} className={classes.rangeContainer}>
         <Grid item>
-          <TextField variant='outlined' size='small' label='Start' defaultValue={adjustableSettings.start_epoch}
+          <TextField
+            variant='outlined'
+            size='small'
+            label='Start'
+            defaultValue={adjustableSettings.start_epoch}
+            disabled={hasCustomLayerEdits}
             onChange={e => dispatch(changeModifierAdjustableSettings({
               modifierId: modifier.modifier_id,
               settings: { start_epoch: Number(e.target.value) },
             }))}></TextField>
         </Grid>
         <Grid item>
-          <TextField variant='outlined' size='small' label='End' defaultValue={adjustableSettings.end_epoch}
+          <TextField
+            variant='outlined'
+            size='small'
+            label='End'
+            defaultValue={adjustableSettings.end_epoch}
+            disabled={hasCustomLayerEdits}
             onChange={e => dispatch(changeModifierAdjustableSettings({
               modifierId: modifier.modifier_id,
               settings: { end_epoch: Number(e.target.value) }
             }))}></TextField>
         </Grid>
         <Grid item>
-          <TextField variant='outlined' size='small' label='Update' defaultValue={adjustableSettings.update_frequency}
+          <TextField
+            variant='outlined'
+            size='small'
+            label='Update'
+            defaultValue={adjustableSettings.update_frequency}
+            disabled={hasCustomLayerEdits}
             onChange={e => dispatch(changeModifierAdjustableSettings({
               modifierId: modifier.modifier_id,
               settings: { update_frequency: Number(e.target.value) }
@@ -43,18 +70,22 @@ const PruningSettings = ({ showRecovery = true, className, modifier }) => {
         </Grid>
       </Grid>
       {showRecovery &&
-        <Grid className={classes.recoveryContainer} container direction='row' spacing={3} alignItems="center">
+        <Grid className={classes.recoveryContainer} container direction='column' spacing={3}>
           <Grid item>
-            <TextField variant='outlined' size='small' label='Recovery' value={adjustableSettings.balance_perf_loss}></TextField>
+            <Typography className={classes.balanceTitle}>Pruning Balance</Typography>
           </Grid>
           <Grid item>
-            <Slider className={classes.slider} min={0} max={1} value={adjustableSettings.balance_perf_loss} step={0.01}
-              onChange={(e, value) =>
-                dispatch(changeModifierAdjustableSettings({
-                  modifierId: modifier.modifier_id,
-                  settings: { balance_perf_loss: Number(value) }
-                })
-                )}/>
+            <Slider classes={{
+              root: classes.slider,
+              markLabel: classes.sliderMarkLabel,
+              markLabelActive: classes.sliderMarkLabelActive }}
+            min={0}
+            max={1}
+            disabled={hasCustomLayerEdits}
+            value={adjustableSettings.balance_perf_loss} step={0.01}
+            marks={[{ value: 0, label: 'Performance' }, { value: 1, label: 'Loss' }]}
+            onChange={(e, value) => changeAdjustableSettings({ balance_perf_loss: Number(value) })}
+            onChangeCommitted={(e, value) => changeAdjustableSettings({ balance_perf_loss: Number(value) }, true)}/>
           </Grid>
         </Grid>}
     </Grid>

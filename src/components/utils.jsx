@@ -1,5 +1,5 @@
 import { curry } from "ramda";
-
+import moment from "moment";
 /**
  * Converts a long string of bytes into a readable format e.g KB, MB, GB, TB, YB
  *
@@ -182,3 +182,7 @@ export const formatMetricValue = curry(({ mantissaLength }, value) =>
 
 export const formatWithMantissa = (length, value) =>
   formatMetricValue({ mantissaLength: length }, value);
+
+export const dateUtcToLocal = (date) => moment.utc(date).local();
+
+export const dateUtcToLocalString = (date) => dateUtcToLocal(date).format("MM/DD/YYYY h:mma")

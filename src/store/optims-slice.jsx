@@ -100,8 +100,6 @@ export const updateOptimsModifierThunk = createAsyncThunkWrapper(
       throw Error(`unknown modifierType given of ${modifierType}`);
     }
 
-    console.log(body);
-
     return body.optim;
   }
 );
@@ -215,9 +213,9 @@ const selectedOptimsSlice = createSlice({
       state.update.modifiersStatus[action.meta.arg.modifierId] = STATUS_SUCCEEDED;
       state.update.modifiersError[action.meta.arg.modifierId] = null;
 
-      const selectedIndex = findIndex(
-        propEq("optim_id", action.payload.optim_id)
-      )(state.val);
+      const selectedIndex = findIndex(propEq("optim_id", action.payload.optim_id))(
+        state.val
+      );
 
       if (selectedIndex > -1) {
         state.val[selectedIndex] = action.payload;
@@ -296,5 +294,7 @@ export const selectSelectedProjectPrunableNodesById = createSelector(
     )(modelAnalysis);
   }
 );
+
+export const selectModifierHasCustomLayerEdits = () => createSelector([], () => false)
 
 export default selectedOptimsSlice.reducer;

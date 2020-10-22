@@ -19,8 +19,8 @@ export default function makeFadeTransitionStyles() {
           transition: ({ transTime }) => `opacity ${transTime}ms`,
         },
         child: {
-          height:"100%"
-        }
+          height: "100%",
+        },
       };
     },
     { name: "FadeTransition" }

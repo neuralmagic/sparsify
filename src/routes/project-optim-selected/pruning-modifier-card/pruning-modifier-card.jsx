@@ -12,11 +12,13 @@ import {
   CardContent,
   Card,
 } from "@material-ui/core";
-import LayersChart from "../../../components/layers-chart";
-import PruningSettings from "../../../components/pruning-settings";
-import AdvancedPruning from "../../../modals/optim-advanced-pruning";
 import EditIcon from "@material-ui/icons/Edit";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
+import LayersChart from "../../../components/layers-chart";
+import CustomLayerEdits from "../../../components/custom-layer-edits";
+import DisplayMetric from "../../../components/display-metric";
+import PruningSettings from "../../../components/pruning-settings";
+import AdvancedPruning from "../../../modals/optim-advanced-pruning";
 
 import { formatWithMantissa } from "../../../components";
 import makeStyles from "./pruning-modifier-styles";
@@ -25,8 +27,8 @@ import {
   selectModifierAdjustableSettings,
   changeModifierAdjustableSettings,
   selectSelectedProjectPrunableNodesById,
+  selectModifierHasCustomLayerEdits
 } from "../../../store";
-import DisplayMetric from "../../../components/display-metric";
 
 const useStyles = makeStyles();
 
@@ -38,7 +40,16 @@ const PruningModifierCard = ({ modifier, optim }) => {
   const adjustableSettings = useSelector(
     selectModifierAdjustableSettings(modifier.modifier_id)
   );
+  const hasCustomLayerEdits = useSelector(
+    selectModifierHasCustomLayerEdits(modifier.modifier_id)
+  );
   const layerData = useSelector(selectSelectedProjectPrunableNodesById);
+  const changeAdjustableSettings = (settings, commit) =>
+    dispatch(changeModifierAdjustableSettings({
+      modifierId: modifier.modifier_id,
+      settings,
+      commit
+    }))
 
   return (
     <Card elevation={1} className={classes.root}>
@@ -133,47 +144,63 @@ const PruningModifierCard = ({ modifier, optim }) => {
                   step = 1,
                   divideBy100 = true,
                   suffix = "",
-                }) => (
-                  <Grid
-                    key={name}
-                    item
-                    container
-                    direction="row"
-                    spacing={2}
-                    alignItems="center"
-                  >
-                    <Grid item>
-                      <TextField
-                        value={`${value || 0}${suffix}`}
-                        className={classes.popoverInput}
-                        size="small"
-                        variant="outlined"
-                        label={label}
-                      />
+                }) => {
+                  const valueChange = (value, commit = false) =>
+                    changeAdjustableSettings({ [name]: divideBy100 ? value / 100 : value }, commit)
+
+                  return (
+                    <Grid
+                      key={name}
+                      item
+                      container
+                      direction="row"
+                      spacing={2}
+                      alignItems="center"
+                    >
+                      <Grid item>
+                        <TextField
+                          value={`${value || 0}${suffix}`}
+                          className={classes.popoverInput}
+                          disabled={hasCustomLayerEdits}
+                          size="small"
+                          variant="outlined"
+                          label={label}
+                        />
+                      </Grid>
+                      <Grid item xs>
+                        <Slider
+                          className={classes.popoverSlider}
+                          value={value}
+                          min={min}
+                          max={max}
+                          step={step}
+                          disabled={hasCustomLayerEdits}
+                          onChange={(e, value) => valueChange(value)}
+                          onChangeCommitted={(e, value) => valueChange(value, true)}
+                        />
+                      </Grid>
                     </Grid>
-                    <Grid item xs>
-                      <Slider
-                        className={classes.popoverSlider}
-                        value={value}
-                        min={min}
-                        max={max}
-                        step={step}
-                        onChange={(e, value) =>
-                          dispatch(
-                            changeModifierAdjustableSettings({
-                              modifierId: modifier.modifier_id,
-                              settings: { [name]: divideBy100 ? value / 100 : value },
-                            })
-                          )
-                        }
-                      />
-                    </Grid>
-                  </Grid>
-                )
-              )}
+                  )
+                })}
+              <Typography className={classes.presetFiltersTitle}>
+                Pruning Balance
+              </Typography>
+              <Slider classes={{
+                root: classes.perfSlider,
+                markLabel: classes.perfSliderMarkLabel,
+                markLabelActive: classes.perfSliderMarkLabelActive }}
+              min={0}
+              max={1}
+              value={adjustableSettings.balance_perf_loss}
+              step={0.01}
+              disabled={hasCustomLayerEdits}
+              marks={[{ value: 0, label: 'Performance' }, { value: 1, label: 'Loss' }]}
+              onChange={(e, value) => changeAdjustableSettings({ balance_perf_loss: Number(value) })}
+              onChangeCommitted={(e, value) => changeAdjustableSettings({ balance_perf_loss: Number(value) }, true)}/>
             </Popover>
           </Grid>
-          <ModifierSparsitySlider modifier={modifier} classes={classes} />
+          { !hasCustomLayerEdits && <ModifierSparsitySlider modifier={modifier} classes={classes} /> }
+          { hasCustomLayerEdits && <CustomLayerEdits/> }
           <PruningSettings modifier={modifier} showRecovery={false} />
         </Grid>
         <AdvancedPruning
@@ -192,6 +219,18 @@ const ModifierSparsitySlider = ({ modifier, classes }) => {
   const adjustableSettings = useSelector(
     selectModifierAdjustableSettings(modifier.modifier_id)
   );
+  const hasCustomLayerEdits = useSelector(
+    selectModifierHasCustomLayerEdits(modifier.modifier_id)
+  );
+
+  const changeSparsity = (value, commit = false) =>
+    dispatch(
+      changeModifierAdjustableSettings({
+        commit,
+        modifierId: modifier.modifier_id,
+        settings: { sparsity: value },
+      })
+    )
 
   return (
     <Grid
@@ -203,6 +242,7 @@ const ModifierSparsitySlider = ({ modifier, classes }) => {
     >
       <Grid item>
         <TextField
+          disabled={hasCustomLayerEdits}
           value={`${Math.round(adjustableSettings.sparsity * 100)}%`}
           className={classes.sparsityInput}
           size="small"
@@ -212,15 +252,10 @@ const ModifierSparsitySlider = ({ modifier, classes }) => {
       </Grid>
       <Grid item xs>
         <Slider
+          disabled={hasCustomLayerEdits}
           value={adjustableSettings.sparsity * 100}
-          onChange={(e, value) =>
-            dispatch(
-              changeModifierAdjustableSettings({
-                modifierId: modifier.modifier_id,
-                settings: { sparsity: value / 100 },
-              })
-            )
-          }
+          onChange={(e, value) => changeSparsity(value / 100)}
+          onChangeCommitted={(e, value) => changeSparsity(value / 100, true)}
         />
       </Grid>
     </Grid>

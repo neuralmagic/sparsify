@@ -1,20 +1,23 @@
 import { compose, filter, contains, prop, defaultTo, sortBy,
-  when, always, not, isNil, toPairs, map, objOf, of as rof,
-  head, last, cond, equals, T, __ } from 'ramda'
+  when, always, not, isNil, toPairs, map, objOf, of as rof, indexOf,
+  head, last, cond, equals, T, test, gt, __, times, identity } from 'ramda'
 import React, { useState } from 'react'
+import * as d3 from 'd3'
 import clsx from 'clsx'
 import { ResponsiveLine } from "@nivo/line"
 import { useSelector, useDispatch } from 'react-redux'
 import { Typography, IconButton, Grid, TextField, Table, TableBody, Dialog, DialogTitle,
   TableCell, TableContainer, TableHead, TableRow, Switch, Slider, DialogContent, Box,
   Collapse, Divider, MenuItem } from '@material-ui/core'
+import { withTheme } from '@material-ui/core/styles'
 import CloseIcon from '@material-ui/icons/Close'
-import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown'
-import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp'
+import ExpandMore from "@material-ui/icons/ExpandMore"
+import ChevronRight from "@material-ui/icons/ChevronRight"
 import LayersChart from '../../components/layers-chart'
 import MetricItem from '../../components/metric-item'
 import { formatWithMantissa } from '../../components'
 import PruningSettings from '../../components/pruning-settings'
+import CustomLayerEdits from "../../components/custom-layer-edits";
 
 import makeStyles, { makeTableStyles, makeFiltersStyles, makeTableRowStyles } from "./optim-advanced-pruning-styles"
 import {
@@ -23,6 +26,7 @@ import {
   changeLayerAdjustableSettings,
   selectLayerAdjustableSettings,
   selectSelectedProjectPrunableNodesById,
+  selectModifierHasCustomLayerEdits
 } from "../../store";
 
 import { readableNumber } from "../../components";
@@ -58,12 +62,24 @@ const Filters = ({ modifier }) => {
   const classes = filtersStyles()
   const dispatch = useDispatch()
   const adjustableSettings = useSelector(selectModifierAdjustableSettings(modifier.modifier_id))
+  const hasCustomLayerEdits = useSelector(
+    selectModifierHasCustomLayerEdits(modifier.modifier_id)
+  );
+  const changeAdjustableSettings = (settings, commit = false) =>
+    dispatch(
+      changeModifierAdjustableSettings({
+        modifierId: modifier.modifier_id,
+        settings,
+        commit
+      })
+    )
 
   return <Grid container direction='column' spacing={3}>
     <Grid item container direction="row" alignItems="center" spacing={2}>
       <Grid item>
         <TextField
           className={classes.input}
+          disabled={hasCustomLayerEdits}
           value={`${Math.round(adjustableSettings.sparsity * 100)}%`}
           size="small"
           variant="outlined"
@@ -73,14 +89,9 @@ const Filters = ({ modifier }) => {
       <Grid item xs>
         <Slider
           value={adjustableSettings.sparsity * 100}
-          onChange={(e, value) =>
-            dispatch(
-              changeModifierAdjustableSettings({
-                modifierId: modifier.modifier_id,
-                settings: { sparsity: value / 100 }
-              })
-            )
-          }
+          disabled={hasCustomLayerEdits}
+          onChange={(e, value) => changeAdjustableSettings({ sparsity: value / 100 })}
+          onChangeCommitted={(e, value) => changeAdjustableSettings({ sparsity: value / 100 }, true)}
         />
       </Grid>
     </Grid>
@@ -94,6 +105,7 @@ const Filters = ({ modifier }) => {
             <TextField
               value={`${value || 0}${suffix}`}
               className={classes.input}
+              disabled={hasCustomLayerEdits}
               size="small"
               variant="outlined"
               label={label}/>
@@ -104,37 +116,43 @@ const Filters = ({ modifier }) => {
               min={min}
               max={max}
               step={step}
-              onChange={(e, value) =>
-                dispatch(
-                  changeModifierAdjustableSettings({
-                    modifierId: modifier.modifier_id,
-                    settings: { [name] : divideBy100 ? value / 100 : value }
-                  })
-                )}/>
+              disabled={hasCustomLayerEdits}
+              onChange={(e, value) => changeAdjustableSettings({ [name] : divideBy100 ? value / 100 : value })}
+              onChangeCommitted={(e, value) => changeAdjustableSettings({ [name] : divideBy100 ? value / 100 : value }, true)}/>
           </Grid>
         </Grid>
       )}
   </Grid>
 }
 
-const LayerMeasurementsChart = ({ data }) => (
+const LayerMeasurementsChart = withTheme(({ data, xAxisLabel, yAxisLabel, theme }) => (
   <ResponsiveLine
       data={data}
-      margin={{ top: 20, right: 20, bottom: 20, left: 10 }}
+      margin={{ top: 20, right: 20, bottom: 20, left: 40 }}
       xScale={{ type: 'point' }}
       yScale={{ type: 'linear', min: 'auto', max: 'auto', reverse: false }}
       axisTop={null}
       axisRight={null}
       axisBottom={{
         orient: 'bottom',
+        legend: xAxisLabel,
+        legendPosition: 'middle',
+        legendOffset: 10,
         tickSize: 0,
         tickPadding: 5,
         tickRotation: 0,
         tickValues: [head(data[0].data).x, last(data[0].data).x]
       }}
-      axisLeft={null}
+      axisLeft={{
+        orient: 'left',
+        legend: yAxisLabel,
+        tickSize: 0,
+        legendPosition: 'middle',
+        legendOffset: -20,
+        tickValues: []
+      }}
       enableGridX={false}
-      colors={['#86C368']}
+      colors={[theme.palette.primary.main]}
       enablePoints={false}
       enableArea={true}
       useMesh={true}
@@ -142,13 +160,20 @@ const LayerMeasurementsChart = ({ data }) => (
       areaOpacity={0.3}
       isInteractive={true}
       enableCrosshair={false}
-      animate={false}/>)
+      animate={false}/>))
 
-const LayersTableRow = ({ modifier, layer, data }) => {
+const LayersTableRow = ({ modifier, layer, data, lossLayerIndex, perfLayerIndex, totalLayers }) => {
   const classes = tableRowStyles()
   const dispatch = useDispatch()
   const [open, setOpen] = useState(false)
   const layerSettings = useSelector(selectLayerAdjustableSettings(modifier.modifier_id, layer.node_id))
+  const changeLayerSettings = (settings, commit = false) =>
+    dispatch(changeLayerAdjustableSettings({
+      modifierId: modifier.modifier_id,
+      layerId: layer.node_id,
+      settings,
+      commit
+    }))
 
   const asChartData = compose(
     rof,
@@ -157,6 +182,17 @@ const LayersTableRow = ({ modifier, layer, data }) => {
     map(values => ({ x: values[0], y: defaultTo(0, values[1]) })),
     toPairs)
 
+  const interval = times(identity, totalLayers)
+  const sensitivityLabel = (interval, value) => cond([
+    [gt(d3.quantile(interval, 0.33)), v => ({ value: `Low (${formatWithMantissa(2, v)})`, type: 'low' })],
+    [gt(d3.quantile(interval, 0.66)), v => ({ value: `Medium (${formatWithMantissa(2, v)})`, type: 'medium' })],
+    [gt(d3.quantile(interval, 0.95)), v => ({ value: `High (${formatWithMantissa(2, v)})`, type: 'high' })],
+    [T, v => ({ value: `Top 5% (${formatWithMantissa(2, v)})`, type: 'top' })]
+  ])(value)
+
+  const lossSensitivity = sensitivityLabel(interval, lossLayerIndex)
+  const perfSensitivity = sensitivityLabel(interval, perfLayerIndex)
+
   const SectionText = ({ children }) => <Grid item className={classes.layerDetailsSectionText}>{children}</Grid>
 
   return <React.Fragment>
@@ -164,7 +200,7 @@ const LayersTableRow = ({ modifier, layer, data }) => {
       <TableCell style={{ padding: 0 }}>
         <Typography className={classes.layerIndexText}>{data.index + 1}.</Typography>
         <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
-          {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+          {open ? <ExpandMore/> : <ChevronRight/>}
         </IconButton>
       </TableCell>
       <TableCell style={{ paddingLeft: 0}}>
@@ -173,18 +209,12 @@ const LayersTableRow = ({ modifier, layer, data }) => {
       <TableCell>
         <div className={classes.sparsityCell}>
           <Switch checked={layerSettings.sparsity !== null} color='primary'
-            onChange={e => dispatch(changeLayerAdjustableSettings({
-              modifierId: modifier.modifier_id,
-              layerId: layer.node_id,
-              settings: { sparsity: e.target.checked ? modifier.sparsity : null }
-            }))}/>
+            onChange={e => changeLayerSettings({ sparsity: e.target.checked ? modifier.sparsity : null })}
+            onChangeCommitted={e => changeLayerSettings({ sparsity: e.target.checked ? modifier.sparsity : null })}/>
           <Slider value={layerSettings.sparsity * 100} min={0} max={100}
             disabled={layerSettings.sparsity === null}
-            onChange={(e, value) => dispatch(changeLayerAdjustableSettings({
-              modifierId: modifier.modifier_id,
-              layerId: layer.node_id,
-              settings: { sparsity: Number(value) / 100 }
-            }))}/>
+            onChange={(e, value) => changeLayerSettings({ sparsity: Number(value) / 100 })}
+            onChangeCommitted={(e, value) => changeLayerSettings({ sparsity: Number(value) / 100 }, true)}/>
           <Typography className={classes.sparsityValue}>{layerSettings.sparsity ? `${formatWithMantissa(1, layerSettings.sparsity * 100)}%` : ''}</Typography>
         </div>
       </TableCell>
@@ -201,10 +231,10 @@ const LayersTableRow = ({ modifier, layer, data }) => {
         <Typography>{formatWithMantissa(4, layer.est_time_baseline)}</Typography>
       </TableCell>
       <TableCell>
-        <Typography>{formatWithMantissa(4, layer.est_loss_sensitivity)}</Typography>
+        <Typography className={clsx(classes.sensitivityLabel, { [lossSensitivity.type]: true })}>{lossSensitivity.value}</Typography>
       </TableCell>
       <TableCell>
-        <Typography>{formatWithMantissa(4, layer.est_perf_sensitivity)}</Typography>
+        <Typography className={clsx(classes.sensitivityLabel, { [perfSensitivity.type]: true })}>{perfSensitivity.value}</Typography>
       </TableCell>
     </TableRow>
     <TableRow>
@@ -259,18 +289,18 @@ const LayersTableRow = ({ modifier, layer, data }) => {
               </Grid>
             </Grid>
             <Grid item direction="column" className={classes.layerDetailsSection}>
-              <Grid item>Recoverability vs Sparsity</Grid>
+              <Grid item>Loss Sensitivity</Grid>
               <Grid item>
                 <div className={classes.chart}>
-                  <LayerMeasurementsChart data={asChartData(data.measurements.loss)}/>
+                  <LayerMeasurementsChart data={asChartData(data.measurements.loss)} xAxisLabel="Sparsity" yAxisLabel="Sensitivity"/>
                 </div>
               </Grid>
             </Grid>
             <Grid item direction="column" className={classes.layerDetailsSection}>
-              <Grid item>Performance density</Grid>
+              <Grid item>Performance Sensitivity</Grid>
               <Grid item>
                 <div className={classes.chart}>
-                  <LayerMeasurementsChart data={asChartData(data.measurements.perf)}/>
+                  <LayerMeasurementsChart data={asChartData(data.measurements.perf)} xAxisLabel="Sparsity" yAxisLabel="Sensitivity"/>
                 </div>
               </Grid>
             </Grid>
@@ -284,12 +314,14 @@ const LayersTableRow = ({ modifier, layer, data }) => {
 const LayersTable = ({ modifier, layerData, className }) => {
   const classes = tableStyles()
   const [searchTerm, setSearchTerm] = useState(null)
+  const sortedByLossSensitivity = sortBy(prop('est_loss_sensitivity'), modifier.nodes)
+  const sortedByPerfSensitivity = sortBy(prop('est_perf_sensitivity'), modifier.nodes)
 
   const filteredLayers = compose(
     when(
       always(compose(not, isNil)(searchTerm)),
       filter(compose(
-        contains(searchTerm),
+        test(new RegExp(searchTerm)),
         prop("weight_name"),
         prop(__, layerData),
         prop('node_id')))),
@@ -335,7 +367,15 @@ const LayersTable = ({ modifier, layerData, className }) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {filteredLayers.map(layer => <LayersTableRow key={layer.node_id} modifier={modifier} layer={layer} data={layerData[layer.node_id]}/>)}
+          {filteredLayers.map(layer =>
+            <LayersTableRow
+              key={layer.node_id}
+              modifier={modifier}
+              layer={layer}
+              data={layerData[layer.node_id]}
+              lossLayerIndex={indexOf(layer, sortedByLossSensitivity)}
+              perfLayerIndex={indexOf(layer, sortedByPerfSensitivity)}
+              totalLayers={modifier.nodes.length}/>)}
         </TableBody>
       </Table>
     </TableContainer>)
@@ -345,6 +385,9 @@ export default ({ modifier, open, onClose }) => {
   const classes = useStyles()
   const layerData = useSelector(selectSelectedProjectPrunableNodesById)
   const [secondPlot, setSecondPlot] = useState("timing")
+  const hasCustomLayerEdits = useSelector(
+    selectModifierHasCustomLayerEdits(modifier.modifier_id)
+  );
 
   const [denseProp, sparseProp] = cond([
     [equals('timing'), always(['est_time', 'est_time_baseline'])],
@@ -355,6 +398,7 @@ export default ({ modifier, open, onClose }) => {
   return <Dialog
     open={open}
     maxWidth="xl"
+    fullWidth={true}
     onClose={onClose}>
     <DialogTitle className={classes.dialogTitle}>Pruning Editor</DialogTitle>
     <DialogContent>
@@ -367,7 +411,10 @@ export default ({ modifier, open, onClose }) => {
           <Divider orientation="vertical" flexItem className={classes.divider} />
           <Grid item xs><Filters modifier={modifier}/></Grid>
           <Divider orientation="vertical" flexItem className={classes.divider} />
-          <Grid item><PruningSettings modifier={modifier}/></Grid>
+          <Grid item>
+            <PruningSettings modifier={modifier}/>
+            { hasCustomLayerEdits && <CustomLayerEdits/> }
+          </Grid>
         </Grid>
         <TextField
           select

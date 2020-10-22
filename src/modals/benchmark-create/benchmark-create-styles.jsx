@@ -5,10 +5,13 @@ export default function createOptimStyles() {
     (theme) => {
       return {
         dialog: {
-          height: "500px",
+          height: "490px",
           width: "800px",
           overflowY: "hidden",
           padding: theme.spacing(2),
+        },
+        fieldRow: {
+          paddingBottom: theme.spacing(4),
         },
         cancelButton: {
           color: theme.palette.text.secondary,

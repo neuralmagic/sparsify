@@ -1,5 +1,5 @@
 import React from "react";
-
+import PropTypes from "prop-types";
 import _ from "lodash";
 
 import { Grid } from "@material-ui/core";
@@ -40,5 +40,10 @@ function BenchmarkMetricsScaling({ metrics, scale }) {
     </Grid>
   );
 }
+
+BenchmarkMetricsScaling.propTypes = {
+  metrics: PropTypes.object.isRequired,
+  scale: PropTypes.string.isRequired,
+};
 
 export default BenchmarkMetricsScaling;

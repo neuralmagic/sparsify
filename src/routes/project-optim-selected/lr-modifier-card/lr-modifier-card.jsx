@@ -1,25 +1,15 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
-import { useDispatch } from "react-redux";
-import {
-  TextField,
-  Typography,
-  Card,
-  CardContent,
-  IconButton,
-} from "@material-ui/core";
 
-import makeStyles from "./lr-modifier-card-styles";
 import { summarizeLearningRateValues, updateOptimsThunk } from "../../../store";
-import GenericPage from "../../../components/generic-page";
-import DisplayMetric from "../../../components/display-metric";
 import { scientificNumber } from "../../../components";
 import LearningRateChart from "../../../components/learning-rate-chart";
-import EditIcon from "@material-ui/icons/Edit";
-import MoreVertIcon from "@material-ui/icons/MoreVert";
 import OptimAdvancedLRDialog from "../../../modals/optim-advanced-lr";
-
-const useStyles = makeStyles();
+import DisplayCard from "../../../components/display-card";
+import DisplayCardActions from "../../../components/display-card-actions";
+import EpochRange from "../../../components/epoch-range";
+import DisplayCardBody from "../../../components/display-card-body";
+import DisplayCardMetrics from "../../../components/display-card-metrics";
 
 const LRModifierCard = ({
   projectId,
@@ -28,7 +18,6 @@ const LRModifierCard = ({
   globalStartEpoch,
   globalEndEpoch,
 }) => {
-  const classes = useStyles();
   const [advancedOpen, setAdvancedOpen] = useState(false);
 
   const startEpoch =
@@ -44,74 +33,32 @@ const LRModifierCard = ({
   const finalLR = lrSummaries
     ? lrSummaries.values.objects[lrSummaries.values.objects.length - 1].value
     : null;
+  const metricsGroups = [
+    {
+      title: "Summary",
+      metrics: [
+        { title: "Initial LR", value: scientificNumber(initLR) },
+        { title: "Final LR", value: scientificNumber(finalLR) },
+      ],
+    },
+  ];
 
   return (
-    <Card elevation={1} className={classes.root}>
-      <CardContent className={classes.layout}>
-        <div className={classes.metrics}>
-          <DisplayMetric title="Initial LR" size="large" rootClass={classes.metric}>
-            {scientificNumber(initLR)}
-          </DisplayMetric>
-          <DisplayMetric title="Final LR" size="large" rootClass={classes.metric}>
-            {scientificNumber(finalLR)}
-          </DisplayMetric>
-          <div className={classes.metricsDiv} />
-        </div>
+    <DisplayCard showEditButton={true} onEditClick={() => setAdvancedOpen(true)}>
+      <DisplayCardMetrics metricsGroups={metricsGroups} />
 
-        <div className={classes.chart}>
-          <LearningRateChart lrSummaries={lrSummaries} />
-        </div>
+      <DisplayCardBody>
+        <LearningRateChart lrSummaries={lrSummaries} />
+      </DisplayCardBody>
 
-        <div className={classes.cardActions}>
-          <div className={classes.actionButtons}>
-            <IconButton
-              className={classes.actionButton}
-              onClick={() => setAdvancedOpen(true)}
-              size="small"
-            >
-              <EditIcon />
-            </IconButton>
-            <IconButton
-              className={classes.actionButton}
-              onClick={(e) => null}
-              size="small"
-              disabled
-            >
-              <MoreVertIcon />
-            </IconButton>
-          </div>
-          <Typography
-            color="textSecondary"
-            variant="subtitle2"
-            className={classes.epochLabel}
-          >
-            Active Epoch Range
-          </Typography>
-          <div className={classes.epochRange}>
-            <TextField
-              id="lrStartEpoch"
-              variant="outlined"
-              type="text"
-              step={1.0}
-              label="Start"
-              value={startEpoch}
-              disabled={true}
-              className={classes.epochInput}
-            />
-            <div className={classes.epochDash} />
-            <TextField
-              id="lrEndEpoch"
-              variant="outlined"
-              type="text"
-              step={1.0}
-              label="End"
-              value={endEpoch}
-              disabled={true}
-              className={classes.epochInput}
-            />
-          </div>
-        </div>
-      </CardContent>
+      <DisplayCardActions>
+        <EpochRange
+          label="Active Epoch Range"
+          disabled={true}
+          startEpoch={startEpoch}
+          endEpoch={endEpoch}
+        />
+      </DisplayCardActions>
 
       <OptimAdvancedLRDialog
         projectId={projectId}
@@ -122,7 +69,7 @@ const LRModifierCard = ({
         open={advancedOpen}
         onClose={() => setAdvancedOpen(false)}
       />
-    </Card>
+    </DisplayCard>
   );
 };
 

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
 
 import { Grid, Divider, Tabs, Tab } from "@material-ui/core";
@@ -13,12 +14,15 @@ import BenchmarkPopoverMenu from "../benchmark-popover-menu";
 
 const useStyles = makeStyles();
 
-function BenchmarkComparison({ benchmark, handleDelete }) {
+function BenchmarkComparison({ benchmark, handleDelete, handleRerun }) {
   const analysis = useSelector(selectBenchmarkResultsById(benchmark.benchmark_id));
   const [metricsTab, setMetricsTab] = useState(0);
   const classes = useStyles();
 
-  let { ranges, rangesX } = _.get(analysis, "baseline[0]", {});
+  let { ranges, rangesX } = _.get(analysis, "baseline[0]", {
+    ranges: [],
+    rangesX: [],
+  });
 
   const results = _.get(analysis, "baseline[0].results", []);
   const measurements = results.map((result) => result.measurements);
@@ -31,9 +35,6 @@ function BenchmarkComparison({ benchmark, handleDelete }) {
     }
   };
 
-  const renderPlot =
-    measurements && _.get(ranges, "length", 0) > 0 && _.get(rangesX, "length", 0) > 0;
-
   return (
     <div className={classes.root}>
       <Tabs
@@ -45,28 +46,32 @@ function BenchmarkComparison({ benchmark, handleDelete }) {
           setMetricsTab(value);
         }}
       >
-        {results.map((result, index) => {
-          return <Tab key={index} label={engineToName(result.inferenceEngine)} />;
+        {benchmark.inference_models.map((result, index) => {
+          return <Tab key={index} label={engineToName(result.inference_engine)} />;
         })}
       </Tabs>
-      <BenchmarkPopoverMenu handleDelete={handleDelete} />
-      {renderPlot && (
-        <Grid container direction="row">
-          <Grid xs={2} item>
-            <BenchmarkMetrics metrics={results} metricsIndex={metricsTab} />
-          </Grid>
-          <Divider orientation="vertical" flexItem className={classes.divider} />
-          <Grid xs={10} item className={classes.chart}>
-            <BenchmarkPlot
-              measurements={measurements}
-              ranges={ranges}
-              rangesX={rangesX}
-            />
-          </Grid>
+      <BenchmarkPopoverMenu handleDelete={handleDelete} handleRerun={handleRerun} />
+      <Grid container direction="row">
+        <Grid xs={2} item>
+          <BenchmarkMetrics metrics={results} metricsIndex={metricsTab} />
         </Grid>
-      )}
+        <Divider orientation="vertical" flexItem className={classes.divider} />
+        <Grid xs={10} item className={classes.chart}>
+          <BenchmarkPlot
+            measurements={measurements}
+            ranges={ranges}
+            rangesX={rangesX}
+          />
+        </Grid>
+      </Grid>
     </div>
   );
 }
+
+BenchmarkComparison.propTypes = {
+  benchmark: PropTypes.object.isRequired,
+  handleDelete: PropTypes.func.isRequired,
+  handleRerun: PropTypes.func.isRequired,
+};
 
 export default BenchmarkComparison;

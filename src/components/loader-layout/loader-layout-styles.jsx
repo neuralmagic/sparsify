@@ -20,8 +20,13 @@ export default function makeLoaderLayoutStyles() {
           justifyContent: "center",
           alignItems: "center",
         },
+        progressRoot: {
+          display: "flex",
+          alignItems: "center",
+          flexDirection: "column",
+        },
         progressContainer: {
-          position: "relative"
+          position: "relative",
         },
         progressTextContainer: {
           position: "absolute",

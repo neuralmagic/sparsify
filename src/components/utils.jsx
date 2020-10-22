@@ -58,8 +58,10 @@ export function scientificNumber(num, digits = 2) {
 
   let coefficient;
   let exponent;
-  [coefficient, exponent] =
-      num.toExponential().split('e').map(item => Number(item));
+  [coefficient, exponent] = num
+    .toExponential()
+    .split("e")
+    .map((item) => Number(item));
 
   return `${parseFloat(coefficient).toFixed(digits)}e${exponent}`;
 }
@@ -100,28 +102,28 @@ export function combineStatuses(statuses) {
   return "idle";
 }
 
-export function localStorageAvailable(){
-  const test = 'test';
+export function localStorageAvailable() {
+  const test = "test";
 
   try {
     localStorage.setItem(test, test);
     localStorage.removeItem(test);
 
     return true;
-  } catch(e) {
+  } catch (e) {
     return false;
   }
 }
 
-export function sessionStorageAvailable(){
-  const test = 'test';
+export function sessionStorageAvailable() {
+  const test = "test";
 
   try {
     sessionStorage.setItem(test, test);
     sessionStorage.removeItem(test);
 
     return true;
-  } catch(e) {
+  } catch (e) {
     return false;
   }
 }
@@ -174,7 +176,7 @@ export const lrModsTypes = [
     value: "exponential",
     label: "Exponential LR",
   },
-]
+];
 
 export const formatMetricValue = curry(({ mantissaLength }, value) =>
   value ? value.toFixed(mantissaLength) : "--"
@@ -185,4 +187,15 @@ export const formatWithMantissa = (length, value) =>
 
 export const dateUtcToLocal = (date) => moment.utc(date).local();
 
-export const dateUtcToLocalString = (date) => dateUtcToLocal(date).format("MM/DD/YYYY h:mma")
+export const dateUtcToLocalString = (date) =>
+  dateUtcToLocal(date).format("MM/DD/YYYY h:mma");
+
+export const inferenceEngineToName = (engine) => {
+  if (engine === "ort_cpu") {
+    return "ONNX Runtime CPU";
+  } else if (engine === "neural_magic") {
+    return "Neural Magic";
+  } else if (engine === "ort_gpu") {
+    return "ONNX Runtime GPU";
+  }
+};

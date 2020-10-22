@@ -40,13 +40,14 @@ export default function makeSelectModelStyles() {
         },
         selectFileUploadText: {
           marginLeft: theme.spacing(2),
+          marginRight: 45,
         },
         selectFileRemote: {
           right: 1,
         },
         selectFileClear: {
           position: "absolute",
-          right: 0,
+          right: 5,
           opacity: 1,
           zIndex: 3,
         },
@@ -66,8 +67,10 @@ export default function makeSelectModelStyles() {
         selectFileSelected: {
           width: "99%",
           zIndex: 2,
+          '& input': {
+            paddingRight: 55
+          }
         },
-
         loaderContainer: {
           width: "100%",
           height: "100%",

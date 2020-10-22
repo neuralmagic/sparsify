@@ -42,7 +42,7 @@ function BenchmarkMetricsScaling({ metrics, scale }) {
 }
 
 BenchmarkMetricsScaling.propTypes = {
-  metrics: PropTypes.array.isRequired,
+  metrics: PropTypes.object.isRequired,
   scale: PropTypes.string.isRequired,
 };
 

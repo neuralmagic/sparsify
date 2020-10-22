@@ -22,7 +22,7 @@ export default function makeBenchmarkCardStyles() {
           alignItems: "baseline",
         },
         headerName: {
-          marginRight: theme.spacing(2),
+          marginRight: theme.spacing(1),
           width: "fit-content",
         },
         headerNameGroup: {

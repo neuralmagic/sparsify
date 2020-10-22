@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
+import { Fab } from "@material-ui/core";
 import { useDispatch, useSelector } from "react-redux";
 import _ from "lodash";
 
@@ -12,13 +13,14 @@ import {
   STATUS_SUCCEEDED,
   STATUS_LOADING,
 } from "../../store";
-
 import AbsoluteLayout from "../../components/absolute-layout";
 import BenchmarkCard from "./benchmark-card";
 import ScrollerLayout from "../../components/scroller-layout";
 import makeStyles from "./project-benchmark-styles";
-import { Fab } from "@material-ui/core";
+import { ReactComponent as Icon } from "./img/icon.svg";
 import { JOB_CANCELED, JOB_COMPLETED, JOB_ERROR } from "../../api";
+import GenericPage from "../../components/generic-page";
+import FadeTransitionGroup from "../../components/fade-transition-group";
 
 const useStyles = makeStyles();
 
@@ -63,29 +65,40 @@ function ProjectBenchmark({ match }) {
   return (
     <AbsoluteLayout>
       <ScrollerLayout layoutClass={classes.root}>
-        <div className={classes.body}>
-          {benchmarksState.val.map((benchmark) => (
-            <BenchmarkCard
-              key={benchmark.benchmark_id}
-              benchmark={benchmark}
-              projectId={projectId}
-            />
-          ))}
-          <BenchmarkCreateDialog
-            open={openCreate}
-            handleClose={() => setOpenCreate(false)}
-            projectId={projectId}
+        <FadeTransitionGroup
+          className={classes.transitionGroup}
+          showIndex={benchmarksState.val.length > 0 ? 1 : 0}
+        >
+          <GenericPage
+            logoComponent={<Icon />}
+            title="Benchmark"
+            description="Analyze performance by running benchmarks on a model. Click on 'Add Benchmark' to start a new benchmark."
           />
-          <Fab
-            variant="extended"
-            color="secondary"
-            arial-label="Add Benchmark"
-            className={classes.fab}
-            onClick={() => setOpenCreate(true)}
-          >
-            Add Benchmark
-          </Fab>
-        </div>
+          <div className={classes.body}>
+            {benchmarksState.val.map((benchmark) => (
+              <BenchmarkCard
+                key={benchmark.benchmark_id}
+                benchmark={benchmark}
+                projectId={projectId}
+              />
+            ))}
+          </div>
+        </FadeTransitionGroup>
+
+        <BenchmarkCreateDialog
+          open={openCreate}
+          handleClose={() => setOpenCreate(false)}
+          projectId={projectId}
+        />
+        <Fab
+          variant="extended"
+          color="secondary"
+          arial-label="Add Benchmark"
+          className={classes.fab}
+          onClick={() => setOpenCreate(true)}
+        >
+          Add Benchmark
+        </Fab>
       </ScrollerLayout>
     </AbsoluteLayout>
   );

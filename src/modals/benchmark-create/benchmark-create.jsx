@@ -182,8 +182,6 @@ function BenchmarkCreateDialog({ open, handleClose, projectId }) {
                       {inferenceEngineToName(engine)}
                     </MenuItem>
                   ))}
-
-                  {/* <MenuItem value="ort_cpu">ONNX Runtime CPU</MenuItem> */}
                 </Select>
               </FormControl>
             </Grid>
@@ -222,7 +220,6 @@ function BenchmarkCreateDialog({ open, handleClose, projectId }) {
                 />
               }
             />
-            {/* <Button onClick={onComparison}>{enableComparison ? "Remove Comparison" : "Enable Comparison"}</Button> */}
           </Grid>
           {enableComparison && (
             <Grid item container xs={12} spacing={2} className={classes.fieldRow}>

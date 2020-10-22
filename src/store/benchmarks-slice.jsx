@@ -133,9 +133,7 @@ const benchmarkToBaseline = (benchmark, optimizationsToName) => {
       inferenceModelOptimization: result.inference_model_optimization,
       measurements: {
         data: measurementsTransform,
-        id: inferenceOptimization
-          ? `${inferenceEngineToName(inferenceEngine)} ${inferenceOptimizationName}`
-          : inferenceEngineToName(inferenceEngine),
+        id: getBenchmarkDataId(inferenceEngine, inferenceOptimizationName),
       },
       rangesX: [0, measurementsTransform.length - 1],
       ranges,
@@ -185,6 +183,14 @@ const createScalingDefault = (rangesX) => ({
     rangesX,
   },
 });
+
+const getBenchmarkDataId = (inferenceEngine, optimization) => {
+  if (optimization.length === 0) {
+    return inferenceEngineToName(inferenceEngine);
+  } else {
+    return `${inferenceEngineToName(inferenceEngine)}, optim version: ${optimization}`;
+  }
+};
 
 const groupByCoreAndBatch = (scalingData, accum, batchSize, coreCount) => {
   if (accum.length === 0) {
@@ -236,7 +242,7 @@ const createBatchScalingReducer = (benchmark, scalingData, optimizationsToName) 
             data.inferenceModelOptimization
           ),
         })),
-        id: `${inferenceEngineToName(measurement[0].inferenceEngine)} ${optimName}`,
+        id: getBenchmarkDataId(measurement[0].inferenceEngine, optimName),
       });
 
       const combinedData = batchData[key].measurements.reduce(
@@ -290,7 +296,7 @@ const createCoreScalingReducer = (benchmark, scalingData, optimizationsToName) =
             data.inferenceModelOptimization
           ),
         })),
-        id: `${inferenceEngineToName(measurement[0].inferenceEngine)} ${optimName}`,
+        id: getBenchmarkDataId(measurement[0].inferenceEngine, optimName),
       });
 
       const combinedData = batchData[key].measurements.reduce(

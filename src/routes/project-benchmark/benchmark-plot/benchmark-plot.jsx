@@ -113,33 +113,10 @@ function BenchmarkPlot({ measurements, ranges, rangesX, xAxisLabel, yAxisLabel }
     );
   };
 
-  const legends = [];
-  if (measurements.length > 1) {
-    // legends.push({
-    //   anchor: 'top-right',
-    //   direction: 'column',
-    //   justify: false,
-    //   itemOpacity: 0.5,
-    //   translateX: 0,
-    //   translateY: 0,
-    //   itemWidth: 200,
-    //   itemHeight: 20,
-    //   itemsSpacing: 4,
-    //   symbolSize: 20,
-    //   symbolShape: 'circle',
-    //   itemDirection: 'left-to-right',
-    //   itemTextColor: '#777',
-    //   effects: [
-    //     {
-    //         // on: 'hover',
-    //         // style: {
-    //         //     itemBackground: 'rgba(0, 0, 0, .05)',
-    //         //     itemOpacity: 1
-    //         // }
-    //     }
-    // ]
-    // })
-  }
+  const colors = [
+    adjustColorOpacity(referenceLightTheme.palette.primary.main, 0.8),
+    adjustColorOpacity(referenceLightTheme.palette.primary.main, 0.2),
+  ];
 
   return (
     <div className={classes.root}>
@@ -185,10 +162,7 @@ function BenchmarkPlot({ measurements, ranges, rangesX, xAxisLabel, yAxisLabel }
             referenceLightTheme.palette.primary.main,
             0.5
           )}
-          colors={[
-            adjustColorOpacity(referenceLightTheme.palette.primary.main, 0.8),
-            adjustColorOpacity(referenceLightTheme.palette.primary.main, 0.2),
-          ]}
+          colors={colors}
           enableGridX={false}
           enableGridY={true}
           axisBottom={null}
@@ -204,7 +178,6 @@ function BenchmarkPlot({ measurements, ranges, rangesX, xAxisLabel, yAxisLabel }
           tooltip={toolTip}
           rangeMinValue={rangeMinValue || "auto"}
           rangeMaxValue={rangeMaxValue || "auto"}
-          legends={legends}
         />
       </div>
       <div className={classes.chartXAxis}>
@@ -222,6 +195,22 @@ function BenchmarkPlot({ measurements, ranges, rangesX, xAxisLabel, yAxisLabel }
           {rangeMaxXValue}
         </Typography>
       </div>
+
+      {measurements.length > 1 && (
+        <div className={classes.legendRoot}>
+          {measurements.map((measurement, index) => (
+            <div className={classes.legendRow} key={index}>
+              <div
+                className={classes.legendColor}
+                style={{ backgroundColor: colors[index] }}
+              />
+              <Typography variant="body2" className={classes.legendLabel}>
+                {measurement.id}
+              </Typography>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

@@ -22,6 +22,9 @@ export default function makeBenchmarkStyles() {
           alignItems: "center",
           justifyContent: "center",
         },
+        transitionGroup: {
+          width: "100%",
+        },
         layout: {
           height: "fit-content",
           width: `calc(100% - 2 * ${theme.spacing(3)}px)`,

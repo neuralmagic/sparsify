@@ -28,13 +28,12 @@ import {
 } from "@material-ui/core";
 
 import makeStyles from "./benchmark-create-styles";
-import { dateUtcToLocalString } from "../../components";
+import { dateUtcToLocalString, inferenceEngineToName } from "../../components";
 
 const useStyles = makeStyles();
 
 const sortSelected = (selected, multiple) => {
   if (multiple) {
-    // selected.sort();
     return sortAsNumbers(selected).join(", ");
   } else {
     return selected;
@@ -51,16 +50,21 @@ function BenchmarkCreateDialog({ open, handleClose, projectId }) {
   const classes = useStyles();
   const dispatch = useDispatch();
   const systemInfoState = useSelector(selectSystemState);
+  const engines = _.get(systemInfoState, "val.available_engines", ["ort_cpu"]);
   const defaultCore =
     _.get(systemInfoState, "val.cores_per_socket", 1) *
     _.get(systemInfoState, "val.num_sockets", 1);
 
   const selectedOptimState = useSelector(selectSelectedOptimsState);
-  const [inferenceEngine, setInferenceEngine] = useState("");
-  const [inferenceModelOptimization, setInferenceModelOptimization] = useState("");
+  const [inferenceEngine, setInferenceEngine] = useState(
+    engines.includes("neural_magic") ? "neural_magic" : "ort_cpu"
+  );
+  const [inferenceModelOptimization, setInferenceModelOptimization] = useState("None");
+
+  const [enableComparison, setEnableComparison] = useState(false);
   const [secondaryInferenceEngine, setSecondaryInferenceEngine] = useState("");
   const [secondaryInferenceModelOptimization, setSecondaryModelOptimization] = useState(
-    ""
+    "None"
   );
   const [multipleCoreCounts, setMultipleCoreCounts] = useState(false);
   const [multipleBatchSizes, setMultipleBatchSizes] = useState(false);
@@ -73,16 +77,18 @@ function BenchmarkCreateDialog({ open, handleClose, projectId }) {
         _.get(systemInfoState, "val.cores_per_socket", 1) *
         _.get(systemInfoState, "val.num_sockets", 1);
       setCoreCounts([defaultCore]);
+      setInferenceEngine(engines.includes("neural_magic") ? "neural_magic" : "ort_cpu");
     }
   }, [systemInfoState]);
 
   const setDefault = () => {
-    setInferenceEngine("");
-    setInferenceModelOptimization("");
+    setInferenceEngine(engines.includes("neural_magic") ? "neural_magic" : "ort_cpu");
+    setInferenceModelOptimization("None");
     setSecondaryInferenceEngine("");
-    setSecondaryModelOptimization("");
+    setSecondaryModelOptimization("None");
     setMultipleBatchSizes(false);
     setMultipleCoreCounts(false);
+    setEnableComparison(false);
     setCoreCounts([defaultCore]);
     setBatchSizes([1]);
   };
@@ -101,14 +107,18 @@ function BenchmarkCreateDialog({ open, handleClose, projectId }) {
     const inferenceModels = [
       {
         inference_engine: inferenceEngine,
-        inference_model_optimization: inferenceModelOptimization,
+        inference_model_optimization:
+          inferenceModelOptimization === "None" ? "" : inferenceModelOptimization,
       },
     ];
 
     if (secondaryInferenceEngine) {
       inferenceModels.push({
         inference_engine: secondaryInferenceEngine,
-        inference_model_optimization: secondaryInferenceModelOptimization,
+        inference_model_optimization:
+          secondaryInferenceModelOptimization === "None"
+            ? ""
+            : secondaryInferenceModelOptimization,
       });
     }
     dispatch(
@@ -139,11 +149,19 @@ function BenchmarkCreateDialog({ open, handleClose, projectId }) {
     availableBatchSizes.push(Math.pow(2, i));
   }
 
+  const onComparison = () => {
+    if (enableComparison) {
+      setSecondaryInferenceEngine("");
+      setSecondaryModelOptimization("None");
+    }
+    setEnableComparison(!enableComparison);
+  };
+
   return (
     <Dialog open={open} PaperProps={{ className: classes.dialog }} maxWidth="md">
       <DialogTitle>Create Benchmark</DialogTitle>
       <DialogContent>
-        <Grid container spacing={4} direction="column">
+        <Grid container direction="column" className={classes.fieldRow}>
           <Grid item container xs={12} spacing={2}>
             <Grid item xs={7}>
               <FormControl variant="outlined" fullWidth>
@@ -159,14 +177,19 @@ function BenchmarkCreateDialog({ open, handleClose, projectId }) {
                   }}
                   label="Inference Engine"
                 >
-                  <MenuItem value="neural_magic">Neural Magic</MenuItem>
-                  <MenuItem value="ort_cpu">ONNX Runtime CPU</MenuItem>
+                  {engines.map((engine) => (
+                    <MenuItem value={engine} key={engine}>
+                      {inferenceEngineToName(engine)}
+                    </MenuItem>
+                  ))}
+
+                  {/* <MenuItem value="ort_cpu">ONNX Runtime CPU</MenuItem> */}
                 </Select>
               </FormControl>
             </Grid>
             <Grid item xs={5}>
               <FormControl variant="outlined" fullWidth>
-                <InputLabel id="optimization-label">Optimization type</InputLabel>
+                <InputLabel id="optimization-label">Optimization version</InputLabel>
                 <Select
                   labelId="optimization-label"
                   value={inferenceModelOptimization}
@@ -176,9 +199,9 @@ function BenchmarkCreateDialog({ open, handleClose, projectId }) {
                     }
                     setInferenceModelOptimization(event.target.value);
                   }}
-                  label="Optimization type"
+                  label="Optimization version"
                 >
-                  <MenuItem value="">None</MenuItem>
+                  <MenuItem value="None">None</MenuItem>
                   {selectedOptimState.val.map((optim) => (
                     <MenuItem key={optim.optim_id} value={optim.optim_id}>
                       {optim.name || dateUtcToLocalString(optim.created)}
@@ -188,52 +211,66 @@ function BenchmarkCreateDialog({ open, handleClose, projectId }) {
               </FormControl>
             </Grid>
           </Grid>
-
-          <Grid item container xs={12} spacing={2}>
-            <Grid item xs={7}>
-              <FormControl variant="outlined" fullWidth>
-                <InputLabel id="secondary-inference-engine-label">
-                  Comparing to
-                </InputLabel>
-                <Select
-                  labelId="secondary-inference-engine-label"
-                  value={secondaryInferenceEngine}
-                  onChange={(event) => {
-                    setSecondaryInferenceEngine(event.target.value);
-                  }}
-                  label="Inference Engine"
-                >
-                  <MenuItem value="">None</MenuItem>
-                  <MenuItem value="neural_magic">Neural Magic</MenuItem>
-                  <MenuItem value="ort_cpu">ONNX Runtime CPU</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={5}>
-              <FormControl variant="outlined" fullWidth>
-                <InputLabel id="secondary-optimization-label">
-                  Optimization type
-                </InputLabel>
-                <Select
-                  labelId="secondary-optimization-label"
-                  value={secondaryInferenceModelOptimization}
-                  onChange={(event) => {
-                    setSecondaryModelOptimization(event.target.value);
-                  }}
-                  label="Optimization type"
-                >
-                  <MenuItem value="">None</MenuItem>
-                  {selectedOptimState.val.map((optim) => (
-                    <MenuItem key={optim.optim_id} value={optim.optim_id}>
-                      {optim.name || dateUtcToLocalString(optim.created)}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
+          <Grid item container xs={12} justify="flex-end">
+            <FormControlLabel
+              label={"Enable Comparison"}
+              control={
+                <Checkbox
+                  color="primary"
+                  checked={enableComparison}
+                  onChange={onComparison}
+                />
+              }
+            />
+            {/* <Button onClick={onComparison}>{enableComparison ? "Remove Comparison" : "Enable Comparison"}</Button> */}
           </Grid>
+          {enableComparison && (
+            <Grid item container xs={12} spacing={2} className={classes.fieldRow}>
+              <Grid item xs={7}>
+                <FormControl variant="outlined" fullWidth>
+                  <InputLabel id="secondary-inference-engine-label">
+                    Comparing to
+                  </InputLabel>
+                  <Select
+                    labelId="secondary-inference-engine-label"
+                    value={secondaryInferenceEngine}
+                    onChange={(event) => {
+                      setSecondaryInferenceEngine(event.target.value);
+                    }}
+                    label="Inference Engine"
+                  >
+                    <MenuItem value="">None</MenuItem>
+                    <MenuItem value="neural_magic">Neural Magic</MenuItem>
+                    <MenuItem value="ort_cpu">ONNX Runtime CPU</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={5}>
+                <FormControl variant="outlined" fullWidth>
+                  <InputLabel id="secondary-optimization-label">
+                    Optimization version
+                  </InputLabel>
+                  <Select
+                    labelId="secondary-optimization-label"
+                    value={secondaryInferenceModelOptimization}
+                    onChange={(event) => {
+                      setSecondaryModelOptimization(event.target.value);
+                    }}
+                    label="Optimization version"
+                  >
+                    <MenuItem value="None">None</MenuItem>
+                    {selectedOptimState.val.map((optim) => (
+                      <MenuItem key={optim.optim_id} value={optim.optim_id}>
+                        {optim.name || dateUtcToLocalString(optim.created)}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+            </Grid>
+          )}
 
-          <Grid item container xs={12} spacing={2}>
+          <Grid item container xs={12} spacing={2} className={classes.fieldRow}>
             <Grid item xs={6}>
               <FormControl variant="outlined" fullWidth>
                 <InputLabel id="core-label">Core Counts</InputLabel>
@@ -257,7 +294,9 @@ function BenchmarkCreateDialog({ open, handleClose, projectId }) {
                 >
                   {availableCores.map((core) => (
                     <MenuItem key={core} value={core}>
-                      <Checkbox checked={coreCounts.includes(core)} color="primary" />
+                      {multipleCoreCounts && (
+                        <Checkbox checked={coreCounts.includes(core)} color="primary" />
+                      )}
                       <ListItemText primary={core} />
                     </MenuItem>
                   ))}
@@ -286,7 +325,7 @@ function BenchmarkCreateDialog({ open, handleClose, projectId }) {
               />
             </Grid>
           </Grid>
-          <Grid item container xs={12} spacing={2}>
+          <Grid item container xs={12} spacing={2} className={classes.fieldRow}>
             <Grid item xs={6}>
               <FormControl variant="outlined" fullWidth>
                 <InputLabel id="batch-label">Batch Sizes</InputLabel>
@@ -306,10 +345,12 @@ function BenchmarkCreateDialog({ open, handleClose, projectId }) {
                 >
                   {availableBatchSizes.map((batchSize) => (
                     <MenuItem key={batchSize} value={batchSize}>
-                      <Checkbox
-                        checked={batchSizes.includes(batchSize)}
-                        color="primary"
-                      />
+                      {multipleBatchSizes && (
+                        <Checkbox
+                          checked={batchSizes.includes(batchSize)}
+                          color="primary"
+                        />
+                      )}
                       <ListItemText primary={batchSize} />
                     </MenuItem>
                   ))}
@@ -346,7 +387,6 @@ function BenchmarkCreateDialog({ open, handleClose, projectId }) {
         </Button>
         <Button
           onClick={() => onSubmit()}
-          disabled={inferenceEngine === ""}
           color="secondary"
           variant="contained"
           disableElevation

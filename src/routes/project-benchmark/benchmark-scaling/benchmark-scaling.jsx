@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
 
 import {
@@ -23,7 +24,7 @@ import BenchmarkPopoverMenu from "../benchmark-popover-menu";
 
 const useStyles = makeStyles();
 
-function BenchmarkScaling({ benchmark, handleDelete }) {
+function BenchmarkScaling({ benchmark, handleDelete, handleRerun }) {
   const analysis = useSelector(selectBenchmarkResultsById(benchmark.benchmark_id));
   const classes = useStyles();
   const [scalingTab, setScalingTab] = useState(0);
@@ -117,7 +118,7 @@ function BenchmarkScaling({ benchmark, handleDelete }) {
         <Tab label="Core Scaling" />
         <Tab label="Batch Size Scaling" />
       </Tabs>
-      <BenchmarkPopoverMenu handleDelete={handleDelete} />
+      <BenchmarkPopoverMenu handleDelete={handleDelete} handleRerun={handleRerun} />
 
       <Grid container direction="row">
         <Grid item xs={2}>
@@ -201,5 +202,11 @@ function BenchmarkScaling({ benchmark, handleDelete }) {
     </div>
   );
 }
+
+BenchmarkScaling.propTypes = {
+  benchmark: PropTypes.object.isRequired,
+  handleDelete: PropTypes.func.isRequired,
+  handleRerun: PropTypes.func.isRequired,
+};
 
 export default BenchmarkScaling;

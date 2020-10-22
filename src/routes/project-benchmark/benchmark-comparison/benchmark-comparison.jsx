@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
 
 import { Grid, Divider, Tabs, Tab } from "@material-ui/core";
@@ -13,7 +14,7 @@ import BenchmarkPopoverMenu from "../benchmark-popover-menu";
 
 const useStyles = makeStyles();
 
-function BenchmarkComparison({ benchmark, handleDelete }) {
+function BenchmarkComparison({ benchmark, handleDelete, handleRerun }) {
   const analysis = useSelector(selectBenchmarkResultsById(benchmark.benchmark_id));
   const [metricsTab, setMetricsTab] = useState(0);
   const classes = useStyles();
@@ -49,7 +50,7 @@ function BenchmarkComparison({ benchmark, handleDelete }) {
           return <Tab key={index} label={engineToName(result.inferenceEngine)} />;
         })}
       </Tabs>
-      <BenchmarkPopoverMenu handleDelete={handleDelete} />
+      <BenchmarkPopoverMenu handleDelete={handleDelete} handleRerun={handleRerun} />
       {renderPlot && (
         <Grid container direction="row">
           <Grid xs={2} item>
@@ -68,5 +69,11 @@ function BenchmarkComparison({ benchmark, handleDelete }) {
     </div>
   );
 }
+
+BenchmarkComparison.propTypes = {
+  benchmark: PropTypes.object.isRequired,
+  handleDelete: PropTypes.func.isRequired,
+  handleRerun: PropTypes.func.isRequired,
+};
 
 export default BenchmarkComparison;

@@ -1,8 +1,8 @@
-import React, { useState } from "react";
-
+import React from "react";
+import PropTypes from "prop-types";
 import _ from "lodash";
 
-import { Grid, IconButton, Divider, Popover, Button } from "@material-ui/core";
+import { Grid } from "@material-ui/core";
 import DisplayMetric from "../../../components/display-metric";
 import { formatWithMantissa } from "../../../components";
 
@@ -18,7 +18,7 @@ function BenchmarkMetricsComparison({ metrics, metricsIndex }) {
     _.get(metrics, `[${metricsIndex}].msPerItem`, 1);
   return (
     <Grid container direction="column">
-      <DisplayMetric title="Estimated Speedup" size="large" rootClass={classes.metric}>
+      <DisplayMetric title="Est. Speedup" size="large" rootClass={classes.metric}>
         {`${formatWithMantissa(2, speedup)}x`}
       </DisplayMetric>
       <DisplayMetric title="MS per item" size="large" rootClass={classes.metric}>
@@ -30,5 +30,10 @@ function BenchmarkMetricsComparison({ metrics, metricsIndex }) {
     </Grid>
   );
 }
+
+BenchmarkMetricsComparison.propTypes = {
+  metrics: PropTypes.array.isRequired,
+  metricsIndex: PropTypes.number.isRequired,
+};
 
 export default BenchmarkMetricsComparison;

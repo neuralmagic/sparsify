@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
 
 import { Grid, Divider } from "@material-ui/core";
@@ -13,7 +14,7 @@ import BenchmarkPopoverMenu from "../benchmark-popover-menu";
 
 const useStyles = makeStyles();
 
-function BenchmarkBaseline({ benchmark, handleDelete }) {
+function BenchmarkBaseline({ benchmark, handleDelete, handleRerun }) {
   const analysis = useSelector(selectBenchmarkResultsById(benchmark.benchmark_id));
   const classes = useStyles();
 
@@ -27,7 +28,7 @@ function BenchmarkBaseline({ benchmark, handleDelete }) {
 
   return (
     <div className={classes.root}>
-      <BenchmarkPopoverMenu handleDelete={handleDelete} />
+      <BenchmarkPopoverMenu handleDelete={handleDelete} handleRerun={handleRerun} />
       {measurements && (
         <Grid container direction="row">
           <Grid item xs={2}>
@@ -48,5 +49,11 @@ function BenchmarkBaseline({ benchmark, handleDelete }) {
     </div>
   );
 }
+
+BenchmarkBaseline.propTypes = {
+  benchmark: PropTypes.object.isRequired,
+  handleDelete: PropTypes.func.isRequired,
+  handleRerun: PropTypes.func.isRequired,
+};
 
 export default BenchmarkBaseline;

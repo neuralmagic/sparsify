@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-
-import { Grid, IconButton, Divider, Popover, Button } from "@material-ui/core";
+import React from "react";
+import PropTypes from "prop-types";
+import { Grid } from "@material-ui/core";
 import DisplayMetric from "../../../components/display-metric";
 import { formatWithMantissa } from "../../../components";
 
@@ -25,5 +25,9 @@ function BenchmarkMetricsSingle({ metrics }) {
     </Grid>
   );
 }
+
+BenchmarkMetricsSingle.propTypes = {
+  metrics: PropTypes.object.isRequired,
+};
 
 export default BenchmarkMetricsSingle;

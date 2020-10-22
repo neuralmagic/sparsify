@@ -19,10 +19,21 @@ export default function makeBenchmarkCardStyles() {
         title: {
           marginBottom: theme.spacing(2),
           display: "flex",
-          alignItems: "flex-end",
+          alignItems: "baseline",
         },
         headerName: {
           marginRight: theme.spacing(2),
+          width: "fit-content",
+        },
+        headerNameGroup: {
+          width: "fit-content",
+        },
+        optimLink: {
+          textDecoration: "none",
+          color: theme.palette.text.primary,
+          "&:hover": {
+            textDecoration: "underline",
+          },
         },
         headerDate: {
           flexGrow: 1,

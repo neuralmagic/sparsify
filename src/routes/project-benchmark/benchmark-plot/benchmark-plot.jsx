@@ -40,20 +40,12 @@ function BenchmarkPlot({ measurements, ranges, rangesX, xAxisLabel, yAxisLabel }
       keys = [
         {
           value: "inferenceOptimization",
-          label: "Inference Optimization",
+          label: "Optimization Version",
         },
         {
           value: "inferenceEngine",
           label: "Inference Engine",
         },
-        // {
-        //   value: "coreCount",
-        //   label: "Core Count",
-        // },
-        // {
-        //   value: "batchSize",
-        //   label: "Batch Size",
-        // },
       ];
     }
 
@@ -79,7 +71,7 @@ function BenchmarkPlot({ measurements, ranges, rangesX, xAxisLabel, yAxisLabel }
                 {`${yAxisLabel}:`}
               </Typography>
               <Typography color="textPrimary" variant="subtitle2">
-                {formatWithMantissa(2, data.y)}
+                {data.y === 0 ? 0 : formatWithMantissa(2, data.y)}
               </Typography>
             </div>
             <div className={classes.tooltipValueRow}>
@@ -91,7 +83,9 @@ function BenchmarkPlot({ measurements, ranges, rangesX, xAxisLabel, yAxisLabel }
                 {`${xAxisLabel}:`}
               </Typography>
               <Typography color="textPrimary" variant="subtitle2">
-                {data.type === "baseline" || data.type === "scaling"
+                {data.x === 0
+                  ? 0
+                  : data.type === "baseline" || data.type === "scaling"
                   ? formatWithMantissa(0, data.x)
                   : formatWithMantissa(2, data.x)}
               </Typography>
@@ -118,6 +112,34 @@ function BenchmarkPlot({ measurements, ranges, rangesX, xAxisLabel, yAxisLabel }
       </Card>
     );
   };
+
+  const legends = [];
+  if (measurements.length > 1) {
+    // legends.push({
+    //   anchor: 'top-right',
+    //   direction: 'column',
+    //   justify: false,
+    //   itemOpacity: 0.5,
+    //   translateX: 0,
+    //   translateY: 0,
+    //   itemWidth: 200,
+    //   itemHeight: 20,
+    //   itemsSpacing: 4,
+    //   symbolSize: 20,
+    //   symbolShape: 'circle',
+    //   itemDirection: 'left-to-right',
+    //   itemTextColor: '#777',
+    //   effects: [
+    //     {
+    //         // on: 'hover',
+    //         // style: {
+    //         //     itemBackground: 'rgba(0, 0, 0, .05)',
+    //         //     itemOpacity: 1
+    //         // }
+    //     }
+    // ]
+    // })
+  }
 
   return (
     <div className={classes.root}>
@@ -176,12 +198,13 @@ function BenchmarkPlot({ measurements, ranges, rangesX, xAxisLabel, yAxisLabel }
           gridYValues={ranges}
           margin={{ top: 24, right: 8, bottom: 24, left: 8 }}
           isInteractive={true}
-          enableCrosshair={true}
+          enableCrosshair={false}
           useMesh={true}
           animate={true}
           tooltip={toolTip}
           rangeMinValue={rangeMinValue || "auto"}
           rangeMaxValue={rangeMaxValue || "auto"}
+          legends={legends}
         />
       </div>
       <div className={classes.chartXAxis}>

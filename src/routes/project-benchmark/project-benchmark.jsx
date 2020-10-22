@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import PropTypes from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
 import _ from "lodash";
 
@@ -38,7 +39,7 @@ function ProjectBenchmark({ match }) {
       benchmarksState.status === STATUS_SUCCEEDED &&
       createdBenchmarkState.status !== STATUS_LOADING
     ) {
-      const benchmarkInProgress = benchmarksState.val.find((benchmark) => {
+      const benchmarksInProgress = benchmarksState.val.filter((benchmark) => {
         const jobStatus = _.get(benchmark, "job.status");
         return (
           jobStatus !== JOB_COMPLETED &&
@@ -46,11 +47,13 @@ function ProjectBenchmark({ match }) {
           jobStatus !== JOB_ERROR
         );
       });
-      if (benchmarkInProgress) {
+      benchmarksInProgress.sort((a, b) => new Date(a.created) - new Date(b.created));
+
+      if (benchmarksInProgress.length > 0) {
         dispatch(
           setCreatedBenchmarkThunk({
             projectId,
-            benchmark: benchmarkInProgress,
+            benchmark: benchmarksInProgress[0],
           })
         );
       }

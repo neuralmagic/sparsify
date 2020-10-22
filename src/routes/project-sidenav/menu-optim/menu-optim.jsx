@@ -122,7 +122,7 @@ function ProjectSideNavMenuOptim({
             );
           }}
           title="Version"
-          showAdd={true}
+          showAdd={false}
         />
         <Divider light className={classes.divider} />
         <LoaderLayout

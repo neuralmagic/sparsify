@@ -74,7 +74,6 @@ function SystemInfoModal({ open, handleClose, isDarkMode, toggleDarkMode }) {
                 <NMLogo />
               </Box>
               <Typography className={classes.title}>Sparsify</Typography>
-              <Typography className={classes.trademark}>TM</Typography>
             </Box>
             <Typography variant="subtitle2">{`v${process.env.REACT_APP_VERSION}`}</Typography>
           </Box>

@@ -28,7 +28,6 @@ function AppSideNav({ onInfoClick }) {
           <NMLogo />
         </div>
         <Typography className={classes.title}>Sparsify</Typography>
-        <Typography className={classes.trademark}>TM</Typography>
 
       </div>
       <div className={classes.body}>

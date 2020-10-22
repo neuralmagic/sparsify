@@ -2,6 +2,7 @@ import { compose, filter, contains, prop, defaultTo, sortBy,
   when, always, not, isNil, toPairs, map, objOf, of as rof, indexOf,
   head, last, cond, equals, T, test, gt, __, times, identity } from 'ramda'
 import React, { useState } from 'react'
+import * as d3 from 'd3'
 import clsx from 'clsx'
 import { ResponsiveLine } from "@nivo/line"
 import { useSelector, useDispatch } from 'react-redux'
@@ -15,8 +16,8 @@ import ChevronRight from "@material-ui/icons/ChevronRight"
 import LayersChart from '../../components/layers-chart'
 import MetricItem from '../../components/metric-item'
 import { formatWithMantissa } from '../../components'
-import * as d3 from 'd3'
 import PruningSettings from '../../components/pruning-settings'
+import CustomLayerEdits from "../../components/custom-layer-edits";
 
 import makeStyles, { makeTableStyles, makeFiltersStyles, makeTableRowStyles } from "./optim-advanced-pruning-styles"
 import {
@@ -25,6 +26,7 @@ import {
   changeLayerAdjustableSettings,
   selectLayerAdjustableSettings,
   selectSelectedProjectPrunableNodesById,
+  selectModifierHasCustomLayerEdits
 } from "../../store";
 
 import { readableNumber } from "../../components";
@@ -60,6 +62,9 @@ const Filters = ({ modifier }) => {
   const classes = filtersStyles()
   const dispatch = useDispatch()
   const adjustableSettings = useSelector(selectModifierAdjustableSettings(modifier.modifier_id))
+  const hasCustomLayerEdits = useSelector(
+    selectModifierHasCustomLayerEdits(modifier.modifier_id)
+  );
   const changeAdjustableSettings = (settings, commit = false) =>
     dispatch(
       changeModifierAdjustableSettings({
@@ -74,6 +79,7 @@ const Filters = ({ modifier }) => {
       <Grid item>
         <TextField
           className={classes.input}
+          disabled={hasCustomLayerEdits}
           value={`${Math.round(adjustableSettings.sparsity * 100)}%`}
           size="small"
           variant="outlined"
@@ -83,6 +89,7 @@ const Filters = ({ modifier }) => {
       <Grid item xs>
         <Slider
           value={adjustableSettings.sparsity * 100}
+          disabled={hasCustomLayerEdits}
           onChange={(e, value) => changeAdjustableSettings({ sparsity: value / 100 })}
           onChangeCommitted={(e, value) => changeAdjustableSettings({ sparsity: value / 100 }, true)}
         />
@@ -98,6 +105,7 @@ const Filters = ({ modifier }) => {
             <TextField
               value={`${value || 0}${suffix}`}
               className={classes.input}
+              disabled={hasCustomLayerEdits}
               size="small"
               variant="outlined"
               label={label}/>
@@ -108,6 +116,7 @@ const Filters = ({ modifier }) => {
               min={min}
               max={max}
               step={step}
+              disabled={hasCustomLayerEdits}
               onChange={(e, value) => changeAdjustableSettings({ [name] : divideBy100 ? value / 100 : value })}
               onChangeCommitted={(e, value) => changeAdjustableSettings({ [name] : divideBy100 ? value / 100 : value }, true)}/>
           </Grid>
@@ -376,6 +385,9 @@ export default ({ modifier, open, onClose }) => {
   const classes = useStyles()
   const layerData = useSelector(selectSelectedProjectPrunableNodesById)
   const [secondPlot, setSecondPlot] = useState("timing")
+  const hasCustomLayerEdits = useSelector(
+    selectModifierHasCustomLayerEdits(modifier.modifier_id)
+  );
 
   const [denseProp, sparseProp] = cond([
     [equals('timing'), always(['est_time', 'est_time_baseline'])],
@@ -399,7 +411,10 @@ export default ({ modifier, open, onClose }) => {
           <Divider orientation="vertical" flexItem className={classes.divider} />
           <Grid item xs><Filters modifier={modifier}/></Grid>
           <Divider orientation="vertical" flexItem className={classes.divider} />
-          <Grid item><PruningSettings modifier={modifier}/></Grid>
+          <Grid item>
+            <PruningSettings modifier={modifier}/>
+            { hasCustomLayerEdits && <CustomLayerEdits/> }
+          </Grid>
         </Grid>
         <TextField
           select

@@ -295,4 +295,6 @@ export const selectSelectedProjectPrunableNodesById = createSelector(
   }
 );
 
+export const selectModifierHasCustomLayerEdits = () => createSelector([], () => false)
+
 export default selectedOptimsSlice.reducer;

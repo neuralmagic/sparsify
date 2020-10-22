@@ -98,7 +98,7 @@ function SystemInfoModal({ open, handleClose, isDarkMode, toggleDarkMode }) {
 
           <Box className={classes.block}>
             <Link className={classes.link} href="mailto:support@neuralmagic.com">
-              <Typography>Contact Support</Typography>
+              <Typography>Contact support@neuralmagic.com</Typography>
             </Link>
           </Box>
 

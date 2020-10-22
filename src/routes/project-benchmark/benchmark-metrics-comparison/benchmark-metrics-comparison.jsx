@@ -14,8 +14,11 @@ function BenchmarkMetricsComparison({ metrics, metricsIndex }) {
   const classes = useStyles();
 
   const speedup =
-    _.get(metrics, `[${metrics.length - 1 - metricsIndex}].msPerItem`, 1) /
-    _.get(metrics, `[${metricsIndex}].msPerItem`, 1);
+    metrics.length > 0
+      ? _.get(metrics, `[${metrics.length - 1 - metricsIndex}].msPerItem`, 1) /
+        _.get(metrics, `[${metricsIndex}].msPerItem`, 1)
+      : null;
+
   return (
     <Grid container direction="column">
       <DisplayMetric title="Est. Speedup" size="large" rootClass={classes.metric}>

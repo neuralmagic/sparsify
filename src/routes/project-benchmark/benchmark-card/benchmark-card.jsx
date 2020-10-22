@@ -21,9 +21,7 @@ import BenchmarkScaling from "../benchmark-scaling";
 import GrowTransitions from "../../../components/grow-transition";
 
 import makeStyles from "./benchmark-card-styles";
-import LoaderLayout from "../../../components/loader-layout";
 import { JOB_CANCELED, JOB_COMPLETED, JOB_PENDING, JOB_STARTED } from "../../../api";
-import FadeTransitionGroup from "../../../components/delayed-fade-transition-group";
 import {
   dateUtcToLocal,
   dateUtcToLocalString,
@@ -31,6 +29,7 @@ import {
 } from "../../../components";
 import { Link } from "react-router-dom";
 import { createProjectOptimPath } from "../../paths";
+import LoaderOverlay from "../../../components/loader-overlay";
 
 const useStyles = makeStyles();
 
@@ -264,32 +263,34 @@ function BenchmarkCard({ benchmark, projectId }) {
       <div className={classes.layout}>
         <BenchmarkCardHeader benchmark={benchmark} />
         <Card className={classes.card} elevation={1}>
-          <FadeTransitionGroup
-            className={classes.transitionGroup}
-            showIndex={showLoader || !animationEnded ? 0 : 1}
-          >
-            <div className={classes.loaderContainer}>
-              <LoaderLayout
-                loading={loading || !animationEnded}
-                error={
-                  createdBenchmarkState.cancelStatus === STATUS_LOADING ? "" : error
-                }
-                progress={!deleting ? progress : null}
-                loaderSize={96}
-              />
-              <Typography
-                variant="body1"
-                color="textPrimary"
-                className={classes.loaderText}
-              >
-                {label}
-              </Typography>
-              {(createdBenchmarkState.status !== STATUS_SUCCEEDED || error) && (
-                <Button disabled={deleting} onClick={handleDelete}>
-                  {errorLabel}
-                </Button>
-              )}
-            </div>
+          <LoaderOverlay
+            loading={loading || !animationEnded}
+            error={createdBenchmarkState.cancelStatus === STATUS_LOADING ? "" : error}
+            progress={!deleting ? progress : null}
+            loaderSize={96}
+            loaderLabel={label}
+            loaderChildren={
+              <div className={classes.loaderContent}>
+                <Typography
+                  variant="body1"
+                  color="inherit"
+                  className={classes.loaderText}
+                >
+                  {label}
+                </Typography>
+                {(createdBenchmarkState.status !== STATUS_SUCCEEDED || error) && (
+                  <Button
+                    disabled={deleting}
+                    onClick={handleDelete}
+                    className={classes.cancelButton}
+                  >
+                    {errorLabel}
+                  </Button>
+                )}
+              </div>
+            }
+          />
+          {animationEnded && (
             <div className={classes.cardContainer}>
               {benchmarkType === "baseline" && (
                 <BenchmarkBaseline
@@ -313,7 +314,7 @@ function BenchmarkCard({ benchmark, projectId }) {
                 />
               )}
             </div>
-          </FadeTransitionGroup>
+          )}
         </Card>
       </div>
     </GrowTransitions>

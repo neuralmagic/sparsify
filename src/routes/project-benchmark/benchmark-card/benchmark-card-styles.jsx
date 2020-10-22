@@ -1,4 +1,5 @@
 import { makeStyles } from "@material-ui/core/styles";
+import { referenceDarkTheme } from "../../../app/app-theme";
 
 export default function makeBenchmarkCardStyles() {
   return makeStyles(
@@ -7,6 +8,7 @@ export default function makeBenchmarkCardStyles() {
         card: {
           height: "350px",
           overflow: "visible",
+          position: "relative",
         },
         layout: {
           height: "fit-content",
@@ -15,6 +17,15 @@ export default function makeBenchmarkCardStyles() {
           display: "flex",
           flexDirection: "column",
           margin: theme.spacing(3),
+        },
+        loaderContent: {
+          alignItems: "center",
+          flexDirection: "column",
+          display: "flex",
+          color: referenceDarkTheme.palette.text.primary,
+        },
+        cancelButton: {
+          color: referenceDarkTheme.palette.text.secondary,
         },
         title: {
           marginBottom: theme.spacing(2),

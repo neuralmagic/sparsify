@@ -19,7 +19,10 @@ function BenchmarkComparison({ benchmark, handleDelete, handleRerun }) {
   const [metricsTab, setMetricsTab] = useState(0);
   const classes = useStyles();
 
-  let { ranges, rangesX } = _.get(analysis, "baseline[0]", {});
+  let { ranges, rangesX } = _.get(analysis, "baseline[0]", {
+    ranges: [],
+    rangesX: [],
+  });
 
   const results = _.get(analysis, "baseline[0].results", []);
   const measurements = results.map((result) => result.measurements);
@@ -32,9 +35,6 @@ function BenchmarkComparison({ benchmark, handleDelete, handleRerun }) {
     }
   };
 
-  const renderPlot =
-    measurements && _.get(ranges, "length", 0) > 0 && _.get(rangesX, "length", 0) > 0;
-
   return (
     <div className={classes.root}>
       <Tabs
@@ -46,26 +46,24 @@ function BenchmarkComparison({ benchmark, handleDelete, handleRerun }) {
           setMetricsTab(value);
         }}
       >
-        {results.map((result, index) => {
-          return <Tab key={index} label={engineToName(result.inferenceEngine)} />;
+        {benchmark.inference_models.map((result, index) => {
+          return <Tab key={index} label={engineToName(result.inference_engine)} />;
         })}
       </Tabs>
       <BenchmarkPopoverMenu handleDelete={handleDelete} handleRerun={handleRerun} />
-      {renderPlot && (
-        <Grid container direction="row">
-          <Grid xs={2} item>
-            <BenchmarkMetrics metrics={results} metricsIndex={metricsTab} />
-          </Grid>
-          <Divider orientation="vertical" flexItem className={classes.divider} />
-          <Grid xs={10} item className={classes.chart}>
-            <BenchmarkPlot
-              measurements={measurements}
-              ranges={ranges}
-              rangesX={rangesX}
-            />
-          </Grid>
+      <Grid container direction="row">
+        <Grid xs={2} item>
+          <BenchmarkMetrics metrics={results} metricsIndex={metricsTab} />
         </Grid>
-      )}
+        <Divider orientation="vertical" flexItem className={classes.divider} />
+        <Grid xs={10} item className={classes.chart}>
+          <BenchmarkPlot
+            measurements={measurements}
+            ranges={ranges}
+            rangesX={rangesX}
+          />
+        </Grid>
+      </Grid>
     </div>
   );
 }

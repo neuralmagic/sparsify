@@ -1,13 +1,23 @@
 import React from "react";
 import PropTypes from "prop-types";
 
+import { referenceDarkTheme } from "../../app/app-theme";
 import makeStyles from "./loader-overlay-styles";
 import LoaderLayout from "../loader-layout";
 import FadeTransition from "../fade-transition";
 
 const useStyles = makeStyles();
 
-function LoaderOverlay({ loading, status, error, errorTitle, progress, loaderSize }) {
+function LoaderOverlay({
+  loading,
+  status,
+  error,
+  errorTitle,
+  progress,
+  loaderSize,
+  children,
+  loaderChildren,
+}) {
   const transTime = 300;
   const classes = useStyles({ transTime });
 
@@ -29,8 +39,13 @@ function LoaderOverlay({ loading, status, error, errorTitle, progress, loaderSiz
         loaderSize={loaderSize}
         rootClass={classes.root}
         loaderClass={classes.loader}
+        loaderColor="inherit"
         errorClass={classes.error}
-      />
+        loaderSize={loaderSize}
+        loaderChildren={loaderChildren}
+      >
+        {children}
+      </LoaderLayout>
     </FadeTransition>
   );
 }
@@ -44,6 +59,9 @@ LoaderOverlay.propTypes = {
   rootClass: PropTypes.string,
   loaderClass: PropTypes.string,
   errorClass: PropTypes.string,
+  children: PropTypes.node,
+  loaderChildren: PropTypes.node,
+  loaderSize: PropTypes.number,
 };
 
 export default LoaderOverlay;

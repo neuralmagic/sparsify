@@ -76,7 +76,6 @@ export default function makeBenchmarkPlotStyles() {
           padding: theme.spacing(1),
           top: 0,
           right: theme.spacing(6),
-          backgroundColor: theme.palette.background.paper,
         },
         legendRow: {
           display: "flex",

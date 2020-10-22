@@ -18,34 +18,30 @@ function BenchmarkBaseline({ benchmark, handleDelete, handleRerun }) {
   const analysis = useSelector(selectBenchmarkResultsById(benchmark.benchmark_id));
   const classes = useStyles();
 
-  let { ranges, rangesX } = _.get(analysis, "baseline[0]", {});
+  let { ranges, rangesX } = _.get(analysis, "baseline[0]", {
+    ranges: [],
+    rangesX: [],
+  });
 
   const metrics = _.get(analysis, "baseline[0].results[0]", {});
-  let { measurements } = metrics;
-
-  const renderPlot =
-    measurements && _.get(ranges, "length", 0) > 0 && _.get(rangesX, "length", 0) > 0;
+  const { measurements } = metrics;
 
   return (
     <div className={classes.root}>
       <BenchmarkPopoverMenu handleDelete={handleDelete} handleRerun={handleRerun} />
-      {measurements && (
-        <Grid container direction="row">
-          <Grid item xs={2}>
-            {metrics && <BenchmarkMetricsSingle metrics={metrics} />}
-          </Grid>
-          <Divider orientation="vertical" flexItem className={classes.divider} />
-          <Grid item className={classes.chart}>
-            {renderPlot && (
-              <BenchmarkPlot
-                measurements={[measurements]}
-                ranges={ranges}
-                rangesX={rangesX}
-              />
-            )}
-          </Grid>
+      <Grid container direction="row">
+        <Grid item xs={2}>
+          <BenchmarkMetricsSingle metrics={metrics} />
         </Grid>
-      )}
+        <Divider orientation="vertical" flexItem className={classes.divider} />
+        <Grid item className={classes.chart}>
+          <BenchmarkPlot
+            measurements={measurements ? [measurements] : []}
+            ranges={ranges}
+            rangesX={rangesX}
+          />
+        </Grid>
+      </Grid>
     </div>
   );
 }

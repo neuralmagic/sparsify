@@ -56,7 +56,10 @@ function BenchmarkScaling({ benchmark, handleDelete, handleRerun }) {
     );
   }, [benchmark]);
 
-  let ranges, rangesX, measurements, metrics;
+  let ranges = [];
+  let rangesX = [];
+  let measurements = [];
+  let metrics = [];
 
   const baseline = _.get(analysis, "baseline", []).find(
     (result) => result.batchSize === selectBatch && result.coreCount === selectCore
@@ -100,9 +103,6 @@ function BenchmarkScaling({ benchmark, handleDelete, handleRerun }) {
     xAxisLabel = "Batch Size";
   }
 
-  const renderPlot =
-    measurements && _.get(ranges, "length", 0) > 0 && _.get(rangesX, "length", 0) > 0;
-
   return (
     <div className={classes.root}>
       <Tabs
@@ -122,10 +122,10 @@ function BenchmarkScaling({ benchmark, handleDelete, handleRerun }) {
 
       <Grid container direction="row">
         <Grid item xs={2}>
-          {_.get(metrics, "length", 0) === 1 && scalingTab === 0 && (
-            <BenchmarkMetricsSingle metrics={metrics[0]} />
+          {_.get(benchmark, "inference_models.length", 0) < 2 && scalingTab === 0 && (
+            <BenchmarkMetricsSingle metrics={metrics.length === 0 ? {} : metrics[0]} />
           )}
-          {_.get(metrics, "length", 0) === 2 && scalingTab === 0 && (
+          {_.get(benchmark, "inference_models.length", 0) === 2 && scalingTab === 0 && (
             <BenchmarkMetricsComparison metrics={metrics} metricsIndex={0} />
           )}
           {_.get(measurements, "length", 0) > 0 && scalingTab !== 0 && (
@@ -137,15 +137,13 @@ function BenchmarkScaling({ benchmark, handleDelete, handleRerun }) {
         </Grid>
         <Divider orientation="vertical" flexItem className={classes.divider} />
         <Grid item xs={8} className={classes.chart}>
-          {renderPlot && (
-            <BenchmarkPlot
-              measurements={measurements}
-              ranges={ranges}
-              rangesX={rangesX}
-              xAxisLabel={xAxisLabel}
-              yAxisLabel={yAxisLabel}
-            />
-          )}
+          <BenchmarkPlot
+            measurements={measurements}
+            ranges={ranges}
+            rangesX={rangesX}
+            xAxisLabel={xAxisLabel}
+            yAxisLabel={yAxisLabel}
+          />
         </Grid>
 
         <Grid

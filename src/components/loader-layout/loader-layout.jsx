@@ -16,6 +16,8 @@ function LoaderLayout({
   loaderSize,
   rootClass,
   loaderClass,
+  loaderColor,
+  loaderChildren,
   errorClass,
   children,
 }) {
@@ -63,21 +65,30 @@ function LoaderLayout({
       {showLoading && (
         <div className={`${loaderClass} ${classes.loader}`}>
           {showLoadingIndefinite && (
-            <CircularProgress color="primary" size={loaderSize} />
+            <div className={classes.progressRoot}>
+              <div className={classes.progressContainer}>
+                <CircularProgress color={loaderColor} size={loaderSize} />
+              </div>
+              {loaderChildren}
+            </div>
           )}
           {showLoadingProgress && (
-            <div className={classes.progressContainer}>
-              <CircularProgress
-                color="primary"
-                variant="static"
-                value={progress}
-                size={loaderSize}
-              />
-              <div className={classes.progressTextContainer}>
-                <Typography variant="h6" color="primary">
-                  {progress ? Math.round(progress) : 0}%
-                </Typography>
+            <div className={classes.progressRoot}>
+              <div className={classes.progressContainer}>
+                <CircularProgress
+                  color={loaderColor}
+                  variant="static"
+                  value={progress}
+                  size={loaderSize}
+                />
+                <div className={classes.progressTextContainer}>
+                  <Typography variant="h6" color={loaderColor}>
+                    {progress ? Math.round(progress) : 0}%
+                  </Typography>
+                </div>
               </div>
+
+              {loaderChildren}
             </div>
           )}
         </div>
@@ -99,6 +110,12 @@ LoaderLayout.propTypes = {
   loaderClass: PropTypes.string,
   errorClass: PropTypes.string,
   children: PropTypes.node,
+  loaderChildren: PropTypes.node,
+  loaderColor: PropTypes.oneOf(["primary", "secondary", "inherit"]),
+};
+
+LoaderLayout.defaultProps = {
+  loaderColor: "primary",
 };
 
 export default LoaderLayout;

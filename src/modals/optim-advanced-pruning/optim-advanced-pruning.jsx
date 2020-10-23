@@ -209,12 +209,11 @@ const LayersTableRow = ({ modifier, layer, data, lossLayerIndex, perfLayerIndex,
       <TableCell>
         <div className={classes.sparsityCell}>
           <Switch checked={layerSettings.sparsity !== null} color='primary'
-            onChange={e => changeLayerSettings({ sparsity: e.target.checked ? modifier.sparsity : null })}
-            onChangeCommitted={e => changeLayerSettings({ sparsity: e.target.checked ? modifier.sparsity : null })}/>
-          <Slider value={layerSettings.sparsity * 100} min={0} max={100}
-            disabled={layerSettings.sparsity === null}
-            onChange={(e, value) => changeLayerSettings({ sparsity: Number(value) / 100 })}
-            onChangeCommitted={(e, value) => changeLayerSettings({ sparsity: Number(value) / 100 }, true)}/>
+            onChange={e => changeLayerSettings({ sparsity: e.target.checked ? modifier.sparsity : null })}/>
+          {layerSettings.sparsity !== null &&
+            <Slider value={layerSettings.sparsity * 100} min={0} max={100}
+              onChange={(e, value) => changeLayerSettings({ sparsity: Number(value) / 100 })}
+              onChangeCommitted={(e, value) => changeLayerSettings({ sparsity: Number(value) / 100 }, true)}/>}
           <Typography className={classes.sparsityValue}>{layerSettings.sparsity ? `${formatWithMantissa(1, layerSettings.sparsity * 100)}%` : ''}</Typography>
         </div>
       </TableCell>
@@ -222,13 +221,13 @@ const LayersTableRow = ({ modifier, layer, data, lossLayerIndex, perfLayerIndex,
         <Typography>{formatWithMantissa(3, layer.est_recovery)}</Typography>
       </TableCell>
       <TableCell>
-        <Typography>{layer.est_perf_gain ? `${formatWithMantissa(1, layer.est_perf_gain)}x` : '--'}</Typography>
+        <Typography>{layer.est_perf_gain && layerSettings.sparsity !== null ? `${formatWithMantissa(1, layer.est_perf_gain)}x` : '-'}</Typography>
       </TableCell>
       <TableCell>
-        <Typography>{formatWithMantissa(4, layer.est_time)}</Typography>
+        <Typography>{layerSettings.sparsity !== null ? formatWithMantissa(4, layer.est_time) : '-'}</Typography>
       </TableCell>
       <TableCell>
-        <Typography>{formatWithMantissa(4, layer.est_time_baseline)}</Typography>
+        <Typography>{layerSettings.sparsity !== null ? formatWithMantissa(4, layer.est_time_baseline) : '-'}</Typography>
       </TableCell>
       <TableCell>
         <Typography className={clsx(classes.sensitivityLabel, { [lossSensitivity.type]: true })}>{lossSensitivity.value}</Typography>

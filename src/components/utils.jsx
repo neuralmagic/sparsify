@@ -179,7 +179,7 @@ export const lrModsTypes = [
 ];
 
 export const formatMetricValue = curry(({ mantissaLength }, value) =>
-  value ? value.toFixed(mantissaLength) : "--"
+  value ? value.toFixed(mantissaLength) : "-"
 );
 
 export const formatWithMantissa = (length, value) =>

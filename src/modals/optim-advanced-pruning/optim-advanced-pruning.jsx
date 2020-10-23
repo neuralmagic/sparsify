@@ -8,11 +8,12 @@ import { ResponsiveLine } from "@nivo/line"
 import { useSelector, useDispatch } from 'react-redux'
 import { Typography, IconButton, Grid, TextField, Table, TableBody, Dialog, DialogTitle,
   TableCell, TableContainer, TableHead, TableRow, Switch, Slider, DialogContent, Box,
-  Collapse, Divider, MenuItem } from '@material-ui/core'
+  Collapse, Divider, MenuItem, InputAdornment } from '@material-ui/core'
 import { withTheme } from '@material-ui/core/styles'
 import CloseIcon from '@material-ui/icons/Close'
 import ExpandMore from "@material-ui/icons/ExpandMore"
 import ChevronRight from "@material-ui/icons/ChevronRight"
+import SearchIcon from '@material-ui/icons/Search'
 import LayersChart from '../../components/layers-chart'
 import MetricItem from '../../components/metric-item'
 import { formatWithMantissa } from '../../components'
@@ -197,13 +198,11 @@ const LayersTableRow = ({ modifier, layer, data, lossLayerIndex, perfLayerIndex,
 
   return <React.Fragment>
     <TableRow key={layer.node_id} className={clsx(classes.root, { [classes.disabled]: layerSettings.sparsity === null })}>
-      <TableCell style={{ padding: 0 }}>
+      <TableCell className={classes.layerNameTableCell} style={{ paddingLeft: 0}}>
         <Typography className={classes.layerIndexText}>{data.index + 1}.</Typography>
         <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
           {open ? <ExpandMore/> : <ChevronRight/>}
         </IconButton>
-      </TableCell>
-      <TableCell style={{ paddingLeft: 0}}>
         <Typography>{data.weight_name}</Typography>
       </TableCell>
       <TableCell>
@@ -237,7 +236,6 @@ const LayersTableRow = ({ modifier, layer, data, lossLayerIndex, perfLayerIndex,
       </TableCell>
     </TableRow>
     <TableRow>
-      <TableCell style={{ paddingBottom: 0, paddingTop: 0 }}/>
       <TableCell style={{ padding: 0 }} colSpan={8}>
         <Collapse in={open} unmountOnExit>
           <Grid container direction="row" className={classes.layerDetails}>
@@ -332,15 +330,21 @@ const LayersTable = ({ modifier, layerData, className }) => {
       <Table size='small'>
         <TableHead className={classes.header}>
           <TableRow>
-            <TableCell size="small" style={{ padding: 0 }}>
-            </TableCell>
             <TableCell style={{ paddingLeft: 0 }}>
               <TextField
+                className={classes.searchInput}
                 variant='outlined'
-                label='Search Layers'
+                placeholder='Search Layers'
                 size='small'
                 value={searchTerm}
-                onChange={e => setSearchTerm(e.target.value)}/>
+                onChange={e => setSearchTerm(e.target.value)}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start" className={classes.searchInputAdornment}>
+                      <SearchIcon size="small"/>
+                    </InputAdornment>
+                  ),
+                }}/>
             </TableCell>
             <TableCell>
               <Typography>Sparsity Level %</Typography>

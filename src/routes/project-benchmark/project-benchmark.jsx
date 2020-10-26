@@ -84,22 +84,21 @@ function ProjectBenchmark({ match }) {
             ))}
           </div>
         </FadeTransitionGroup>
-
-        <BenchmarkCreateDialog
-          open={openCreate}
-          handleClose={() => setOpenCreate(false)}
-          projectId={projectId}
-        />
-        <Fab
-          variant="extended"
-          color="secondary"
-          arial-label="Add Benchmark"
-          className={classes.fab}
-          onClick={() => setOpenCreate(true)}
-        >
-          Add Benchmark
-        </Fab>
       </ScrollerLayout>
+      <BenchmarkCreateDialog
+        open={openCreate}
+        handleClose={() => setOpenCreate(false)}
+        projectId={projectId}
+      />
+      <Fab
+        variant="extended"
+        color="secondary"
+        arial-label="Add Benchmark"
+        className={classes.fab}
+        onClick={() => setOpenCreate(true)}
+      >
+        Add Benchmark
+      </Fab>
     </AbsoluteLayout>
   );
 }

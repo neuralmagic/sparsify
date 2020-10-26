@@ -12,7 +12,7 @@ export default function makeOptimAdvancedLRStyles() {
         content: {
           width: "85vw",
           height: "85vh",
-          maxWidth: "1024px",
+          maxWidth: "1280px",
           overflow: "unset",
           padding: 0,
           margin: 0,
@@ -24,12 +24,12 @@ export default function makeOptimAdvancedLRStyles() {
         },
         summary: {
           width: "100%",
-          height: `calc(33%)`,
+          height: `280px`,
           display: "flex",
         },
         modifiers: {
           width: "100%",
-          height: `calc(66% - ${theme.spacing(5)}px)`,
+          height: `calc(100% - 280px - ${theme.spacing(5)}px)`,
           marginTop: theme.spacing(5),
           display: "flex",
           flexDirection: "column",

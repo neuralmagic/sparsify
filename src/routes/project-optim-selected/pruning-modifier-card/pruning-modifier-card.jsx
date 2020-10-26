@@ -1,33 +1,12 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  Grid,
-  TextField,
-  Slider,
-  IconButton,
-  Popover,
-  Typography,
-  MenuItem,
-  CardContent,
-  Card,
-} from "@material-ui/core";
-import EditIcon from "@material-ui/icons/Edit";
-import MoreVertIcon from "@material-ui/icons/MoreVert";
-import LayersChart from "../../../components/layers-chart";
-import CustomLayerEdits from "../../../components/custom-layer-edits";
-import DisplayMetric from "../../../components/display-metric";
-import PruningSettings from "../../../components/pruning-settings";
 import AdvancedPruning from "../../../modals/optim-advanced-pruning";
 
-import { formatWithMantissa } from "../../../components";
 import makeStyles from "./pruning-modifier-styles";
-
 import {
   selectModifierAdjustableSettings,
   changeModifierAdjustableSettings,
-  selectSelectedProjectPrunableNodesById,
-  selectModifierHasCustomLayerEdits,
   summarizePruningModifier,
 } from "../../../store";
 import DisplayCard from "../../../components/display-card";
@@ -49,10 +28,6 @@ const PruningModifierCard = ({ modifier, optim, modelAnalysis }) => {
     selectModifierAdjustableSettings(modifier.modifier_id)
   );
   const modSummary = summarizePruningModifier(modifier, modelAnalysis);
-  console.log(modSummary);
-
-  console.log(modifier);
-  console.log(adjustableSettings);
 
   function updateModifierValues(settings, commit) {
     dispatch(
@@ -128,6 +103,7 @@ const PruningModifierCard = ({ modifier, optim, modelAnalysis }) => {
       <AdvancedPruning
         modifier={modifier}
         optim={optim}
+        modelAnalysis={modelAnalysis}
         open={advancedOpen}
         onClose={() => setAdvancedOpen(false)}
       />

@@ -118,8 +118,8 @@ function profilePerfDisplayValues(
       ? bestEstimatedState.val.est_time * 1000
       : null;
   const estPerfGain =
-    bestEstimatedState.val && bestEstimatedState.val.est_perf_gain
-      ? `${readableNumber(bestEstimatedState.val.est_perf_gain, 2)}x`
+    bestEstimatedState.val && bestEstimatedState.val.est_time_gain
+      ? `${readableNumber(bestEstimatedState.val.est_time_gain, 2)}x`
       : null;
 
   return {

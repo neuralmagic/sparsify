@@ -6,7 +6,7 @@ import SentimentVeryDissatisfiedIcon from "@material-ui/icons/SentimentVeryDissa
 
 import {
   selectSelectedOptim,
-  selectSelectedOptimsState,
+  selectSelectedOptimsState, selectSelectedProjectModelAnalysis,
   selectSelectedProjectState,
 } from "../../store";
 import makeStyles from "./project-optim-selected-styles";
@@ -27,6 +27,7 @@ function ProjectOptimSelected(props) {
 
   const optimsState = useSelector(selectSelectedOptimsState);
   const selectedProjectState = useSelector(selectSelectedProjectState);
+  const selectedModelAnalysis = useSelector(selectSelectedProjectModelAnalysis);
   const selectedOptimsState = useSelector(selectSelectedOptimsState);
   const [openExportModal, setOpenExportModal] = useState(false);
 
@@ -71,6 +72,7 @@ function ProjectOptimSelected(props) {
                     key={mod.modifier_id}
                     modifier={mod}
                     optim={optim}
+                    modelAnalysis={selectedModelAnalysis}
                   />
                 ))}
               </div>

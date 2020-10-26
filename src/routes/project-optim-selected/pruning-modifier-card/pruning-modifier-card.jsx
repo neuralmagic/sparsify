@@ -27,244 +27,118 @@ import {
   selectModifierAdjustableSettings,
   changeModifierAdjustableSettings,
   selectSelectedProjectPrunableNodesById,
-  selectModifierHasCustomLayerEdits
+  selectModifierHasCustomLayerEdits,
+  summarizePruningModifier,
 } from "../../../store";
+import DisplayCard from "../../../components/display-card";
+import DisplayCardMetrics from "../../../components/display-card-metrics";
+import DisplayCardBody from "../../../components/display-card-body";
+import DisplayCardActions from "../../../components/display-card-actions";
+import DisplayEpochRange from "../../../components/display-epoch-range";
+import DisplayTextField from "../../../components/display-text-field";
+import ChartPruning from "../../../components/chart-pruning";
+import DisplayPruningSettings from "../../../components/display-pruning-settings";
 
 const useStyles = makeStyles();
 
-const PruningModifierCard = ({ modifier, optim }) => {
+const PruningModifierCard = ({ modifier, optim, modelAnalysis }) => {
   const classes = useStyles();
-  const [advancedModalOpen, setAdvancedModalOpen] = useState(false);
-  const [menuAnchor, setMenuAnchor] = useState(null);
+  const [advancedOpen, setAdvancedOpen] = useState(false);
   const dispatch = useDispatch();
   const adjustableSettings = useSelector(
     selectModifierAdjustableSettings(modifier.modifier_id)
   );
-  const hasCustomLayerEdits = useSelector(
-    selectModifierHasCustomLayerEdits(modifier.modifier_id)
-  );
-  const layerData = useSelector(selectSelectedProjectPrunableNodesById);
-  const changeAdjustableSettings = (settings, commit) =>
-    dispatch(changeModifierAdjustableSettings({
-      modifierId: modifier.modifier_id,
-      settings,
-      commit
-    }))
+  const modSummary = summarizePruningModifier(modifier, modelAnalysis);
+  console.log(modSummary);
 
-  return (
-    <Card elevation={1} className={classes.root}>
-      <CardContent className={classes.layout}>
-        <div className={classes.metrics}>
-          <DisplayMetric title="Est. Speedup" size="large" rootClass={classes.metric}>
-            {formatWithMantissa(2, modifier.est_perf_gain)}x
-          </DisplayMetric>
-          <DisplayMetric title="Est. Time" size="large" rootClass={classes.metric}>
-            {formatWithMantissa(
-              2,
-              modifier.est_time ? modifier.est_time * 1000 : modifier.est_time
-            )}{" "}
-            ms
-          </DisplayMetric>
-          <DisplayMetric title="Recoverability" size="large" rootClass={classes.metric}>
-            {formatWithMantissa(4, modifier.est_recovery)}
-          </DisplayMetric>
-          <div className={classes.metricsDiv} />
-        </div>
+  console.log(modifier);
+  console.log(adjustableSettings);
 
-        <div className={classes.chart}>
-          <LayersChart
-            data={modifier.nodes}
-            layerData={layerData}
-            sparsityProp="sparsity"
-          />
-        </div>
-
-        <Grid item container direction="column" xs={1} className={classes.filtersRoot}>
-          <Grid item container justify="flex-end">
-            <IconButton
-              className={classes.editButton}
-              onClick={() => setAdvancedModalOpen(true)}
-              size="small"
-            >
-              <EditIcon />
-            </IconButton>
-            <IconButton
-              className={classes.menuButton}
-              onClick={(e) => setMenuAnchor(e.currentTarget)}
-              size="small"
-            >
-              <MoreVertIcon />
-            </IconButton>
-            <Popover
-              classes={{ paper: classes.popoverMenu }}
-              open={menuAnchor}
-              onClose={() => setMenuAnchor(null)}
-              anchorEl={menuAnchor}
-            >
-              <TextField
-                select
-                className={classes.pruningTypeSelect}
-                value="unstructured"
-                variant="outlined"
-                label="Pruning type"
-              >
-                <MenuItem value="unstructured">Unstructured</MenuItem>
-              </TextField>
-              <Typography className={classes.presetFiltersTitle}>
-                Preset filters
-              </Typography>
-              {[
-                {
-                  name: "filter_min_sparsity",
-                  label: "Min sparsity",
-                  value: Math.round(adjustableSettings.filter_min_sparsity * 100),
-                  suffix: "%",
-                },
-                {
-                  name: "filter_min_perf_gain",
-                  label: "Performance",
-                  value: Math.round(adjustableSettings.filter_min_perf_gain * 100),
-                  suffix: "%",
-                },
-                {
-                  name: "filter_max_loss_drop",
-                  label: "Loss",
-                  value: adjustableSettings.filter_max_loss_drop,
-                  divideBy100: false,
-                  max: 1,
-                  step: 0.01,
-                },
-              ].map(
-                ({
-                  name,
-                  value,
-                  label,
-                  min = 0,
-                  max = 100,
-                  step = 1,
-                  divideBy100 = true,
-                  suffix = "",
-                }) => {
-                  const valueChange = (value, commit = false) =>
-                    changeAdjustableSettings({ [name]: divideBy100 ? value / 100 : value }, commit)
-
-                  return (
-                    <Grid
-                      key={name}
-                      item
-                      container
-                      direction="row"
-                      spacing={2}
-                      alignItems="center"
-                    >
-                      <Grid item>
-                        <TextField
-                          value={`${value || 0}${suffix}`}
-                          className={classes.popoverInput}
-                          disabled={hasCustomLayerEdits}
-                          size="small"
-                          variant="outlined"
-                          label={label}
-                        />
-                      </Grid>
-                      <Grid item xs>
-                        <Slider
-                          className={classes.popoverSlider}
-                          value={value}
-                          min={min}
-                          max={max}
-                          step={step}
-                          disabled={hasCustomLayerEdits}
-                          onChange={(e, value) => valueChange(value)}
-                          onChangeCommitted={(e, value) => valueChange(value, true)}
-                        />
-                      </Grid>
-                    </Grid>
-                  )
-                })}
-              <Typography className={classes.presetFiltersTitle}>
-                Pruning Balance
-              </Typography>
-              <Slider classes={{
-                root: classes.perfSlider,
-                markLabel: classes.perfSliderMarkLabel,
-                markLabelActive: classes.perfSliderMarkLabelActive }}
-              min={0}
-              max={1}
-              value={adjustableSettings.balance_perf_loss}
-              step={0.01}
-              disabled={hasCustomLayerEdits}
-              marks={[{ value: 0, label: 'Performance' }, { value: 1, label: 'Loss' }]}
-              onChange={(e, value) => changeAdjustableSettings({ balance_perf_loss: Number(value) })}
-              onChangeCommitted={(e, value) => changeAdjustableSettings({ balance_perf_loss: Number(value) }, true)}/>
-            </Popover>
-          </Grid>
-          { !hasCustomLayerEdits && <ModifierSparsitySlider modifier={modifier} classes={classes} /> }
-          { hasCustomLayerEdits && <CustomLayerEdits/> }
-          <PruningSettings modifier={modifier} showRecovery={false} />
-        </Grid>
-        <AdvancedPruning
-          modifier={modifier}
-          optim={optim}
-          open={advancedModalOpen}
-          onClose={() => setAdvancedModalOpen(false)}
-        />
-      </CardContent>
-    </Card>
-  );
-};
-
-const ModifierSparsitySlider = ({ modifier, classes }) => {
-  const dispatch = useDispatch();
-  const adjustableSettings = useSelector(
-    selectModifierAdjustableSettings(modifier.modifier_id)
-  );
-  const hasCustomLayerEdits = useSelector(
-    selectModifierHasCustomLayerEdits(modifier.modifier_id)
-  );
-
-  const changeSparsity = (value, commit = false) =>
+  function updateModifierValues(settings, commit) {
     dispatch(
       changeModifierAdjustableSettings({
-        commit,
         modifierId: modifier.modifier_id,
-        settings: { sparsity: value },
+        settings,
+        commit,
       })
-    )
+    );
+  }
 
   return (
-    <Grid
-      className={classes.sparsitySliderRoot}
-      item
-      container
-      direction="row"
-      alignItems="center"
-    >
-      <Grid item>
-        <TextField
-          disabled={hasCustomLayerEdits}
-          value={`${Math.round(adjustableSettings.sparsity * 100)}%`}
-          className={classes.sparsityInput}
-          size="small"
-          variant="outlined"
-          label="Sparsity"
+    <DisplayCard showEditButton={true} onEditClick={() => setAdvancedOpen(true)}>
+      <DisplayCardMetrics metricsGroups={modSummary.metricsGroups} />
+
+      <DisplayCardBody>
+        <ChartPruning layerSummaries={modSummary.summaries} />
+      </DisplayCardBody>
+
+      <DisplayCardActions>
+        <DisplayPruningSettings
+          sparsity={adjustableSettings.sparsity}
+          perfRecoveryBalance={adjustableSettings.balance_perf_loss}
+          filterSparsity={adjustableSettings.filter_min_sparsity}
+          filterPerf={adjustableSettings.filter_min_perf_gain}
+          filterRecovery={adjustableSettings.filter_min_recovery}
+          onSparsityChange={(val, commit) =>
+            updateModifierValues({ sparsity: val }, commit)
+          }
+          onPerfRecoveryBalanceChange={(val, commit) =>
+            updateModifierValues({ balance_perf_loss: val }, commit)
+          }
+          onFilterSparsityChange={(val, commit) =>
+            updateModifierValues({ filter_min_sparsity: val }, commit)
+          }
+          onFilterPerfChange={(val, commit) =>
+            updateModifierValues({ filter_min_perf_gain: val }, commit)
+          }
+          onFilterRecoveryChange={(val, commit) =>
+            updateModifierValues({ filter_min_recovery: val }, commit)
+          }
         />
-      </Grid>
-      <Grid item xs>
-        <Slider
-          disabled={hasCustomLayerEdits}
-          value={adjustableSettings.sparsity * 100}
-          onChange={(e, value) => changeSparsity(value / 100)}
-          onChangeCommitted={(e, value) => changeSparsity(value / 100, true)}
+        <DisplayEpochRange
+          label="Active Epoch Range"
+          startEpoch={`${adjustableSettings.start_epoch}`}
+          endEpoch={`${adjustableSettings.end_epoch}`}
+          onStartEpochChange={(value) =>
+            updateModifierValues({ start_epoch: value }, false)
+          }
+          onEndEpochChange={(value) =>
+            updateModifierValues({ end_epoch: value }, false)
+          }
+          onStartFinished={() =>
+            updateModifierValues(
+              { start_epoch: parseFloat(adjustableSettings.start_epoch) },
+              true
+            )
+          }
+          onEndFinished={() =>
+            updateModifierValues(
+              { end_epoch: parseFloat(adjustableSettings.end_epoch) },
+              true
+            )
+          }
         />
-      </Grid>
-    </Grid>
+        <DisplayTextField
+          label="Update"
+          className={classes.update}
+          value={`${adjustableSettings.update_frequency}`}
+        />
+      </DisplayCardActions>
+
+      <AdvancedPruning
+        modifier={modifier}
+        optim={optim}
+        open={advancedOpen}
+        onClose={() => setAdvancedOpen(false)}
+      />
+    </DisplayCard>
   );
 };
 
 PruningModifierCard.propTypes = {
   optim: PropTypes.object.isRequired,
   modifier: PropTypes.object.isRequired,
+  modelAnalysis: PropTypes.object.isRequired,
 };
 
 export default PruningModifierCard;

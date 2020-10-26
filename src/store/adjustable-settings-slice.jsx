@@ -28,7 +28,7 @@ const modifierAdjustableSettings = [
   "balance_perf_loss",
   "filter_min_sparsity",
   "filter_min_perf_gain",
-  "filter_max_loss_drop",
+  "filter_min_recovery",
 ];
 
 const layerAdjustableSettings = ["sparsity"];

@@ -2,12 +2,12 @@ import React from "react";
 import PropTypes from "prop-types";
 import { Typography } from "@material-ui/core";
 
-import makeStyles from "./epoch-range-styles";
+import makeStyles from "./display-epoch-range-styles";
 import DisplayTextField from "../display-text-field";
 
 const useStyles = makeStyles();
 
-function EpochRange({
+function DisplayEpochRange({
   label,
   startEpoch,
   endEpoch,
@@ -45,7 +45,7 @@ function EpochRange({
   );
 }
 
-EpochRange.propTypes = {
+DisplayEpochRange.propTypes = {
   label: PropTypes.string.isRequired,
   startEpoch: PropTypes.string.isRequired,
   endEpoch: PropTypes.string.isRequired,
@@ -56,4 +56,4 @@ EpochRange.propTypes = {
   onEndFinished: PropTypes.func,
 };
 
-export default EpochRange;
+export default DisplayEpochRange;

@@ -10,7 +10,7 @@ import Background from "./background";
 import DisplayCard from "../../../components/display-card";
 import DisplayCardBody from "../../../components/display-card-body";
 import DisplayCardActions from "../../../components/display-card-actions";
-import EpochRange from "../../../components/epoch-range";
+import DisplayEpochRange from "../../../components/display-epoch-range";
 
 const useStyles = makeStyles();
 
@@ -115,7 +115,7 @@ const TrainingSummaryCard = ({ projectId, optim }) => {
       </DisplayCardBody>
 
       <DisplayCardActions noMargin={true}>
-        <EpochRange
+        <DisplayEpochRange
           label="Global Epoch Range"
           startEpoch={startEpoch}
           endEpoch={endEpoch}

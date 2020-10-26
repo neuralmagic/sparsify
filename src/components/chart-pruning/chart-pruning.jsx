@@ -1,19 +1,36 @@
 import React from "react";
 import { Typography } from "@material-ui/core";
-import Card from "@material-ui/core/Card";
 import PropTypes from "prop-types";
 import { ResponsiveLine } from "@nivo/line";
 
-import makeStyles from "./learning-rate-chart-styles";
+import makeStyles from "./chart-pruning-styles";
 import { referenceLightTheme } from "../../app/app-theme";
-import {adjustColorOpacity, readableNumber, scientificNumber} from "../utils";
+import { adjustColorOpacity, readableNumber } from "../utils";
+import ChartTooltip from "../chart-tooltip";
 
 const useStyles = makeStyles();
 
-function LearningRateChart({ lrSummaries }) {
-  const classes = useStyles();
+function createTooltip(val) {
+  const data = val.hasOwnProperty("data") ? val.data : val.point.data;
+  const color = val.hasOwnProperty("color") ? val.color : val.point.borderColor;
+  const displayMetrics = [
+    { title: "Layer Index", val: data.x },
+    { title: "Layer ID", val: data.id },
+    { title: "Layer Type", val: data.op_type },
+    { title: "Weight Name", val: data.weight_name },
+    { title: "Sparsity", val: `${data.y}%` },
+  ];
 
-  const selected = lrSummaries.values;
+  return (
+    <ChartTooltip color={color} title="Sparsity" displayMetrics={displayMetrics} />
+  );
+}
+
+function ChartPruning({ layerSummaries }) {
+  const classes = useStyles();
+  console.log(layerSummaries);
+
+  const selected = layerSummaries.values;
   const selectedObjects = selected.objects;
   const selectedRanges = selected.ranges;
   const selectedRangeMax =
@@ -22,60 +39,6 @@ function LearningRateChart({ lrSummaries }) {
       : null;
   const selectedRangeMin =
     selectedRanges && selectedRanges.length > 0 ? selectedRanges[0] : null;
-  const epochStart = selectedObjects ? selectedObjects[0].x : null;
-  const epochEnd = selectedObjects
-    ? selectedObjects[selectedObjects.length - 1].x
-    : null;
-
-  function tooltip(val) {
-    const data = val.hasOwnProperty("data") ? val.data : val.point.data;
-    const color = val.hasOwnProperty("color") ? val.color : val.point.borderColor;
-
-    const innerHtml = (
-      <div className={classes.tooltipLayout}>
-        <div className={classes.tooltipHeader}>
-          <div
-            style={{ backgroundColor: color }}
-            className={classes.tooltipHeaderColor}
-          />
-          <Typography color="textSecondary" variant="subtitle2">Learning Rate</Typography>
-        </div>
-
-        <div>
-          <div className={classes.tooltipValueRow}>
-            <Typography
-                color="textSecondary"
-                variant="subtitle2"
-                className={classes.tooltipValueRowLabel}
-            >
-              LR:
-            </Typography>
-            <Typography color="textPrimary" variant="subtitle2">
-              {data.value ? scientificNumber(data.value, 4) : "--"}
-            </Typography>
-          </div>
-          <div className={classes.tooltipValueRow}>
-            <Typography
-                color="textSecondary"
-                variant="subtitle2"
-                className={classes.tooltipValueRowLabel}
-            >
-              Epoch:
-            </Typography>
-            <Typography color="textPrimary" variant="subtitle2">
-              {data.x}
-            </Typography>
-          </div>
-        </div>
-      </div>
-    );
-
-    return (
-      <Card elevation={2} className={classes.tooltipRoot}>
-        {innerHtml}
-      </Card>
-    );
-  }
 
   return (
     <div className={classes.root}>
@@ -96,7 +59,7 @@ function LearningRateChart({ lrSummaries }) {
                 className={classes.chartAxisTitle}
                 noWrap
               >
-                Learning Rate
+                Sparsity
               </Typography>
             </div>
           </div>
@@ -109,7 +72,7 @@ function LearningRateChart({ lrSummaries }) {
           </Typography>
         </div>
         <ResponsiveLine
-          data={[{ id: "Learning Rate", data: selectedObjects }]}
+          data={[{ id: "Sparsity", data: selectedObjects }]}
           xScale={{ type: "point" }}
           yScale={{ type: "linear", min: "auto", max: "auto" }}
           curve="monotoneX"
@@ -135,7 +98,7 @@ function LearningRateChart({ lrSummaries }) {
           enableCrosshair={false}
           useMesh={true}
           animate={true}
-          tooltip={tooltip}
+          tooltip={createTooltip}
           minValue={selectedRangeMin ? selectedRangeMin : "auto"}
           maxValue={selectedRangeMax ? selectedRangeMax : "auto"}
         />
@@ -146,29 +109,29 @@ function LearningRateChart({ lrSummaries }) {
           variant="subtitle2"
           className={classes.chartYAxisNumber}
         >
-          {epochStart}
+          0
         </Typography>
         <Typography
           color="textSecondary"
           variant="subtitle2"
           className={classes.chartAxisTitle}
         >
-          Epoch
+          Layer Depth
         </Typography>
         <Typography
           color="textSecondary"
           variant="subtitle2"
           className={classes.chartYAxisNumber}
         >
-          {epochEnd}
+          {selectedObjects.length - 1}
         </Typography>
       </div>
     </div>
   );
 }
 
-LearningRateChart.propTypes = {
-  lrSummaries: PropTypes.object.isRequired,
+ChartPruning.propTypes = {
+  layerSummaries: PropTypes.object.isRequired,
 };
 
-export default LearningRateChart;
+export default ChartPruning;

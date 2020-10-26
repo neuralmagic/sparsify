@@ -17,13 +17,13 @@ import CloseIcon from "@material-ui/icons/Close";
 import { scientificNumber } from "../../components";
 
 import makeStyles from "./optim-advanced-lr-styles";
-import { summarizeLearningRateValues, updateOptimsModifierThunk } from "../../store";
-import LearningRateChart from "../../components/learning-rate-chart";
+import { summarizeLRModifier, updateOptimsModifierThunk } from "../../store";
+import ChartLearningRate from "../../components/chart-learning-rate";
 import ScrollerLayout from "../../components/scroller-layout";
 import LRModRow from "./lr-mod-row";
 import DisplayCardMetrics from "../../components/display-card-metrics";
 import DisplayCardBody from "../../components/display-card-body";
-import EpochRange from "../../components/epoch-range";
+import DisplayEpochRange from "../../components/display-epoch-range";
 import DisplayCardActions from "../../components/display-card-actions";
 import LRModHeader from "./lr-mod-header";
 
@@ -61,28 +61,11 @@ function OptimAdvancedLRDialog({
     init_lr: 0.1,
     args: {},
   };
-  const startEpoch =
-    modifier.start_epoch > -1 ? modifier.start_epoch : globalStartEpoch;
-  const endEpoch = modifier.end_epoch > -1 ? modifier.end_epoch : globalEndEpoch;
-
-  const lrSummaries = summarizeLearningRateValues(
+  const modSummary = summarizeLRModifier(
     modifier,
     globalStartEpoch,
     globalEndEpoch
   );
-  const initLR = lrSummaries ? lrSummaries.values.objects[0].value : null;
-  const finalLR = lrSummaries
-    ? lrSummaries.values.objects[lrSummaries.values.objects.length - 1].value
-    : null;
-  const metricsGroups = [
-    {
-      title: "Summary",
-      metrics: [
-        { title: "Initial LR", value: scientificNumber(initLR) },
-        { title: "Final LR", value: scientificNumber(finalLR) },
-      ],
-    },
-  ];
 
   function lrModSave(lrMod, lrModIndex) {
     const updatedLRMods = [...lrMods];
@@ -142,18 +125,18 @@ function OptimAdvancedLRDialog({
       <DialogContent className={classes.content}>
         <div className={classes.layout}>
           <div className={classes.summary}>
-            <DisplayCardMetrics metricsGroups={metricsGroups} />
+            <DisplayCardMetrics metricsGroups={modSummary.metricsGroups} />
 
             <DisplayCardBody>
-              <LearningRateChart lrSummaries={lrSummaries} />
+              <ChartLearningRate lrSummaries={modSummary.summaries} />
             </DisplayCardBody>
 
             <DisplayCardActions noMargin={true}>
-              <EpochRange
+              <DisplayEpochRange
                 label="Active Epoch Range"
                 disabled={true}
-                startEpoch={startEpoch}
-                endEpoch={endEpoch}
+                startEpoch={`${modSummary.startEpoch}`}
+                endEpoch={`${modSummary.endEpoch}`}
               />
             </DisplayCardActions>
           </div>

@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
 
-import { summarizeLearningRateValues, updateOptimsThunk } from "../../../store";
+import { summarizeLRModifier, updateOptimsThunk } from "../../../store";
 import { scientificNumber } from "../../../components";
-import LearningRateChart from "../../../components/learning-rate-chart";
+import ChartLearningRate from "../../../components/chart-learning-rate";
 import OptimAdvancedLRDialog from "../../../modals/optim-advanced-lr";
 import DisplayCard from "../../../components/display-card";
 import DisplayCardActions from "../../../components/display-card-actions";
-import EpochRange from "../../../components/epoch-range";
+import DisplayEpochRange from "../../../components/display-epoch-range";
 import DisplayCardBody from "../../../components/display-card-body";
 import DisplayCardMetrics from "../../../components/display-card-metrics";
 
@@ -19,44 +19,26 @@ const LRModifierCard = ({
   globalEndEpoch,
 }) => {
   const [advancedOpen, setAdvancedOpen] = useState(false);
-
-  const startEpoch =
-    modifier.start_epoch > -1 ? modifier.start_epoch : globalStartEpoch;
-  const endEpoch = modifier.end_epoch > -1 ? modifier.end_epoch : globalEndEpoch;
-
-  const lrSummaries = summarizeLearningRateValues(
+  const modSummary = summarizeLRModifier(
     modifier,
     globalStartEpoch,
     globalEndEpoch
   );
-  const initLR = lrSummaries ? lrSummaries.values.objects[0].value : null;
-  const finalLR = lrSummaries
-    ? lrSummaries.values.objects[lrSummaries.values.objects.length - 1].value
-    : null;
-  const metricsGroups = [
-    {
-      title: "Summary",
-      metrics: [
-        { title: "Initial LR", value: scientificNumber(initLR) },
-        { title: "Final LR", value: scientificNumber(finalLR) },
-      ],
-    },
-  ];
 
   return (
     <DisplayCard showEditButton={true} onEditClick={() => setAdvancedOpen(true)}>
-      <DisplayCardMetrics metricsGroups={metricsGroups} />
+      <DisplayCardMetrics metricsGroups={modSummary.metricsGroups} />
 
       <DisplayCardBody>
-        <LearningRateChart lrSummaries={lrSummaries} />
+        <ChartLearningRate lrSummaries={modSummary.summaries} />
       </DisplayCardBody>
 
       <DisplayCardActions>
-        <EpochRange
+        <DisplayEpochRange
           label="Active Epoch Range"
           disabled={true}
-          startEpoch={startEpoch}
-          endEpoch={endEpoch}
+          startEpoch={`${modSummary.startEpoch}`}
+          endEpoch={`${modSummary.endEpoch}`}
         />
       </DisplayCardActions>
 

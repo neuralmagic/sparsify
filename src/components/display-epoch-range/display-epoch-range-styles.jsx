@@ -1,6 +1,6 @@
 import { makeStyles } from "@material-ui/core/styles";
 
-export default function makeEpochRangeStyles() {
+export default function makeDisplayEpochRangeStyles() {
   return makeStyles(
     (theme) => {
       return {
@@ -22,6 +22,6 @@ export default function makeEpochRangeStyles() {
         },
       };
     },
-    { name: "EpochRange" }
+    { name: "DisplayEpochRange" }
   );
 }

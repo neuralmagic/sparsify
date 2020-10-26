@@ -156,7 +156,7 @@ function LRModRow({ lrModIndex, lrMod, onSave, onDelete }) {
 }
 
 LRModRow.propTypes = {
-  lrModIndex: PropTypes.oneOfType(PropTypes.number, PropTypes.string).isRequired,
+  lrModIndex: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
   lrMod: PropTypes.object.isRequired,
   onSave: PropTypes.func,
   onDelete: PropTypes.func,

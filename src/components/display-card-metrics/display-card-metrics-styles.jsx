@@ -30,6 +30,41 @@ export default function makeDisplayCardMetricsStyles() {
           display: "flex",
           flexDirection: "column",
         },
+        metric: {
+          marginBottom: theme.spacing(2),
+        },
+
+        swipeActions: {
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        },
+        swipeActionBody: {
+          flex: "1",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+        },
+        swipeActionTitle: {},
+        pagination: {
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          marginTop: theme.spacing(0.5),
+        },
+        pageMarker: {
+          width: theme.spacing(0.5),
+          height: theme.spacing(0.5),
+          marginLeft: theme.spacing(0.25),
+          marginRight: theme.spacing(0.25),
+          backgroundColor: theme.palette.divider,
+          borderRadius: "100%",
+          overflow: "hidden",
+        },
+        pageMarkerSelected: {
+          backgroundColor: theme.palette.primary.main,
+        },
 
         divider: {
           position: "absolute",
@@ -37,18 +72,6 @@ export default function makeDisplayCardMetricsStyles() {
           height: "100%",
           backgroundColor: theme.palette.divider,
           right: theme.spacing(2),
-        },
-
-        metrics: {
-          width: `calc(192px - ${theme.spacing(4)}px)`,
-          height: "100%",
-          paddingRight: theme.spacing(4),
-          display: "flex",
-          flexDirection: "column",
-          position: "relative",
-        },
-        metric: {
-          marginBottom: theme.spacing(2),
         },
       };
     },

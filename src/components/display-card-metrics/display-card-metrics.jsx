@@ -44,6 +44,7 @@ const DisplayCardMetrics = ({ metricsGroups }) => {
       {metricsGroups.length > 1 && (
         <div className={classes.swipeActions}>
           <IconButton
+            size="small"
             disabled={index <= 0}
             onClick={() => setIndex(index - 1)}
             className={classes.swipeButton}
@@ -72,8 +73,9 @@ const DisplayCardMetrics = ({ metricsGroups }) => {
           </div>
 
           <IconButton
-            disabled={index <= 0}
-            onClick={() => setIndex(index - 1)}
+            size="small"
+            disabled={index >= metricsGroups.length - 1}
+            onClick={() => setIndex(index + 1)}
             className={classes.swipeButton}
           >
             <ChevronRightIcon className={classes.swipeButtonIcon} />

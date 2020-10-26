@@ -34,7 +34,7 @@ function DisplayTextField({
 DisplayTextField.propTypes = {
   label: PropTypes.string.isRequired,
   value: PropTypes.string.isRequired,
-  disabled: PropTypes.bool.isRequired,
+  disabled: PropTypes.bool,
   className: PropTypes.string,
   onValueChange: PropTypes.func,
   onFinished: PropTypes.func,

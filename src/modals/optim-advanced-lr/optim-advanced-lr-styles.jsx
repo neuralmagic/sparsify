@@ -10,8 +10,8 @@ export default function makeOptimAdvancedLRStyles() {
           top: theme.spacing(1),
         },
         content: {
-          width: "80vw",
-          height: "80vh",
+          width: "85vw",
+          height: "85vh",
           maxWidth: "1024px",
           overflow: "unset",
           padding: 0,

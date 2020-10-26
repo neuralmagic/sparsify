@@ -37,6 +37,10 @@ export default function makePruningModifierStyles() {
           flex: "1 0",
           height: "100%",
         },
+        update: {
+          width: theme.spacing(12),
+          marginTop: theme.spacing(2),
+        },
 
         sparsitySliderRoot: {
           marginTop: theme.spacing(2),

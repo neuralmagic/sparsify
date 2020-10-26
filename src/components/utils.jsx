@@ -51,6 +51,20 @@ export function readableNumber(num, digits = 2) {
   return `${shiftedNum.toFixed(digits)} ${lookup[index].symbol}`;
 }
 
+export function formattedNumber(num, digits = 2, suffix = null) {
+  if (!num && num !== 0) {
+    return "--";
+  }
+
+  let formatted = `${num.toFixed(digits)}`;
+
+  if (suffix) {
+    formatted += `${suffix}`;
+  }
+
+  return formatted;
+}
+
 export function scientificNumber(num, digits = 2) {
   if (!num && num !== 0) {
     return "";

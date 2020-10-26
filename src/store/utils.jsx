@@ -1,6 +1,7 @@
-import { sum } from "ramda";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { serverOnline, serverOffline, serverLoading } from "./server-slice";
+import { scientificNumber, formattedNumber, readableNumber } from "../components";
+import { sum } from "ramda";
 
 export const STATUS_IDLE = "idle";
 export const STATUS_LOADING = "loading";
@@ -173,11 +174,7 @@ export function summarizeObjValuesArray(
   return summary;
 }
 
-export function summarizeLearningRateValues(
-  modifier,
-  globalStartEpoch,
-  globalEndEpoch
-) {
+export function summarizeLRModifier(modifier, globalStartEpoch, globalEndEpoch) {
   const startEpoch = Math.round(
     modifier.start_epoch > -1 ? modifier.start_epoch : globalStartEpoch
   );
@@ -243,10 +240,137 @@ export function summarizeLearningRateValues(
     });
   }
 
-  return summarizeObjValuesArray(
+  const summaries = summarizeObjValuesArray(
     values,
     (val) => val.epoch,
     (val) => val.lr,
     (val) => val.mod
   );
+
+  const initLR = summaries ? summaries.values.objects[0].value : null;
+  const finalLR = summaries
+    ? summaries.values.objects[summaries.values.objects.length - 1].value
+    : null;
+
+  return {
+    startEpoch: modifier.start_epoch > -1 ? modifier.start_epoch : globalStartEpoch,
+    endEpoch: modifier.end_epoch > -1 ? modifier.end_epoch : globalEndEpoch,
+    summaries,
+    metricsGroups: [
+      {
+        title: "Summary",
+        metrics: [
+          { title: "Initial LR", value: scientificNumber(initLR) },
+          { title: "Final LR", value: scientificNumber(finalLR) },
+        ],
+      },
+    ],
+  };
+}
+
+export function summarizePruningModifier(modifier, modelAnalysis) {
+  const nodeLookup = {};
+
+  if (modelAnalysis && modelAnalysis.nodes) {
+    modelAnalysis.nodes.forEach((node) => {
+      nodeLookup[node.id] = node;
+    });
+  }
+  const perfGainTitle = modifier.est_time_gain
+    ? "Estimated Speedup"
+    : "FLOPS Reduction";
+  const perfGain = modifier.est_time_gain
+    ? modifier.est_time_gain
+    : modifier.flops_gain;
+  const summaries = summarizeObjValuesArray(
+    modifier.nodes,
+    (node, index) => index,
+    (node) => (node.sparsity ? node.sparsity * 100 : 0.0),
+    (node) =>
+      nodeLookup.hasOwnProperty(node.node_id) ? nodeLookup[node.node_id] : null
+  );
+  summaries.values.ranges = [0.0, 33.33, 66.67, 100.0];
+  summaries.values.min = 0;
+  summaries.values.max = 100.0;
+
+  return {
+    startEpoch: modifier.start_epoch,
+    endEpoch: modifier.end_epoch,
+    summaries,
+    metricsGroups: [
+      {
+        title: "Summary",
+        metrics: [
+          { title: perfGainTitle, value: formattedNumber(perfGain, 2, "x") },
+          {
+            title: "Estimated Compression",
+            value: formattedNumber(modifier.compression, 2, "x"),
+          },
+          {
+            title: "Recovery Confidence",
+            value: formattedNumber(modifier.est_recovery, 2),
+          },
+        ],
+      },
+      {
+        title: "Performance",
+        metrics: [
+          {
+            title: "Estimated Time",
+            value: formattedNumber(
+              modifier.est_time ? modifier.est_time * 1000 : null,
+              2,
+              " ms"
+            ),
+          },
+          {
+            title: "Baseline Time",
+            value: formattedNumber(
+              modifier.est_time_baseline ? modifier.est_time_baseline * 1000 : null,
+              2,
+              " ms"
+            ),
+          },
+          {
+            title: "Estimated Speedup",
+            value: formattedNumber(modifier.est_time_gain, 2, "x"),
+          },
+        ],
+      },
+      {
+        title: "FLOPS",
+        metrics: [
+          {
+            title: "Estimated FLOPS",
+            value: readableNumber(modifier.flops, 1),
+          },
+          {
+            title: "Baseline FLOPS",
+            value: readableNumber(modifier.flops_baseline, 1),
+          },
+          {
+            title: "FLOPS Reduction",
+            value: formattedNumber(modifier.flops_gain, 2, "x"),
+          },
+        ],
+      },
+      {
+        title: "Params",
+        metrics: [
+          {
+            title: "Estimated Params",
+            value: readableNumber(modifier.params, 1),
+          },
+          {
+            title: "Baseline Params",
+            value: readableNumber(modifier.params_baseline, 1),
+          },
+          {
+            title: "Estimated Compression",
+            value: formattedNumber(modifier.compression, 2, "x"),
+          },
+        ],
+      },
+    ],
+  };
 }

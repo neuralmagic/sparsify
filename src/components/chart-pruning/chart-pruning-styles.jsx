@@ -1,6 +1,6 @@
 import { makeStyles } from "@material-ui/core/styles";
 
-export default function makeLearningRateChartStyles() {
+export default function makeChartPruningStyles() {
   return makeStyles(
     (theme) => {
       return {
@@ -45,33 +45,8 @@ export default function makeLearningRateChartStyles() {
           marginTop: theme.spacing(1),
           marginLeft: theme.spacing(2),
         },
-        tooltipRoot: {
-          padding: theme.spacing(1),
-        },
-        tooltipLayout: {
-          display: "flex",
-          flexDirection: "column",
-        },
-        tooltipHeader: {
-          display: "flex",
-          alignItems: "center",
-          marginBottom: theme.spacing(1),
-        },
-        tooltipHeaderColor: {
-          width: "16px",
-          height: "16px",
-          marginRight: theme.spacing(1),
-          borderRadius: "16px",
-        },
-        tooltipValueRow: {
-          display: "flex",
-          marginBottom: theme.spacing(0.5),
-        },
-        tooltipValueRowLabel: {
-          marginRight: theme.spacing(1),
-        },
       };
     },
-    { name: "LearningRateChart" }
+    { name: "ChartPruning" }
   );
 }

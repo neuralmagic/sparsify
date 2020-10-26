@@ -6,7 +6,7 @@ export default function makeDisplayCardStyles() {
       return {
         card: {
           position: "relative",
-          height: "320px",
+          height: "360px",
           overflow: "unset",
         },
         content: {

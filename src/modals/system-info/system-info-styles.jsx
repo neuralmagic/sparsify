@@ -33,6 +33,7 @@ export default function createSystemInfoStyles(theme) {
         link: {
           color: theme.palette.text.primary,
           cursor: "pointer",
+          textDecoration: "underline",
         },
       };
     },

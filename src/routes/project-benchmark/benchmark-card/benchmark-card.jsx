@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from "react";
+import PropTypes from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
-import { Typography, Card, Button } from "@material-ui/core";
-import moment from "moment";
+import { Typography, Card, Button, Grid } from "@material-ui/core";
 import _ from "lodash";
 
 import {
   getBenchmarksThunk,
+  createBenchmarkCopyThunk,
   deleteBenchmarkThunk,
   selectCreatedBenchmark,
-  selectCreatedBenchmarkId,
+  selectSelectedOptimsState,
   STATUS_FAILED,
   STATUS_LOADING,
   STATUS_SUCCEEDED,
@@ -20,30 +21,164 @@ import BenchmarkScaling from "../benchmark-scaling";
 import GrowTransitions from "../../../components/grow-transition";
 
 import makeStyles from "./benchmark-card-styles";
-import LoaderLayout from "../../../components/loader-layout";
-import { JOB_CANCELED } from "../../../api";
-import FadeTransitionGroup from "../../../components/delayed-fade-transition-group";
+import { JOB_CANCELED, JOB_COMPLETED, JOB_PENDING, JOB_STARTED } from "../../../api";
+import {
+  dateUtcToLocal,
+  dateUtcToLocalString,
+  inferenceEngineToName,
+} from "../../../components";
+import { Link } from "react-router-dom";
+import { createProjectOptimPath } from "../../paths";
+import LoaderOverlay from "../../../components/loader-overlay";
 
 const useStyles = makeStyles();
+
+function BenchmarkCardHeader({ benchmark }) {
+  const classes = useStyles();
+  const date = dateUtcToLocal(benchmark.created);
+  const optimsState = useSelector(selectSelectedOptimsState);
+  const { selectedProfileLossId, selectedProfilePerfId } = optimsState;
+
+  const batchSizes = [..._.get(benchmark, "batch_sizes", [])];
+  batchSizes.sort((a, b) => Number(a) - Number(b));
+
+  const optimName = (optimId) => {
+    const optim = _.get(optimsState, "val", []).find(
+      (optim) => optim.optim_id === optimId
+    );
+    if (optim) {
+      return dateUtcToLocalString(optim.created);
+    } else {
+      return optimId.slice(0, 20);
+    }
+  };
+
+  const hasOptimization = benchmark.inference_models.reduce(
+    (accum, model) => accum || model.inference_model_optimization !== "",
+    false
+  );
+
+  return (
+    <div className={classes.title}>
+      <Grid direction="row" container spacing={1} className={classes.headerName}>
+        {benchmark.inference_models.map((model, index) => (
+          <Grid
+            container
+            item
+            key={index}
+            spacing={1}
+            alignItems="baseline"
+            className={classes.headerNameGroup}
+          >
+            {index !== 0 && (
+              <Grid item className={classes.headerNameGroup}>
+                <Typography variant="h6" color="textSecondary">
+                  vs
+                </Typography>
+              </Grid>
+            )}
+            <Grid direction="column" container item className={classes.headerNameGroup}>
+              <Grid item>
+                <Typography color="textPrimary" variant="h5">
+                  {inferenceEngineToName(model.inference_engine)}
+                </Typography>
+              </Grid>
+              <Grid item>
+                {hasOptimization && (
+                  <div>
+                    <Typography color="textSecondary" variant="subtitle2">
+                      {model.inference_model_optimization
+                        ? "Optimization: "
+                        : "No Optimization"}
+                      <Link
+                        className={classes.optimLink}
+                        to={createProjectOptimPath(
+                          benchmark.project_id,
+                          model.inference_model_optimization,
+                          selectedProfilePerfId,
+                          selectedProfileLossId
+                        )}
+                      >
+                        {optimName(model.inference_model_optimization)}
+                      </Link>
+                    </Typography>
+                  </div>
+                )}
+              </Grid>
+            </Grid>
+          </Grid>
+        ))}
+      </Grid>
+      <Typography
+        className={classes.headerDate}
+        color="textSecondary"
+        variant="subtitle1"
+      >
+        {`(${date.fromNow()})`}
+      </Typography>
+      <div className={classes.headerGroup}>
+        <Typography
+          color="textSecondary"
+          variant="caption"
+          className={classes.headerLabel}
+        >
+          Batch Size
+        </Typography>
+        <Typography color="textPrimary" variant="subtitle1">
+          {batchSizes.join(", ")}
+        </Typography>
+      </div>
+      <div className={classes.headerGroup}>
+        <Typography
+          color="textSecondary"
+          variant="caption"
+          className={classes.headerLabel}
+        >
+          Core Count
+        </Typography>
+        <Typography color="textPrimary" variant="subtitle1">
+          {benchmark.core_counts.join(", ")}
+        </Typography>
+      </div>
+      <div className={classes.headerGroup}>
+        <Typography
+          color="textSecondary"
+          variant="caption"
+          className={classes.headerLabel}
+        >
+          Instruction Set
+        </Typography>
+        <Typography color="textPrimary" variant="subtitle1">
+          {benchmark.instruction_sets.join(", ")}
+        </Typography>
+      </div>
+    </div>
+  );
+}
 
 function BenchmarkCard({ benchmark, projectId }) {
   const dispatch = useDispatch();
   const [deleting, setDeleting] = useState(false);
   const [animationEnded, setAnimationEnded] = useState(false);
-  const createdBenchmarkId = useSelector(selectCreatedBenchmarkId);
   const createdBenchmarkState = useSelector(selectCreatedBenchmark);
   const classes = useStyles();
-  const date = moment.utc(benchmark.created).local();
 
   let loading,
     progress = null;
 
-  if (createdBenchmarkId === benchmark.benchmark_id || deleting) {
-    loading =
-      createdBenchmarkState.status === STATUS_LOADING ||
-      createdBenchmarkState.status === STATUS_FAILED ||
-      (deleting && createdBenchmarkState.cancelStatus === STATUS_LOADING);
-    progress = createdBenchmarkState.progressValue;
+  const jobStatus = _.get(benchmark, "job.status");
+  const inProgress = benchmark.source !== "uploaded" && jobStatus !== JOB_COMPLETED;
+
+  loading = inProgress || deleting;
+
+  if (loading) {
+    if (
+      (jobStatus === JOB_STARTED ||
+        _.get(createdBenchmarkState, "val.benchmark_id") === benchmark.benchmark_id) &&
+      createdBenchmarkState.status === STATUS_LOADING
+    ) {
+      progress = createdBenchmarkState.progressValue;
+    }
   }
 
   useEffect(() => {
@@ -65,6 +200,7 @@ function BenchmarkCard({ benchmark, projectId }) {
   if (deleting) {
     label = "Deleting Benchmark";
   }
+
   const showLoader =
     error ||
     loading ||
@@ -75,14 +211,6 @@ function BenchmarkCard({ benchmark, projectId }) {
   if (!showLoader) {
     errorLabel = "";
   }
-
-  const inferenceEngineToName = (engine) => {
-    if (engine === "ort_cpu") {
-      return "ONNX Runtime CPU";
-    } else if (engine === "neural_magic") {
-      return "Neural Magic";
-    }
-  };
 
   let name = benchmark.name;
   if (!name && benchmark.inference_models.length === 1) {
@@ -104,6 +232,14 @@ function BenchmarkCard({ benchmark, projectId }) {
     setDeleting(true);
   };
 
+  const handleRerun = () => {
+    dispatch(
+      createBenchmarkCopyThunk({
+        benchmark,
+      })
+    );
+  };
+
   let benchmarkType = "baseline";
   if (
     _.get(benchmark, "core_counts.length", 0) > 1 ||
@@ -113,9 +249,6 @@ function BenchmarkCard({ benchmark, projectId }) {
   } else if (_.get(benchmark, "inference_models.length", 0) > 1) {
     benchmarkType = "comparison";
   }
-
-  const batchSizes = [..._.get(benchmark, "batch_sizes", [])];
-  batchSizes.sort((a, b) => Number(a) - Number(b));
 
   return (
     <GrowTransitions
@@ -128,103 +261,69 @@ function BenchmarkCard({ benchmark, projectId }) {
       }}
     >
       <div className={classes.layout}>
-        <div className={classes.title}>
-          <Typography className={classes.headerName} color="textPrimary" variant="h5">
-            {name || "Unspecified"}
-          </Typography>
-          <Typography
-            className={classes.headerDate}
-            color="textSecondary"
-            variant="subtitle1"
-          >
-            {`(${date.fromNow()})`}
-          </Typography>
-          <div className={classes.headerGroup}>
-            <Typography
-              color="textSecondary"
-              variant="caption"
-              className={classes.headerLabel}
-            >
-              Batch Size
-            </Typography>
-            <Typography color="textPrimary" variant="subtitle1">
-              {batchSizes.join(", ")}
-            </Typography>
-          </div>
-          <div className={classes.headerGroup}>
-            <Typography
-              color="textSecondary"
-              variant="caption"
-              className={classes.headerLabel}
-            >
-              Core Count
-            </Typography>
-            <Typography color="textPrimary" variant="subtitle1">
-              {benchmark.core_counts.join(", ")}
-            </Typography>
-          </div>
-          <div className={classes.headerGroup}>
-            <Typography
-              color="textSecondary"
-              variant="caption"
-              className={classes.headerLabel}
-            >
-              Instruction Set
-            </Typography>
-            <Typography color="textPrimary" variant="subtitle1">
-              {benchmark.instruction_sets.join(", ")}
-            </Typography>
-          </div>
-        </div>
+        <BenchmarkCardHeader benchmark={benchmark} />
         <Card className={classes.card} elevation={1}>
-          <FadeTransitionGroup
-            className={classes.transitionGroup}
-            showIndex={showLoader || !animationEnded ? 0 : 1}
-          >
-            <div className={classes.loaderContainer}>
-              <LoaderLayout
-                loading={loading || !animationEnded}
-                error={
-                  createdBenchmarkState.cancelStatus === STATUS_LOADING ? "" : error
-                }
-                progress={!deleting ? progress : null}
-                loaderSize={96}
-              />
-              <Typography
-                variant="body1"
-                color="textPrimary"
-                className={classes.loaderText}
-              >
-                {label}
-              </Typography>
-              {(createdBenchmarkState.status !== STATUS_SUCCEEDED || error) && (
-                <Button
-                  disabled={createdBenchmarkState.cancelStatus === STATUS_LOADING}
-                  onClick={handleDelete}
+          <LoaderOverlay
+            loading={loading || !animationEnded}
+            error={createdBenchmarkState.cancelStatus === STATUS_LOADING ? "" : error}
+            progress={!deleting ? progress : null}
+            loaderSize={96}
+            loaderLabel={label}
+            loaderChildren={
+              <div className={classes.loaderContent}>
+                <Typography
+                  variant="body1"
+                  color="inherit"
+                  className={classes.loaderText}
                 >
-                  {errorLabel}
-                </Button>
-              )}
-            </div>
+                  {label}
+                </Typography>
+                {(createdBenchmarkState.status !== STATUS_SUCCEEDED || error) && (
+                  <Button
+                    disabled={deleting}
+                    onClick={handleDelete}
+                    className={classes.cancelButton}
+                  >
+                    {errorLabel}
+                  </Button>
+                )}
+              </div>
+            }
+          />
+          {animationEnded && (
             <div className={classes.cardContainer}>
               {benchmarkType === "baseline" && (
-                <BenchmarkBaseline benchmark={benchmark} handleDelete={handleDelete} />
+                <BenchmarkBaseline
+                  benchmark={benchmark}
+                  handleDelete={handleDelete}
+                  handleRerun={handleRerun}
+                />
               )}
               {benchmarkType === "comparison" && (
                 <BenchmarkComparison
                   benchmark={benchmark}
                   handleDelete={handleDelete}
+                  handleRerun={handleRerun}
                 />
               )}
               {benchmarkType === "scaling" && (
-                <BenchmarkScaling benchmark={benchmark} handleDelete={handleDelete} />
+                <BenchmarkScaling
+                  benchmark={benchmark}
+                  handleDelete={handleDelete}
+                  handleRerun={handleRerun}
+                />
               )}
             </div>
-          </FadeTransitionGroup>
+          )}
         </Card>
       </div>
     </GrowTransitions>
   );
 }
+
+BenchmarkCard.propTypes = {
+  benchmark: PropTypes.object.isRequired,
+  projectId: PropTypes.string.isRequired,
+};
 
 export default BenchmarkCard;

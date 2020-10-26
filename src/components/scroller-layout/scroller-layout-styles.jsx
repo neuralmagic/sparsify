@@ -5,7 +5,7 @@ export default function makeScrollerLayoutStyles() {
     (theme) => {
       return {
         layout: {
-          overflow: "scroll!important",
+          overflow: "auto!important",
         },
       };
     },

@@ -51,7 +51,7 @@ function ServerDownModal() {
       <DialogTitle>NeuralmagicML Server Not Detected</DialogTitle>
       <DialogContent>
         <Typography>
-          Please make sure the neuralmagicML server is running to use Sparsify.
+        Confirm the neuralmagicML server is running to use Sparsify. See the Sparsify User Guide for more detail
         </Typography>
       </DialogContent>
       <DialogActions>

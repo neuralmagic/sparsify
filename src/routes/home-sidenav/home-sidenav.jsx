@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { Divider, List, ListItem, Typography } from "@material-ui/core";
+import { Divider, List, ListItem, Typography, TextField } from "@material-ui/core";
 import moment from "moment";
 
 import { getProjectsThunk, selectProjectsState } from "../../store";
@@ -49,16 +49,14 @@ function HomeSideNav() {
                   to={`/project/${project.project_id}`}
                   className={classes.projectCard}
                 >
-                  <Typography
-                    color="textPrimary"
-                    variant="body1"
-                    noWrap
+                  <TextField
+                    multiline={true}
+                    rowsMax={3}
+                    disabled={true}
                     className={classes.projectCardTitle}
+                    defaultValue={project.name ? project.name : "Unspecified"}
                   >
-                    <NullableText placeholder="Unspecified" value={project.name}>
-                      {project.name ? project.name : ""}
-                    </NullableText>
-                  </Typography>
+                  </TextField>
                   <Typography
                     color="textSecondary"
                     variant="subtitle2"

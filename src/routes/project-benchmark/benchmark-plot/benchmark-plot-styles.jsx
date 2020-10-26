@@ -1,4 +1,6 @@
 import { makeStyles } from "@material-ui/core/styles";
+import { referenceLightTheme } from "../../../app/app-theme";
+import { adjustColorOpacity } from "../../../components/utils";
 
 export default function makeBenchmarkPlotStyles() {
   return makeStyles(
@@ -6,6 +8,7 @@ export default function makeBenchmarkPlotStyles() {
       return {
         root: {
           height: "275px",
+          paddingTop: theme.spacing(1),
         },
         tooltipRoot: {
           padding: theme.spacing(1),
@@ -67,6 +70,28 @@ export default function makeBenchmarkPlotStyles() {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
+        },
+        legendRoot: {
+          position: "absolute",
+          padding: theme.spacing(1),
+          top: 0,
+          right: theme.spacing(6),
+        },
+        legendRow: {
+          display: "flex",
+          alignItems: "center",
+        },
+        legendColor: {
+          height: "10px",
+          width: "10px",
+          borderRadius: "50%",
+          marginRight: theme.spacing(1),
+          display: "inline-block",
+        },
+        legendLabel: {
+          color: theme.palette.text.secondary,
+          display: "inline-block",
+          textOverflow: "wrap",
         },
       };
     },

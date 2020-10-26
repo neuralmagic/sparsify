@@ -40,20 +40,12 @@ function BenchmarkPlot({ measurements, ranges, rangesX, xAxisLabel, yAxisLabel }
       keys = [
         {
           value: "inferenceOptimization",
-          label: "Inference Optimization",
+          label: "Optimization Version",
         },
         {
           value: "inferenceEngine",
           label: "Inference Engine",
         },
-        // {
-        //   value: "coreCount",
-        //   label: "Core Count",
-        // },
-        // {
-        //   value: "batchSize",
-        //   label: "Batch Size",
-        // },
       ];
     }
 
@@ -79,7 +71,7 @@ function BenchmarkPlot({ measurements, ranges, rangesX, xAxisLabel, yAxisLabel }
                 {`${yAxisLabel}:`}
               </Typography>
               <Typography color="textPrimary" variant="subtitle2">
-                {formatWithMantissa(2, data.y)}
+                {data.y === 0 ? 0 : formatWithMantissa(2, data.y)}
               </Typography>
             </div>
             <div className={classes.tooltipValueRow}>
@@ -91,7 +83,9 @@ function BenchmarkPlot({ measurements, ranges, rangesX, xAxisLabel, yAxisLabel }
                 {`${xAxisLabel}:`}
               </Typography>
               <Typography color="textPrimary" variant="subtitle2">
-                {data.type === "baseline" || data.type === "scaling"
+                {data.x === 0
+                  ? 0
+                  : data.type === "baseline" || data.type === "scaling"
                   ? formatWithMantissa(0, data.x)
                   : formatWithMantissa(2, data.x)}
               </Typography>
@@ -118,6 +112,11 @@ function BenchmarkPlot({ measurements, ranges, rangesX, xAxisLabel, yAxisLabel }
       </Card>
     );
   };
+
+  const colors = [
+    adjustColorOpacity(referenceLightTheme.palette.primary.main, 0.8),
+    adjustColorOpacity(referenceLightTheme.palette.primary.main, 0.2),
+  ];
 
   return (
     <div className={classes.root}>
@@ -163,10 +162,7 @@ function BenchmarkPlot({ measurements, ranges, rangesX, xAxisLabel, yAxisLabel }
             referenceLightTheme.palette.primary.main,
             0.5
           )}
-          colors={[
-            adjustColorOpacity(referenceLightTheme.palette.primary.main, 0.8),
-            adjustColorOpacity(referenceLightTheme.palette.primary.main, 0.2),
-          ]}
+          colors={colors}
           enableGridX={false}
           enableGridY={true}
           axisBottom={null}
@@ -176,7 +172,7 @@ function BenchmarkPlot({ measurements, ranges, rangesX, xAxisLabel, yAxisLabel }
           gridYValues={ranges}
           margin={{ top: 24, right: 8, bottom: 24, left: 8 }}
           isInteractive={true}
-          enableCrosshair={true}
+          enableCrosshair={false}
           useMesh={true}
           animate={true}
           tooltip={toolTip}
@@ -199,6 +195,22 @@ function BenchmarkPlot({ measurements, ranges, rangesX, xAxisLabel, yAxisLabel }
           {rangeMaxXValue}
         </Typography>
       </div>
+
+      {measurements.length > 1 && (
+        <div className={classes.legendRoot}>
+          {measurements.map((measurement, index) => (
+            <div className={classes.legendRow} key={index}>
+              <div
+                className={classes.legendColor}
+                style={{ backgroundColor: colors[index] }}
+              />
+              <Typography variant="body2" className={classes.legendLabel}>
+                {measurement.id}
+              </Typography>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

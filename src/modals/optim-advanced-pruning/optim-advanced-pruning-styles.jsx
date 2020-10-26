@@ -53,6 +53,17 @@ export const makeTableStyles = () => makeStyles(
           textTransform: 'uppercase'
         },
         backgroundColor: '#f4f4f8'
+      },
+      searchInput: {
+        background: "white",
+        marginLeft: theme.spacing(1),
+        '& .MuiInputBase-root': {
+          paddingLeft: 5,
+          fontSize: 14,
+        }
+      },
+      searchInputAdornment: {
+        color: theme.palette.disabled.main
       }
     };
   },
@@ -74,6 +85,13 @@ export const makeTableRowStyles = () => makeStyles(
       disabled: {
         opacity: 0.4
       },
+      layerNameTableCell: {
+        alignContent: "center",
+        whiteSpace: "nowrap",
+        '& .MuiTypography-root': {
+          display: "inline"
+        }
+      },
       sparsityCell: {
         display: 'flex',
         alignItems: 'center',
@@ -89,7 +107,8 @@ export const makeTableRowStyles = () => makeStyles(
       },
       layerDetails: {
         paddingTop: theme.spacing(1),
-        paddingBottom: theme.spacing(2)
+        paddingBottom: theme.spacing(2),
+        paddingLeft: theme.spacing(5)
       },
       layerDetailsSection: {
         paddingRight: theme.spacing(8)

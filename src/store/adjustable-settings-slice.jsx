@@ -37,24 +37,28 @@ const optimIdentifiers = ["project_id", "optim_id"];
 
 const modifierIdentifiers = ["project_id", "optim_id", "modifier_id"];
 
-const getLayerAdjustableSettingsFromOptims = compose(
-  indexBy(prop("modifier_id")),
-  flatten,
-  map((modifier) =>
-    compose(
-      merge({ modifier_id: modifier.modifier_id }),
-      indexBy(prop("node_id")),
-      map(
-        compose(
-          merge(pick(modifierIdentifiers, modifier)),
-          pick(["node_id", ...layerAdjustableSettings])
+function getLayerAdjustableSettingsFromOptims(payload) {
+  const settings = compose(
+    indexBy(prop("modifier_id")),
+    flatten,
+    map((modifier) =>
+      compose(
+        merge({ modifier_id: modifier.modifier_id }),
+        indexBy(prop("node_id")),
+        map(
+          compose(
+            merge(pick(modifierIdentifiers, modifier)),
+            pick(["node_id", ...layerAdjustableSettings])
+          )
         )
-      )
-    )(modifier.nodes)
-  ),
-  flatten,
-  map((optim) => map(merge(pick(optimIdentifiers, optim)), optim.pruning_modifiers))
-);
+      )(modifier.nodes)
+    ),
+    flatten,
+    map((optim) => map(merge(pick(optimIdentifiers, optim)), optim.pruning_modifiers))
+  )(payload);
+
+  return settings;
+}
 
 /**
  * Slice for handling adjustable settings for entities in the redux store.
@@ -109,8 +113,7 @@ const adjustableSettingsSlice = createSlice({
 });
 
 function* changeModifierAdjustableSettingSaga({ payload }) {
-  if (!payload.commit)
-    yield delay(400);
+  if (!payload.commit) yield delay(200);
 
   const modifierSettings = yield select(
     selectModifierAdjustableSettings(payload.modifierId)
@@ -129,8 +132,7 @@ function* changeModifierAdjustableSettingSaga({ payload }) {
 }
 
 function* changeLayerAdjustableSettingsSaga({ payload }) {
-  if (!payload.commit)
-    yield delay(400);
+  if (!payload.commit) yield delay(200);
 
   const layerSettings = yield select(
     selectLayerAdjustableSettings(payload.modifierId, payload.layerId)

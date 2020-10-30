@@ -16,6 +16,9 @@ function ProfileSummaryCard({
   status,
   error,
   projectId,
+  defaultOptimId,
+  profilePerfId,
+  profileLossId,
   name,
   profileDescriptorsOne,
   profileDescriptorsTwo,
@@ -29,7 +32,9 @@ function ProfileSummaryCard({
   const history = useHistory();
 
   function handleStartOptimizing() {
-    history.push(createProjectOptimPath(projectId));
+    history.push(
+      createProjectOptimPath(projectId, defaultOptimId, profilePerfId, profileLossId)
+    );
   }
 
   return (
@@ -168,6 +173,9 @@ ProfileSummaryCard.propTypes = {
   status: PropTypes.string,
   error: PropTypes.string,
   projectId: PropTypes.string,
+  defaultOptimId: PropTypes.string,
+  profilePerfId: PropTypes.string,
+  profileLossId: PropTypes.string,
   name: PropTypes.string,
   profileDescriptorsOne: PropTypes.arrayOf(PropTypes.object).isRequired,
   profileDescriptorsTwo: PropTypes.arrayOf(PropTypes.object).isRequired,

@@ -23,6 +23,7 @@ import {
   selectModalsState,
   setPerfModalOpen,
   STATUS_SUCCEEDED,
+  selectSelectedOptimsState,
 } from "../../store";
 import { combineStatuses, readableNumber } from "../../components";
 import ChartSummariesCard from "../../components/chart-summaries-card";
@@ -112,7 +113,7 @@ function profilePerfDisplayValues(
     ? bestEstimatedState.val.est_time_baseline * 1000
     : null;
   const itemsPerSecond =
-    msPerBatch && batchSize ? 1000 / (msPerBatch * batchSize) : null;
+    msPerBatch && batchSize ? (1000 * batchSize) / msPerBatch : null;
   const estMsPerBatch =
     bestEstimatedState.val && bestEstimatedState.val.est_time
       ? bestEstimatedState.val.est_time * 1000
@@ -176,6 +177,11 @@ function ProjectPerf(props) {
   const profilePerfNodeSummaries = useSelector(selectSelectedProfilePerfNodeSummaries);
   const profilePerfNodeResults = useSelector(selectSelectedProfilePerfNodeResults);
   const modalsState = useSelector(selectModalsState);
+  const selectedOptimsState = useSelector(selectSelectedOptimsState);
+  const defaultOptimId =
+    selectedOptimsState.val && selectedOptimsState.val.length > 0
+      ? selectedOptimsState.val[0].optim_id
+      : null;
   const profilePerfId = profilePerf ? profilePerf.profile_id : null;
   const firstLossProfile =
     profilesLossState.val && profilesLossState.val.length > 0
@@ -279,6 +285,9 @@ function ProjectPerf(props) {
             status={bestEstimatedState.status}
             error={bestEstimatedState.error}
             projectId={projectState.projectId}
+            defaultOptimId={defaultOptimId}
+            profilePerfId={profilePerfId}
+            profileLossId={firstLossProfileId}
             name={displayValues.name}
             profileDescriptorsOne={[
               {

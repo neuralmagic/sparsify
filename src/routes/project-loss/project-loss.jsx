@@ -20,6 +20,8 @@ import {
   setLossModalOpen,
   STATUS_SUCCEEDED,
   selectSelectedProfileLossNodeResults,
+  selectSelectedOptim,
+  selectSelectedOptimsState,
 } from "../../store";
 import { combineStatuses, readableNumber } from "../../components";
 import ChartSummariesCard from "../../components/chart-summaries-card";
@@ -131,6 +133,11 @@ function ProjectLoss(props) {
     selectSelectedProjectModelAnalysisNodeParams
   );
   const profileLossNodeResults = useSelector(selectSelectedProfileLossNodeResults);
+  const selectedOptimsState = useSelector(selectSelectedOptimsState);
+  const defaultOptimId =
+    selectedOptimsState.val && selectedOptimsState.val.length > 0
+      ? selectedOptimsState.val[0].optim_id
+      : null;
 
   const profileLossId = profileLoss ? profileLoss.profile_id : null;
   const firstPerfProfile =
@@ -235,6 +242,9 @@ function ProjectLoss(props) {
             status={bestEstimatedState.status}
             error={bestEstimatedState.error}
             projectId={projectState.projectId}
+            defaultOptimId={defaultOptimId}
+            profilePerfId={firstPerfProfileId}
+            profileLossId={profileLossId}
             name={displayValues.name}
             profileDescriptorsOne={[
               {

@@ -19,7 +19,6 @@ import {
   selectDefaultProfilesLoss,
   selectDefaultProfilesPerf,
   getOptimsThunk,
-  updateProjectThunk,
   createOptimThunk,
   STATUS_LOADING,
   STATUS_FAILED,
@@ -130,21 +129,20 @@ function OptimCreateDialog({ open, handleClose, projectId }) {
       const abortController = new AbortController();
       setAbortController(abortController);
       dispatch(
-        updateProjectThunk({
-          projectId,
-          name: saveValues.name,
-          description: saveValues.description,
-          trainingOptimizer: saveValues.trainingOptimizer,
-          trainingEpochs: saveValues.trainingEpochs,
-          trainingLRInit: saveValues.trainingLRInit,
-          trainingLRFinal: saveValues.trainingLRFinal,
-        })
-      );
-      dispatch(
         createOptimThunk({
           projectId,
-          add_pruning: pruning,
-          add_lr_schedule: saveValues.trainingLRInit !== null,
+          projectSettings: {
+            name: saveValues.name,
+            description: saveValues.description,
+            trainingOptimizer: saveValues.trainingOptimizer,
+            trainingEpochs: saveValues.trainingEpochs,
+            trainingLRInit: saveValues.trainingLRInit,
+            trainingLRFinal: saveValues.trainingLRFinal,
+          },
+          addPruning: pruning,
+          addLRSchedule: saveValues.trainingLRInit !== null,
+          profilePerfId: _.get(defaultPerf, "profile_id"),
+          profileLossId: _.get(defaultLoss, "profile_id"),
           abortController,
         })
       );

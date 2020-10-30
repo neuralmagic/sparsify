@@ -1,7 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { createAsyncThunkWrapper } from "../store/utils";
 
-import { requestCreateProjectOptimizer } from "../api";
+import {
+  requestCreateProjectOptimizer,
+  requestUpdateOptim,
+  requestUpdateOptimModifierPruning,
+  requestUpdateProject,
+} from "../api";
 
 /**
  * Async thunk for making a request to create a project optimizer
@@ -12,22 +17,57 @@ export const createOptimThunk = createAsyncThunkWrapper(
   "createOptims/createProjectOptimsThunk",
   async ({
     projectId,
+    projectSettings,
     name,
-    add_pruning = true,
-    add_quantization = false,
-    add_lr_schedule = false,
-    add_trainable = false,
+    addPruning = true,
+    addQuantization = false,
+    addLRSchedule = false,
+    addTrainable = false,
     abortController = undefined,
+    profilePerfId = null,
+    profileLossId = null,
   }) => {
-    const body = await requestCreateProjectOptimizer(
+    const projectBody = await requestUpdateProject(
+      projectId,
+      projectSettings.name,
+      projectSettings.description,
+      projectSettings.trainingOptimizer,
+      projectSettings.trainingEpochs,
+      projectSettings.trainingLRInit,
+      projectSettings.trainingLRFinal
+    );
+    const createBody = await requestCreateProjectOptimizer(
       projectId,
       name,
-      add_pruning,
-      add_quantization,
-      add_lr_schedule,
-      add_trainable,
+      addPruning,
+      addQuantization,
+      addLRSchedule,
+      addTrainable,
       abortController
     );
+    let body = await requestUpdateOptim(
+      projectId,
+      createBody.optim.optim_id,
+      name,
+      profilePerfId,
+      profileLossId
+    );
+
+    if (addPruning) {
+      // make a request to update pruning for now at 85% until it's better automated
+      body = await requestUpdateOptimModifierPruning(
+        projectId,
+        createBody.optim.optim_id,
+        createBody.optim.pruning_modifiers[0].modifier_id,
+        {
+          sparsity: 0.85,
+          balance_perf_loss: 1.0,
+          filter_min_sparsity: 0.4,
+          filter_min_perf_gain: 0.75,
+          filter_min_recovery: -1.0,
+        }
+      );
+    }
 
     return body.optim;
   }

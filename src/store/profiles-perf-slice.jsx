@@ -120,7 +120,7 @@ const getOpType = (node, nodeLookup) => {
   if (analysisNode) {
     opType = analysisNode.op_type;
   } else if (node.name.includes("ORT Subgraph")) {
-    opType = "ORT Subgraph";
+    opType = "ORT";
   } else {
     opType = node.name.split("_")[0];
     opType = opType.charAt(0).toUpperCase() + opType.slice(1);

@@ -28,7 +28,6 @@ function createTooltip(val) {
 
 function ChartPruning({ layerSummaries }) {
   const classes = useStyles();
-  console.log(layerSummaries);
 
   const selected = layerSummaries.values;
   const selectedObjects = selected.objects;

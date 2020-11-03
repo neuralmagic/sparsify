@@ -13,6 +13,7 @@ import {
   selectCreatedOptimsState,
   selectDefaultProfilesLoss,
   selectDefaultProfilesPerf,
+  setOptimVersionModalOpen,
   STATUS_IDLE,
   STATUS_SUCCEEDED,
   updateOptimsThunk,
@@ -105,7 +106,7 @@ function ProjectSideNavMenuOptim({
         projectId,
         selectedId,
         selectedProfilePerfId,
-        selectedProfileLossId,
+        selectedProfileLossId
       )}
       title="Optimization"
       selected={selected}
@@ -115,14 +116,10 @@ function ProjectSideNavMenuOptim({
       <div>
         <ProjectSideNavSubMenuTitle
           onClick={() => {
-            dispatch(
-              createOptimThunk({
-                projectId,
-              })
-            );
+            dispatch(setOptimVersionModalOpen(true));
           }}
           title="Version"
-          showAdd={false}
+          showAdd={true}
         />
         <Divider light className={classes.divider} />
         <LoaderLayout

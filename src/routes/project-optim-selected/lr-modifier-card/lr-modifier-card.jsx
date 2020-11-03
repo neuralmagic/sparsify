@@ -19,11 +19,7 @@ const LRModifierCard = ({
   globalEndEpoch,
 }) => {
   const [advancedOpen, setAdvancedOpen] = useState(false);
-  const modSummary = summarizeLRModifier(
-    modifier,
-    globalStartEpoch,
-    globalEndEpoch
-  );
+  const modSummary = summarizeLRModifier(modifier, globalStartEpoch, globalEndEpoch);
 
   return (
     <DisplayCard showEditButton={true} onEditClick={() => setAdvancedOpen(true)}>

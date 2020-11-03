@@ -1,14 +1,17 @@
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Fab, Typography } from "@material-ui/core";
 import OpenInNewIcon from "@material-ui/icons/OpenInNew";
 import SentimentVeryDissatisfiedIcon from "@material-ui/icons/SentimentVeryDissatisfied";
+import OptimVersionDialog from "../../modals/optim-version-create";
 
 import {
+  selectModalsState,
   selectSelectedOptim,
   selectSelectedOptimsState,
   selectSelectedProjectModelAnalysis,
   selectSelectedProjectState,
+  setOptimVersionModalOpen,
   STATUS_SUCCEEDED,
 } from "../../store";
 import makeStyles from "./project-optim-selected-styles";
@@ -30,8 +33,9 @@ function ProjectOptimSelected(props) {
   const selectedModelAnalysis = useSelector(selectSelectedProjectModelAnalysis);
   const selectedOptimsState = useSelector(selectSelectedOptimsState);
   const [openExportModal, setOpenExportModal] = useState(false);
-
+  const modalsState = useSelector(selectModalsState);
   const classes = useStyles();
+  const dispatch = useDispatch();
 
   let errorMessage = null;
   if (selectSelectedOptimsState.error) {
@@ -134,6 +138,12 @@ function ProjectOptimSelected(props) {
           />
         )}
       </LoaderLayout>
+      <OptimVersionDialog
+        optimId={optimId}
+        projectId={projectId}
+        open={modalsState.optimVersionModalOpen || false}
+        handleClose={() => dispatch(setOptimVersionModalOpen(false))}
+      />
     </ScrollerLayout>
   );
 }

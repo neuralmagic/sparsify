@@ -3,10 +3,31 @@ import { createAsyncThunkWrapper } from "../store/utils";
 
 import {
   requestCreateProjectOptimizer,
+  requestCreateProjectOptimVersion,
   requestUpdateOptim,
   requestUpdateOptimModifierPruning,
   requestUpdateProject,
 } from "../api";
+
+/**
+ * Async thunk for making a request to create a new optimization version
+ *
+ * @type {AsyncThunk<Promise<*>, {readonly projectId?: string, optimId?: string, name?: string, notes?: string, abortController?: AbortController}, {}>}
+ */
+export const createOptimVersionThunk = createAsyncThunkWrapper(
+  "createdOptims/createProjectsOptimsVersionThunk",
+  async ({ projectId, optimId, name, notes, abortController = undefined }) => {
+    const body = await requestCreateProjectOptimVersion(
+      projectId,
+      optimId,
+      name,
+      notes,
+      abortController
+    );
+
+    return body.optim;
+  }
+);
 
 /**
  * Async thunk for making a request to create a project optimizer
@@ -111,6 +132,22 @@ const createdOptimsSlice = createSlice({
       state.error = null;
     },
     [createOptimThunk.rejected]: (state, action) => {
+      state.status = "failed";
+      state.error = action.error.message;
+      state.projectId = action.meta.arg.projectId;
+    },
+    [createOptimVersionThunk.pending]: (state, action) => {
+      state.status = "loading";
+      state.val = null;
+      state.projectId = action.meta.arg.projectId;
+    },
+    [createOptimVersionThunk.fulfilled]: (state, action) => {
+      state.status = "succeeded";
+      state.projectId = action.meta.arg.projectId;
+      state.val = action.payload;
+      state.error = null;
+    },
+    [createOptimVersionThunk.rejected]: (state, action) => {
       state.status = "failed";
       state.error = action.error.message;
       state.projectId = action.meta.arg.projectId;

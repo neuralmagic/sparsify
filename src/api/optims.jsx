@@ -191,3 +191,50 @@ export function requestGetProjectOptimBestEstimated(
     })
   );
 }
+
+/**
+ * Request to create a new optimization version
+ *
+ * @param {string} projectId - The id of the project to get
+ * @param {string} optimId - The id of the optimization to get
+ * @param {string} name - The name of the created optimizer
+ * @param {string} notes - The notes of the created optimizer
+ * @param {AbortController} abortController - Optional control to control whether to cancel
+ */
+export function requestCreateProjectOptimVersion(
+  projectId,
+  optimId,
+  name = undefined,
+  notes = undefined,
+  abortController = undefined
+) {
+  const url = `${API_ROOT}/projects/${projectId}/optim/${optimId}/version`;
+  const body = {};
+
+  if (name !== undefined) {
+    body.name = name;
+  }
+
+  if (notes !== undefined) {
+    body.notes = notes;
+  }
+
+  let signalOptions = {};
+  if (abortController) {
+    signalOptions = {
+      signal: abortController.signal,
+    };
+  }
+
+  return validateAPIResponseJSON(
+    fetch(url, {
+      method: "POST",
+      cache: "no-cache",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+      ...signalOptions,
+    })
+  );
+}

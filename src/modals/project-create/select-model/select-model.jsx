@@ -87,7 +87,11 @@ function SelectModel({
                 variant="body1"
                 color={selectedFile ? "textPrimary" : "textSecondary"}
                 noWrap
-                className={classes.selectFileUploadText}
+                className={
+                  selectedFile
+                    ? classes.selectFileUploadTextSelected
+                    : classes.selectFileUploadText
+                }
               >
                 {selectedFile ? selectedFile.name : "Click to browse or drag file here"}
               </Typography>

@@ -14,6 +14,11 @@ export default function createExportStyles() {
           height: "24vh",
           width: "770px",
           overflow: "hidden",
+          position: "relative",
+        },
+        buttonContainer: {
+          display: "flex",
+          justifyContent: "flex-end",
         },
         otherblock: {
           height: "20vh",

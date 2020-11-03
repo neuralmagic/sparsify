@@ -17,7 +17,6 @@ export const getConfigThunk = createAsyncThunkWrapper(
   "selectedProjectConfig/getProjectConfig",
   async ({ projectId, optimId, framework }) => {
     const body = await requestGetProjectConfig(projectId, optimId, framework);
-
     return body;
   }
 );
@@ -79,6 +78,8 @@ const selectedConfigSlice = createSlice({
     status: "idle",
     configStatus: "idle",
     codeSampleStatus: "idle",
+    configError: null,
+    codeSampleError: null,
     error: null,
     projectId: null,
     optimId: null,
@@ -89,23 +90,25 @@ const selectedConfigSlice = createSlice({
       state.configStatus = "loading";
       state.projectId = action.meta.arg.projectId;
       state.optimId = action.meta.arg.optimId;
+      state.configError = null;
     },
     [getConfigThunk.fulfilled]: (state, action) => {
       state.configStatus = "succeeded";
       state.projectId = action.meta.arg.projectId;
       state.optimId = action.meta.arg.optimId;
       state.config[action.meta.arg.framework] = action.payload;
-      state.error = null;
+      state.configError = null;
     },
     [getConfigThunk.rejected]: (state, action) => {
       state.configStatus = "failed";
-      state.error = action.error.message;
+      state.configError = action.error.message;
       state.projectId = action.meta.arg.projectId;
       state.optimId = action.meta.arg.optimId;
     },
     [getAvailableFrameworksThunk.pending]: (state, action) => {
       state.status = "loading";
       state.projectId = action.meta.arg.projectId;
+      state.error = null;
     },
     [getAvailableFrameworksThunk.fulfilled]: (state, action) => {
       state.status = "succeeded";
@@ -121,6 +124,7 @@ const selectedConfigSlice = createSlice({
     [getAvailableCodeSamplesThunk.pending]: (state, action) => {
       state.status = "loading";
       state.projectId = action.meta.arg.projectId;
+      state.error = null;
     },
     [getAvailableCodeSamplesThunk.fulfilled]: (state, action) => {
       state.status = "succeeded";
@@ -136,6 +140,7 @@ const selectedConfigSlice = createSlice({
     [getCodeSampleThunk.pending]: (state, action) => {
       state.codeSampleStatus = "loading";
       state.projectId = action.meta.arg.projectId;
+      state.codeSampleError = null;
     },
     [getCodeSampleThunk.fulfilled]: (state, action) => {
       state.codeSampleStatus = "succeeded";
@@ -145,11 +150,11 @@ const selectedConfigSlice = createSlice({
       }
       state.codeSamples[action.meta.arg.framework][action.meta.arg.sampleType] =
         action.payload;
-      state.error = null;
+      state.codeSampleError = null;
     },
     [getCodeSampleThunk.rejected]: (state, action) => {
       state.codeSampleStatus = "failed";
-      state.error = action.error.message;
+      state.codeSampleError = action.error.message;
       state.projectId = action.meta.arg.projectId;
     },
   },

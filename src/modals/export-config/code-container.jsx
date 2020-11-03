@@ -5,11 +5,10 @@ import {
   atomOneLight,
 } from "react-syntax-highlighter/dist/esm/styles/hljs";
 
-import { Box, Button, Tooltip, useTheme } from "@material-ui/core";
+import { Button, Tooltip, useTheme } from "@material-ui/core";
 
 import makeStyles from "./export-styles";
-import LoaderLayout from "../../components/loader-layout";
-import FadeTransitionGroup from "../../components/fade-transition-group";
+import LoaderOverlay from "../../components/loader-overlay";
 
 function CodeContainer({ language, text, defaultFileName, loading, error }) {
   const isDarkMode = useTheme().palette.type === "dark";
@@ -25,25 +24,21 @@ function CodeContainer({ language, text, defaultFileName, loading, error }) {
 
   return (
     <div>
-      <Box className={classes.container}>
-        <FadeTransitionGroup showIndex={loading || !text ? 1 : 0}>
-          <SyntaxHighlighter
-            language={language}
-            style={isDarkMode ? atomOneDark : atomOneLight}
-            className={classes.codeblock}
-            showLineNumbers
-            wrapLines
-          >
-            {text}
-          </SyntaxHighlighter>
-          <div className={classes.otherblock}>
-            <LoaderLayout loading={loading} error={error} />
-          </div>
-        </FadeTransitionGroup>
-      </Box>
+      <div className={classes.container}>
+        <SyntaxHighlighter
+          language={language}
+          style={isDarkMode ? atomOneDark : atomOneLight}
+          className={classes.codeblock}
+          showLineNumbers
+          wrapLines
+        >
+          {text}
+        </SyntaxHighlighter>
+        <LoaderOverlay loading={loading} error={error} loaderSize={96} />
+      </div>
 
-      <Box display="flex" justifyContent="flex-end">
-        <Box>
+      <div className={classes.buttonContainer}>
+        <div>
           <Button
             component="a"
             download={defaultFileName}
@@ -52,8 +47,8 @@ function CodeContainer({ language, text, defaultFileName, loading, error }) {
           >
             Save to disk
           </Button>
-        </Box>
-        <Box>
+        </div>
+        <div>
           <Tooltip
             open={showCopiedTooltip}
             onClose={() => setShowCopiedTooltip(false)}
@@ -69,8 +64,8 @@ function CodeContainer({ language, text, defaultFileName, loading, error }) {
               Copy to clipboard
             </Button>
           </Tooltip>
-        </Box>
-      </Box>
+        </div>
+      </div>
     </div>
   );
 }

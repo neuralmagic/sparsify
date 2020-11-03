@@ -75,7 +75,8 @@ export function validateAPIResponseText(responsePromise) {
     })
     .then((data) => {
       if (!data.statusOk) {
-        return Promise.reject(Error(data.body.error_message));
+        const body = JSON.parse(data.body);
+        return Promise.reject(Error(body.error_message));
       }
       return data.body;
     })

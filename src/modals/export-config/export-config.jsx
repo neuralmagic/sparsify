@@ -39,6 +39,8 @@ function ExportDialog({ projectId, optimId, open, handleClose }) {
     codeSampleStatus,
     configStatus,
     error,
+    configError,
+    codeSampleError,
   } = configState;
   useExportEffects(dispatch, projectId, optimId, frameworkTab, sampleType, open);
 
@@ -64,6 +66,7 @@ function ExportDialog({ projectId, optimId, open, handleClose }) {
     configStatus === STATUS_LOADING || configStatus === STATUS_FAILED;
   const loadingCodeSample =
     codeSampleStatus === STATUS_LOADING || codeSampleStatus === STATUS_FAILED;
+
   return (
     <Dialog
       open={open}
@@ -103,7 +106,7 @@ function ExportDialog({ projectId, optimId, open, handleClose }) {
           text={configExists ? _.get(config, availableFrameworks[frameworkTab]) : ""}
           defaultFileName="recal.config.yaml"
           loading={loadingConfig}
-          error={error}
+          error={configError || error}
         />
         <Box className={classes.optimizationRow}>
           <Typography className={classes.contentHeader}>
@@ -141,7 +144,7 @@ function ExportDialog({ projectId, optimId, open, handleClose }) {
           }
           defaultFileName="sample.py"
           loading={loadingCodeSample}
-          error={error}
+          error={codeSampleError || error}
         />
       </DialogContent>
       <DialogActions>

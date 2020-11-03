@@ -38,9 +38,13 @@ export default function makeSelectModelStyles() {
           borderColor: theme.palette.action.disabled,
           borderWidth: "1px",
         },
-        selectFileUploadText: {
+        selectFileUploadTextSelected: {
           marginLeft: theme.spacing(2),
           marginRight: 45,
+        },
+        selectFileUploadText: {
+          marginLeft: theme.spacing(2),
+          // marginRight: 45,
         },
         selectFileRemote: {
           right: 1,
@@ -67,9 +71,9 @@ export default function makeSelectModelStyles() {
         selectFileSelected: {
           width: "99%",
           zIndex: 2,
-          '& input': {
-            paddingRight: 55
-          }
+          "& input": {
+            paddingRight: 55,
+          },
         },
         loaderContainer: {
           width: "100%",

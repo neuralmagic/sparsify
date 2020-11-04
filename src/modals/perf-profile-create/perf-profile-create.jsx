@@ -40,7 +40,9 @@ function PerfProfileCreateDialog({ open, handleClose, projectId }) {
   const history = useHistory();
   const classes = useStyles();
 
-  const defaultCore = _.get(systemInfoState, "val.cores_per_socket", 1) * _.get(systemInfoState, "val.num_sockets", 1)
+  const defaultCore =
+    _.get(systemInfoState, "val.cores_per_socket", 1) *
+    _.get(systemInfoState, "val.num_sockets", 1);
   const [closing, setClosing] = useState(false);
   const [name, setName] = useState("");
   const [batchSize, setBatchSize] = useState(1);
@@ -53,8 +55,7 @@ function PerfProfileCreateDialog({ open, handleClose, projectId }) {
 
   const canceling = createPerfProfileState.cancelingStatus === STATUS_LOADING;
   const completed = createPerfProfileState.status === STATUS_SUCCEEDED;
-  const action =
-    createPerfProfileState.status === STATUS_SUCCEEDED ? "Run" : "Add";
+  const action = createPerfProfileState.status === STATUS_SUCCEEDED ? "Run" : "Add";
 
   let profilingLabel = "Profiling Performance";
   if (canceling || createPerfProfileState.cancelingStatus === STATUS_SUCCEEDED) {
@@ -86,15 +87,13 @@ function PerfProfileCreateDialog({ open, handleClose, projectId }) {
       })
     );
     handleClear();
-  }
+  };
 
   // Will wait until canceling is finished before closing
   useEffect(() => {
     if (completed && !canceling) {
-      handleComplete()
-    } else if (
-      createPerfProfileState.cancelingStatus === STATUS_SUCCEEDED
-    ) {
+      handleComplete();
+    } else if (createPerfProfileState.cancelingStatus === STATUS_SUCCEEDED) {
       handleClose();
       handleClear();
     }
@@ -163,7 +162,12 @@ function PerfProfileCreateDialog({ open, handleClose, projectId }) {
             <div>
               <Typography>Measure the model's performace</Typography>
               {nmEngineAvailable && (
-                <Grid className={classes.profileBody} container spacing={3} direction="column">
+                <Grid
+                  className={classes.profileBody}
+                  container
+                  spacing={3}
+                  direction="column"
+                >
                   <Grid item xs={8}>
                     <TextField
                       id="name"
@@ -251,7 +255,7 @@ function PerfProfileCreateDialog({ open, handleClose, projectId }) {
             color="secondary"
             variant="contained"
             disableElevation
-            disabled={profiling}
+            disabled={profiling || !nmEngineAvailable}
           >
             {action}
           </Button>

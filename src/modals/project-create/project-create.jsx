@@ -152,13 +152,18 @@ function ProjectCreateDialog({ open, handleClose }) {
     const projectId = _.get(val, "project_id");
     const profileLossId = _.get(profilingLossVal, "profile_id");
     const profilePerfId = _.get(profilingPerfVal, "profile_id");
-    dispatch(
-      deleteProjectProfilesThunk({
-        projectId,
-        profileLossId,
-        profilePerfId,
-      })
-    );
+
+    if (profileLossId || profilePerfId) {
+      dispatch(
+        deleteProjectProfilesThunk({
+          projectId,
+          profileLossId,
+          profilePerfId,
+        })
+      );
+    } else {
+      clearCurrent();
+    }
   }
 
   // Will wait until canceling is finished before closing

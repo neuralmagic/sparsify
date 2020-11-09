@@ -232,6 +232,9 @@ function BenchmarkCreateDialog({ open, handleClose, projectId }) {
                     labelId="secondary-inference-engine-label"
                     value={secondaryInferenceEngine}
                     onChange={(event) => {
+                      if (event.target.value === "ort_cpu") {
+                        onOrtCpuSelect();
+                      }
                       setSecondaryInferenceEngine(event.target.value);
                     }}
                     label="Inference Engine"

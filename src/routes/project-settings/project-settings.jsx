@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Redirect } from "react-router-dom";
 import { Fab, Typography } from "@material-ui/core";
 import SaveIcon from "@material-ui/icons/Save";
@@ -64,6 +64,12 @@ function ProjectSettings({ match }) {
   ) {
     projectLoaded(selectedProjectState.val);
   }
+
+  useEffect(() => {
+    if (selectedProjectState.val) {
+      projectLoaded(selectedProjectState.val);
+    }
+  }, [selectedProjectState.val]);
 
   function onSaveClick() {
     projectSaving();

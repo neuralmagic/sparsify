@@ -1,13 +1,15 @@
 import React, { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { Fab, Typography } from "@material-ui/core";
 import OpenInNewIcon from "@material-ui/icons/OpenInNew";
 import SentimentVeryDissatisfiedIcon from "@material-ui/icons/SentimentVeryDissatisfied";
 
 import {
   selectSelectedOptim,
-  selectSelectedOptimsState, selectSelectedProjectModelAnalysis,
+  selectSelectedOptimsState,
+  selectSelectedProjectModelAnalysis,
   selectSelectedProjectState,
+  STATUS_SUCCEEDED,
 } from "../../store";
 import makeStyles from "./project-optim-selected-styles";
 import GenericPage from "../../components/generic-page";
@@ -23,9 +25,7 @@ const useStyles = makeStyles();
 function ProjectOptimSelected(props) {
   const { optimId, projectId } = props.match.params;
   const optim = useSelector(selectSelectedOptim);
-  const dispatch = useDispatch();
 
-  const optimsState = useSelector(selectSelectedOptimsState);
   const selectedProjectState = useSelector(selectSelectedProjectState);
   const selectedModelAnalysis = useSelector(selectSelectedProjectModelAnalysis);
   const selectedOptimsState = useSelector(selectSelectedOptimsState);
@@ -55,7 +55,7 @@ function ProjectOptimSelected(props) {
           />
         }
       >
-        {optim && (
+        {optim && selectedProjectState.status === STATUS_SUCCEEDED && (
           <div className={classes.layout}>
             {optim.pruning_modifiers && optim.pruning_modifiers.length > 0 && (
               <div>

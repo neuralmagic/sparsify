@@ -74,11 +74,14 @@ function ProjectSideNav({ match, location }) {
 
   useEffect(() => {
     if (selectedOptimsState.status === STATUS_SUCCEEDED) {
-      dispatch(setSelectedOptimProfileLoss(defaultLoss ? defaultLoss.profile_id : null));
-      dispatch(setSelectedOptimProfilePerf(defaultPerf ? defaultPerf.profile_id : null));
+      dispatch(
+        setSelectedOptimProfileLoss(defaultLoss ? defaultLoss.profile_id : null)
+      );
+      dispatch(
+        setSelectedOptimProfilePerf(defaultPerf ? defaultPerf.profile_id : null)
+      );
     }
-    
-  }, [selectedOptimsState.status, projectId])
+  }, [selectedOptimsState.status, projectId]);
 
   // handle redux store and state setup for the current route
   // todo, move out to central location to work with store
@@ -99,6 +102,8 @@ function ProjectSideNav({ match, location }) {
       selectedOptimsState.selectedProfileLossId !== profileLossId
     ) {
       dispatch(setSelectedOptimProfileLoss(profileLossId ? profileLossId : null));
+    } else if (action === "settings") {
+      dispatch(getProjectThunk({ projectId }));
     }
   }, [
     dispatch,

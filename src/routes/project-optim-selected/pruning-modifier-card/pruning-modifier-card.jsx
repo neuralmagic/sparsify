@@ -97,6 +97,9 @@ const PruningModifierCard = ({ modifier, optim, modelAnalysis }) => {
           label="Update"
           className={classes.update}
           value={`${adjustableSettings.update_frequency}`}
+          onValueChange={(value) =>
+            updateModifierValues({ update_frequency: value }, false)
+          }
         />
       </DisplayCardActions>
 

@@ -525,6 +525,9 @@ function OptimAdvancedPruningDialog({ modifier, modelAnalysis, open, onClose }) 
                 label="Update"
                 className={classes.update}
                 value={`${adjustableSettings.update_frequency}`}
+                onValueChange={(value) =>
+                  updateModifierValues({ update_frequency: value }, false)
+                }
               />
             </DisplayCardActions>
           </div>

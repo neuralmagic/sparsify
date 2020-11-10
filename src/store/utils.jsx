@@ -1,7 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { serverOnline, serverOffline, serverLoading } from "./server-slice";
 import { scientificNumber, formattedNumber, readableNumber } from "../components";
-import { sum } from "ramda";
 
 export const STATUS_IDLE = "idle";
 export const STATUS_LOADING = "loading";
@@ -247,10 +246,14 @@ export function summarizeLRModifier(modifier, globalStartEpoch, globalEndEpoch) 
     (val) => val.mod
   );
 
-  const initLR = summaries ? summaries.values.objects[0].value : null;
-  const finalLR = summaries
-    ? summaries.values.objects[summaries.values.objects.length - 1].value
-    : null;
+  const initLR =
+    summaries && summaries.values.objects.length > 0
+      ? summaries.values.objects[0].value
+      : null;
+  const finalLR =
+    summaries && summaries.values.objects.length > 0
+      ? summaries.values.objects[summaries.values.objects.length - 1].value
+      : null;
 
   return {
     startEpoch: modifier.start_epoch > -1 ? modifier.start_epoch : globalStartEpoch,

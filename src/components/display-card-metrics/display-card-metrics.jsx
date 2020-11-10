@@ -33,7 +33,7 @@ const DisplayCardMetrics = ({ metricsGroups }) => {
                   size="large"
                   rootClass={classes.metric}
                 >
-                  {metric.value}
+                  {metric.value ? metric.value : "--"}
                 </DisplayMetric>
               ))}
             </div>

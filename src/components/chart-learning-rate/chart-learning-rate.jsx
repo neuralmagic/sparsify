@@ -5,7 +5,7 @@ import { ResponsiveLine } from "@nivo/line";
 
 import makeStyles from "./chart-learning-rate-styles";
 import { referenceLightTheme } from "../../app/app-theme";
-import { adjustColorOpacity, readableNumber, scientificNumber } from "../utils";
+import { adjustColorOpacity, readableNumber } from "../utils";
 import ChartTooltip from "../chart-tooltip";
 
 const useStyles = makeStyles();
@@ -35,10 +35,12 @@ function ChartLearningRate({ lrSummaries }) {
       : null;
   const selectedRangeMin =
     selectedRanges && selectedRanges.length > 0 ? selectedRanges[0] : null;
-  const epochStart = selectedObjects ? selectedObjects[0].x : null;
-  const epochEnd = selectedObjects
-    ? selectedObjects[selectedObjects.length - 1].x
-    : null;
+  const epochStart =
+    selectedObjects && selectedObjects.length > 0 ? selectedObjects[0].x : null;
+  const epochEnd =
+    selectedObjects && selectedObjects.length > 0
+      ? selectedObjects[selectedObjects.length - 1].x
+      : null;
 
   return (
     <div className={classes.root}>

@@ -50,10 +50,10 @@ const ModifierRow = ({ name, start, end, globalStart, globalEnd }) => {
 
 ModifierRow.propTypes = {
   name: PropTypes.string.isRequired,
-  start: PropTypes.number.isRequired,
-  end: PropTypes.number.isRequired,
-  globalStart: PropTypes.number.isRequired,
-  globalEnd: PropTypes.number.isRequired,
+  start: PropTypes.number,
+  end: PropTypes.number,
+  globalStart: PropTypes.number,
+  globalEnd: PropTypes.number,
 };
 
 export default ModifierRow;

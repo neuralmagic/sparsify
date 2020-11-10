@@ -4,6 +4,7 @@ import {
   atomOneDark,
   atomOneLight,
 } from "react-syntax-highlighter/dist/esm/styles/hljs";
+import { CopyToClipboard } from "react-copy-to-clipboard";
 
 import { Button, Tooltip, useTheme } from "@material-ui/core";
 
@@ -54,15 +55,11 @@ function CodeContainer({ language, text, defaultFileName, loading, error }) {
             onClose={() => setShowCopiedTooltip(false)}
             title="Copied to clipboard"
           >
-            <Button
-              className={classes.textButton}
-              onClick={() => {
-                setShowCopiedTooltip(true);
-                navigator.clipboard.writeText(text);
-              }}
-            >
-              Copy to clipboard
-            </Button>
+            <CopyToClipboard text={text} onCopy={() => setShowCopiedTooltip(true)}>
+              <Button className={classes.textButton}>
+                <div className={classes.textButton}>Copy to clipboard</div>
+              </Button>
+            </CopyToClipboard>
           </Tooltip>
         </div>
       </div>

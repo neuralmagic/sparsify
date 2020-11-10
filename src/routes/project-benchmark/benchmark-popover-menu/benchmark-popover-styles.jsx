@@ -31,6 +31,7 @@ export default function makeBenchmarkPopoverStyles() {
           position: "absolute",
           right: theme.spacing(3),
           top: theme.spacing(2),
+          zIndex: 1200,
         },
         chart: {
           flex: "1 1 auto",

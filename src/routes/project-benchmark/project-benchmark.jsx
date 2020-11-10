@@ -18,7 +18,7 @@ import BenchmarkCard from "./benchmark-card";
 import ScrollerLayout from "../../components/scroller-layout";
 import makeStyles from "./project-benchmark-styles";
 import { ReactComponent as Icon } from "./img/icon.svg";
-import { JOB_CANCELED, JOB_COMPLETED, JOB_ERROR } from "../../api";
+import { JOB_CANCELED, JOB_COMPLETED, JOB_ERROR, JOB_STARTED } from "../../api";
 import GenericPage from "../../components/generic-page";
 import FadeTransitionGroup from "../../components/fade-transition-group";
 
@@ -43,15 +43,16 @@ function ProjectBenchmark({ match }) {
     ) {
       const benchmarksInProgress = benchmarksState.val.filter((benchmark) => {
         const jobStatus = _.get(benchmark, "job.status");
-        return (
-          jobStatus !== JOB_COMPLETED &&
-          jobStatus !== JOB_CANCELED &&
-          jobStatus !== JOB_ERROR
-        );
+        return jobStatus === JOB_STARTED;
       });
       benchmarksInProgress.sort((a, b) => new Date(a.created) - new Date(b.created));
 
-      if (benchmarksInProgress.length > 0) {
+      const createdBenchmarkId = _.get(createdBenchmarkState, "val.benchmark_id");
+      if (
+        benchmarksInProgress.length > 0 &&
+        (!createdBenchmarkId ||
+          createdBenchmarkId !== benchmarksInProgress[0].benchmark_id)
+      ) {
         dispatch(
           setCreatedBenchmarkThunk({
             projectId,

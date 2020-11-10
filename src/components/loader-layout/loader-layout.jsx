@@ -57,7 +57,10 @@ function LoaderLayout({
     <div className={`${rootClass} ${classes.root}`}>
       {showError && !errorComponent && (
         <div className={`${errorClass} ${classes.error}`}>
-          <span>{`${errorTitle}${error}`}</span>
+          <div className={classes.progressRoot}>
+            <div>{`${errorTitle}${error}`}</div>
+            {loaderChildren}
+          </div>
         </div>
       )}
       {showError && errorComponent}

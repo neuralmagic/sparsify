@@ -103,6 +103,11 @@ export const createBenchmarkThunk = createAsyncThunkWrapper(
 export const setCreatedBenchmarkThunk = createAsyncThunkWrapper(
   "createBenchmarks/selectCreateBenchmarks",
   async ({ projectId, benchmark }, thunkAPI) => {
+    thunkAPI.dispatch(
+      setBenchmark({
+        benchmark,
+      })
+    );
     await trackBenchmarkJob(projectId, benchmark, thunkAPI);
     const getBody = await requestGetProjectBenchmark(projectId, benchmark.benchmark_id);
 
@@ -130,6 +135,11 @@ const createBenchmarksSlice = createSlice({
     projectId: null,
     progressValue: null,
     cancelStatus: "idle",
+  },
+  reducers: {
+    setBenchmark: (state, action) => {
+      state.val = action.payload.benchmark;
+    },
   },
   extraReducers: {
     [deleteBenchmarkThunk.pending]: (state, action) => {
@@ -187,7 +197,7 @@ const createBenchmarksSlice = createSlice({
   },
 });
 
-export const {} = createBenchmarksSlice.actions;
+export const { setBenchmark } = createBenchmarksSlice.actions;
 
 export const selectCreatedBenchmarkId = (state) => {
   return state.createdBenchmarks.val && state.status !== STATUS_SUCCEEDED

@@ -182,10 +182,15 @@ function BenchmarkCard({ benchmark, projectId }) {
   }
 
   useEffect(() => {
+    const createdBenchmarkId = _.get(createdBenchmarkState, "val.benchmark_id");
+    const currentBenchmarkId = _.get(benchmark, "benchmark_id");
     if (
       createdBenchmarkState.status === STATUS_SUCCEEDED ||
-      createdBenchmarkState.cancelStatus === STATUS_SUCCEEDED ||
-      createdBenchmarkState.cancelStatus === STATUS_FAILED
+      ((!createdBenchmarkId || createdBenchmarkId === currentBenchmarkId) &&
+        createdBenchmarkState.status === STATUS_FAILED) ||
+      (deleting &&
+        (createdBenchmarkState.cancelStatus === STATUS_SUCCEEDED ||
+          createdBenchmarkState.cancelStatus === STATUS_FAILED))
     ) {
       dispatch(getBenchmarksThunk({ projectId }));
     }
@@ -265,7 +270,13 @@ function BenchmarkCard({ benchmark, projectId }) {
         <Card className={classes.card} elevation={1}>
           <LoaderOverlay
             loading={loading || !animationEnded}
-            error={createdBenchmarkState.cancelStatus === STATUS_LOADING ? "" : error}
+            error={
+              deleting &&
+              (createdBenchmarkState.cancelStatus === STATUS_LOADING ||
+                createdBenchmarkState.cancelStatus === STATUS_SUCCEEDED)
+                ? ""
+                : error
+            }
             progress={!deleting ? progress : null}
             loaderSize={96}
             loaderLabel={label}

@@ -76,7 +76,11 @@ function ChartLearningRate({ lrSummaries }) {
         <ResponsiveLine
           data={[{ id: "Learning Rate", data: selectedObjects }]}
           xScale={{ type: "point" }}
-          yScale={{ type: "linear", min: "auto", max: "auto" }}
+          yScale={{
+            type: "linear",
+            min: selectedRangeMin === 0 || selectedRangeMin ? selectedRangeMin : "auto",
+            max: selectedRangeMax === 0 || selectedRangeMax ? selectedRangeMax : "auto",
+          }}
           curve="monotoneX"
           colors={[adjustColorOpacity(referenceLightTheme.palette.primary.main, 0.8)]}
           lineWidth={2}
@@ -101,8 +105,6 @@ function ChartLearningRate({ lrSummaries }) {
           useMesh={true}
           animate={true}
           tooltip={createTooltip}
-          minValue={selectedRangeMin ? selectedRangeMin : "auto"}
-          maxValue={selectedRangeMax ? selectedRangeMax : "auto"}
         />
       </div>
       <div className={classes.chartXAxis}>

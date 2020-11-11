@@ -218,7 +218,17 @@ function ChartSummariesCard({ plotType, summaries, xAxisTitle, tooltipValues }) 
             <ResponsiveLine
               data={[{ id: summaryType, data: selectedObjects }]}
               xScale={{ type: "point" }}
-              yScale={{ type: "linear", min: "auto", max: "auto" }}
+              yScale={{
+                type: "linear",
+                min:
+                  selectedRangeMin === 0 || selectedRangeMin
+                    ? selectedRangeMin
+                    : "auto",
+                max:
+                  selectedRangeMax === 0 || selectedRangeMax
+                    ? selectedRangeMax
+                    : "auto",
+              }}
               curve="monotoneX"
               colors={[
                 adjustColorOpacity(referenceLightTheme.palette.primary.main, 0.8),
@@ -245,8 +255,6 @@ function ChartSummariesCard({ plotType, summaries, xAxisTitle, tooltipValues }) 
               useMesh={true}
               animate={true}
               tooltip={tooltip}
-              minValue={selectedRangeMin ? selectedRangeMin : "auto"}
-              maxValue={selectedRangeMax ? selectedRangeMax : "auto"}
             />
           )}
         </div>

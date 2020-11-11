@@ -152,7 +152,11 @@ function BenchmarkPlot({ measurements, ranges, rangesX, xAxisLabel, yAxisLabel }
         <ResponsiveLine
           data={measurements}
           xScale={{ type: "linear", min: "auto" }}
-          yScale={{ type: "linear" }}
+          yScale={{
+            type: "linear",
+            min: rangeMinValue === 0 || rangeMinValue ? rangeMinValue : "auto",
+            max: rangeMaxValue === 0 || rangeMaxValue ? rangeMaxValue : "auto",
+          }}
           lineWidth={2}
           enablePoints={true}
           pointSize={6}
@@ -176,8 +180,6 @@ function BenchmarkPlot({ measurements, ranges, rangesX, xAxisLabel, yAxisLabel }
           useMesh={true}
           animate={true}
           tooltip={toolTip}
-          rangeMinValue={rangeMinValue || "auto"}
-          rangeMaxValue={rangeMaxValue || "auto"}
         />
       </div>
       <div className={classes.chartXAxis}>

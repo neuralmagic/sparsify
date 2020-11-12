@@ -1,52 +1,55 @@
 import React, { useState } from "react";
-import { Fab, IconButton } from "@material-ui/core";
+import { Fab, IconButton, Typography } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
-import HelpOutlineIcon from "@material-ui/icons/HelpOutline";
 
 import makeStyles from "./home-styles";
 import AbsoluteLayout from "../../components/absolute-layout";
 import ProjectCreateDialog from "../../modals/project-create";
-import GettingStartedDialog from "../../modals/getting-started";
-import DefaultHome from "./default-home";
-import useGettingStarted from "./hooks/use-getting-started";
+import { ReactComponent as AnalyzeIcon } from "./img/analyze.svg";
+import { ReactComponent as IntegrateIcon } from "./img/integrate.svg";
+import { ReactComponent as OptimizeIcon } from "./img/optimize.svg";
+import DisplayAction from "./display-action";
 
 const useStyles = makeStyles();
-const HOME_URL = null;
 
 function Home() {
   const classes = useStyles();
-  const [displayType, setDisplayType] = useState(HOME_URL ? "iframe" : "fallback");
   const [createOpen, setCreateOpen] = useState(false);
-
-  const {
-    userDoNotShow,
-    setUserDoNotShow,
-    gettingStartedOpen,
-    setGettingStartedOpen,
-  } = useGettingStarted();
 
   return (
     <AbsoluteLayout>
-      <div className={classes.info}>
-        <IconButton
-          size="medium"
-          className={classes.infoButton}
-          onClick={() => setGettingStartedOpen(true)}
+      <div className={classes.content}>
+        <Typography
+          className={classes.titleText}
+          color="textPrimary"
+          variant="h5"
+          align="center"
         >
-          <HelpOutlineIcon />
-        </IconButton>
-      </div>
+          Follow three simple steps to maximize your model's performance and ensure
+          compatibility with Neural Magic's Inference Engine.
+        </Typography>
 
-      {displayType === "iframe" && (
-        <iframe
-          title={"Home"}
-          width="100%"
-          height="100%"
-          src={HOME_URL}
-          onError={() => setDisplayType("fallback")}
-        />
-      )}
-      {displayType === "fallback" && <DefaultHome />}
+        <div className={classes.displayActions}>
+          <DisplayAction
+            headerText="Analyze"
+            bodyText="Create a project, upload a model, and Sparsify will estimate a speedup."
+          >
+            <AnalyzeIcon />
+          </DisplayAction>
+          <DisplayAction
+            headerText="Optimize"
+            bodyText="Apply the latest optimization techniques such as pruning and then benchmark."
+          >
+            <OptimizeIcon />
+          </DisplayAction>
+          <DisplayAction
+            headerText="Integrate"
+            bodyText="Export an optimization config, use this to retrain your model, and run."
+          >
+            <IntegrateIcon />
+          </DisplayAction>
+        </div>
+      </div>
 
       <Fab
         variant="extended"
@@ -60,12 +63,6 @@ function Home() {
       </Fab>
 
       <ProjectCreateDialog open={createOpen} handleClose={() => setCreateOpen(false)} />
-      <GettingStartedDialog
-        open={gettingStartedOpen}
-        handleClose={() => setGettingStartedOpen(false)}
-        userDoNotShow={userDoNotShow}
-        setUserDoNotShow={setUserDoNotShow}
-      />
     </AbsoluteLayout>
   );
 }

@@ -39,5 +39,5 @@ clean:
 	rm -fr .pytest_cache;
 	rm -fr docs/_build docs/build;
 	rm -fr node_modules;
-	find . -not -path "./.venv/*" | grep -E "(__pycache__|\.pyc|\.pyo)" | xargs rm -fr;
-	find . -not -path "./.venv/*" | grep .rst | xargs rm -fr;
+	find $(PYCHECKDIRS) $(JSCHECKDIRS) | grep -E "(__pycache__|\.pyc|\.pyo)" | xargs rm -fr;
+	find $(DOCDIR) | grep .rst | xargs rm -fr;

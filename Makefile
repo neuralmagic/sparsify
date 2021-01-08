@@ -1,3 +1,5 @@
+.PHONY: build docs test
+
 BUILDDIR := $(PWD)
 PYCHECKDIRS := tests src utils scripts setup.py
 JSCHECKDIRS := src

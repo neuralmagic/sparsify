@@ -1,0 +1,18 @@
+# Optimization Config File and Code for Optimization
+
+The **optimization configuration file** is used during training. You can save this file to disk or copy it to your clipboard.
+
+<kbd><img src="images/image_61.jpg" alt="(Optimization configuration file)" width="440" height="170" /></kbd>
+
+The optimization configuration file (config.yml) includes all information that was described during optimization. The configuration file encodes all Sparsify processing into a format that your system can use to override the training process (such as to prune and control learning rate).
+
+After exporting, you would integrate the configuration file into your training flow. Then, run the training. If the results are not acceptable for your business criteria, return to model optimization and try different values. For example, perhaps the model did not recover with the pruning modifier and the sparsity should be lowered.
+
+**Optimization code** is provided for training and for integration. You can save this code to disk or copy it to your clipboard.
+
+<kbd><img src="images/image_62.jpg" alt="(Code for optimization)" width="440" height="200" /></kbd>
+
+---
+**Next step...**
+
+Explore your project's [Settings](07-settings.md) or review general [Key Concepts, Features, and Terms](08-key-terms.md) mentioned throughout Sparsify.

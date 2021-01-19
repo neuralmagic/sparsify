@@ -1,5 +1,5 @@
 <!---
-Copyright 2021 Neuralmagic, Inc. All rights reserved.
+Copyright (c) 2021 - present / Neuralmagic, Inc. All Rights Reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -14,9 +14,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-# [Related Icon Here] Sparsify
+# ![icon for Sparsify](docs/icon-sparsify.png) Sparsify
 
-### Easy-to-use UI to optimize neural networks for better performance and smaller sizes
+### Easy-to-use interface to automatically sparsify and fine-tune models for better performance and smaller footprint
+
 <p>
     <a href="https://github.com/neuralmagic/comingsoon/blob/master/LICENSE">
         <img alt="GitHub" src="https://img.shields.io/github/license/neuralmagic/comingsoon.svg?color=purple&style=for-the-badge" height=25>
@@ -43,106 +44,73 @@ limitations under the License.
 
 ## Overview
 
-Sparsify improves model performance for deployment at scale using the latest model
-compression techniques. Use Sparsify to analyze, optimize, and integrate your neural
-network for production.
+Sparsify is a deep learning model acceleration tool that simplifies the model optimization process to rapidly achieve the best combination of size, speed, and accuracy on any deep learning model. Sparsify optimizes and benchmarks models informed by industry research insights for ML practitioners, including ML engineers and operators, who need to deploy performant deep learning models fast and at scale. Sparsify shows visual performance potential for your model, including a sliding scale between performance and loss sensitivity, ultimately speeding up the model optimization process from weeks to minutes.
 
-Sparsify is a deep learning model acceleration tool suite that simplifies the model
-optimization process to rapidly achieve the best combination of size, speed, and
-accuracy on any deep learning model. Sparsify is an easy way to optimize and
-benchmark models informed by industry research insights for ML practitioners, including
-ML engineers and operators, who need to deploy performant deep learning models at
-scale. Sparsify provides visual performance potential for your model, including a sliding
-scale between performance and loss.
+This repository contains the package to locally launch Sparsify where you can create projects to load and optimize your deep learning models. At the end, you can export configuration files to deploy within your training workflow.
 
 ## Quick Tour and Documentation
 
 Follow the quick tour below to get started.
 For a more in-depth read, check out [Sparsify documentation](https://docs.neuralmagic.com/sparsify/).
 It provides the following for you to use Sparsify:
+
 - Learning path and goals
 - Basic examples
 - Details of features
 - Advanced options
 <!--- the docs url will become active once Marketing configures it. --->
 
-### Installation and Requirements
+### Requirements
 
-- Installation of [SparseML](https://docs.neuralmagic.com/sparseml/) and [SparseZoo](https://docs.neuralmagic.com/sparsezoo/) 
-- Python 3.6 or higher
+- This repository is tested on Python 3.6+, PyTorch base-ver+ and TensorFlow 1.x+
 - Use Case: Computer Vision - Image Classification, Object Detection
-- Model Architectures: Deep Learning Neural Network Architectures (e.g., CNNs, DNNs - refer to SparseZoo for examples)
-- ONNX: Ability to provide an ONNX file
-- Instruction Set: Ideally CPUs with AVX-512 (e.g., Intel Xeon Cascade Lake, Icelake, Skylake) and 2 FMAs. VNNI support required for sparse quantization.
-- OS / Environment: Ubuntu, CentOS, RHEL, Amazon Linux 
-- FP32 bit precision (quantized performance coming soon)
+- Model Architectures: Deep Learning Neural Network Architectures (e.g., CNNs, DNNs - refer to [SparseZoo](https://docs.neuralmagic.com/sparsezoo/) for examples)
+- Instruction Set: CPUs with AVX2 or AVX-512 (best); (e.g., Intel Xeon Cascade Lake, Icelake, Skylake; AMD) and 2 FMAs. VNNI support required for sparse quantization.
+- OS / Environment: Linux
 
-To install, these packages will be required:
+### Installation
 
-```python
-$ pip install sparsify
-$ pip install sparseml
-$ pip install sparsezoo
+To install, run:
+
+```bash
+pip install sparsify
 ```
-Optionally, you may also want to install the [Neural Magic Inference Engine](https://docs.neuralmagic.com/[ENGINE_REPO_NAME]/). Sparsify can utilize Neural Magic’s runtime engine to achieve faster inference timings. For example, after running a benchmark, you might want to change optimization values and run an optimization profile again.
 
-```python
-$ pip install engine
+To launch Sparsify, type the following command:
+
+```bash
+sparsify
 ```
-### Usage
-To launch Sparsify, use the following command:
 
-```python
-$ sparsify
-```
-From the initial screen, click the "New Project button" so you can:
-1. Upload an ONNX file of your deep learning model to a new project
-2. Profile the model for the effects of model optimizations on loss and performance
-3. Create an automatic model optimization config and edit as desired
-4. Export the config and integrate into your current training flow
+## Tutorials
 
-Projects are saved out locally on the left navigation bar of the initial screen for easy access.
-You can create a single or multiple projects for your analysis.
+[TODO ENGINEERING]
 
+## Available Models and Recipes
 
-### Available Models and Recipes
-If you are not ready to upload your model to Sparsify, a number of pre-trained models are available in the SparseZoo that can be used. Included are both baseline and recalibrated models for higher performance. These can optionally be used with [Neural Magic Inference Engine](https://github.com/neuralmagic/engine/). The types available for each model architecture are noted in the [Sparsify model repository listing](docs/available-models.md).
-
-### Development Setup
-[TODO ENGINEERING: dev instructions or point to [CONTRIBUTING.md](#contributing)
+[TODO ENGINEERING]
 
 ## Resources and Learning More
-* [Sparsify Documentation](https://docs.neuralmagic.com/sparsify/)
-* [Sparsify Use Cases](INSERT PATH HERE; IS THIS NEEDED?)
-* [Sparsify Examples] Coming soon in February 2021
-* [SparseML Documentation](https://docs.neuralmagic.com/sparseml/)
-* [SparseZoo Documentation](https://docs.neuralmagic.com/sparsezoo/)
-* [ENGINE_FORMAL_NAME Documentation](https://docs.neuralmagic.com/[ENGINE_REPO_NAME]/)
-* [Neural Magic Blog](https://www.neuralmagic.com/blog/)
-* [Neural Magic](https://www.neuralmagic.com/)
 
-[TODO ENGINEERING: table with links for deeper topics or other links that should be included above]
+- [Sparsify Documentation](https://docs.neuralmagic.com/sparsify/)
+- [Sparsify Use Cases]([TODO ENGINEERING])
+- [Sparsify Examples] Coming soon in February 2021
+- [SparseML Documentation](https://docs.neuralmagic.com/sparseml/)
+- [SparseZoo Documentation](https://docs.neuralmagic.com/sparsezoo/)
+- [DeepSparse Documentation](https://docs.neuralmagic.com/deepsparse/)
+- [Neural Magic Blog](https://www.neuralmagic.com/blog/), [Resources](https://www.neuralmagic.com/resources/), [Website](https://www.neuralmagic.com/)
 
 ## Contributing
 
-We appreciate contributions to the code, documentation and examples, documentation!
-
-- Report issues and bugs directly in [this GitHub project](https://github.com/neuralmagic/sparsify/issues).
-- Learn how to work with the Sparsify source code, including building and testing Sparsify models and recipes as well as contributing code changes to Sparsify by reading our [Development and Contribution guidelines](CONTRIBUTING.md).
-
-Give Sparsify a shout out on social! Are you able write a blog post, do a lunch ’n learn, host a meetup, or simply share via your networks? Help us build the community, yay! Here’s some details to assist:
-- item 1 [TODO MARKETING: NEED METHODS]
-- item n
+We appreciate contributions to the code, examples, and documentation as well as bug reports and feature requests! [Learn how here](CONTRIBUTING.md).
 
 ## Join the Community
 
-For user help or questions about Sparsify, please use our [GitHub Discussions](https://www.github.com/neuralmagic/sparsify/issues). Everyone is welcome!
+For user help or questions about SparseML, use our [GitHub Discussions](https://www.github.com/neuralmagic/sparsify/discussions/). Everyone is welcome!
 
-You can get the latest news, webinar invites, and other ML Performance tidbits by [connecting with the Neural Magic community](https://www.neuralmagic.com/NEED_URL/).[TODO MARKETING: NEED METHOD]
+You can get the latest news, webinar and event invites, research papers, and other ML Performance tidbits by [subscribing](https://neuralmagic.com/subscribe/) to the Neural Magic community.
 
-For more general questions about Neural Magic please contact us this way [Method](URL). [TODO MARKETING: NEED METHOD]
-
-[TODO MARKETING: Example screenshot here]
+For more general questions about Neural Magic, please email us at [learnmore@neuralmagic.com](mailto:learnmore@neuralmagic.com) or fill out this [form](http://neuralmagic.com/contact/).
 
 ## License
 
@@ -151,3 +119,23 @@ The project is licensed under the [Apache License Version 2.0](LICENSE).
 ## Release History
 
 [Track this project via GitHub Releases.](https://github.com/neuralmagic/sparsify/releases)
+
+## Citation
+
+Find this project useful in your research or other communications? Please consider citing:
+
+```bibtex
+@InProceedings{pmlr-v119-kurtz20a, title = {Inducing and Exploiting Activation Sparsity for Fast Inference on Deep Neural Networks}, author = {Kurtz, Mark and Kopinsky, Justin and Gelashvili, Rati and Matveev, Alexander and Carr, John and Goin, Michael and Leiserson, William and Moore, Sage and Shavit, Nir and Alistarh, Dan}, booktitle = {Proceedings of the 37th International Conference on Machine Learning}, pages = {5533--5543}, year = {2020}, editor = {Hal Daumé III and Aarti Singh}, volume = {119}, series = {Proceedings of Machine Learning Research}, address = {Virtual}, month = {13--18 Jul}, publisher = {PMLR}, pdf = {http://proceedings.mlr.press/v119/kurtz20a/kurtz20a.pdf},, url = {http://proceedings.mlr.press/v119/kurtz20a.html}, abstract = {Optimizing convolutional neural networks for fast inference has recently become an extremely active area of research. One of the go-to solutions in this context is weight pruning, which aims to reduce computational and memory footprint by removing large subsets of the connections in a neural network. Surprisingly, much less attention has been given to exploiting sparsity in the activation maps, which tend to be naturally sparse in many settings thanks to the structure of rectified linear (ReLU) activation functions. In this paper, we present an in-depth analysis of methods for maximizing the sparsity of the activations in a trained neural network, and show that, when coupled with an efficient sparse-input convolution algorithm, we can leverage this sparsity for significant performance gains. To induce highly sparse activation maps without accuracy loss, we introduce a new regularization technique, coupled with a new threshold-based sparsification method based on a parameterized activation function called Forced-Activation-Threshold Rectified Linear Unit (FATReLU). We examine the impact of our methods on popular image classification models, showing that most architectures can adapt to significantly sparser activation maps without any accuracy loss. Our second contribution is showing that these these compression gains can be translated into inference speedups: we provide a new algorithm to enable fast convolution operations over networks with sparse activations, and show that it can enable significant speedups for end-to-end inference on a range of popular models on the large-scale ImageNet image classification task on modern Intel CPUs, with little or no retraining cost.} }
+}
+```
+
+```bibtex
+@misc{singh2020woodfisher,
+      title={WoodFisher: Efficient Second-Order Approximation for Neural Network Compression}, 
+      author={Sidak Pal Singh and Dan Alistarh},
+      year={2020},
+      eprint={2004.14340},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG}
+}
+```

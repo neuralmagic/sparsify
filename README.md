@@ -82,6 +82,15 @@ To launch Sparsify, type the following command:
 sparsify
 ```
 
+From the initial screen, click the "New Project button" so you can:
+
+1. Upload an ONNX file of your deep learning model to a new project
+2. Profile the model for the effects of model optimizations on loss and performance
+3. Create an automatic model optimization config and edit as desired
+4. Export the config and integrate into your current training flow
+
+Projects are saved out locally on the left navigation bar of the initial screen for easy access. You can create a single or multiple projects for your analysis.
+
 ## Tutorials
 
 [TODO ENGINEERING]

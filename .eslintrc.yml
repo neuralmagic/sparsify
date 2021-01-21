@@ -1,0 +1,169 @@
+env:
+  browser: true
+  es6: true
+extends:
+  - "eslint:recommended"
+  - "plugin:react/recommended"
+globals:
+  Atomics: readonly
+  SharedArrayBuffer: readonly
+parserOptions:
+  ecmaFeatures:
+    jsx: true
+  ecmaVersion: 2018
+  sourceType: module
+plugins:
+  - react
+rules:
+  arrow-parens:
+    - error
+    - as-needed
+  arrow-body-style:
+    - error
+    - as-needed
+  arrow-spacing:
+    - error
+  block-scoped-var:
+    - error
+  block-spacing:
+    - error
+    - always
+  brace-style:
+    - error
+    - 1tbs
+    - allowSingleLine: true
+  comma-dangle:
+    - error
+    - only-multiline
+  comma-style:
+    - error
+    - last
+    - exceptions:
+        ArrayExpression: false
+        ArrayPattern: false
+        ArrowFunctionExpression: false
+        CallExpression: false
+        FunctionDeclaration: false
+        FunctionExpression: false
+        ImportDeclaration: false
+        ObjectExpression: false
+        ObjectPattern: false
+        VariableDeclaration: false
+        NewExpression: false
+  comma-spacing:
+    - error
+    - after: true
+      before: false
+  eqeqeq:
+    - error
+  eol-last:
+    - error
+    - always
+  indent:
+    - error
+    - 2
+    - SwitchCase: 1
+      ObjectExpression: first
+      ArrayExpression: first
+      CallExpression:
+        arguments: off
+      flatTernaryExpressions: true
+      FunctionDeclaration:
+        parameters: first
+      FunctionExpression:
+        parameters: first
+      ignoreComments: false
+      MemberExpression: 1
+      VariableDeclarator:
+        var: 4
+        const: 4
+        let: 4
+  function-paren-newline:
+    - off
+  func-style:
+    - error
+    - declaration
+    - allowArrowFunctions: true
+  jasmine/no-disabled-tests:
+    - off
+  jsx-quotes:
+    - warn
+    - prefer-single
+  keyword-spacing:
+    - error
+    - before: true
+      after: true
+      overrides: {}
+  linebreak-style:
+    - error
+    - unix
+  no-alert:
+    - error
+  no-console:
+    - off
+  no-debugger:
+    - off
+  no-extra-boolean-cast:
+    - off
+  no-extra-parens:
+    - error
+  no-eq-null:
+    - error
+  no-fallthrough:
+    - error
+  no-lonely-if:
+    - error
+  no-mixed-spaces-and-tabs:
+    - off
+  no-multiple-empty-lines:
+    - error
+    - max: 1
+  no-multi-spaces:
+    - off
+    - ignoreEOLComments: false
+  no-trailing-spaces:
+    - error
+  no-undef:
+    - 2
+  no-unneeded-ternary:
+    - error
+  no-useless-escape:
+    - off
+  nonblock-statement-body-position:
+    - error
+    - below
+  object-curly-spacing:
+    - error
+    - always
+  padding-line-between-statements:
+    - error
+    - blankLine: "always"
+      prev: ["const", "let", "var"]
+      next: "*"
+    - blankLine: "any"
+      prev: ["const", "let", "var"]
+      next: ["const", "let", "var"]
+  quotes:
+    - warn
+    - single
+    - allowTemplateLiterals: true
+  react/display-name:
+    - off
+  react/prop-types:
+    - off
+  react/jsx-uses-vars:
+    - warn
+  react/jsx-no-undef:
+    - off
+  space-in-parens:
+    - error
+    - never
+  space-before-blocks:
+    - error
+  space-before-function-paren:
+    - error
+    - never
+  switch-colon-spacing:
+    - error
+  yoda:
+    - error

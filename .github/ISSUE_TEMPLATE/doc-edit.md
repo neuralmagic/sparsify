@@ -1,16 +1,7 @@
 ---
 name: Doc edit
-about: Propose additions or improvements to project documentation
-title: ''
-labels: documentation
-assignees: ''
-
----
-
----
-name: Doc edit
 about: Propose changes to project documentation
-labels: ''
+labels: documentation
 
 ---
 

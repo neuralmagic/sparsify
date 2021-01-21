@@ -11,7 +11,7 @@ from onnx import ModelProto
 from sparseml.onnx.utils import (
     DataLoader,
     ModelRunner,
-    NMModelRunner,
+    DeepSparseModelRunner,
     ORTModelRunner,
     check_load_model,
     get_node_by_id,
@@ -383,7 +383,7 @@ class CreateBenchmarkJobWorker(BaseJobWorker):
                     )
                 )
             elif inference_engine == DEEPSPARSE_ENGINE:
-                runner = NMModelRunner(model, batch_size, core_count)
+                runner = DeepSparseModelRunner(model, batch_size, core_count)
             elif inference_engine == ORT_GPU_ENGINE:
                 raise NotImplementedError()
             else:

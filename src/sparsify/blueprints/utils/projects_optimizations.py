@@ -678,18 +678,18 @@ def create_config(project: Project, optim: ProjectOptimization, framework: str) 
     # add imports in function so they don't fail if they don't have env setup
     # for frameworks other than the requested
     if framework == "pytorch":
-        from sparseml.pytorch.recal import (
+        from sparseml.pytorch.optim import (
             EpochRangeModifier,
-            GradualKSModifier,
+            GMPruningModifier,
             LearningRateModifier,
             ScheduledModifierManager,
             SetLearningRateModifier,
             TrainableParamsModifier,
         )
     elif framework == "tensorflow":
-        from sparseml.tensorflow_v1.recal import (
+        from sparseml.tensorflow_v1.optim import (
             EpochRangeModifier,
-            GradualKSModifier,
+            GMPruningModifier,
             LearningRateModifier,
             ScheduledModifierManager,
             SetLearningRateModifier,

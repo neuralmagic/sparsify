@@ -1,6 +1,6 @@
 import math
 
-from sparseml.tensorflow_v1.recal import (
+from sparseml.tensorflow_v1.optim import (
     EXTRAS_KEY_LEARNING_RATE,
     EXTRAS_KEY_SUMMARIES,
     ScheduledModifierManager,

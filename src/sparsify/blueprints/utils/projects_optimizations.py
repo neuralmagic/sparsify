@@ -732,7 +732,7 @@ def create_config(project: Project, optim: ProjectOptimization, framework: str) 
             sparsity_to_params[sparsity].append(weight_name)
 
         for sparsity, params in sparsity_to_params.items():
-            grad_ks = GradualKSModifier(
+            gm_pruning = GMPruningModifier(
                 init_sparsity=0.05,
                 final_sparsity=sparsity,
                 start_epoch=mod.start_epoch if mod.start_epoch is not None else -1,
@@ -742,9 +742,9 @@ def create_config(project: Project, optim: ProjectOptimization, framework: str) 
             )
 
             if mod.mask_type:
-                grad_ks.mask_type = mod.mask_type
+                gm_pruning.mask_type = mod.mask_type
 
-            mods.append(grad_ks)
+            mods.append(gm_pruning)
 
     for lr_schedule_modifier in optim.lr_schedule_modifiers:
         for mod in lr_schedule_modifier.lr_mods:

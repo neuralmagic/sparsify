@@ -10,8 +10,8 @@ from onnx import ModelProto
 
 from sparseml.onnx.utils import (
     DataLoader,
-    ModelRunner,
     DeepSparseModelRunner,
+    ModelRunner,
     ORTModelRunner,
     check_load_model,
     get_node_by_id,

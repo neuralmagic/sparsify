@@ -56,7 +56,7 @@ This repository contains the package to locally launch Sparsify
 where you can create projects to load and optimize your deep learning models. 
 At the end, you can export optimization recipes to integrate with your training workflow.
 
-## Quick Links
+### Related Products
 
 - [DeepSparse](https://github.com/neuralmagic/deepsparse): 
   CPU inference engine that delivers unprecedented performance for sparse models

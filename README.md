@@ -85,8 +85,8 @@ Therefore, after starting Sparsify with the default commands,
 you may enter the following into a web browser to begin using Sparsify: `http://0.0.0.0:5543`.
 
 If you are running Sparsify on a separate server from where the web browser is located,
-then you will need to sub in the proper IP address for that server in place of `0.0.0.0`.
-Additionally, be sure to check that the networking rules on your server allow for access to port 5543.
+then you will need to substitute in the proper IP address for that server in place of `0.0.0.0`.
+Additionally, confirm that the networking rules on your server allow for access to port 5543.
 
 After visiting `http://0.0.0.0:5543` in a web browser, 
 the home page for Sparsify will load if configured correctly:
@@ -109,15 +109,15 @@ see the [SparseML repository](https://github.com/neuralmagic/sparseml).
 To begin creating a project use one of the following flows:
 - Upload your model file through the browser by clicking on `Click to browse`.
 - Download your model file through a public URL by filling in the field `Remote Path or URL`.
-- Move your model file from an accesible file location on the server by filling in the field `Remote Path or URL`.
+- Move your model file from an accessible file location on the server by filling in the field `Remote Path or URL`.
 
 Continue through the popup and fill in information as specified to finish creating the project.
 
 ### Analyzing a Model
 
 After model creation, optimization sensitivity analysis for the model are shown under 
-the `Performane Profiles` and `Loss Profiles` sidenav rows.
-These include the effects different types of optimizations and degrees of those optimizations 
+the `Performance Profiles` and `Loss Profiles` in the left navigation.
+The profiles will show the effects that different types of optimizations and degrees of those optimizations
 have on both the models inference speed and the baseline loss.
 
 Performance Profiles:
@@ -128,7 +128,7 @@ Loss Profiles:
 
 ### Optimizing a Model
 
-Click on the `Optimization` sidenav row or the `Start Optimizing` button on the analyzing pages 
+Click on the `Optimization` in the left navigation or the `Start Optimizing` button on the analyzing pages 
 to begin optimizing your model. 
 After clicking, the optimization creation popup will be displayed:
 ![Sparsify loss profiles](docs/userguide/images/image_26.jpg)
@@ -140,11 +140,11 @@ The recipe can then be further edited if desired:
 ![Sparsify loss profiles](docs/userguide/images/image_28.jpg)
 
 ### Exporting a Recipe
-Currently Sparsify is focused on training aware optimizations; 
+Currently Sparsify is focused on training-aware optimizations; 
 these allow much better loss recovery for a given target performance.
 A future release will enable the option of one-shot optimizations with limited to no retraining.
 
-Given that the optimization recipe is created with training aware optimizations, 
+Given that the optimization recipe is created with training-aware optimizations, 
 it must be exported for inclusion in your original training pipeline using 
 [SparseML](https://github.com/neuralmagic/sparseml).
 SparseML enables this inclusion with only a few lines of code for most training workflows.

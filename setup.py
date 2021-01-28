@@ -58,7 +58,7 @@ def _setup_long_description() -> Tuple[str, str]:
 setup(
     name="sparsify",
     version="0.1.0",
-    author="Mark Kurtz, Kevin Rodriguez, Ben Fineran, Tuan Nguyen, Dan Alistarh",
+    author="Neuralmagic, Inc.",
     author_email="support@neuralmagic.com",
     description="Easy-to-use autoML interface to optimize deep neural networks "
     "for better inference performance and a smaller footprint.",

@@ -58,15 +58,16 @@ def _setup_long_description() -> Tuple[str, str]:
 setup(
     name="sparsify",
     version="0.1.0",
-    author="Mark Kurtz, Kevin Rodriguez, Ben Fineran, Tuan Nguyen, Dan Alistarh",
+    author="Neuralmagic, Inc.",
     author_email="support@neuralmagic.com",
-    description="Easy-to-use interface to automatically prune and optimize models "
-    "for better performance and smaller footprint",
+    description="Easy-to-use autoML interface to optimize deep neural networks "
+    "for better inference performance and a smaller footprint.",
     long_description=_setup_long_description()[0],
     long_description_content_type=_setup_long_description()[1],
-    keywords="inference machine learning neural network computer vision nlp cv "
-    "deep learning torch pytorch tensorflow keras automl",
-    license="[TODO]",
+    keywords="inference, machine learning, neural network, computer vision, nlp, cv, "
+    "deep learning, torch, pytorch, tensorflow, keras, automl, sparsity, pruning, "
+    "deep learning libraries, onnx, quantization",
+    license="Apache",
     url="https://github.com/neuralmagic/sparsify",
     include_package_data=True,
     package_dir=_setup_package_dir(),
@@ -83,6 +84,7 @@ setup(
         "Intended Audience :: Education",
         "Intended Audience :: Information Technology",
         "Intended Audience :: Science/Research",
+        "License :: OSI Approved :: Apache Software License",
         "Operating System :: POSIX :: Linux",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3 :: Only",

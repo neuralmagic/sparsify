@@ -16,7 +16,7 @@ limitations under the License.
 
 # ![icon for Sparsify](docs/icon-sparsify.png) Sparsify
 
-### Easy-to-use interface to automatically sparsify and fine-tune models for better performance and smaller footprint
+### Easy-to-use autoML interface to optimize deep neural networks for better inference performance and a smaller footprint.
 
 <p>
     <a href="https://github.com/neuralmagic/comingsoon/blob/master/LICENSE">
@@ -44,43 +44,134 @@ limitations under the License.
 
 ## Overview
 
-Sparsify is a deep learning model acceleration tool that simplifies the model optimization process to rapidly achieve the best combination of size, speed, and accuracy on any deep learning model. Sparsify optimizes and benchmarks models informed by industry research insights for ML practitioners, including ML engineers and operators, who need to deploy performant deep learning models fast and at scale. Sparsify shows visual performance potential for your model, including a sliding scale between performance and loss sensitivity, ultimately speeding up the model optimization process from weeks to minutes.
+Sparsify is a deep learning autoML tool that simplifies the model optimization process to rapidly achieve 
+the best combination of size, speed, and accuracy on any deep learning model. 
+Sparsify optimizes and benchmarks models informed by industry research insights for ML practitioners, 
+including ML engineers and operators, who need to deploy performant deep learning models fast and at scale. 
+Sparsify shows visual performance potential for your model, 
+including a sliding scale between performance and loss sensitivity, 
+ultimately speeding up the model optimization process from weeks to minutes.
 
-This repository contains the package to locally launch Sparsify where you can create projects to load and optimize your deep learning models. At the end, you can export configuration files to deploy within your training workflow.
+This repository contains the package to locally launch Sparsify 
+where you can create projects to load and optimize your deep learning models. 
+At the end, you can export optimization recipes to integrate with your training workflow.
 
-## Quick Tour and Documentation
+### Related Products
 
-Follow the quick tour below to get started.
+- [DeepSparse](https://github.com/neuralmagic/deepsparse): 
+  CPU inference engine that delivers unprecedented performance for sparse models
+- [SparseZoo](https://github.com/neuralmagic/sparsezoo): 
+  Neural network model repository for highly sparse models and optimization recipes
+- [SparseML](https://github.com/neuralmagic/sparseml): 
+  Libraries for state-of-the-art deep neural network optimization algorithms, 
+  enabling simple pipelines integration with a few lines of code
+
+## Quick Tour
+
+A console script entry point is installed with the package: `sparsify`.
+This enables easy interaction through your console/terminal.
+Note, for some environments the console scripts cannot install properly.
+If this happens for your system and the `sparsify` command is not available,
+`scripts/sparsify.py` may be used in its place.
+
+To launch Sparsify locally, open up a console or terminal window and type in the following:
+```shell script
+sparsify
+```
+
+The Sparsify server will begin running locally on the machine and can be accessed through a web browser.
+The default host:port Sparsify starts on is `0.0.0.0:5543`.
+Therefore, after starting Sparsify with the default commands, 
+you may enter the following into a web browser to begin using Sparsify: `http://0.0.0.0:5543`.
+
+If you are running Sparsify on a separate server from where the web browser is located,
+then you will need to substitute in the proper IP address for that server in place of `0.0.0.0`.
+Additionally, confirm that the networking rules on your server allow for access to port 5543.
+
+After visiting `http://0.0.0.0:5543` in a web browser, 
+the home page for Sparsify will load if configured correctly:
+![SparseZoo main page Icon](docs/userguide/images/image_1.jpg)
+
+A quick start flow is given below. 
 For a more in-depth read, check out [Sparsify documentation](https://docs.neuralmagic.com/sparsify/).
-It provides the following for you to use Sparsify:
 
-- Learning path and goals
-- Basic examples
-- Details of features
-- Advanced options
-<!--- the docs url will become active once Marketing configures it. --->
+### New Project
 
-### Requirements
+To begin optimizing a model, a new project must be created.
+The New Project button is located in the lower right of Sparsify's home screen.
+After clicking, the create project popup will be displayed:
+![Sparsify new project popup](docs/userguide/images/image_7.jpg)
 
-- This repository is tested on Python 3.6+, PyTorch base-ver+ and TensorFlow 1.x+
-- Use Case: Computer Vision - Image Classification, Object Detection
-- Model Architectures: Deep Learning Neural Network Architectures (e.g., CNNs, DNNs - refer to [SparseZoo](https://docs.neuralmagic.com/sparsezoo/) for examples)
-- Instruction Set: CPUs with AVX2 or AVX-512 (best); (e.g., Intel Xeon Cascade Lake, Icelake, Skylake; AMD) and 2 FMAs. VNNI support required for sparse quantization.
-- OS / Environment: Linux
+Sparsify only accepts [ONNX](https://onnx.ai/) model formats currently.
+To easily convert to ONNX from common ML frameworks, 
+see the [SparseML repository](https://github.com/neuralmagic/sparseml).
+
+To begin creating a project use one of the following flows:
+- Upload your model file through the browser by clicking on `Click to browse`.
+- Download your model file through a public URL by filling in the field `Remote Path or URL`.
+- Move your model file from an accessible file location on the server by filling in the field `Remote Path or URL`.
+
+Continue through the popup and fill in information as specified to finish creating the project.
+
+### Analyzing a Model
+
+After model creation, optimization sensitivity analysis for the model are shown under 
+the `Performance Profiles` and `Loss Profiles` in the left navigation.
+The profiles will show the effects that different types of optimizations and degrees of those optimizations
+have on both the models inference speed and the baseline loss.
+
+Performance Profiles:
+![Sparsify performance profiles](docs/userguide/images/image_14.jpg)
+
+Loss Profiles:
+![Sparsify loss profiles](docs/userguide/images/image_20.jpg)
+
+### Optimizing a Model
+
+Click on the `Optimization` in the left navigation or the `Start Optimizing` button on the analyzing pages 
+to begin optimizing your model. 
+After clicking, the optimization creation popup will be displayed:
+![Sparsify loss profiles](docs/userguide/images/image_26.jpg)
+
+Fill in the information as required in the modal.
+Once completed, Sparsify's autoML algorithms will choose the best settings it can find for optimizing your model.
+The resulting recipe will be displayed along with estimated metrics for the optimized model.
+The recipe can then be further edited if desired:
+![Sparsify loss profiles](docs/userguide/images/image_28.jpg)
+
+### Exporting a Recipe
+Currently Sparsify is focused on training-aware optimizations; 
+these allow much better loss recovery for a given target performance.
+A future release will enable the option of one-shot optimizations with limited to no retraining.
+
+Given that the optimization recipe is created with training-aware optimizations, 
+it must be exported for inclusion in your original training pipeline using 
+[SparseML](https://github.com/neuralmagic/sparseml).
+SparseML enables this inclusion with only a few lines of code for most training workflows.
+
+On the optimization page, click the `Export` button in the bottom right.
+This will open up the export popup:
+![Sparsify loss profiles](docs/userguide/images/image_60.jpg)
+
+Select the framework the model was originally trained in on the upper right of the popup.
+Once selected, either copy or download the recipe for use with SparseML.
+In addition, some sample code using SparseML is given to integrate the exported optimization recipe.
 
 ### Installation
 
-To install, run:
+This repository is tested on Python 3.6+, Linux/Debian systems, and Chrome 87+.
+It is recommended to install in a [virtual environment](https://docs.python.org/3/library/venv.html) 
+to keep your system in order.
+
+Install with pip using:
 
 ```bash
 pip install sparsify
 ```
 
-To launch Sparsify, type the following command:
+Then if you would like to explore any of the [scripts](scripts/), [notebooks](notebooks/), or [examples](examples/)
+clone the repository and install any additional dependencies as required.
 
-```bash
-sparsify
-```
 
 From the initial screen, click the "New Project button" so you can:
 
@@ -91,35 +182,32 @@ From the initial screen, click the "New Project button" so you can:
 
 Projects are saved out locally on the left navigation bar of the initial screen for easy access. You can create a single or multiple projects for your analysis.
 
-## Tutorials
-
-[TODO ENGINEERING]
-
-## Available Models and Recipes
-
-[TODO ENGINEERING]
-
 ## Resources and Learning More
 
-- [Sparsify Documentation](https://docs.neuralmagic.com/sparsify/)
-- [Sparsify Use Cases]([TODO ENGINEERING])
-- [Sparsify Examples] Coming soon in February 2021
-- [SparseML Documentation](https://docs.neuralmagic.com/sparseml/)
 - [SparseZoo Documentation](https://docs.neuralmagic.com/sparsezoo/)
+- [SparseML Documentation](https://docs.neuralmagic.com/sparseml/)
+- [Sparsify Documentation](https://docs.neuralmagic.com/sparsify/)
 - [DeepSparse Documentation](https://docs.neuralmagic.com/deepsparse/)
-- [Neural Magic Blog](https://www.neuralmagic.com/blog/), [Resources](https://www.neuralmagic.com/resources/), [Website](https://www.neuralmagic.com/)
+- Neural Magic [Blog](https://www.neuralmagic.com/blog/), 
+  [Resources](https://www.neuralmagic.com/resources/), 
+  [Website](https://www.neuralmagic.com/)
 
 ## Contributing
 
-We appreciate contributions to the code, examples, and documentation as well as bug reports and feature requests! [Learn how here](CONTRIBUTING.md).
+We appreciate contributions to the code, examples, and documentation as well as bug reports and feature requests! 
+[Learn how here](CONTRIBUTING.md).
 
 ## Join the Community
 
-For user help or questions about SparseML, use our [GitHub Discussions](https://www.github.com/neuralmagic/sparsify/discussions/). Everyone is welcome!
+For user help or questions about Sparsify, 
+use our [GitHub Discussions](https://www.github.com/neuralmagic/sparsify/discussions/). Everyone is welcome!
 
-You can get the latest news, webinar and event invites, research papers, and other ML Performance tidbits by [subscribing](https://neuralmagic.com/subscribe/) to the Neural Magic community.
+You can get the latest news, webinar and event invites, research papers, 
+and other ML Performance tidbits by [subscribing](https://neuralmagic.com/subscribe/) to the Neural Magic community.
 
-For more general questions about Neural Magic, please email us at [learnmore@neuralmagic.com](mailto:learnmore@neuralmagic.com) or fill out this [form](http://neuralmagic.com/contact/).
+For more general questions about Neural Magic, 
+please email us at [learnmore@neuralmagic.com](mailto:learnmore@neuralmagic.com) 
+or fill out this [form](http://neuralmagic.com/contact/).
 
 ## License
 
@@ -127,24 +215,44 @@ The project is licensed under the [Apache License Version 2.0](LICENSE).
 
 ## Release History
 
-[Track this project via GitHub Releases.](https://github.com/neuralmagic/sparsify/releases)
+Official builds are hosted on PyPi
+- stable: [sparsify](https://pypi.org/project/sparsify/)
+- nightly (dev): [sparsify-nightly](https://pypi.org/project/sparsify-nightly/)
+
+Additionally, more information can be found via [GitHub Releases.](https://github.com/neuralmagic/sparsezoo/releases)
 
 ## Citation
 
 Find this project useful in your research or other communications? Please consider citing:
 
 ```bibtex
-@InProceedings{pmlr-v119-kurtz20a, title = {Inducing and Exploiting Activation Sparsity for Fast Inference on Deep Neural Networks}, author = {Kurtz, Mark and Kopinsky, Justin and Gelashvili, Rati and Matveev, Alexander and Carr, John and Goin, Michael and Leiserson, William and Moore, Sage and Nell, Bill and Shavit, Nir and Alistarh, Dan}, booktitle = {Proceedings of the 37th International Conference on Machine Learning}, pages = {5533--5543}, year = {2020}, editor = {Hal Daumé III and Aarti Singh}, volume = {119}, series = {Proceedings of Machine Learning Research}, address = {Virtual}, month = {13--18 Jul}, publisher = {PMLR}, pdf = {http://proceedings.mlr.press/v119/kurtz20a/kurtz20a.pdf},, url = {http://proceedings.mlr.press/v119/kurtz20a.html}, abstract = {Optimizing convolutional neural networks for fast inference has recently become an extremely active area of research. One of the go-to solutions in this context is weight pruning, which aims to reduce computational and memory footprint by removing large subsets of the connections in a neural network. Surprisingly, much less attention has been given to exploiting sparsity in the activation maps, which tend to be naturally sparse in many settings thanks to the structure of rectified linear (ReLU) activation functions. In this paper, we present an in-depth analysis of methods for maximizing the sparsity of the activations in a trained neural network, and show that, when coupled with an efficient sparse-input convolution algorithm, we can leverage this sparsity for significant performance gains. To induce highly sparse activation maps without accuracy loss, we introduce a new regularization technique, coupled with a new threshold-based sparsification method based on a parameterized activation function called Forced-Activation-Threshold Rectified Linear Unit (FATReLU). We examine the impact of our methods on popular image classification models, showing that most architectures can adapt to significantly sparser activation maps without any accuracy loss. Our second contribution is showing that these these compression gains can be translated into inference speedups: we provide a new algorithm to enable fast convolution operations over networks with sparse activations, and show that it can enable significant speedups for end-to-end inference on a range of popular models on the large-scale ImageNet image classification task on modern Intel CPUs, with little or no retraining cost.} }
+@InProceedings{
+    pmlr-v119-kurtz20a, 
+    title = {Inducing and Exploiting Activation Sparsity for Fast Inference on Deep Neural Networks}, 
+    author = {Kurtz, Mark and Kopinsky, Justin and Gelashvili, Rati and Matveev, Alexander and Carr, John and Goin, Michael and Leiserson, William and Moore, Sage and Nell, Bill and Shavit, Nir and Alistarh, Dan}, 
+    booktitle = {Proceedings of the 37th International Conference on Machine Learning}, 
+    pages = {5533--5543}, 
+    year = {2020}, 
+    editor = {Hal Daumé III and Aarti Singh}, 
+    volume = {119}, 
+    series = {Proceedings of Machine Learning Research}, 
+    address = {Virtual}, 
+    month = {13--18 Jul}, 
+    publisher = {PMLR}, 
+    pdf = {http://proceedings.mlr.press/v119/kurtz20a/kurtz20a.pdf},
+    url = {http://proceedings.mlr.press/v119/kurtz20a.html}, 
+    abstract = {Optimizing convolutional neural networks for fast inference has recently become an extremely active area of research. One of the go-to solutions in this context is weight pruning, which aims to reduce computational and memory footprint by removing large subsets of the connections in a neural network. Surprisingly, much less attention has been given to exploiting sparsity in the activation maps, which tend to be naturally sparse in many settings thanks to the structure of rectified linear (ReLU) activation functions. In this paper, we present an in-depth analysis of methods for maximizing the sparsity of the activations in a trained neural network, and show that, when coupled with an efficient sparse-input convolution algorithm, we can leverage this sparsity for significant performance gains. To induce highly sparse activation maps without accuracy loss, we introduce a new regularization technique, coupled with a new threshold-based sparsification method based on a parameterized activation function called Forced-Activation-Threshold Rectified Linear Unit (FATReLU). We examine the impact of our methods on popular image classification models, showing that most architectures can adapt to significantly sparser activation maps without any accuracy loss. Our second contribution is showing that these these compression gains can be translated into inference speedups: we provide a new algorithm to enable fast convolution operations over networks with sparse activations, and show that it can enable significant speedups for end-to-end inference on a range of popular models on the large-scale ImageNet image classification task on modern Intel CPUs, with little or no retraining cost.} 
 }
 ```
 
 ```bibtex
-@misc{singh2020woodfisher,
-      title={WoodFisher: Efficient Second-Order Approximation for Neural Network Compression}, 
-      author={Sidak Pal Singh and Dan Alistarh},
-      year={2020},
-      eprint={2004.14340},
-      archivePrefix={arXiv},
-      primaryClass={cs.LG}
+@misc{
+    singh2020woodfisher,
+    title={WoodFisher: Efficient Second-Order Approximation for Neural Network Compression}, 
+    author={Sidak Pal Singh and Dan Alistarh},
+    year={2020},
+    eprint={2004.14340},
+    archivePrefix={arXiv},
+    primaryClass={cs.LG}
 }
 ```

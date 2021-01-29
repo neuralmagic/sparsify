@@ -1,3 +1,17 @@
+# Copyright (c) 2021 - present / Neuralmagic, Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 """
 Server routes related to projects data files
 """
@@ -137,12 +151,12 @@ def upload_data(project_id: str):
             if project_data:
                 try:
                     os.remove(project_data.file_path)
-                except OSError as err:
+                except OSError:
                     pass
 
                 try:
                     project_data.delete_instance()
-                except Exception as rollback_Err:
+                except Exception as rollback_err:
                     _LOGGER.error(
                         "error while rolling back new data: {}".format(rollback_err)
                     )
@@ -226,8 +240,10 @@ def load_data_from_path(project_id: str):
         )
     )
     project = get_project_by_id(project_id)
-    project_model = get_project_model_by_project_id(project_id)
+    get_project_model_by_project_id(project_id)
     data = SetProjectDataFromSchema().load(request.get_json(force=True))
+    project_data = None
+    job = None
 
     try:
         project_data = ProjectData.create(
@@ -248,12 +264,12 @@ def load_data_from_path(project_id: str):
         if project_data:
             try:
                 os.remove(project_data.file_path)
-            except OSError as err:
+            except OSError:
                 pass
 
             try:
                 project_data.delete_instance()
-            except Exception as rollback_Err:
+            except Exception as rollback_err:
                 _LOGGER.error(
                     "error while rolling back new data: {}".format(rollback_err)
                 )
@@ -261,7 +277,7 @@ def load_data_from_path(project_id: str):
         if job:
             try:
                 job.delete_instance()
-            except Exception as rollback_Err:
+            except Exception as rollback_err:
                 _LOGGER.error(
                     "error while rolling back new data: {}".format(rollback_err)
                 )
@@ -347,8 +363,10 @@ def load_data_from_repo(project_id: str):
         )
     )
     project = get_project_by_id(project_id)
-    project_model = get_project_model_by_project_id(project_id)
+    get_project_model_by_project_id(project_id)
     data = SetProjectDataFromSchema().load(request.get_json(force=True))
+    project_data = None
+    job = None
 
     try:
         project_data = ProjectData.create(
@@ -369,12 +387,12 @@ def load_data_from_repo(project_id: str):
         if project_data:
             try:
                 os.remove(project_data.file_path)
-            except OSError as err:
+            except OSError:
                 pass
 
             try:
                 project_data.delete_instance()
-            except Exception as rollback_Err:
+            except Exception as rollback_err:
                 _LOGGER.error(
                     "error while rolling back new data: {}".format(rollback_err)
                 )
@@ -382,7 +400,7 @@ def load_data_from_repo(project_id: str):
         if job:
             try:
                 job.delete_instance()
-            except Exception as rollback_Err:
+            except Exception as rollback_err:
                 _LOGGER.error(
                     "error while rolling back new data: {}".format(rollback_err)
                 )
@@ -390,7 +408,6 @@ def load_data_from_repo(project_id: str):
         _LOGGER.error(
             "error while creating new project data, rolling back: {}".format(err)
         )
-        transaction.rollback()
         raise err
 
     # call into JobWorkerManager to kick off job if it's not already running
@@ -429,7 +446,7 @@ def load_data_from_repo(project_id: str):
                 "in": "query",
                 "name": "page_length",
                 "type": "integer",
-                "description": "The length of the page to get (number of project data). "
+                "description": "The length of the page to get (number of project data)."
                 "Default 20",
             },
         ],
@@ -471,8 +488,8 @@ def get_data_details(project_id: str):
     args = SearchProjectDataSchema().load(args)
 
     # Validate project and model
-    project = get_project_by_id(project_id)
-    project_model = get_project_model_by_project_id(project_id)
+    get_project_by_id(project_id)
+    get_project_model_by_project_id(project_id)
 
     project_data = (
         ProjectData.select()
@@ -544,8 +561,8 @@ def get_data_single_details(project_id: str, data_id: str):
     _LOGGER.info(
         "getting the data with data_id {} for project_id {}".format(data_id, project_id)
     )
-    project = get_project_by_id(project_id)
-    project_model = get_project_model_by_project_id(project_id)
+    get_project_by_id(project_id)
+    get_project_model_by_project_id(project_id)
     project_data = get_project_data_by_ids(project_id, data_id)
 
     resp_data = data_dump_and_validation(
@@ -603,15 +620,17 @@ def delete_data(project_id: str, data_id: str):
     Route to delete a data file for a given project matching the project_id.
     Raises an HTTPNotFoundError if the project or data is not found in the database.
 
-    :param project_id: the project_id to get the model details for
+    :param project_id: the project_id to get the data for
+    :param data_id: the data_id to get the data for
     :return: a tuple containing (json response, http status code)
     """
     _LOGGER.info(
         "deleting data with data_id {} for project_id {}".format(data_id, project_id)
     )
-    project = get_project_by_id(project_id)
-    project_model = get_project_model_by_project_id(project_id)
+    get_project_by_id(project_id)
+    get_project_model_by_project_id(project_id)
     project_data = get_project_data_by_ids(project_id, data_id)
+    args = {key: val for key, val in request.args.items()}
 
     try:
         project_data.delete_instance()
@@ -695,7 +714,7 @@ def get_data_file(project_id: str, data_id: str):
             project_id, data_id
         )
     )
-    project = get_project_by_id(project_id)
+    get_project_by_id(project_id)
     project_data = get_project_data_by_ids(project_id, data_id)
     project_data.validate_filesystem()
     _LOGGER.info("sending project data file from {}".format(project_data.file_path))

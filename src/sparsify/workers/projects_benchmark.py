@@ -1,3 +1,17 @@
+# Copyright (c) 2021 - present / Neuralmagic, Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 """
 Code related to the benchmark implementations for job workers
 """
@@ -83,10 +97,10 @@ class CreateBenchmarkJobWorker(BaseJobWorker):
         :param instruction_sets: list of instruction sets
         :param inference_models: list of inference model to use for comparison with
             fields inference_engine and inference_model_optimization
-        :param warmup_iterations_per_check: the number of warmup iterations to run for before
-            checking performance / timing
-        :param iterations_per_check: the number of iterations to run for each performance
-            check / timing
+        :param warmup_iterations_per_check: the number of warmup iterations to run
+            for before checking performance / timing
+        :param iterations_per_check: the number of iterations to run for each
+            performance check / timing
         :return: the formatted args to be stored for later use
         """
         return {

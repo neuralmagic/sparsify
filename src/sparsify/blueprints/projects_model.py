@@ -1,3 +1,17 @@
+# Copyright (c) 2021 - present / Neuralmagic, Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 """
 Server routes related to the project's model routes
 """
@@ -21,7 +35,7 @@ from sparsify.blueprints.utils import (
     get_project_by_id,
     get_project_model_by_project_id,
 )
-from sparsify.models import Job, Project, ProjectModel, database
+from sparsify.models import Job, Project, ProjectModel
 from sparsify.schemas import (
     CreateUpdateProjectModelSchema,
     DeleteProjectModelSchema,
@@ -508,7 +522,7 @@ def get_model_file(project_id: str) -> Tuple[Response, int]:
     :return: a tuple containing (json response, http status code)
     """
     _LOGGER.info("getting the model file for project_id {}".format(project_id))
-    project = get_project_by_id(project_id)
+    get_project_by_id(project_id)
     project_model = get_project_model_by_project_id(project_id)
     project_model.validate_filesystem()
     _LOGGER.info("sending project model file from {}".format(project_model.file_path))
@@ -571,7 +585,7 @@ def delete_model(project_id: str) -> Tuple[Response, int]:
     args = DeleteProjectModelSchema().load(
         {key: val for key, val in request.args.items()}
     )
-    project = get_project_by_id(project_id)
+    get_project_by_id(project_id)
     project_model = get_project_model_by_project_id(project_id)
     model_id = project_model.model_id
 
@@ -647,7 +661,7 @@ def create_analysis(project_id: str) -> Tuple[Response, int]:
     :return: a tuple containing (json response, http status code)
     """
     _LOGGER.info("creating analysis for project_id {} model".format(project_id))
-    project = get_project_by_id(project_id)
+    get_project_by_id(project_id)
     project_model = get_project_model_by_project_id(project_id)
     project_model.validate_filesystem()
     analyzer = ModelAnalyzer(project_model.file_path)
@@ -712,7 +726,7 @@ def get_analysis(project_id: str) -> Tuple[Response, int]:
     :return: a tuple containing (json response, http status code)
     """
     _LOGGER.info("getting model analysis for project_id {}".format(project_id))
-    project = get_project_by_id(project_id)
+    get_project_by_id(project_id)
     project_model = get_project_model_by_project_id(project_id)
     analysis = (
         ProjectModelAnalysisSchema().dump(project_model.analysis)
@@ -780,7 +794,7 @@ def delete_analysis(project_id: str) -> Tuple[Response, int]:
     :return: a tuple containing (json response, http status code)
     """
     _LOGGER.info("deleting analysis for project_id {} model".format(project_id))
-    project = get_project_by_id(project_id)
+    get_project_by_id(project_id)
     project_model = get_project_model_by_project_id(project_id)
     project_model.analysis = None
     project_model.save()

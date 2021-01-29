@@ -1,3 +1,17 @@
+# Copyright (c) 2021 - present / Neuralmagic, Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 """
 Server routes related to project optimizations and modifiers
 """
@@ -142,7 +156,7 @@ def get_optims(project_id: str):
         )
     )
     args = SearchProjectOptimizationsSchema().load(args)
-    project = optim_validate_and_get_project_by_id(project_id)  # validate id
+    optim_validate_and_get_project_by_id(project_id)  # validate id
 
     query = (
         ProjectOptimization.select(
@@ -381,7 +395,7 @@ def get_available_frameworks(project_id: str):
     # make sure project exists
     # currently project_id doesn't do anything,
     # but gives us flexibility to edit the frameworks for a projects model in the future
-    project = optim_validate_and_get_project_by_id(project_id)
+    optim_validate_and_get_project_by_id(project_id)
 
     resp_frameworks = data_dump_and_validation(
         ResponseProjectOptimizationFrameworksAvailableSchema(),
@@ -413,7 +427,7 @@ def get_available_frameworks(project_id: str):
             {
                 "in": "path",
                 "name": "framework",
-                "description": "the ML framework to get available sample code types for",
+                "description": "ML framework to get available sample code types for",
                 "required": True,
                 "type": "string",
             },
@@ -453,7 +467,7 @@ def get_available_frameworks_samples(project_id: str, framework: str):
     # make sure project exists
     # currently project_id doesn't do anything,
     # but gives us flexibility to edit the frameworks for a projects model in the future
-    project = optim_validate_and_get_project_by_id(project_id)
+    optim_validate_and_get_project_by_id(project_id)
 
     code_samples_dir = os.path.join(
         os.path.dirname(clean_path(__file__)), "code_samples"
@@ -464,7 +478,7 @@ def get_available_frameworks_samples(project_id: str, framework: str):
             "could not find the given framework of {}".format(framework)
         )
 
-    reg = re.compile("(.+)__(.+)\.py")
+    reg = re.compile("(.+)__(.+)[.]py")
     samples = []
 
     for file in glob.glob(os.path.join(code_samples_dir, "{}*.py".format(framework))):
@@ -939,7 +953,10 @@ def update_optim(project_id: str, optim_id: str):
 @swag_from(
     {
         "tags": ["Projects Optimizations"],
-        "summary": "Create a new optimization from an existing optimization for the projects model.",
+        "summary": (
+            "Create a new optimization from an existing "
+            "optimization for the projects model."
+        ),
         "produces": ["application/json"],
         "parameters": [
             {
@@ -995,9 +1012,8 @@ def create_version_optim(project_id: str, optim_id: str):
     :return: a tuple containing (json response, http status code)
     """
     _LOGGER.info(
-        "creating a new project optimizer from project optimizer {} for project {}".format(
-            optim_id, project_id
-        )
+        f"creating a new project optimizer from project optimizer "
+        f"{optim_id} for project {project_id}"
     )
     data = UpdateProjectOptimizationSchema().dump(request.get_json(force=True))
     project = optim_validate_and_get_project_by_id(project_id)
@@ -1136,7 +1152,7 @@ def delete_optim(project_id: str, optim_id: str):
     _LOGGER.info(
         "deleting project optimizer {} for project {}".format(optim_id, project_id)
     )
-    project = get_project_by_id(project_id)  # make sure project exists
+    get_project_by_id(project_id)  # make sure project exists
     optim = get_project_optimizer_by_ids(project_id, optim_id)
     optim.delete_instance()
     resp_deleted = data_dump_and_validation(
@@ -1580,7 +1596,7 @@ def update_optim_modifier_pruning(project_id: str, optim_id: str, modifier_id: s
         )
         optim.save()
     except Exception as err:
-        _LOGGER.error("error while updating pruning modifier".format(err))
+        _LOGGER.error("error while updating pruning modifier {}".format(err))
         raise err
 
     _LOGGER.info(
@@ -1903,7 +1919,7 @@ def update_optim_modifier_lr_schedule(project_id: str, optim_id: str, modifier_i
             "and project {} with data {}"
         ).format(modifier_id, optim_id, project_id, request.json)
     )
-    project = optim_validate_and_get_project_by_id(project_id)
+    optim_validate_and_get_project_by_id(project_id)
     optim = get_project_optimizer_by_ids(project_id, optim_id)
     lr_sched = ProjectOptimizationModifierLRSchedule.get_or_none(
         ProjectOptimizationModifierLRSchedule.modifier_id == modifier_id
@@ -1942,7 +1958,7 @@ def update_optim_modifier_lr_schedule(project_id: str, optim_id: str, modifier_i
         )
         optim.save()
     except Exception as err:
-        _LOGGER.error("error while updating lr_sched modifier".format(err))
+        _LOGGER.error("error while updating lr_sched modifier {}".format(err))
         raise err
 
     _LOGGER.info(
@@ -2006,7 +2022,8 @@ def update_optim_modifier_lr_schedule(project_id: str, optim_id: str, modifier_i
 def create_optim_modifier_trainable(project_id: str, optim_id: str):
     """
     Route for creating a new trainable modifier for a given project optim.
-    Raises an HTTPNotFoundError if the project or the optim are not found in the database.
+    Raises an HTTPNotFoundError if the project or the optim are not found
+    in the database.
 
     :param project_id: the id of the project to create a trainable modifier for
     :param optim_id: the id of the optim to create a trainable modifier for
@@ -2148,14 +2165,12 @@ def update_optim_modifier_trainable(project_id: str, optim_id: str, modifier_id:
     )
     if trainable is None:
         _LOGGER.error(
-            "could not find trainable modifier {} for project {} with optim_id {}".format(
-                modifier_id, project_id, optim_id
-            )
+            f"could not find trainable modifier {modifier_id} "
+            f"for project {project_id} with optim_id {optim_id}"
         )
         raise HTTPNotFoundError(
-            "could not find trainable modifier {} for project {} with optim_id {}".format(
-                modifier_id, project_id, optim_id
-            )
+            f"could not find trainable modifier {modifier_id} for "
+            f"project {project_id} with optim_id {optim_id}"
         )
     data = CreateUpdateProjectOptimizationModifiersTrainableSchema().load(
         request.get_json(force=True)
@@ -2179,7 +2194,7 @@ def update_optim_modifier_trainable(project_id: str, optim_id: str, modifier_id:
         )
         optim.save()
     except Exception as err:
-        _LOGGER.error("error while creating trainable modifer".format(err))
+        _LOGGER.error("error while creating trainable modifier {}".format(err))
         raise err
 
     _LOGGER.info(

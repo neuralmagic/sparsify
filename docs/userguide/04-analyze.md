@@ -1,3 +1,19 @@
+<!--
+Copyright (c) 2021 - present / Neuralmagic, Inc. All Rights Reserved.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
 # Analyze
 
 During analysis, you will profile (understand) your model. Profiling is a unique Sparsify feature that does a layer-by-layer analysis of the model by looking at loss and performance. Rather than simply estimating, profiling determines which parts of your model contribute to performance and which parts contribute to loss. For example, if you optimize the model and cut out one layer completely, how much will that affect the loss? And, how much is that going to affect the performance? This information is valuable to know before you begin to optimize. It guides the automatic optimization algorithms.

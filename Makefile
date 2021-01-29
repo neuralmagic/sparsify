@@ -6,11 +6,13 @@ PYCHECKGLOBS := 'examples/**/*.py' 'scripts/**/*.py' 'src/**/*.py' 'tests/**/*.p
 JSCHECKDIRS := src public
 JSCHECKGLOBS := 'public/**/*.html' 'public/**/*.js' 'public/**/*.css' 'src/**/*.html' 'src/**/*.jsx' 'tests/**/*.jsx'
 DOCDIR := docs
+MDCHECKGLOBS := 'docs/**/*.md' 'examples/**/*.md' 'notebooks/**/*.md' 'scripts/**/*.md'
+MDCHECKFILES := CODE_OF_CONDUCT.md CONTRIBUTING.md DEVELOPING.md README.md
 
 # run checks on all files for the repo
 quality:
 	@echo "Running copyright checks";
-	python utils/copyright.py quality $(PYCHECKGLOBS) $(JSCHECKGLOBS)
+	python utils/copyright.py quality $(PYCHECKGLOBS) $(JSCHECKGLOBS) $(MDCHECKGLOBS) $(MDCHECKFILES)
 	@echo "Running python quality checks";
 	black --check $(PYCHECKDIRS);
 	isort --check-only $(PYCHECKDIRS);
@@ -21,7 +23,7 @@ quality:
 # style the code according to accepted standards for the repo
 style:
 	@echo "Running copyrighting";
-	python utils/copyright.py style $(PYCHECKGLOBS) $(JSCHECKGLOBS)
+	python utils/copyright.py style $(PYCHECKGLOBS) $(JSCHECKGLOBS) $(MDCHECKGLOBS) $(MDCHECKFILES)
 	@echo "Running python styling";
 	black $(PYCHECKDIRS);
 	isort $(PYCHECKDIRS);

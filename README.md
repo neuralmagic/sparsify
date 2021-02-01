@@ -14,12 +14,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-# ![icon for Sparsify](docs/icon-sparsify.png) Sparsify
+# ![icon for Sparsify](https://github.com/neuralmagic/sparsify/blob/main/docs/icon-sparsify.png) Sparsify
 
-### Easy-to-use autoML interface to optimize deep neural networks for better inference performance and a smaller footprint.
+### Easy-to-use autoML interface to optimize deep neural networks for better inference performance and a smaller footprint
 
 <p>
-    <a href="https://github.com/neuralmagic/comingsoon/blob/master/LICENSE">
+    <a href="https://github.com/neuralmagic/sparsify/blob/main/LICENSE">
         <img alt="GitHub" src="https://img.shields.io/github/license/neuralmagic/comingsoon.svg?color=purple&style=for-the-badge" height=25>
     </a>
     <a href="https://docs.neuralmagic.com/sparsify/">
@@ -28,7 +28,7 @@ limitations under the License.
     <a href="https://github.com/neuralmagic/sparsify/releases">
         <img alt="GitHub release" src="https://img.shields.io/github/release/neuralmagic/sparsify.svg?style=for-the-badge" height=25>
     </a>
-    <a href="https://github.com/neuralmagic.com/comingsoon/blob/master/CODE_OF_CONDUCT.md">
+    <a href="https://github.com/neuralmagic.com/sparsify/blob/main/CODE_OF_CONDUCT.md">
         <img alt="Contributor Covenant" src="https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg?color=yellow&style=for-the-badge" height=25>
     </a>
      <a href="https://www.youtube.com/channel/UCo8dO_WMGYbWCRnj_Dxr4EA">
@@ -44,27 +44,15 @@ limitations under the License.
 
 ## Overview
 
-Sparsify is a deep learning autoML tool that simplifies the model optimization process to rapidly achieve 
-the best combination of size, speed, and accuracy on any deep learning model. 
-Sparsify optimizes and benchmarks models informed by industry research insights for ML practitioners, 
-including ML engineers and operators, who need to deploy performant deep learning models fast and at scale. 
-Sparsify shows visual performance potential for your model, 
-including a sliding scale between performance and loss sensitivity, 
-ultimately speeding up the model optimization process from weeks to minutes.
+Sparsify is a deep learning autoML tool that simplifies the model optimization process to rapidly achieve the best combination of size, speed, and accuracy on any deep learning model. Sparsify optimizes and benchmarks models informed by industry research insights for ML practitioners, including ML engineers and operators, who need to deploy performant deep learning models fast and at scale. Sparsify shows visual performance potential for your model, including a sliding scale between performance and loss sensitivity, ultimately speeding up the model optimization process from weeks to minutes.
 
-This repository contains the package to locally launch Sparsify 
-where you can create projects to load and optimize your deep learning models. 
-At the end, you can export optimization recipes to integrate with your training workflow.
+This repository contains the package to locally launch Sparsify where you can create projects to load and optimize your deep learning models. At the end, you can export optimization recipes to integrate with your training workflow.
 
 ### Related Products
 
-- [DeepSparse](https://github.com/neuralmagic/deepsparse): 
-  CPU inference engine that delivers unprecedented performance for sparse models
-- [SparseZoo](https://github.com/neuralmagic/sparsezoo): 
-  Neural network model repository for highly sparse models and optimization recipes
-- [SparseML](https://github.com/neuralmagic/sparseml): 
-  Libraries for state-of-the-art deep neural network optimization algorithms, 
-  enabling simple pipelines integration with a few lines of code
+- [DeepSparse](https://github.com/neuralmagic/deepsparse): CPU inference engine that delivers unprecedented performance for sparse models
+- [SparseZoo](https://github.com/neuralmagic/sparsezoo): Neural network model repository for highly sparse models and optimization recipes
+- [SparseML](https://github.com/neuralmagic/sparseml): Libraries for state-of-the-art deep neural network optimization algorithms, enabling simple pipelines integration with a few lines of code
 
 ## Quick Tour
 
@@ -75,38 +63,36 @@ If this happens for your system and the `sparsify` command is not available,
 `scripts/sparsify.py` may be used in its place.
 
 To launch Sparsify locally, open up a console or terminal window and type in the following:
-```shell script
+
+```bash
 sparsify
 ```
 
 The Sparsify server will begin running locally on the machine and can be accessed through a web browser.
 The default host:port Sparsify starts on is `0.0.0.0:5543`.
-Therefore, after starting Sparsify with the default commands, 
-you may enter the following into a web browser to begin using Sparsify: `http://0.0.0.0:5543`.
+Therefore, after starting Sparsify with the default commands, you may enter the following into a web browser to begin using Sparsify: `http://0.0.0.0:5543`.
 
 If you are running Sparsify on a separate server from where the web browser is located,
 then you will need to substitute in the proper IP address for that server in place of `0.0.0.0`.
 Additionally, confirm that the networking rules on your server allow for access to port 5543.
 
-After visiting `http://0.0.0.0:5543` in a web browser, 
-the home page for Sparsify will load if configured correctly:
-![SparseZoo main page Icon](docs/userguide/images/image_1.jpg)
+After visiting `http://0.0.0.0:5543` in a web browser, the home page for Sparsify will load if configured correctly:
+![SparseZoo main page Icon](https://github.com/neuralmagic/sparsify/blob/main/docs/userguide/images/image_1.jpg)
 
-A quick start flow is given below. 
-For a more in-depth read, check out [Sparsify documentation](https://docs.neuralmagic.com/sparsify/).
+A quick start flow is given below. For a more in-depth read, check out [Sparsify documentation](https://docs.neuralmagic.com/sparsify/).
 
 ### New Project
 
 To begin optimizing a model, a new project must be created.
 The New Project button is located in the lower right of Sparsify's home screen.
 After clicking, the create project popup will be displayed:
-![Sparsify new project popup](docs/userguide/images/image_7.jpg)
+![Sparsify new project popup](https://github.com/neuralmagic/sparsify/blob/main/docs/userguide/images/image_7.jpg)
 
 Sparsify only accepts [ONNX](https://onnx.ai/) model formats currently.
-To easily convert to ONNX from common ML frameworks, 
-see the [SparseML repository](https://github.com/neuralmagic/sparseml).
+To easily convert to ONNX from common ML frameworks, see the [SparseML repository](https://github.com/neuralmagic/sparseml).
 
 To begin creating a project use one of the following flows:
+
 - Upload your model file through the browser by clicking on `Click to browse`.
 - Download your model file through a public URL by filling in the field `Remote Path or URL`.
 - Move your model file from an accessible file location on the server by filling in the field `Remote Path or URL`.
@@ -115,43 +101,39 @@ Continue through the popup and fill in information as specified to finish creati
 
 ### Analyzing a Model
 
-After model creation, optimization sensitivity analysis for the model are shown under 
-the `Performance Profiles` and `Loss Profiles` in the left navigation.
-The profiles will show the effects that different types of optimizations and degrees of those optimizations
-have on both the models inference speed and the baseline loss.
+After model creation, optimization sensitivity analysis for the model are shown under the `Performance Profiles` and `Loss Profiles` in the left navigation.
+
+The profiles will show the effects that different types of optimizations and degrees of those optimizations have on both the models inference speed and the baseline loss.
 
 Performance Profiles:
-![Sparsify performance profiles](docs/userguide/images/image_14.jpg)
+![Sparsify performance profiles](https://github.com/neuralmagic/sparsify/blob/main/docs/userguide/images/image_14.jpg)
 
 Loss Profiles:
-![Sparsify loss profiles](docs/userguide/images/image_20.jpg)
+![Sparsify loss profiles](https://github.com/neuralmagic/sparsify/blob/main/docs/userguide/images/image_20.jpg)
 
 ### Optimizing a Model
 
-Click on the `Optimization` in the left navigation or the `Start Optimizing` button on the analyzing pages 
-to begin optimizing your model. 
-After clicking, the optimization creation popup will be displayed:
-![Sparsify loss profiles](docs/userguide/images/image_26.jpg)
+Click on the `Optimization` in the left navigation or the `Start Optimizing` button on the analyzing pages to begin optimizing your model. After clicking, the optimization creation popup will be displayed:
+![Sparsify loss profiles](https://github.com/neuralmagic/sparsify/blob/main/docs/userguide/images/image_26.jpg)
 
 Fill in the information as required in the modal.
 Once completed, Sparsify's autoML algorithms will choose the best settings it can find for optimizing your model.
 The resulting recipe will be displayed along with estimated metrics for the optimized model.
 The recipe can then be further edited if desired:
-![Sparsify loss profiles](docs/userguide/images/image_28.jpg)
+![Sparsify loss profiles](https://github.com/neuralmagic/sparsify/blob/main/docs/userguide/images/image_28.jpg)
 
 ### Exporting a Recipe
+
 Currently Sparsify is focused on training-aware optimizations; 
 these allow much better loss recovery for a given target performance.
 A future release will enable the option of one-shot optimizations with limited to no retraining.
 
-Given that the optimization recipe is created with training-aware optimizations, 
-it must be exported for inclusion in your original training pipeline using 
-[SparseML](https://github.com/neuralmagic/sparseml).
+Given that the optimization recipe is created with training-aware optimizations, it must be exported for inclusion in your original training pipeline using [SparseML](https://github.com/neuralmagic/sparseml).
 SparseML enables this inclusion with only a few lines of code for most training workflows.
 
 On the optimization page, click the `Export` button in the bottom right.
 This will open up the export popup:
-![Sparsify loss profiles](docs/userguide/images/image_60.jpg)
+![Sparsify loss profiles](https://github.com/neuralmagic/sparsify/blob/main/docs/userguide/images/image_60.jpg)
 
 Select the framework the model was originally trained in on the upper right of the popup.
 Once selected, either copy or download the recipe for use with SparseML.
@@ -160,8 +142,7 @@ In addition, some sample code using SparseML is given to integrate the exported 
 ### Installation
 
 This repository is tested on Python 3.6+, Linux/Debian systems, and Chrome 87+.
-It is recommended to install in a [virtual environment](https://docs.python.org/3/library/venv.html) 
-to keep your system in order.
+It is recommended to install in a [virtual environment](https://docs.python.org/3/library/venv.html) to keep your system in order.
 
 Install with pip using:
 
@@ -169,9 +150,8 @@ Install with pip using:
 pip install sparsify
 ```
 
-Then if you would like to explore any of the [scripts](scripts/), [notebooks](notebooks/), or [examples](examples/)
+Then if you would like to explore any of the [scripts](https://github.com/neuralmagic/sparsify/blob/main/scripts/), [notebooks](https://github.com/neuralmagic/sparsify/blob/main/notebooks/), or [examples](https://github.com/neuralmagic/sparsify/blob/main/examples/)
 clone the repository and install any additional dependencies as required.
-
 
 From the initial screen, click the "New Project button" so you can:
 
@@ -188,34 +168,28 @@ Projects are saved out locally on the left navigation bar of the initial screen 
 - [SparseML Documentation](https://docs.neuralmagic.com/sparseml/)
 - [Sparsify Documentation](https://docs.neuralmagic.com/sparsify/)
 - [DeepSparse Documentation](https://docs.neuralmagic.com/deepsparse/)
-- Neural Magic [Blog](https://www.neuralmagic.com/blog/), 
-  [Resources](https://www.neuralmagic.com/resources/), 
-  [Website](https://www.neuralmagic.com/)
+- Neural Magic [Blog](https://www.neuralmagic.com/blog/), [Resources](https://www.neuralmagic.com/resources/), [Website](https://www.neuralmagic.com/)
 
 ## Contributing
 
-We appreciate contributions to the code, examples, and documentation as well as bug reports and feature requests! 
-[Learn how here](CONTRIBUTING.md).
+We appreciate contributions to the code, examples, and documentation as well as bug reports and feature requests! [Learn how here](https://github.com/neuralmagic/sparsify/blob/main/CONTRIBUTING.md).
 
 ## Join the Community
 
-For user help or questions about Sparsify, 
-use our [GitHub Discussions](https://www.github.com/neuralmagic/sparsify/discussions/). Everyone is welcome!
+For user help or questions about Sparsify, use our [GitHub Discussions](https://www.github.com/neuralmagic/sparsify/discussions/). Everyone is welcome!
 
-You can get the latest news, webinar and event invites, research papers, 
-and other ML Performance tidbits by [subscribing](https://neuralmagic.com/subscribe/) to the Neural Magic community.
+You can get the latest news, webinar and event invites, research papers,and other ML Performance tidbits by [subscribing](https://neuralmagic.com/subscribe/) to the Neural Magic community.
 
-For more general questions about Neural Magic, 
-please email us at [learnmore@neuralmagic.com](mailto:learnmore@neuralmagic.com) 
-or fill out this [form](http://neuralmagic.com/contact/).
+For more general questions about Neural Magic, please email us at [learnmore@neuralmagic.com](mailto:learnmore@neuralmagic.com) or fill out this [form](http://neuralmagic.com/contact/).
 
 ## License
 
-The project is licensed under the [Apache License Version 2.0](LICENSE).
+The project is licensed under the [Apache License Version 2.0](https://github.com/neuralmagic/sparsify/blob/main/LICENSE).
 
 ## Release History
 
 Official builds are hosted on PyPi
+
 - stable: [sparsify](https://pypi.org/project/sparsify/)
 - nightly (dev): [sparsify-nightly](https://pypi.org/project/sparsify-nightly/)
 

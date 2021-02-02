@@ -569,7 +569,7 @@ def get_framework_sample(project_id: str, framework: str, sample: str):
     # make sure project exists
     # currently project_id doesn't do anything,
     # but gives us flexibility to edit the frameworks for a projects model in the future
-    project = optim_validate_and_get_project_by_id(project_id)
+    optim_validate_and_get_project_by_id(project_id)
 
     code_samples_dir = os.path.join(
         os.path.dirname(clean_path(__file__)), "code_samples"
@@ -801,7 +801,7 @@ def get_optim(project_id: str, optim_id: str):
     _LOGGER.info(
         "getting project optimizer {} for project {}".format(optim_id, project_id)
     )
-    project = optim_validate_and_get_project_by_id(project_id)
+    optim_validate_and_get_project_by_id(project_id)
     optim = get_project_optimizer_by_ids(project_id, optim_id)
 
     resp_optim = data_dump_and_validation(
@@ -938,7 +938,7 @@ def update_optim(project_id: str, optim_id: str):
             )
             lr_schedule.save()
     except Exception as err:
-        _LOGGER.error("error while updating optimization".format(err))
+        _LOGGER.error(f"error while updating optimization {err}")
         raise err
 
     resp_optim = data_dump_and_validation(

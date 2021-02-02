@@ -14,11 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-# ![icon for test:](https://github.com/neuralmagic/comingsoon/blob/main/docs/icon-sparsezoo.png) Test only, Broken on Pypi? Reg URL, public repo
-
-# ![icon for test:](https://raw.githubusercontent.com/neuralmagic/comingsoon/main/docs/icon-sparsezoo.png) Test only, Works on Pypi? Raw URL, public repo
-
-# ![icon for Sparsify:](https://github.com/neuralmagic/sparsify/blob/main/docs/source/icon-sparsify.png) Sparsify (Reg URL, private repo)
+# ![icon for Sparsify:](https://raw.githubusercontent.com/neuralmagic/sparsify/main/docs/source/icon-sparsify.png) Sparsify
 
 ### Easy-to-use autoML interface to optimize deep neural networks for better inference performance and a smaller footprint
 
@@ -81,7 +77,7 @@ then you will need to substitute in the proper IP address for that server in pla
 Additionally, confirm that the networking rules on your server allow for access to port 5543.
 
 After visiting `http://0.0.0.0:5543` in a web browser, the home page for Sparsify will load if configured correctly:
-![SparseZoo main page Icon](https://github.com/neuralmagic/sparsify/blob/main/docs/userguide/images/image_1.jpg)
+![SparseZoo main page Icon](https://raw.githubusercontent.com/neuralmagic/sparsify/main/docs/source/userguide/images/image_1.jpg)
 
 A quick start flow is given below. For a more in-depth read, check out [Sparsify documentation](https://docs.neuralmagic.com/sparsify/).
 
@@ -90,7 +86,7 @@ A quick start flow is given below. For a more in-depth read, check out [Sparsify
 To begin optimizing a model, a new project must be created.
 The New Project button is located in the lower right of Sparsify's home screen.
 After clicking, the create project popup will be displayed:
-![Sparsify new project popup](https://github.com/neuralmagic/sparsify/blob/main/docs/userguide/images/image_7.jpg)
+![Sparsify new project popup](https://raw.githubusercontent.com/neuralmagic/sparsify/main/docs/source/userguide/images/image_7.jpg)
 
 Sparsify only accepts [ONNX](https://onnx.ai/) model formats currently.
 To easily convert to ONNX from common ML frameworks, see the [SparseML repository](https://github.com/neuralmagic/sparseml).
@@ -110,21 +106,21 @@ After model creation, optimization sensitivity analysis for the model are shown 
 The profiles will show the effects that different types of optimizations and degrees of those optimizations have on both the models inference speed and the baseline loss.
 
 Performance Profiles:
-![Sparsify performance profiles](https://github.com/neuralmagic/sparsify/blob/main/docs/userguide/images/image_14.jpg)
+![Sparsify performance profiles](https://raw.githubusercontent.com/neuralmagic/sparsify/main/docs/source/userguide/images/image_14.jpg)
 
 Loss Profiles:
-![Sparsify loss profiles](https://github.com/neuralmagic/sparsify/blob/main/docs/userguide/images/image_20.jpg)
+![Sparsify loss profiles](https://raw.githubusercontent.com/neuralmagic/sparsify/main/docs/source/userguide/images/image_20.jpg)
 
 ### Optimizing a Model
 
 Click on the `Optimization` in the left navigation or the `Start Optimizing` button on the analyzing pages to begin optimizing your model. After clicking, the optimization creation popup will be displayed:
-![Sparsify loss profiles](https://github.com/neuralmagic/sparsify/blob/main/docs/userguide/images/image_26.jpg)
+![Sparsify loss profiles](https://raw.githubusercontent.com/neuralmagic/sparsify/main/docs/source/userguide/images/image_26.jpg)
 
 Fill in the information as required in the modal.
 Once completed, Sparsify's autoML algorithms will choose the best settings it can find for optimizing your model.
 The resulting recipe will be displayed along with estimated metrics for the optimized model.
 The recipe can then be further edited if desired:
-![Sparsify loss profiles](https://github.com/neuralmagic/sparsify/blob/main/docs/userguide/images/image_28.jpg)
+![Sparsify loss profiles](https://raw.githubusercontent.com/neuralmagic/sparsify/main/docs/source/userguide/images/image_28.jpg)
 
 ### Exporting a Recipe
 
@@ -137,7 +133,7 @@ SparseML enables this inclusion with only a few lines of code for most training 
 
 On the optimization page, click the `Export` button in the bottom right.
 This will open up the export popup:
-![Sparsify loss profiles](https://github.com/neuralmagic/sparsify/blob/main/docs/userguide/images/image_60.jpg)
+![Sparsify loss profiles](https://raw.githubusercontent.com/neuralmagic/sparsify/main/docs/source/userguide/images/image_60.jpg)
 
 Select the framework the model was originally trained in on the upper right of the popup.
 Once selected, either copy or download the recipe for use with SparseML.

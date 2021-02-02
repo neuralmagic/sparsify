@@ -150,8 +150,7 @@ Install with pip using:
 pip install sparsify
 ```
 
-Then if you would like to explore any of the [scripts](https://github.com/neuralmagic/sparsify/blob/main/scripts/), [notebooks](https://github.com/neuralmagic/sparsify/blob/main/notebooks/), or [examples](https://github.com/neuralmagic/sparsify/blob/main/examples/)
-clone the repository and install any additional dependencies as required.
+Then if you would like to explore any of the [scripts](https://github.com/neuralmagic/sparsify/blob/main/scripts/), clone the repository and install any additional dependencies as required.
 
 From the initial screen, click the "New Project button" so you can:
 

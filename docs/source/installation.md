@@ -17,8 +17,7 @@ limitations under the License.
 ### Installation
 
 This repository is tested on Python 3.6+, and Linux/Debian systems.
-It is recommended to install in a [virtual environment](https://docs.python.org/3/library/venv.html) 
-to keep your system in order.
+It is recommended to install in a [virtual environment](https://docs.python.org/3/library/venv.html) to keep your system in order.
 
 Install with pip using:
 
@@ -26,7 +25,4 @@ Install with pip using:
 pip install sparsify
 ```
 
-Then if you would like to explore any of the [scripts](https://github.com/neuralmagic/sparsify/tree/main/scripts), 
-[notebooks](https://github.com/neuralmagic/sparsify/tree/main/notebooks), 
-or [examples](https://github.com/neuralmagic/sparsify/tree/main/examples)
-clone the repository and install any additional dependencies as required.
+From there, check out the [Sparsify User Guide](userguide/index) for an in-depth guided experience and/or tour Sparsify on your own.

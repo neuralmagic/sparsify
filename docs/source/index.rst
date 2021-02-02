@@ -17,21 +17,21 @@
 Sparsify |version|
 ===================
 
-Neural network model repository for highly sparse models and optimization recipes.
+Neural network model repository for highly sparse models and optimization recipes
 
 .. raw:: html
 
     <div style="margin-bottom:16px;">
-        <a href="https://github.com/neuralmagic/sparsify/blob/master/LICENSE">
+        <a href="https://github.com/neuralmagic/sparsify/blob/main/LICENSE">
             <img alt="GitHub" src="https://img.shields.io/github/license/neuralmagic/sparsify.svg?color=purple&style=for-the-badge" height=25 style="margin-bottom:4px;">
         </a>
         <a href="https://docs.neuralmagic.com/sparsify/index.html">
-            <img alt="Documentation" src="https://img.shields.io/website/http/neuralmagic.com/sparsify/index.html.svg?down_color=red&down_message=offline&up_message=online&style=for-the-badge" height=25 style="margin-bottom:4px;">
+            <img alt="Documentation" src="https://img.shields.io/website/http/docs.neuralmagic.com/sparsify/index.html.svg?down_color=red&down_message=offline&up_message=online&style=for-the-badge" height=25 style="margin-bottom:4px;">
         </a>
         <a href="https://github.com/neuralmagic/sparsify/releases">
             <img alt="GitHub release" src="https://img.shields.io/github/release/neuralmagic/sparsify.svg?style=for-the-badge" height=25 style="margin-bottom:4px;">
         </a>
-        <a href="https://github.com/neuralmagic.com/sparsify/blob/master/CODE_OF_CONDUCT.md">
+        <a href="https://github.com/neuralmagic.com/sparsify/blob/main/CODE_OF_CONDUCT.md">
             <img alt="Contributor Covenant" src="https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg?color=yellow&style=for-the-badge" height=25 style="margin-bottom:4px;">
         </a>
          <a href="https://www.youtube.com/channel/UCo8dO_WMGYbWCRnj_Dxr4EA">
@@ -57,7 +57,7 @@ Related Products
 
 - `DeepSparse <https://github.com/neuralmagic/deepsparse />`_:
   CPU inference engine that delivers unprecedented performance for sparse models
-- `Sparse Zoo <https://github.com/neuralmagic/sparsezoo />`_:
+- `SparseZoo <https://github.com/neuralmagic/sparsezoo />`_:
   Neural network model repository for highly sparse models and optimization recipes
 - `SparseML <https://github.com/neuralmagic/sparseml />`_:
   Libraries for state-of-the-art deep neural network optimization algorithms,
@@ -66,10 +66,9 @@ Related Products
 Resources and Learning More
 ===========================
 
+- `DeepSparse Documentation <https://docs.neuralmagic.com/deepsparse/ />`_
 - `SparseZoo Documentation <https://docs.neuralmagic.com/sparsezoo/ />`_
 - `SparseML Documentation <https://docs.neuralmagic.com/sparseml/ />`_
-- `Sparsify Documentation <https://docs.neuralmagic.com/sparsify/ />`_
-- `DeepSparse Documentation <https://docs.neuralmagic.com/deepsparse/ />`_
 - `Neural Magic Blog <https://www.neuralmagic.com/blog/ />`_,
   `Resources <https://www.neuralmagic.com/resources/ />`_,
   `Website <https://www.neuralmagic.com/ />`_
@@ -97,3 +96,12 @@ Additionally, more information can be found via
     :caption: API
 
     api/sparsify
+
+.. toctree::
+    :maxdepth: 2
+    :caption: Help and Support
+
+    `Bugs, Feature Requests <https://github.com/neuralmagic/sparsify/discussions>`_ 
+    `Support, General Q&A <https://github.com/neuralmagic/sparsify/issues>`_ 
+   
+    

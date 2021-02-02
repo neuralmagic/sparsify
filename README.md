@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-# ![icon for Sparsify](https://github.com/neuralmagic/sparsify/blob/main/docs/icon-sparsify.png) Sparsify
+# ![icon for Sparsify](https://github.com/neuralmagic/sparsify/blob/main/docs/source/icon-sparsify.png) Sparsify
 
 ### Easy-to-use autoML interface to optimize deep neural networks for better inference performance and a smaller footprint
 

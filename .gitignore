@@ -1,6 +1,4 @@
-# NM Studio
-/server/model_paths.json
-
+/docs/source/api/*.rst
 
 npm-debug.log
 yarn-error.log

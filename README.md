@@ -18,7 +18,7 @@ limitations under the License.
 
 # ![icon for test:](https://raw.githubusercontent.com/neuralmagic/comingsoon/main/docs/icon-sparsezoo.png) Test only, Works on Pypi? Raw URL, public repo
 
-# ![icon for test:](https://raw.githubusercontent.com/neuralmagic/sparsify/blob/main/docs/source/icon-sparsify.png) Sparsify (Raw URL, private pro)
+# ![icon for test:](https://raw.githubusercontent.com/neuralmagic/sparsify/main/docs/source/icon-sparsify.png) Sparsify (Raw URL, private repo)
 
 # ![icon for Sparsify:](https://github.com/neuralmagic/sparsify/blob/main/docs/source/icon-sparsify.png) Sparsify (Reg URL, private repo)
 

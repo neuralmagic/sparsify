@@ -18,7 +18,7 @@ limitations under the License.
 
 # ![icon for test:](https://raw.githubusercontent.com/neuralmagic/comingsoon/main/docs/icon-sparsezoo.png) Test only, Works on Pypi? Raw URL, public repo
 
-# ![icon for test:](https://github.com/neuralmagic/sparsify/blob/main/docs/source/icon-sparsify.png) Sparsify (Raw URL, private pro)
+# ![icon for test:](https://raw.githubusercontent.com/neuralmagic/sparsify/blob/main/docs/source/icon-sparsify.png) Sparsify (Raw URL, private pro)
 
 # ![icon for Sparsify:](https://github.com/neuralmagic/sparsify/blob/main/docs/source/icon-sparsify.png) Sparsify (Reg URL, private repo)
 
@@ -29,7 +29,7 @@ limitations under the License.
         <img alt="GitHub" src="https://img.shields.io/github/license/neuralmagic/comingsoon.svg?color=purple&style=for-the-badge" height=25>
     </a>
     <a href="https://docs.neuralmagic.com/sparsify/">
-        <img alt="Documentation" src="https://img.shields.io/website/http/neuralmagic.com/sparsify/index.html.svg?down_color=red&down_message=offline&up_message=online&style=for-the-badge" height=25>
+        <img alt="Documentation" src="https://img.shields.io/website/http/docs.neuralmagic.com/sparsify/index.html.svg?down_color=red&down_message=offline&up_message=online&style=for-the-badge" height=25>
     </a>
     <a href="https://github.com/neuralmagic/sparsify/releases">
         <img alt="GitHub release" src="https://img.shields.io/github/release/neuralmagic/sparsify.svg?style=for-the-badge" height=25>

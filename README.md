@@ -14,7 +14,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-# ![icon for Sparsify](https://github.com/neuralmagic/sparsify/blob/main/docs/source/icon-sparsify.png) Sparsify
+# ![icon for test:](https://github.com/neuralmagic/comingsoon/blob/main/docs/icon-sparsezoo.png) Test only, Broken on Pypi? Reg URL, public repo
+
+# ![icon for test:](https://raw.githubusercontent.com/neuralmagic/comingsoon/main/docs/icon-sparsezoo.png) Test only, Works on Pypi? Raw URL, public repo
+
+# ![icon for test:](https://github.com/neuralmagic/sparsify/blob/main/docs/source/icon-sparsify.png) Sparsify (Raw URL, private pro)
+
+# ![icon for Sparsify:](https://github.com/neuralmagic/sparsify/blob/main/docs/source/icon-sparsify.png) Sparsify (Reg URL, private repo)
 
 ### Easy-to-use autoML interface to optimize deep neural networks for better inference performance and a smaller footprint
 

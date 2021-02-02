@@ -6,7 +6,7 @@ PYCHECKGLOBS := 'examples/**/*.py' 'scripts/**/*.py' 'src/**/*.py' 'tests/**/*.p
 JSCHECKDIRS := src public
 JSCHECKGLOBS := 'public/**/*.html' 'public/**/*.js' 'public/**/*.css' 'src/**/*.html' 'src/**/*.jsx' 'tests/**/*.jsx'
 DOCDIR := docs
-MDCHECKGLOBS := 'docs/**/*.md' 'examples/**/*.md' 'notebooks/**/*.md' 'scripts/**/*.md'
+MDCHECKGLOBS := 'docs/**/*.md' 'docs/**/*.rst' 'examples/**/*.md' 'notebooks/**/*.md' 'scripts/**/*.md'
 MDCHECKFILES := CODE_OF_CONDUCT.md CONTRIBUTING.md DEVELOPING.md README.md
 
 # run checks on all files for the repo
@@ -37,8 +37,8 @@ test:
 
 # create docs
 docs:
-	sphinx-apidoc -o "$(DOCDIR)/source/" src/sparsify;
-	cd $(DOCDIR) && $(MAKE) html;
+	export SPARSEML_IGNORE_TFV1="True"; sphinx-apidoc -o "$(DOCDIR)/source/api" src/sparsify;
+	export SPARSEML_IGNORE_TFV1="True"; cd $(DOCDIR) && $(MAKE) html;
 
 # creates wheel file
 build:

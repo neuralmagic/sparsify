@@ -28,7 +28,7 @@ from marshmallow import ValidationError
 
 from sparsify.blueprints.projects import PROJECTS_ROOT_PATH
 from sparsify.blueprints.utils import HTTPNotFoundError, get_project_by_id
-from sparsify.models import Job, ProjectLossProfile, ProjectPerfProfile, database
+from sparsify.models import Job, ProjectLossProfile, ProjectPerfProfile
 from sparsify.schemas import (
     CreateProjectLossProfileSchema,
     CreateProjectPerfProfileSchema,

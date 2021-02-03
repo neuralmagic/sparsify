@@ -28,7 +28,7 @@ from sparsezoo.utils import download_file_iter
 from sparsify.blueprints.utils import validate_model_data
 from sparsify.models import ProjectData, ProjectModel
 from sparsify.schemas import JobProgressSchema
-from sparsify.workers.base import BaseJobWorker
+from sparsify.workers.base import JobWorker
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -36,7 +36,7 @@ _LOGGER = logging.getLogger(__name__)
 __all__ = ["DataFromPathJobWorker", "DataFromRepoJobWorker"]
 
 
-class _DataLoaderJobWorker(BaseJobWorker):
+class _DataLoaderJobWorker(JobWorker):
     @classmethod
     def format_args(
         cls, data_id: str, uri: str, **kwargs

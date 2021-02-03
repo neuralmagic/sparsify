@@ -91,6 +91,12 @@ class BaseModel(Model):
         database = database
         storage = storage
 
+    def refresh(self):
+        """
+        Refresh the data for the model instance from the DB
+        """
+        return type(self).get_by_id(self._pk)
+
 
 class BaseCreatedModifiedModel(BaseModel):
     """

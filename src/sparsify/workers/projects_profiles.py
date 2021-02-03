@@ -36,7 +36,7 @@ from sparsify.schemas import (
     ProjectProfileModelOpsBaselineMeasurementsSchema,
     ProjectProfileModelOpsMeasurementsSchema,
 )
-from sparsify.workers.base import BaseJobWorker
+from sparsify.workers.base import JobWorker
 
 
 __all__ = [
@@ -48,7 +48,7 @@ __all__ = [
 _LOGGER = logging.getLogger(__name__)
 
 
-class BaseProfileJobWorker(BaseJobWorker):
+class BaseProfileJobWorker(JobWorker):
     """
     Base job worker for working with profiles for projects
 

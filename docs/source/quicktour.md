@@ -39,7 +39,7 @@ Additionally, confirm that the networking rules on your server allow for access 
 After visiting `http://0.0.0.0:5543` in a web browser, the home page for Sparsify will load if configured correctly:
 ![SparseZoo main page Icon](userguide/images/image_1.jpg)
 
-A quick start flow is given below. For a more in-depth read, check out [Sparsify documentation](https://docs.neuralmagic.com/sparsify/).
+A quick start flow is given below. For a more in-depth read, check out the [Sparsify User Guide](userguide/index).
 
 ### New Project
 

@@ -58,11 +58,13 @@ This repository contains the package to locally launch Sparsify where you can cr
 
 A console script entry point is installed with the package: `sparsify`.
 This enables easy interaction through your console/terminal.
+
 Note, for some environments the console scripts cannot install properly.
 If this happens for your system and the `sparsify` command is not available,
-`scripts/sparsify.py` may be used in its place.
+`scripts/main.py` may be used in its place.  Documentation is provided in the
+script file.
 
-To launch Sparsify locally, open up a console or terminal window and type in the following:
+To launch Sparsify locally, open up a console or terminal window and enter the following:
 
 ```bash
 sparsify

@@ -101,7 +101,5 @@ Additionally, more information can be found via
     :maxdepth: 2
     :caption: Help and Support
 
-    `Bugs, Feature Requests <https://github.com/neuralmagic/sparsify/discussions>`_ 
-    `Support, General Q&A <https://github.com/neuralmagic/sparsify/issues>`_ 
-   
-    
+    Bugs, Feature Requests <https://github.com/neuralmagic/sparsify/issues>
+    Support, General Q&A <https://github.com/neuralmagic/sparsify/discussions>

@@ -12,15 +12,26 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import sys
+from datetime import date
 from sys import platform
 from typing import Dict, List, Tuple
 
 from setuptools import find_packages, setup
 
 
+_PACKAGE_NAME = "sparsify"
+_VERSION = "0.1.0"
+_NIGHTLY = "nightly" in sys.argv
+
+if _NIGHTLY:
+    _PACKAGE_NAME += "-nightly"
+    _VERSION += "." + date.today().strftime("%Y%m%d")
+    # remove nightly param so it does not break bdist_wheel
+    sys.argv.remove("nightly")
+
+
 _deps = [
-    "sparsezoo~=0.1.0",
-    "sparseml~=0.1.0",
     "apispec>=3.0.0",
     "flasgger>=0.9.0",
     "Flask>=1.0.0",
@@ -28,6 +39,12 @@ _deps = [
     "marshmallow>=3.0.0",
     "peewee>=3.0.0",
 ]
+
+_nm_deps = [
+    f"{'sparsezoo-nightly' if _NIGHTLY else 'sparsezoo'}~={_VERSION}",
+    f"{'sparseml-nightly' if _NIGHTLY else 'sparseml'}~={_VERSION}",
+]
+
 
 _dev_deps = [
     "black>=20.8b1",
@@ -58,7 +75,7 @@ def _setup_package_dir() -> Dict:
 
 
 def _setup_install_requires() -> List:
-    return _deps
+    return _nm_deps + _deps
 
 
 def _setup_extras() -> Dict:
@@ -74,8 +91,8 @@ def _setup_long_description() -> Tuple[str, str]:
 
 
 setup(
-    name="sparsify",
-    version="0.1.0",
+    name=_PACKAGE_NAME,
+    version=_VERSION,
     author="Neuralmagic, Inc.",
     author_email="support@neuralmagic.com",
     description="Easy-to-use autoML interface to optimize deep neural networks "

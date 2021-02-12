@@ -1,6 +1,7 @@
 .PHONY: build docs test
 
 BUILDDIR := $(PWD)
+BUILD_ARGS :=  # set nightly to build nightly release
 PYCHECKDIRS := examples tests src utils scripts setup.py
 PYCHECKGLOBS := 'examples/**/*.py' 'scripts/**/*.py' 'src/**/*.py' 'tests/**/*.py' 'utils/**/*.py' setup.py
 JSCHECKDIRS := src public
@@ -47,7 +48,7 @@ build:
 	yarn run build;
 	mv -v build/* src/sparsify/ui/;
 	@echo "Building python package";
-	python3 setup.py sdist bdist_wheel;
+	python3 setup.py sdist bdist_wheel $(BUILD_ARGS);
 
 # clean package
 clean:

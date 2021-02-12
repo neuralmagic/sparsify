@@ -50,7 +50,7 @@ Overview
 
 Sparsify is a deep learning autoML tool that simplifies the model optimization process to rapidly achieve the best combination of size, speed, and accuracy on any deep learning model. Sparsify optimizes and benchmarks models informed by industry research insights for ML practitioners, including ML engineers and operators, who need to deploy performant deep learning models fast and at scale. Sparsify shows visual performance potential for your model, including a sliding scale between performance and loss sensitivity, ultimately speeding up the model optimization process from weeks to minutes.
 
-This repository contains the package to locally launch Sparsify where you can create projects to load and optimize your deep learning models. At the end, you can export optimization recipes to integrate with your training workflow.
+`This repository <https://github.com/neuralmagic/sparsify />`_  contains the package to locally launch Sparsify where you can create projects to load and optimize your deep learning models. At the end, you can export optimization recipes to integrate with your training workflow.
 
 Related Products
 ================
@@ -66,19 +66,19 @@ Related Products
 Resources and Learning More
 ===========================
 
-- `DeepSparse Documentation <https://docs.neuralmagic.com/deepsparse/ />`_
-- `SparseZoo Documentation <https://docs.neuralmagic.com/sparsezoo/ />`_
-- `SparseML Documentation <https://docs.neuralmagic.com/sparseml/ />`_
-- `Neural Magic Blog <https://www.neuralmagic.com/blog/ />`_,
-  `Resources <https://www.neuralmagic.com/resources/ />`_,
-  `Website <https://www.neuralmagic.com/ />`_
+- `DeepSparse Documentation <https://docs.neuralmagic.com/deepsparse />`_
+- `SparseZoo Documentation <https://docs.neuralmagic.com/sparsezoo />`_
+- `SparseML Documentation <https://docs.neuralmagic.com/sparseml />`_
+- `Neural Magic Blog <https://www.neuralmagic.com/blog />`_,
+  `Resources <https://www.neuralmagic.com/resources />`_,
+  `Website <https://www.neuralmagic.com />`_
 
 Release History
 ===============
 
 Official builds are hosted on PyPi
-- stable: `sparsify <https://pypi.org/project/sparsify/ />`_
-- nightly (dev): `sparsify-nightly <https://pypi.org/project/sparsify-nightly/ />`_
+- stable: `sparsify <https://pypi.org/project/sparsify />`_
+- nightly (dev): `sparsify-nightly <https://pypi.org/project/sparsify-nightly />`_
 
 Additionally, more information can be found via
 `GitHub Releases <https://github.com/neuralmagic/sparsify/releases />`_.
@@ -98,8 +98,9 @@ Additionally, more information can be found via
     api/sparsify
 
 .. toctree::
-    :maxdepth: 2
-    :caption: Help and Support
+    :maxdepth: 3
+    :caption: Help
 
     Bugs, Feature Requests <https://github.com/neuralmagic/sparsify/issues>
     Support, General Q&A <https://github.com/neuralmagic/sparsify/discussions>
+    Neural Magic Docs <https://docs.neuralmagic.com>

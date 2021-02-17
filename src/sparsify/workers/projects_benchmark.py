@@ -39,7 +39,7 @@ from sparsify.schemas import (
     data_dump_and_validation,
 )
 from sparsify.utils import get_ml_sys_info
-from sparsify.workers.base import BaseJobWorker
+from sparsify.workers.base import JobWorker
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -51,7 +51,7 @@ ORT_CPU_ENGINE = "ort_cpu"
 ORT_GPU_ENGINE = "ort_gpu"
 
 
-class CreateBenchmarkJobWorker(BaseJobWorker):
+class CreateBenchmarkJobWorker(JobWorker):
     """
     A job worker for running and saving a benchmark for a given project
     and configuration.

@@ -21,7 +21,7 @@ import logging
 import uuid
 from enum import Enum
 
-from peewee import CharField, DateTimeField, Field, TextField
+from peewee import BooleanField, CharField, DateTimeField, Field, TextField
 from playhouse.sqlite_ext import JSONField
 
 from sparsify.models.base import BaseModel
@@ -71,6 +71,7 @@ class Job(BaseModel):
     modified = DateTimeField(default=datetime.datetime.now)
     type_ = CharField()
     worker_args = JSONField(null=True, default=None)
+    worker_ack = BooleanField(default=False)
     status = JobStatusField(default=JobStatus.pending)
     progress = JSONField(null=True, default=None)
     error = TextField(null=True)

@@ -674,7 +674,7 @@ class PruningModelEvaluator(object):
     :param loss_analysis: loss analysis of the model, if any
     """
 
-    MAX_NODE_SPARSITY = 0.975
+    MAX_NODE_SPARSITY = 0.95
     EVAL_SENSITIVITY_SPARSITY = 0.95
 
     def __init__(

@@ -206,8 +206,7 @@ class _PruningNodeSeries(object):
             return rescaler(v if not use_max else self.value_optimized_max)
 
         measurements = [
-            (val.sparsity, _get_val(val.value))
-            for val in self.data_optimization
+            (val.sparsity, _get_val(val.value)) for val in self.data_optimization
         ]
 
         # creates the data at increments of 1% levels from 0 to 99
@@ -351,7 +350,10 @@ class _PruningNodeEvaluator(object):
         )
         self.series_loss_est = _PruningNodeSeries(
             sparsity_measurements=OrderedDict(
-                [("0.0", 0.0), ("1.0", self.analysis["prunable_equation_sensitivity"]),]
+                [
+                    ("0.0", 0.0),
+                    ("1.0", self.analysis["prunable_equation_sensitivity"]),
+                ]
             ),
             baseline_key="0.0",
             num_params=self.num_params,
@@ -429,7 +431,9 @@ class _PruningNodeEvaluator(object):
         }
 
     def recovery(
-        self, sparsity: Union[float, None], baseline_sparsity: Union[float, None],
+        self,
+        sparsity: Union[float, None],
+        baseline_sparsity: Union[float, None],
     ) -> Union[float, None]:
         baseline = self.available_series_loss.estimated_sensitivity(baseline_sparsity)
         estimated = self.available_series_loss.estimated_sensitivity(sparsity)
@@ -458,9 +462,7 @@ class _PruningNodeEvaluator(object):
         perf_rescaler: _PruningPointRescaler,
         loss_rescaler: _PruningPointRescaler,
     ) -> List[_PruningNodeSeriesValue]:
-        loss_costs = self.available_series_loss.costs(
-            loss_rescaler, use_max=False
-        )
+        loss_costs = self.available_series_loss.costs(loss_rescaler, use_max=False)
         perf_costs = self.available_series_perf.costs(
             perf_rescaler,
             use_max=self.available_series_perf == self.series_flops,
@@ -744,7 +746,9 @@ class PruningModelEvaluator(object):
 
         for index, node in enumerate(self._nodes):
             costs = node.optimization_costs(
-                balance_perf_loss, self._perf_rescaler, self._loss_rescaler,
+                balance_perf_loss,
+                self._perf_rescaler,
+                self._loss_rescaler,
             )
 
             # make sure we have sensitivity data for the node to add for consideration

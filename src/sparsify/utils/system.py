@@ -91,8 +91,12 @@ def get_ml_version_info() -> Dict[str, str]:
     :return: a dictionary containing the version information of sparseml,
         deepsparse, onnxruntime, and onnx if installed.
     """
-    sparseml_version = _get_package_version("sparseml")
-    deepsparse_version = _get_package_version("deepsparse")
+    sparseml_version = _get_package_version("sparseml") or _get_package_version(
+        "sparseml-nightly"
+    )
+    deepsparse_version = _get_package_version("deepsparse") or _get_package_version(
+        "sparseml-deepsparse"
+    )
     onnxruntime_version = _get_package_version("onnxruntime")
     onnx_version = _get_package_version("onnx")
 

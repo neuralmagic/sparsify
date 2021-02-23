@@ -247,7 +247,7 @@ def default_pruning_settings():
     sparsity = 0.85  # TODO: dynamically choose sparsity level
     balance_perf_loss = 1.0
     filter_min_sparsity = 0.4
-    filter_min_perf_gain = 0.75
+    filter_min_perf_gain = 0.6
     filter_min_recovery = -1.0
 
     return PruningSettings(

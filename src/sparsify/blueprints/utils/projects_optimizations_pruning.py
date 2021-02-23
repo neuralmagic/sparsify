@@ -71,7 +71,11 @@ class _PruningPointRescaler(object):
 
         # normalize the value such that it will fall in the range [0, 1.0]
         # by dividing by the max range
-        max_range = self.max_val - self.min_val
+        max_range = (
+            self.max_val - self.min_val
+            if self.max_val is not None and self.min_val is not None
+            else 0.0
+        )
         rescaled = rescaled / max_range if max_range else rescaled
 
         return rescaled

@@ -157,6 +157,12 @@ class _PruningNodeSeries(object):
         return interpolated
 
     def estimated_gain(self, sparsity: Union[None, float]) -> Union[None, float]:
+        """
+        :param sparsity: the sparsity to get the gain value for
+        :return: the ratio of the predicted value at the given sparsity
+            as compared with the baseline value
+        """
+
         if not self.data:
             return None
 
@@ -171,6 +177,12 @@ class _PruningNodeSeries(object):
         return self.value_baseline / value
 
     def estimated_sensitivity(self, sparsity: Union[None, float]) -> Union[None, float]:
+        """
+        :param sparsity: the sparsity to get the sensitivity value for
+        :return: the sensitivity comparison (difference) of the measurement
+            at the given sparsity compared with the baseline
+        """
+
         if not self.data:
             return None
 
@@ -439,6 +451,13 @@ class _PruningNodeEvaluator(object):
         sparsity: Union[float, None],
         baseline_sparsity: Union[float, None],
     ) -> Union[float, None]:
+        """
+        :param sparsity: the sparsity to get recovery for
+        :param baseline_sparsity: the baseline sparsity to use for recovery
+        :return: the estimated confidence of recovery for the given sparsity
+            as compared to the baseline
+        """
+
         baseline = self.available_series_loss.estimated_sensitivity(baseline_sparsity)
         estimated = self.available_series_loss.estimated_sensitivity(sparsity)
 
@@ -466,6 +485,16 @@ class _PruningNodeEvaluator(object):
         perf_rescaler: _PruningPointRescaler,
         loss_rescaler: _PruningPointRescaler,
     ) -> List[_PruningNodeSeriesValue]:
+        """
+        :param balance_perf_loss: the weight [0.0, 1.0] for balancing perf vs loss;
+            0.0 for all performance, 1.0 for all loss	            perf_rescaler,
+        :param perf_rescaler: rescaler to use to rescale vales for performance
+            before calculating cost
+        :param loss_rescaler: rescaler to use to rescale vales for loss
+            before calculating cost
+        :return: a list of tuples containing the sparsities from 0% to 99% and
+            their associated cost for pruning the node to that sparsity
+        """
         loss_costs = self.available_series_loss.costs(loss_rescaler, use_max=False)
         perf_costs = self.available_series_perf.costs(
             perf_rescaler,

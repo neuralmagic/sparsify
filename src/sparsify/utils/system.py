@@ -95,7 +95,7 @@ def get_ml_version_info() -> Dict[str, str]:
         "sparseml-nightly"
     )
     deepsparse_version = _get_package_version("deepsparse") or _get_package_version(
-        "sparseml-deepsparse"
+        "deepsparse-nightly"
     )
     onnxruntime_version = _get_package_version("onnxruntime")
     onnx_version = _get_package_version("onnx")

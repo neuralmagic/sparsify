@@ -21,7 +21,9 @@ from setuptools import find_packages, setup
 
 
 _PACKAGE_NAME = "sparsify"
-_VERSION = "0.1.0"
+_VERSION = "0.1.1"
+_VERSION_MAJOR, _VERSION_MINOR, _VERSION_BUG = _VERSION.split(".")
+_VERSION_MAJOR_MINOR = f"{_VERSION_MAJOR}.{_VERSION_MINOR}"
 _NIGHTLY = "nightly" in sys.argv
 
 if _NIGHTLY:
@@ -41,8 +43,8 @@ _deps = [
 ]
 
 _nm_deps = [
-    f"{'sparsezoo-nightly' if _NIGHTLY else 'sparsezoo'}~={_VERSION}",
-    f"{'sparseml-nightly' if _NIGHTLY else 'sparseml'}~={_VERSION}",
+    f"{'sparsezoo-nightly' if _NIGHTLY else 'sparsezoo'}~={_VERSION_MAJOR_MINOR}",
+    f"{'sparseml-nightly' if _NIGHTLY else 'sparseml'}~={_VERSION_MAJOR_MINOR}",
 ]
 
 

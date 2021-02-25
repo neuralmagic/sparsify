@@ -27,7 +27,7 @@ from sparseml.utils import is_url
 from sparsezoo.utils import download_file_iter
 from sparsify.models import ProjectModel
 from sparsify.schemas import JobProgressSchema
-from sparsify.workers.base import BaseJobWorker
+from sparsify.workers.base import JobWorker
 
 
 __all__ = ["ModelFromPathJobWorker", "ModelFromRepoJobWorker"]
@@ -36,7 +36,7 @@ __all__ = ["ModelFromPathJobWorker", "ModelFromRepoJobWorker"]
 _LOGGER = logging.getLogger(__name__)
 
 
-class _ModelLoaderJobWorker(BaseJobWorker):
+class _ModelLoaderJobWorker(JobWorker):
     """
     A base job worker for retrieving a model from a given uri.
 

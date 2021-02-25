@@ -20,10 +20,10 @@ from abc import abstractmethod
 from typing import Any, Dict, Iterator
 
 
-__all__ = ["JobWorkerRegistryHolder", "BaseJobWorker"]
+__all__ = ["JobWorkerRegistry", "JobWorker"]
 
 
-class JobWorkerRegistryHolder(type):
+class JobWorkerRegistry(type):
     """
     Registry class for handling and storing BaseJobWorker sub class instances.
     All subclasses are added to the the REGISTRY property
@@ -37,8 +37,15 @@ class JobWorkerRegistryHolder(type):
 
         return new_cls
 
+    @staticmethod
+    def create_worker(job):
+        cls = JobWorkerRegistry.REGISTRY[job.type_]
+        worker = cls(job.job_id, job.project_id, **job.worker_args)
 
-class BaseJobWorker(object, metaclass=JobWorkerRegistryHolder):
+        return worker
+
+
+class JobWorker(object, metaclass=JobWorkerRegistry):
     """
     The base job worker instance all job workers must extend
 

@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import argparse
+import atexit
 import logging
 import os
 from typing import Any, Union
@@ -96,7 +97,13 @@ def _api_docs_setup(app: Flask):
 
 
 def _worker_setup():
-    JobWorkerManager().app_startup()
+    manager = JobWorkerManager()
+
+    def _interrupt():
+        manager.shutdown()
+
+    atexit.register(_interrupt)
+    manager.start()
 
 
 def run(

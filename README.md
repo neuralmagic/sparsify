@@ -53,15 +53,20 @@ At the end, you can export sparsification recipes to integrate with your trainin
 
 ## Sparsification
 
-Sparsification is the process of taking a trained deep learning model and removing redundant information from the over precise and over parameterized network resulting in a faster and smaller model.
+Sparsification is the process of taking a trained deep learning model and removing redundant information from the overprecise and over-parameterized network resulting in a faster and smaller model.
 Techniques for sparsification are all encompassing including everything from inducing sparsity using [pruning](https://neuralmagic.com/blog/pruning-overview/) and [quantization](https://arxiv.org/abs/1609.07061) to enabling naturally occurring sparsity using [activation sparsity](http://proceedings.mlr.press/v119/kurtz20a.html) or [winograd/FFT](https://arxiv.org/abs/1509.09308). 
 When implemented correctly, these techniques result in significantly more performant and smaller models with limited to no effect on the baseline metrics.
 For example, pruning plus quantization can give over [7x improvements in performance](resnet50link) while recovering to nearly the same baseline accuracy.
 
-The DeepSparse product suite builds on top of sparsification enabling you to easily apply the techniques to your datasets/models using recipe driven approaches.
+The Deep Sparse product suite builds on top of sparsification enabling you to easily apply the techniques to your datasets and models using recipe-driven approaches.
 Recipes encode the directions for how to sparsify a model into a simple, easily editable format.
-Download a sparsification recipe/sparsified model from the [SparseZoo](https://github.com/neuralmagic/sparsezoo) or create one using [Sparsify](https://github.com/neuralmagic/sparsify), apply it using [SparseML](https://github.com/neuralmagic/sparseml) with only a few lines of code, and deploy with the [DeepSparse Engine](https://github.com/neuralmagic/deepsparse) for unprecedented performance on CPUs.
-Visualization of the full product flow:
+- Download a sparsification recipe and sparsified model from the [SparseZoo](https://github.com/neuralmagic/sparsezoo).
+- Alternatively, create a recipe for your model using [Sparsify](https://github.com/neuralmagic/sparsify).
+- Apply your recipe with only a few lines of code using [SparseML](https://github.com/neuralmagic/sparseml).
+- Finally, for GPU-level performance on CPUs, deploy your sparse-quantized model with the [DeepSparse Engine](https://github.com/neuralmagic/deepsparse).
+
+
+**Full Deep Sparse product flow:**  
 
 <img src="https://docs.neuralmagic.com/docs/source/sparsification/flow-overview.svg" width="960px">
 

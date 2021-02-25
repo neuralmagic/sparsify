@@ -97,13 +97,18 @@ setup(
     version=_VERSION,
     author="Neuralmagic, Inc.",
     author_email="support@neuralmagic.com",
-    description="Easy-to-use autoML interface to optimize deep neural networks "
-    "for better inference performance and a smaller footprint.",
+    description=(
+        "Easy-to-use UI for automatically sparsifying neural networks and "
+        "creating sparsification recipes for better inference performance and "
+        "a smaller footprint"
+    ),
     long_description=_setup_long_description()[0],
     long_description_content_type=_setup_long_description()[1],
-    keywords="inference, machine learning, neural network, computer vision, nlp, cv, "
-    "deep learning, torch, pytorch, tensorflow, keras, automl, sparsity, pruning, "
-    "deep learning libraries, onnx, quantization",
+    keywords=(
+        "inference, machine learning, neural network, computer vision, nlp, cv, "
+        "deep learning, torch, pytorch, tensorflow, keras, automl, sparsity, pruning, "
+        "deep learning libraries, onnx, quantization"
+    ),
     license="Apache",
     url="https://github.com/neuralmagic/sparsify",
     include_package_data=True,

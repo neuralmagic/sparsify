@@ -16,7 +16,7 @@ limitations under the License.
 
 # ![icon for Sparsify:](https://raw.githubusercontent.com/neuralmagic/sparsify/main/docs/source/icon-sparsify.png) Sparsify
 
-### Drag-and-drop UI for automatically sparsifying neural networks and creating sparsification recipes for better inference performance and a smaller footprint
+### Easy-to-use UI for automatically sparsifying neural networks and creating sparsification recipes for better inference performance and a smaller footprint
 
 <p>
     <a href="https://github.com/neuralmagic/sparsify/blob/main/LICENSE">
@@ -44,9 +44,9 @@ limitations under the License.
 
 ## Overview
 
-Sparsify is a deep learning autoML tool that simplifies the model sparsification process to rapidly achieve the best combination of size, speed, and accuracy on any deep learning model. 
-Sparsify optimizes and benchmarks models informed by industry research insights for ML practitioners, including ML engineers and operators, who need to deploy performant deep learning models fast and at scale. 
-Sparsify shows visual performance potential for your model, including a sliding scale between performance and loss sensitivity, ultimately speeding up the model sparsification process from weeks to minutes.
+Sparsify is an easy-to-use UI tool that simplifies the deep learning model optimization process to rapidly achieve the best combination of size, speed, and accuracy. 
+Sparsify sparsifies and benchmarks models informed by industry research insights for ML practitioners, including ML engineers and operators, who need to deploy performant deep learning models fast and at scale. 
+Sparsify shows visual performance potential for your model, including a sliding scale between performance and recovery, ultimately speeding up the model sparsification process from weeks to minutes.
 
 This repository contains the package to locally launch Sparsify where you can create projects to load and sparsify your deep learning models. 
 At the end, you can export sparsification recipes to integrate with your training workflow.
@@ -56,7 +56,7 @@ At the end, you can export sparsification recipes to integrate with your trainin
 Sparsification is the process of taking a trained deep learning model and removing redundant information from the overprecise and over-parameterized network resulting in a faster and smaller model.
 Techniques for sparsification are all encompassing including everything from inducing sparsity using [pruning](https://neuralmagic.com/blog/pruning-overview/) and [quantization](https://arxiv.org/abs/1609.07061) to enabling naturally occurring sparsity using [activation sparsity](http://proceedings.mlr.press/v119/kurtz20a.html) or [winograd/FFT](https://arxiv.org/abs/1509.09308). 
 When implemented correctly, these techniques result in significantly more performant and smaller models with limited to no effect on the baseline metrics.
-For example, pruning plus quantization can give over [7x improvements in performance](resnet50link) while recovering to nearly the same baseline accuracy.
+For example, pruning plus quantization can give over [7x improvements in performance](https://neuralmagic.com/blog/benchmark-resnet50-with-deepsparse) while recovering to nearly the same baseline accuracy.
 
 The Deep Sparse product suite builds on top of sparsification enabling you to easily apply the techniques to your datasets and models using recipe-driven approaches.
 Recipes encode the directions for how to sparsify a model into a simple, easily editable format.

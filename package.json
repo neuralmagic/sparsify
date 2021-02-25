@@ -53,7 +53,7 @@
   "scripts": {
     "lint": "yarn prettier --write src/ui",
     "start": "export REACT_APP_VERSION=$npm_package_version && react-scripts start",
-    "start_local": "export REACT_APP_VERSION=$npm_package_version && export REACT_APP_API_ROOT='http://0.0.0.0:5543/api' && react-scripts start",
+    "start_local": "export REACT_APP_VERSION=$npm_package_version && export REACT_APP_API_ROOT='http://192.168.197.218:5543/api' && react-scripts start",
     "build": "export REACT_APP_VERSION=$npm_package_version && export REACT_APP_API_ROOT='' && react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

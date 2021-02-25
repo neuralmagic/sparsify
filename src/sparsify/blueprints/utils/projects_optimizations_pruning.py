@@ -487,7 +487,7 @@ class _PruningNodeEvaluator(object):
     ) -> List[_PruningNodeSeriesValue]:
         """
         :param balance_perf_loss: the weight [0.0, 1.0] for balancing perf vs loss;
-            0.0 for all performance, 1.0 for all loss	            perf_rescaler,
+            0.0 for all performance, 1.0 for all loss
         :param perf_rescaler: rescaler to use to rescale vales for performance
             before calculating cost
         :param loss_rescaler: rescaler to use to rescale vales for loss

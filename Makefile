@@ -39,7 +39,9 @@ test:
 # create docs
 docs:
 	export SPARSEML_IGNORE_TFV1="True"; sphinx-apidoc -o "$(DOCDIR)/source/api" src/sparsify;
-	export SPARSEML_IGNORE_TFV1="True"; cd $(DOCDIR) && $(MAKE) html;
+	export SPARSEML_IGNORE_TFV1="True"; cd $(DOCDIR) && $(MAKE) html && \
+			cp -r source/userguide/images/ build/html/images/ && \
+			cp -r source/userguide/images/ build/html/_images/;
 
 # creates wheel file
 build:
@@ -54,10 +56,9 @@ build:
 clean:
 	rm -rf .pytest_cache;
 	rm -rf docs/_build docs/build;
-	rm -rf node_modules;
 	rm -rf build;
 	rm -rf dist;
-	rm -rf src/sparsify/ui/*;
+	find src/sparsify/ui/* | grep -v .gitkeep | xargs rm -rf;
 	rm -rf src/sparsify.egg-info;
 	find $(PYCHECKDIRS) $(JSCHECKDIRS) | grep -E "(__pycache__|\.pyc|\.pyo)" | xargs rm -rf;
-	find $(DOCDIR) | grep .rst | xargs rm -rf;
+	find $(DOCDIR)/source/api | grep .rst | xargs rm -rf;

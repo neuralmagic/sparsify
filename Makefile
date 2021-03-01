@@ -41,7 +41,8 @@ docs:
 	export SPARSEML_IGNORE_TFV1="True"; sphinx-apidoc -o "$(DOCDIR)/source/api" src/sparsify;
 	export SPARSEML_IGNORE_TFV1="True"; cd $(DOCDIR) && $(MAKE) html && \
 			cp -r source/userguide/images/ build/html/images/ && \
-			cp -r source/userguide/images/ build/html/_images/;
+			cp -r source/userguide/images/ build/html/_images/ && \
+			cp -r source/userguide/images/ build/html/userguide/images/;
 
 # creates wheel file
 build:

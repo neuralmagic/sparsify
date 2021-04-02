@@ -16,12 +16,13 @@ import sys
 from datetime import date
 from sys import platform
 from typing import Dict, List, Tuple
-
 from setuptools import find_packages, setup
+
+from sparsify import __version__
 
 
 _PACKAGE_NAME = "sparsify"
-_VERSION = "0.2.0"
+_VERSION = __version__
 _VERSION_MAJOR, _VERSION_MINOR, _VERSION_BUG = _VERSION.split(".")
 _VERSION_MAJOR_MINOR = f"{_VERSION_MAJOR}.{_VERSION_MINOR}"
 _NIGHTLY = "nightly" in sys.argv

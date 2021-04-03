@@ -13,7 +13,6 @@
 # limitations under the License.
 
 """
-<<<<<<< HEAD
 Functionality for storing and setting the version info for Sparsify
 """
 

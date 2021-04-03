@@ -12,24 +12,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
 import sys
 from datetime import date
 from sys import platform
 from typing import Dict, List, Tuple
+
 from setuptools import find_packages, setup
 
-from sparsify import __version__
 
+version = "unknown"
+version_major_minor = version
+# load and overwrite version info from sparseml package
+exec(open(os.path.join("src", "sparseml", "version.py")).read())
+print(f"loaded version {version} from src/sparseml/version.py")
 
 _PACKAGE_NAME = "sparsify"
-_VERSION = __version__
-_VERSION_MAJOR, _VERSION_MINOR, _VERSION_BUG = _VERSION.split(".")
-_VERSION_MAJOR_MINOR = f"{_VERSION_MAJOR}.{_VERSION_MINOR}"
 _NIGHTLY = "nightly" in sys.argv
 
 if _NIGHTLY:
     _PACKAGE_NAME += "-nightly"
-    _VERSION += "." + date.today().strftime("%Y%m%d")
+    version += "." + date.today().strftime("%Y%m%d")
     # remove nightly param so it does not break bdist_wheel
     sys.argv.remove("nightly")
 
@@ -44,8 +47,8 @@ _deps = [
 ]
 
 _nm_deps = [
-    f"{'sparsezoo-nightly' if _NIGHTLY else 'sparsezoo'}~={_VERSION_MAJOR_MINOR}",
-    f"{'sparseml-nightly' if _NIGHTLY else 'sparseml'}~={_VERSION_MAJOR_MINOR}",
+    f"{'sparsezoo-nightly' if _NIGHTLY else 'sparsezoo'}~={version_major_minor}",
+    f"{'sparseml-nightly' if _NIGHTLY else 'sparseml'}~={version_major_minor}",
 ]
 
 
@@ -95,7 +98,7 @@ def _setup_long_description() -> Tuple[str, str]:
 
 setup(
     name=_PACKAGE_NAME,
-    version=_VERSION,
+    version=version,
     author="Neuralmagic, Inc.",
     author_email="support@neuralmagic.com",
     description=(

@@ -24,8 +24,8 @@ from setuptools import find_packages, setup
 version = "unknown"
 version_major_minor = version
 # load and overwrite version info from sparseml package
-exec(open(os.path.join("src", "sparseml", "version.py")).read())
-print(f"loaded version {version} from src/sparseml/version.py")
+exec(open(os.path.join("src", "sparsify", "version.py")).read())
+print(f"loaded version {version} from src/sparsify/version.py")
 
 _PACKAGE_NAME = "sparsify"
 _NIGHTLY = "nightly" in sys.argv

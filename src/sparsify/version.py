@@ -13,7 +13,7 @@
 # limitations under the License.
 
 """
-Functionality for storing and setting the version info for SparseML
+Functionality for storing and setting the version info for Sparsify
 """
 
 __all__ = [

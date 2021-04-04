@@ -28,7 +28,7 @@ author = "Neural Magic"
 # The full version, including alpha/beta/rc tags
 version = "unknown"
 version_major_minor = version
-# load and overwrite version info from sparseml package
+# load and overwrite version info from sparsify package
 exec(open(os.path.join(os.pardir, os.pardir, "src", "sparsify", "version.py")).read())
 release = version
 version = version_major_minor

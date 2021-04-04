@@ -38,11 +38,17 @@ test:
 
 # create docs
 docs:
-	export SPARSEML_IGNORE_TFV1="True"; sphinx-apidoc -o "$(DOCDIR)/source/api" src/sparsify;
-	export SPARSEML_IGNORE_TFV1="True"; cd $(DOCDIR) && $(MAKE) html && \
-			cp -r source/userguide/images/ build/html/images/ && \
-			cp -r source/userguide/images/ build/html/_images/ && \
-			cp -r source/userguide/images/ build/html/userguide/images/;
+	@echo "Running docs creation";
+	export SPARSEML_IGNORE_TFV1="True"; \
+			python utils/docs_builder.py --src $(DOCDIR) --dest $(DOCDIR)/build/html && \
+			cp -r $(DOCDIR)/userguide/images/ $(DOCDIR)/build/html/images/ && \
+			cp -r $(DOCDIR)/userguide/images/ $(DOCDIR)/build/html/_images/ && \
+			cp -r $(DOCDIR)/userguide/images/ $(DOCDIR)/build/html/userguide/images/;
+
+docsupdate:
+	@echo "Runnning update to api docs";
+	find $(DOCDIR)/api | grep .rst | xargs rm -rf;
+	export SPARSEML_IGNORE_TFV1="True"; sphinx-apidoc -o "$(DOCDIR)/api" src/sparsify;
 
 # creates wheel file
 build:

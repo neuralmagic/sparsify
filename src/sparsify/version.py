@@ -13,18 +13,19 @@
 # limitations under the License.
 
 """
-Functionality for handling the backend of Sparsify to benchmark and sparsify
-neural networks
+Functionality for storing and setting the version info for Sparsify
 """
 
-# flake8: noqa
-# isort: skip_file
-
+__all__ = [
+    "__version__",
+    "version",
+    "version_major",
+    "version_minor",
+    "version_bug",
+    "version_major_minor",
+]
 __version__ = "0.2.0"
 
-# be sure to import all logging first and at the root
-# this keeps other loggers in nested files creating from the root logger setups
-from .log import *
-
-from .version import *
-from .app import *
+version = __version__
+version_major, version_minor, version_bug = version.split(".")
+version_major_minor = f"{version_major}.{version_minor}"

@@ -1,4 +1,4 @@
-/docs/source/api/*.rst
+/docs/api/*.rst
 
 npm-debug.log
 yarn-error.log

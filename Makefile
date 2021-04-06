@@ -41,9 +41,9 @@ docs:
 	@echo "Running docs creation";
 	export SPARSEML_IGNORE_TFV1="True"; \
 			python utils/docs_builder.py --src $(DOCDIR) --dest $(DOCDIR)/build/html && \
-			cp -r $(DOCDIR)/userguide/images/ $(DOCDIR)/build/html/images/ && \
-			cp -r $(DOCDIR)/userguide/images/ $(DOCDIR)/build/html/_images/ && \
-			cp -r $(DOCDIR)/userguide/images/ $(DOCDIR)/build/html/userguide/images/;
+			cp -r $(DOCDIR)/source/userguide/images/ $(DOCDIR)/build/html/images/ && \
+			cp -r $(DOCDIR)/source/userguide/images/ $(DOCDIR)/build/html/_images/ && \
+			cp -r $(DOCDIR)/source/userguide/images/ $(DOCDIR)/build/html/userguide/images/;
 
 docsupdate:
 	@echo "Runnning update to api docs";
@@ -68,4 +68,3 @@ clean:
 	find src/sparsify/ui/* | grep -v .gitkeep | xargs rm -rf;
 	rm -rf src/sparsify.egg-info;
 	find $(PYCHECKDIRS) $(JSCHECKDIRS) | grep -E "(__pycache__|\.pyc|\.pyo)" | xargs rm -rf;
-	find $(DOCDIR)/source/api | grep .rst | xargs rm -rf;

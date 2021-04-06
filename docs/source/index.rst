@@ -101,9 +101,9 @@ Additionally, more information can be found via
     :maxdepth: 3
     :caption: General
 
-    source/quicktour
-    source/installation
-    source/userguide/index
+    quicktour
+    installation
+    userguide/index
 
 .. toctree::
     :maxdepth: 2

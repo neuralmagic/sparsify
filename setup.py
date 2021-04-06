@@ -53,6 +53,7 @@ _nm_deps = [
 
 
 _dev_deps = [
+    "beautifulsoup4==4.9.3",
     "black>=20.8b1",
     "flake8>=3.8.3",
     "isort>=5.7.0",
@@ -61,9 +62,10 @@ _dev_deps = [
     "sphinx>=3.4.0",
     "sphinx-copybutton>=0.3.0",
     "sphinx-markdown-tables>=0.0.15",
-    "wheel>=0.36.2",
-    "pytest>=6.0.0",
+    "sphinx-multiversion==0.2.4",
     "sphinx-rtd-theme",
+    "pytest>=6.0.0",
+    "wheel>=0.36.2",
 ]
 
 if platform == "linux" or platform == "linux2":

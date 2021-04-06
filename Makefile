@@ -68,4 +68,3 @@ clean:
 	find src/sparsify/ui/* | grep -v .gitkeep | xargs rm -rf;
 	rm -rf src/sparsify.egg-info;
 	find $(PYCHECKDIRS) $(JSCHECKDIRS) | grep -E "(__pycache__|\.pyc|\.pyo)" | xargs rm -rf;
-	find $(DOCDIR)/source/api | grep .rst | xargs rm -rf;

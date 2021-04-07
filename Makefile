@@ -43,6 +43,7 @@ docs:
 			python utils/docs_builder.py --src $(DOCDIR) --dest $(DOCDIR)/build/html && \
 			cp -r $(DOCDIR)/source/userguide/images/ $(DOCDIR)/build/html/images/ && \
 			cp -r $(DOCDIR)/source/userguide/images/ $(DOCDIR)/build/html/_images/ && \
+			mkdir -p $(DOCDIR)/build/html/userguide && \
 			cp -r $(DOCDIR)/source/userguide/images/ $(DOCDIR)/build/html/userguide/images/;
 
 docsupdate:

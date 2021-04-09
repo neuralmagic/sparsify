@@ -16,6 +16,8 @@ limitations under the License.
 
 # ![icon for Sparsify:](https://raw.githubusercontent.com/neuralmagic/sparsify/main/docs/source/icon-sparsify.png) Sparsify
 
+[![quality-check Actions Status](https://github.com/neuralmagic/sparsify/actions/workflows/quality-check.yaml/badge.svg)](https://github.com/neuralmagic/sparsify/actions)
+
 ### Easy-to-use UI for automatically sparsifying neural networks and creating sparsification recipes for better inference performance and a smaller footprint
 
 <p>

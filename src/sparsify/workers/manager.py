@@ -147,7 +147,10 @@ class JobWorkerManager(object, metaclass=Singleton):
             _LOGGER.info("Refreshing JobWorkerManager")
             query = (
                 Job.select()
-                .where(Job.status == JobStatus.pending and Job.worker_ack is False)
+                .where(
+                    Job.status == JobStatus.pending
+                    and Job.worker_ack == False  # noqa: E712
+                )  # noqa: E712
                 .order_by(Job.created)
             )
             job_ids = [job.job_id for job in query]

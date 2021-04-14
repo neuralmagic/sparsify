@@ -19,11 +19,16 @@ limitations under the License.
 ### Easy-to-use UI for automatically sparsifying neural networks and creating sparsification recipes for better inference performance and a smaller footprint
 
 <p>
-    <a href="https://github.com/neuralmagic/sparsify/blob/main/LICENSE">
-        <img alt="GitHub" src="https://img.shields.io/github/license/neuralmagic/sparsify.svg?color=purple&style=for-the-badge" height=25>
-    </a>
     <a href="https://docs.neuralmagic.com/sparsify/">
         <img alt="Documentation" src="https://img.shields.io/website/http/docs.neuralmagic.com/sparsify/index.html.svg?down_color=red&down_message=offline&up_message=online&style=for-the-badge" height=25>
+    </a>
+    <a href="https://github.com/neuralmagic/sparsify/actions/workflows/quality-check.yaml">
+        <img alt="Quality Check" src="https://img.shields.io/github/workflow/status/neuralmagic/sparsify/Quality%20Checks/main?label=Quality%20Checks&style=for-the-badge" height=25>
+    </a>
+</p>
+<p>
+    <a href="https://github.com/neuralmagic/sparsify/blob/main/LICENSE">
+        <img alt="GitHub" src="https://img.shields.io/github/license/neuralmagic/sparsify.svg?color=purple&style=for-the-badge" height=25>
     </a>
     <a href="https://github.com/neuralmagic/sparsify/releases">
         <img alt="GitHub release" src="https://img.shields.io/github/release/neuralmagic/sparsify.svg?style=for-the-badge" height=25>
@@ -40,7 +45,7 @@ limitations under the License.
     <a href="https://twitter.com/neuralmagic">
         <img src="https://img.shields.io/twitter/follow/neuralmagic?color=darkgreen&label=Follow&style=social" height=25>
     </a>
- </p>
+</p>
 
 ## Overview
 

@@ -147,7 +147,10 @@ class JobWorkerManager(object, metaclass=Singleton):
             _LOGGER.info("Refreshing JobWorkerManager")
             query = (
                 Job.select()
-                .where(Job.status == JobStatus.pending and Job.worker_ack == False)
+                .where(
+                    Job.status == JobStatus.pending
+                    and Job.worker_ack == False  # noqa: E712
+                )  # noqa: E712
                 .order_by(Job.created)
             )
             job_ids = [job.job_id for job in query]
@@ -157,7 +160,7 @@ class JobWorkerManager(object, metaclass=Singleton):
                 _LOGGER.debug(f"Adding job {job.job_id} to threadpool")
                 self._pool.submit(self._execute_job, str(job.job_id), self._canceled)
 
-            _LOGGER.debug(f"Updating jobs in db to ack that worker received them")
+            _LOGGER.debug("Updating jobs in db to ack that worker received them")
             Job.update(worker_ack=True).where(Job.job_id.in_(job_ids)).execute()
 
     @database.connection_context()

@@ -13,28 +13,22 @@
 # limitations under the License.
 
 import os
-import sys
-from datetime import date
 from sys import platform
 from typing import Dict, List, Tuple
 
 from setuptools import find_packages, setup
 
 
+# default variables to be overwritten by the version.py file
+is_release = None
 version = "unknown"
 version_major_minor = version
-# load and overwrite version info from sparsify package
+
+# load and overwrite version and release info from sparseml package
 exec(open(os.path.join("src", "sparsify", "version.py")).read())
 print(f"loaded version {version} from src/sparsify/version.py")
 
-_PACKAGE_NAME = "sparsify"
-_NIGHTLY = "nightly" in sys.argv
-
-if _NIGHTLY:
-    _PACKAGE_NAME += "-nightly"
-    version += "." + date.today().strftime("%Y%m%d")
-    # remove nightly param so it does not break bdist_wheel
-    sys.argv.remove("nightly")
+_PACKAGE_NAME = "sparsify" if is_release else "sparsify-nightly"
 
 
 _deps = [
@@ -47,8 +41,8 @@ _deps = [
 ]
 
 _nm_deps = [
-    f"{'sparsezoo-nightly' if _NIGHTLY else 'sparsezoo'}~={version_major_minor}",
-    f"{'sparseml-nightly' if _NIGHTLY else 'sparseml'}~={version_major_minor}",
+    f"{'sparsezoo' if is_release else 'sparsezoo-nightly'}~={version_major_minor}",
+    f"{'sparseml' if is_release else 'sparseml-nightly'}~={version_major_minor}",
 ]
 
 

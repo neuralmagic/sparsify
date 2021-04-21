@@ -30,6 +30,7 @@ def _generate_version():
         else f"{version_base}.{date.today().strftime('%Y%m%d')}"
     )
 
+
 __all__ = [
     "__version__",
     "version_base",

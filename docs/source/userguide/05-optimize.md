@@ -58,7 +58,7 @@ To run Sparsify for optimization:
 
 3. Click **APPLY**.
 
-    **Note:** If you need to change these settings in the future, you can do so by changing the [Settings](06-settings-key.md). However, changing these values later will not change the modifiers on the Optimization screen.
+    **Note:** If you need to change these settings in the future, you can do so by changing the [Settings](07-settings.md). However, changing these values later will not change the modifiers on the Optimization screen.
 
 The Optimization screen is displayed. For example:
 

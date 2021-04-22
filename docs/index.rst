@@ -31,7 +31,7 @@ Easy-to-use UI for automatically sparsifying neural networks and creating sparsi
         <a href="https://github.com/neuralmagic/sparsify/releases">
             <img alt="GitHub release" src="https://img.shields.io/github/release/neuralmagic/sparsify.svg?style=for-the-badge" height=25 style="margin-bottom:4px;">
         </a>
-        <a href="https://github.com/neuralmagic.com/sparsify/blob/main/CODE_OF_CONDUCT.md">
+        <a href="https://github.com/neuralmagic/sparsify/blob/main/CODE_OF_CONDUCT.md">
             <img alt="Contributor Covenant" src="https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg?color=yellow&style=for-the-badge" height=25 style="margin-bottom:4px;">
         </a>
          <a href="https://www.youtube.com/channel/UCo8dO_WMGYbWCRnj_Dxr4EA">

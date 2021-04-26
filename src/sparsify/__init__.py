@@ -20,8 +20,6 @@ neural networks
 # flake8: noqa
 # isort: skip_file
 
-__version__ = "0.2.0"
-
 # be sure to import all logging first and at the root
 # this keeps other loggers in nested files creating from the root logger setups
 from .log import *

@@ -5,6 +5,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
+        with:
+          repository: "neuralmagic/sparsezoo"
+          path: "sparsezoo"
+      - name: "⚙️ Install sparsezoo dependencies"
+        run: pip3 install sparsezoo/
+      - name: "Clean sparsezoo directory"
+        run: rm -r sparsezoo/
+      - uses: actions/checkout@v2
+        with:
+          repository: "neuralmagic/sparseml"
+          path: "sparseml"
+      - name: "⚙️ Install sparseml dependencies"
+        run: pip3 install sparseml/
+      - name: "Clean sparseml directory"
+        run: rm -r sparseml/
       - uses: actions/setup-node@v2
         with:
           node-version: '14'

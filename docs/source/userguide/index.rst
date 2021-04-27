@@ -23,7 +23,7 @@ User Guide
     02-install-sparsify
     03-sparsify-overview
     04-analyze
-    04a-pprofiling-your-model
+    04a-profiling-your-model
     04b-reviewing-performance-profiles
     04c-reviewing-loss-profiles
     05-optimize

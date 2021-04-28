@@ -20,7 +20,7 @@ After you optimize your model, click the **EXPORT** button on the Optimization s
 
 <kbd><img src="images/image_59.jpg" alt="(Export button circled)" width="480" height="270" /></kbd>
 
-During integration, you will generate a configuration (yml) file and integrate code into your training. This minimizes the work needed for you to train. The configuration file includes descriptions ("modifiers") of how the model will be modified during training. These modifiers correspond to modifiers in the [SparseML code base](github.com/neuralmagic/sparseml/). You can integrate the configuration file with your existing training platform and do not need to rewrite any part of your platform for optimization.
+During integration, you will generate a configuration (yml) file and integrate code into your training. This minimizes the work needed for you to train. The configuration file includes descriptions ("modifiers") of how the model will be modified during training. These modifiers correspond to modifiers in the [SparseML code base](https://github.com/neuralmagic/sparseml/). You can integrate the configuration file with your existing training platform and do not need to rewrite any part of your platform for optimization.
 
 <kbd><img src="images/image_60.jpg" alt="(Configuration file)" width="320" height="300" /></kbd>
 

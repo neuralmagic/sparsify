@@ -65,11 +65,11 @@ For example, pruning plus quantization can give noticeable improvements in perfo
 
 The Deep Sparse product suite builds on top of sparsification enabling you to easily apply the techniques to your datasets and models using recipe-driven approaches.
 Recipes encode the directions for how to sparsify a model into a simple, easily editable format.
+
 - Download a sparsification recipe and sparsified model from the [SparseZoo](https://github.com/neuralmagic/sparsezoo).
 - Alternatively, create a recipe for your model using [Sparsify](https://github.com/neuralmagic/sparsify).
 - Apply your recipe with only a few lines of code using [SparseML](https://github.com/neuralmagic/sparseml).
 - Finally, for GPU-level performance on CPUs, deploy your sparse-quantized model with the [DeepSparse Engine](https://github.com/neuralmagic/deepsparse).
-
 
 **Full Deep Sparse product flow:**  
 
@@ -218,7 +218,7 @@ The project is licensed under the [Apache License Version 2.0](https://github.co
 
 ## Release History
 
-Official builds are hosted on PyPi
+Official builds are hosted on PyPI:  
 
 - stable: [sparsify](https://pypi.org/project/sparsify/)
 - nightly (dev): [sparsify-nightly](https://pypi.org/project/sparsify-nightly/)

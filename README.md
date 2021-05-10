@@ -206,7 +206,7 @@ We appreciate contributions to the code, examples, and documentation as well as 
 
 ## Join the Community
 
-For user help or questions about Sparsify, use our [GitHub Discussions](https://www.github.com/neuralmagic/sparsify/discussions/). Everyone is welcome!
+For user help or questions about Sparsify, sign up or log in: **Deep Sparse Community** [Discourse Forum](https://discuss.neuralmagic.com/) and/or [Slack](https://discuss-neuralmagic.slack.com/). We are growing the community member by member and happy to see you there.
 
 You can get the latest news, webinar and event invites, research papers,and other ML Performance tidbits by [subscribing](https://neuralmagic.com/subscribe/) to the Neural Magic community.
 

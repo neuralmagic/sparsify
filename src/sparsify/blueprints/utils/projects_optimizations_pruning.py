@@ -503,6 +503,10 @@ class _PruningNodeEvaluator(object):
         costs = []
 
         for ((sparsity, loss_cost), (_, perf_cost)) in zip(loss_costs, perf_costs):
+            if loss_cost is None:
+                loss_cost = 0
+            if perf_cost is None:
+                perf_cost = 0
             cost = balance_perf_loss * loss_cost + (1.0 - balance_perf_loss) * perf_cost
             costs.append(
                 _PruningNodeSeriesValue(

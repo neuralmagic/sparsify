@@ -60,7 +60,7 @@ Sparsify shows visual performance potential for your model, including a sliding 
 The [GitHub repository](https://github.com/neuralmagic/sparsify) contains the package to locally launch Sparsify where you can create projects to load and sparsify your deep learning models. 
 At the end, you can export sparsification recipes to integrate with your training workflow.
 
-<img src="https://docs.neuralmagic.com/docs/source/infographics/sparsify.png" width="960px" />
+<img alt="Sparsify Flow" src="https://docs.neuralmagic.com/docs/source/infographics/sparsify.png" width="960px" />
 
 ## Highlights
 

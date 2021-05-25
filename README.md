@@ -14,29 +14,33 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-# ![icon for Sparsify:](https://raw.githubusercontent.com/neuralmagic/sparsify/main/docs/source/icon-sparsify.png) Sparsify
+<h1><img src="https://raw.githubusercontent.com/neuralmagic/sparsify/main/docs/source/icon-sparsify.png" />&nbsp;&nbsp;Sparsify</h1>
 
-### Easy-to-use UI for automatically sparsifying neural networks and creating sparsification recipes for better inference performance and a smaller footprint
+<h3>Easy-to-use UI for automatically sparsifying neural networks and creating sparsification recipes for better inference performance and a smaller footprint</h3>
 
 <p>
     <a href="https://docs.neuralmagic.com/sparsify/">
-        <img alt="Documentation" src="https://img.shields.io/website/http/docs.neuralmagic.com/sparsify/index.html.svg?down_color=red&down_message=offline&up_message=online&style=for-the-badge" height=25>
+        <img alt="Documentation" src="https://img.shields.io/badge/documentation-darkred?&style=for-the-badge&logo=read-the-docs" height=25>
+    </a>
+    <a href="https://join.slack.com/t/discuss-neuralmagic/shared_invite/zt-q1a1cnvo-YBoICSIw3L1dmQpjBeDurQ/">
+        <img src="https://img.shields.io/badge/slack-purple?style=for-the-badge&logo=slack" height=25>
+    </a>
+    <a href="https://discuss.neuralmagic.com/">
+        <img src="https://img.shields.io/badge/support%20forums-navy?style=for-the-badge&logo=discourse" height=25>
     </a>
     <a href="https://github.com/neuralmagic/sparsify/actions/workflows/quality-check.yaml">
-        <img alt="Quality Check" src="https://img.shields.io/github/workflow/status/neuralmagic/sparsify/Quality%20Checks/main?label=Quality%20Checks&style=for-the-badge" height=25>
-    </a>
-</p>
-<p>
-    <a href="https://github.com/neuralmagic/sparsify/blob/main/LICENSE">
-        <img alt="GitHub" src="https://img.shields.io/github/license/neuralmagic/sparsify.svg?color=purple&style=for-the-badge" height=25>
+        <img alt="Main" src="https://img.shields.io/github/workflow/status/neuralmagic/sparsify/Quality%20Checks/main?label=build&style=for-the-badge" height=25>
     </a>
     <a href="https://github.com/neuralmagic/sparsify/releases">
         <img alt="GitHub release" src="https://img.shields.io/github/release/neuralmagic/sparsify.svg?style=for-the-badge" height=25>
     </a>
+    <a href="https://github.com/neuralmagic/sparsify/blob/main/LICENSE">
+        <img alt="GitHub" src="https://img.shields.io/github/license/neuralmagic/sparsify.svg?color=lightgray&style=for-the-badge" height=25>
+    </a>
     <a href="https://github.com/neuralmagic/sparsify/blob/main/CODE_OF_CONDUCT.md">
         <img alt="Contributor Covenant" src="https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg?color=yellow&style=for-the-badge" height=25>
     </a>
-     <a href="https://www.youtube.com/channel/UCo8dO_WMGYbWCRnj_Dxr4EA">
+    <a href="https://www.youtube.com/channel/UCo8dO_WMGYbWCRnj_Dxr4EA">
         <img src="https://img.shields.io/badge/-YouTube-red?&style=for-the-badge&logo=youtube&logoColor=white" height=25>
     </a>
      <a href="https://medium.com/limitlessai">
@@ -56,24 +60,26 @@ Sparsify shows visual performance potential for your model, including a sliding 
 This repository contains the package to locally launch Sparsify where you can create projects to load and sparsify your deep learning models. 
 At the end, you can export sparsification recipes to integrate with your training workflow.
 
-## Sparsification
+<img src="https://docs.neuralmagic.com/docs/source/infographics/sparsify.png" width="960px" />
 
-Sparsification is the process of taking a trained deep learning model and removing redundant information from the overprecise and over-parameterized network resulting in a faster and smaller model.
-Techniques for sparsification are all encompassing including everything from inducing sparsity using [pruning](https://neuralmagic.com/blog/pruning-overview/) and [quantization](https://arxiv.org/abs/1609.07061) to enabling naturally occurring sparsity using [activation sparsity](http://proceedings.mlr.press/v119/kurtz20a.html) or [winograd/FFT](https://arxiv.org/abs/1509.09308). 
-When implemented correctly, these techniques result in significantly more performant and smaller models with limited to no effect on the baseline metrics.
-For example, pruning plus quantization can give noticeable improvements in performance while recovering to nearly the same baseline accuracy.
+## Highlights
 
-The Deep Sparse product suite builds on top of sparsification enabling you to easily apply the techniques to your datasets and models using recipe-driven approaches.
-Recipes encode the directions for how to sparsify a model into a simple, easily editable format.
+- [User Guide](https://docs.neuralmagic.com/sparsify/source/userguide/01-intro.html)
 
-- Download a sparsification recipe and sparsified model from the [SparseZoo](https://github.com/neuralmagic/sparsezoo).
-- Alternatively, create a recipe for your model using [Sparsify](https://github.com/neuralmagic/sparsify).
-- Apply your recipe with only a few lines of code using [SparseML](https://github.com/neuralmagic/sparseml).
-- Finally, for GPU-level performance on CPUs, deploy your sparse-quantized model with the [DeepSparse Engine](https://github.com/neuralmagic/deepsparse).
+## Tutorials
 
-**Full Deep Sparse product flow:**  
+Coming soon!
 
-<img src="https://docs.neuralmagic.com/docs/source/sparsification/flow-overview.svg" width="960px">
+## Installation
+
+This repository is tested on Python 3.6+, Linux/Debian systems, and Chrome 87+.
+It is recommended to install in a [virtual environment](https://docs.python.org/3/library/venv.html) to keep your system in order.
+
+Install with pip using:
+
+```bash
+pip install sparsify
+```
 
 ## Quick Tour
 
@@ -169,63 +175,41 @@ Select the framework the model was originally trained in on the upper right of t
 Once selected, either copy or download the recipe for use with SparseML.
 In addition, some sample code using SparseML is given to integrate the exported sparsification recipe.
 
-## Installation
+## Resources
 
-This repository is tested on Python 3.6+, Linux/Debian systems, and Chrome 87+.
-It is recommended to install in a [virtual environment](https://docs.python.org/3/library/venv.html) to keep your system in order.
+### Learning More
 
-Install with pip using:
+- Documentation: [SparseML](https://docs.neuralmagic.com/sparseml/), [SparseZoo](https://docs.neuralmagic.com/sparsezoo/), [Sparsify](https://docs.neuralmagic.com/sparsify/), [DeepSparse](https://docs.neuralmagic.com/deepsparse/)
+- Neural Magic: [Blog](https://www.neuralmagic.com/blog/), [Resources](https://www.neuralmagic.com/resources/)
 
-```bash
-pip install sparsify
-```
+### Release History
 
-Then if you would like to explore any of the [scripts](https://github.com/neuralmagic/sparsify/blob/main/scripts/), clone the repository and install any additional dependencies as required.
-
-From the initial screen, click the "New Project button" so you can:
-
-1. Upload an ONNX file of your deep learning model to a new project
-2. Profile the model for the effects of sparsifying your model on loss and performance
-3. Create an automatic sparsification recipe and edit as desired
-4. Export the recipe and integrate into your current training flow
-
-Projects are saved out locally on the left navigation bar of the initial screen for easy access. 
-You can create a single or multiple projects for your analysis.
-
-## Resources and Learning More
-
-- [SparseZoo Documentation](https://docs.neuralmagic.com/sparsezoo/)
-- [SparseML Documentation](https://docs.neuralmagic.com/sparseml/)
-- [Sparsify Documentation](https://docs.neuralmagic.com/sparsify/)
-- [DeepSparse Documentation](https://docs.neuralmagic.com/deepsparse/)
-- Neural Magic [Blog](https://www.neuralmagic.com/blog/), [Resources](https://www.neuralmagic.com/resources/), [Website](https://www.neuralmagic.com/)
-
-## Contributing
-
-We appreciate contributions to the code, examples, and documentation as well as bug reports and feature requests! [Learn how here](https://github.com/neuralmagic/sparsify/blob/main/CONTRIBUTING.md).
-
-## Join the Community
-
-For user help or questions about Sparsify, sign up or log in: **Deep Sparse Community** [Discourse Forum](https://discuss.neuralmagic.com/) and/or [Slack](https://join.slack.com/t/discuss-neuralmagic/shared_invite/zt-q1a1cnvo-YBoICSIw3L1dmQpjBeDurQ). We are growing the community member by member and happy to see you there.
-
-You can get the latest news, webinar and event invites, research papers,and other ML Performance tidbits by [subscribing](https://neuralmagic.com/subscribe/) to the Neural Magic community.
-
-For more general questions about Neural Magic, please email us at [learnmore@neuralmagic.com](mailto:learnmore@neuralmagic.com) or fill out this [form](http://neuralmagic.com/contact/).
-
-## License
-
-The project is licensed under the [Apache License Version 2.0](https://github.com/neuralmagic/sparsify/blob/main/LICENSE).
-
-## Release History
-
-Official builds are hosted on PyPI:  
+Official builds are hosted on PyPI
 
 - stable: [sparsify](https://pypi.org/project/sparsify/)
 - nightly (dev): [sparsify-nightly](https://pypi.org/project/sparsify-nightly/)
 
-Additionally, more information can be found via [GitHub Releases.](https://github.com/neuralmagic/sparsezoo/releases)
+Additionally, more information can be found via [GitHub Releases.](https://github.com/neuralmagic/sparsify/releases)
 
-## Citation
+### License
+
+The project is licensed under the [Apache License Version 2.0](https://github.com/neuralmagic/sparsify/blob/main/LICENSE).
+
+## Community
+
+### Contribute
+
+We appreciate contributions to the code, examples, integrations, and documentation as well as bug reports and feature requests! [Learn how here](https://github.com/neuralmagic/sparsify/blob/main/CONTRIBUTING.md).
+
+### Join
+
+For user help or questions about Sparsify, sign up or log in: **Deep Sparse Community** [Discourse Forum](https://discuss.neuralmagic.com/) and/or [Slack](https://join.slack.com/t/discuss-neuralmagic/shared_invite/zt-q1a1cnvo-YBoICSIw3L1dmQpjBeDurQ). We are growing the community member by member and happy to see you there.
+
+You can get the latest news, webinar and event invites, research papers, and other ML Performance tidbits by [subscribing](https://neuralmagic.com/subscribe/) to the Neural Magic community.
+
+For more general questions about Neural Magic, please fill out this [form](http://neuralmagic.com/contact/).
+
+### Cite
 
 Find this project useful in your research or other communications? Please consider citing:
 

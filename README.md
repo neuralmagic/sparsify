@@ -53,11 +53,11 @@ limitations under the License.
 
 ## Overview
 
-Sparsify is an easy-to-use UI tool that simplifies the deep learning model optimization process to rapidly achieve the best combination of size, speed, and accuracy. 
-Sparsify sparsifies and benchmarks models informed by industry research insights for ML practitioners, including ML engineers and operators, who need to deploy performant deep learning models fast and at scale. 
+Sparsify is an easy-to-use UI tool that simplifies the deep learning model [sparsification](https://docs.neuralmagic.com/main/source/getstarted.html#sparsification) process to rapidly achieve the best combination of size, speed, and accuracy. 
+It sparsifies and benchmarks models informed by industry research insights for ML practitioners, including ML engineers and operators, who need to deploy performant deep learning models fast and at scale. 
 Sparsify shows visual performance potential for your model, including a sliding scale between performance and recovery, ultimately speeding up the model sparsification process from weeks to minutes.
 
-This repository contains the package to locally launch Sparsify where you can create projects to load and sparsify your deep learning models. 
+The [GitHub repository](https://github.com/neuralmagic/sparsify) contains the package to locally launch Sparsify where you can create projects to load and sparsify your deep learning models. 
 At the end, you can export sparsification recipes to integrate with your training workflow.
 
 <img src="https://docs.neuralmagic.com/docs/source/infographics/sparsify.png" width="960px" />

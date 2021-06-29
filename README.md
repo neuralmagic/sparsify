@@ -122,6 +122,11 @@ After clicking, the create project popup will be displayed:
 Sparsify only accepts [ONNX](https://onnx.ai/) model formats currently.
 To easily convert to ONNX from common ML frameworks, see the [SparseML repository](https://github.com/neuralmagic/sparseml).
 
+**Compatibility/Support Notes**
+- ONNX version 1.5-1.7
+- ONNX opset version 11+
+- ONNX IR version has not been tested at this time
+
 To begin creating a project use one of the following flows:
 
 - Upload your model file through the browser by clicking on `Click to browse`.

@@ -65,7 +65,7 @@ def create_docs(src: str, dest: str):
     print("completed sphinx build")
 
 
-def package_docs(dest: str):
+def package_docs(src: str, dest: str):
     """
     Run any extra packaging commands to prep the docs for release.
     Ex: copies the latest version to the root so if a version isn't specified will load.
@@ -76,6 +76,8 @@ def package_docs(dest: str):
     print(f"packaging docs at {dest}")
     folders = _get_docs_folders(dest)
     print(f"found {len(folders)} docs folders from build")
+    _copy_docs_data(src, dest, folders)
+    print(f"copied over docs data for folders {folders}")
     latest = _get_latest_folder(folders)
     print(f"found latest version `{latest}`, copying to {dest}")
     _copy_to_root(dest, latest)
@@ -89,6 +91,25 @@ def _get_docs_folders(dest: str) -> List[str]:
     folders = os.listdir(dest)
 
     return folders
+
+
+def _copy_docs_data(src: str, dest: str, folders: List[str]):
+    map_dirs = [
+        (["source", "userguide", "images"], ["images"]),
+        (["source", "userguide", "images"], ["_images"]),
+        (["source", "userguide", "images"], ["source", "userguide", "images"]),
+    ]
+
+    # loop through version folders to add data to, None represents root folder
+    for ver_folder in [None, *folders]:
+        for (map_from, map_to) in map_dirs:
+            path_from = os.path.join(src, *map_from)
+            path_to = (
+                os.path.join(dest, ver_folder, *map_to)
+                if ver_folder is not None
+                else os.path.join(dest, *map_to)
+            )
+            copy_tree(path_from, path_to)
 
 
 def _get_latest_folder(folders: List[str]) -> str:
@@ -143,7 +164,7 @@ def _fix_html_version_links(file_path: str):
 def main():
     args = parse_args()
     create_docs(args.src, args.dest)
-    package_docs(args.dest)
+    package_docs(args.src, args.dest)
 
 
 if __name__ == "__main__":

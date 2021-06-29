@@ -41,10 +41,7 @@ test:
 docs:
 	@echo "Running docs creation";
 	export SPARSEML_IGNORE_TFV1="True"; \
-			python utils/docs_builder.py --src $(DOCDIR) --dest $(DOCDIR)/build/html && \
-			cp -r $(DOCDIR)/source/userguide/images/ $(DOCDIR)/build/html/images/ && \
-			cp -r $(DOCDIR)/source/userguide/images/ $(DOCDIR)/build/html/_images/ && \
-			cp -r $(DOCDIR)/source/userguide/images/ $(DOCDIR)/build/html/source/userguide/images/;
+			python utils/docs_builder.py --src $(DOCDIR) --dest $(DOCDIR)/build/html;
 
 docsupdate:
 	@echo "Runnning update to api docs";

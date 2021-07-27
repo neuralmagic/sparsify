@@ -36,7 +36,7 @@ This guide provides the following for you to use Sparsify:
 
 Sparsify is currently an alpha release and, as such, the software may not contain all of the features that are planned for the final version. Neural Magic, the software's maintainer, welcomes all feedback and suggestions, from user experience to model optimization errors.
 
-[GitHub Discussions](https://github.com/neuralmagic/sparsify/discussions/)
+For support, sign up or log in to get help with your questions in our **Sparsify channel**: [Discourse Forum](https://discuss.neuralmagic.com/) and/or [Slack](https://join.slack.com/t/discuss-neuralmagic/shared_invite/zt-q1a1cnvo-YBoICSIw3L1dmQpjBeDurQ). 
 
 Post software issues requiring support. Please include a light summary, the steps to reproduce, screenshots, files used, or onscreen messages. Be sure to share your environment details and framework versions.
 

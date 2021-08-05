@@ -22,11 +22,12 @@ from setuptools import find_packages, setup
 # default variables to be overwritten by the version.py file
 is_release = None
 version = "unknown"
-version_base = version
+version_major_minor = version
 
 # load and overwrite version and release info from sparseml package
 exec(open(os.path.join("src", "sparsify", "version.py")).read())
 print(f"loaded version {version} from src/sparsify/version.py")
+version_nm_deps = f"{version_major_minor}.0"
 
 _PACKAGE_NAME = "sparsify" if is_release else "sparsify-nightly"
 
@@ -41,8 +42,8 @@ _deps = [
 ]
 
 _nm_deps = [
-    f"{'sparsezoo' if is_release else 'sparsezoo-nightly'}~={version_base}",
-    f"{'sparseml' if is_release else 'sparseml-nightly'}~={version_base}",
+    f"{'sparsezoo' if is_release else 'sparsezoo-nightly'}~={version_nm_deps}",
+    f"{'sparseml' if is_release else 'sparseml-nightly'}~={version_nm_deps}",
 ]
 
 

@@ -51,4 +51,4 @@ An information <kbd><img src="images/image_2.jpg" alt="(i)" width="25" height="2
 ---
 **Next step...**
 
-Go deeper on details with the [Sparsify Overview](03-sparsify-overview.md).
+Go deeper on details with the [Sparsify Overview](https://docs.neuralmagic.com/sparsify/main/source/userguide/03-sparsify-overview.html).

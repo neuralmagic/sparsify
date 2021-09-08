@@ -81,5 +81,5 @@ You can identify a new loss profile:
 ---
 **Next steps...**
 
-Continue by reviewing your [Performance Profiles](04b-reviewing-performance-profiles.md) if you have not already done so.
-Then, you will be ready to [Optimize](05-optimize.md).
+Continue by reviewing your [Performance Profiles](https://docs.neuralmagic.com/sparsify/main/source/userguide/04b-reviewing-performance-profiles.html) if you have not already done so.
+Then, you will be ready to [Optimize](https://docs.neuralmagic.com/sparsify/main/source/userguide/05-optimize.html).

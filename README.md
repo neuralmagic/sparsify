@@ -81,6 +81,8 @@ Install with pip using:
 pip install sparsify
 ```
 
+Depending on your flow, PyTorch, Keras, or TensorFlow must be installed in the local environment along with Sparsify to export recipes through the UI.
+
 ## Quick Tour
 
 A console script entry point is installed with the package: `sparsify`.

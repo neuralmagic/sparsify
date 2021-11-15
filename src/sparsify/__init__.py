@@ -30,9 +30,8 @@ from .app import *
 
 from sparsezoo.package import check_package_version as _check_package_version
 
-version_base = "0.8.0"
 _check_package_version(
     package_name=__name__,
-    package_integration="testing_from_repo",
+    package_integration="Null",
     package_version=version_base,
 )

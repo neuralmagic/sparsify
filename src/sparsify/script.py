@@ -12,27 +12,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""
-Functionality for handling the backend of Sparsify to benchmark and sparsify
-neural networks
-"""
-
-# flake8: noqa
-# isort: skip_file
-
-# be sure to import all logging first and at the root
-# this keeps other loggers in nested files creating from the root logger setups
-from .log import *
-
-from .version import *
-from .app import *
-
-
-from sparsezoo.package import check_package_version as _check_package_version
-
-version_base = "0.8.0"
-_check_package_version(
-    package_name=__name__,
-    package_integration="testing_from_repo",
-    package_version=version_base,
-)
+import sparsify

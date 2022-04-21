@@ -692,7 +692,7 @@ def create_config(project: Project, optim: ProjectOptimization, framework: str) 
     # add imports in function so they don't fail if they don't have env setup
     # for frameworks other than the requested
     if framework == "pytorch":
-        from sparseml.pytorch.optimimport (
+        from sparseml.pytorch.optim import (
             EpochRangeModifier,
             LearningRateModifier,
             ScheduledModifierManager,

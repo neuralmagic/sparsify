@@ -700,7 +700,7 @@ def create_config(project: Project, optim: ProjectOptimization, framework: str) 
             TrainableParamsModifier,
         )
         from sparseml.pytorch.sparsification import GMPruningModifier
-        
+
     elif framework == "tensorflow":
         from sparseml.tensorflow_v1.optim import (
             EpochRangeModifier,

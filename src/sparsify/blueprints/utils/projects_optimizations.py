@@ -693,7 +693,6 @@ def create_config(project: Project, optim: ProjectOptimization, framework: str) 
     # for frameworks other than the requested
     if framework == "pytorch":
         from sparseml.pytorch.optim.manager import ScheduledModifierManager
-            
         from sparseml.pytorch.optim.sparsification import (
             EpochRangeModifier,
             GMPruningModifier,

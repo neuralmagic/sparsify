@@ -52,7 +52,7 @@ from typing import Any, Dict
 
 import click
 from sparsify import package
-from sparsify.utils import DATASETS, DEPLOYMENT_SCENARIOS, METRICS, TASKS
+from sparsify.utils.constants import DATASETS, DEPLOYMENT_SCENARIOS, METRICS, TASKS
 from sparsify.version import __version__
 
 
@@ -100,7 +100,6 @@ def _create_dir_callback(ctx, param, value):
     "--scenario",
     "-s",
     type=click.Choice(DEPLOYMENT_SCENARIOS, case_sensitive=False),
-    default=DEPLOYMENT_SCENARIOS[0] if len(DEPLOYMENT_SCENARIOS) else "VNNI",
     help="The deployment scenarios to choose from",
     show_default=True,
 )
@@ -116,7 +115,7 @@ def parse_args(**kwargs) -> Dict[str, Any]:
          `sparsify.package --t ic -m accuracy -m compression -s VNNI`
     """
     if not (kwargs.get("task") or kwargs.get("dataset")):
-        raise ValueError("At-least one of the `task` or `dataset`")
+        raise ValueError("At-least one of the `task` or `dataset` must be specified")
     _LOGGER.debug(f"{kwargs}")
     return kwargs
 

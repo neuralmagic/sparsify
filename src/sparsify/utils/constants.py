@@ -40,7 +40,6 @@ METRICS = [
 
 DEPLOYMENT_SCENARIOS = [
     "VNNI",
-    "NO_VNNI",
 ]
 
 TASK_REGISTRY = {

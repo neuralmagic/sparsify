@@ -34,11 +34,13 @@ _PACKAGE_NAME = "sparsify" if is_release else "sparsify-nightly"
 _deps = [
     "pydantic>=1.8.2",
     "pyyaml>=5.0.0",
+    "click~=8.0.0",
 ]
 _nm_deps = [
     f"{'sparsezoo' if is_release else 'sparsezoo-nightly'}~={version_nm_deps}",
-    f"{'sparseml' if is_release else 'sparseml-nightly'}[torchvision]~={version_nm_deps}",  # noqa E501
+    f"{'sparseml' if is_release else 'sparseml-nightly'}~={version_nm_deps}",
 ]
+
 
 _dev_deps = [
     "black>=20.8b1",
@@ -69,7 +71,12 @@ def _setup_extras() -> Dict:
 
 
 def _setup_entry_points() -> Dict:
-    return {"console_scripts": ["sparsify.auto=sparsify.auto:main"]}
+    return {
+        "console_scripts": [
+            "sparsify.auto=sparsify.auto:main",
+            "sparsify.package=sparsify.package.cli:main",
+        ]
+    }
 
 
 def _setup_long_description() -> Tuple[str, str]:

@@ -11,20 +11,59 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import logging
+from typing import List, Optional
+
+import requests
+
+from sparsify.package.config import BACKEND_URL
+
 
 __all__ = [
     "package",
 ]
 
-import logging
+_LOGGER = logging.getLogger(__name__)
 
 
-_LOGGER = logging.getLogger(__file__)
-
-
-def package(*args, **kwargs):
+def package(
+    directory: Optional[str] = None,
+    task: Optional[str] = None,
+    dataset: Optional[str] = None,
+    scenario: Optional[str] = None,
+    optimizing_metric: Optional[List[str]] = None,
+    return_directory: bool = False,
+) -> str:
     """
-    A function that returns relevant sparsezoo stubs given the task or dataset,
-    and an optimizing criterion
+    A function that returns appropriate SparseZoo stub or deployment directory given
+    the task or dataset, optimizing criterions and a deployment scenario
+
+    :param directory: str A local existing directory path to download the deployment
+        artifacts to
+    :param task: str A supported task
+    :param dataset: str The public dataset this model was trained for
+    :param scenario: Optional[str] `VNNI` or `vnni for a VNNI compatible machine
+    :param optimizing_metric: Optional[Iterable[str] representing different metrics
+        to prioritize for when searching for models
+    :param return_directory: boolean flag to return a deployment directory instead of
+        stub
+    :return: The appropriate stub based on specified arguments
     """
-    raise NotImplementedError
+    optimizing_metric = (
+        [optimizing_metric] if isinstance(optimizing_metric, str) else optimizing_metric
+    )
+
+    payload = {
+        "task": task,
+        "dataset": dataset,
+        "scenario": scenario,
+        "optimizing_metric": optimizing_metric,
+    }
+
+    response = requests.get(
+        url=BACKEND_URL,
+        headers={"Content-Type": "application/json"},
+        params=payload,
+    )
+
+    return response.json()

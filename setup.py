@@ -39,6 +39,7 @@ _deps = [
     "Flask-Cors>=3.0.0",
     "marshmallow>=3.0.0",
     "peewee>=3.0.0",
+    "click==8.0.0",
 ]
 
 _nm_deps = [
@@ -88,7 +89,12 @@ def _setup_extras() -> Dict:
 
 
 def _setup_entry_points() -> Dict:
-    return {"console_scripts": ["sparsify=sparsify.app:main"]}
+    return {
+        "console_scripts": [
+            "sparsify=sparsify.app:main",
+            "sparsify.package=sparsify.package_.cli:main",
+        ]
+    }
 
 
 def _setup_long_description() -> Tuple[str, str]:

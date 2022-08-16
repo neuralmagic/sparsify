@@ -26,7 +26,7 @@ from .log import *
 
 from .version import *
 from .app import *
-
+from .package_ import *
 
 try:
     from sparsezoo.package import check_package_version as _check_package_version

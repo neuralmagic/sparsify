@@ -16,11 +16,11 @@ from sparsezoo import Model
 
 
 __all__ = [
-    "package",
+    "download_directory_from_stub"
 ]
 
 
-def _download_directory_from_stub(stub: str):
+def download_directory_from_stub(stub: str):
     """
     Download deployment directory from stub and return it's local path
 
@@ -29,6 +29,3 @@ def _download_directory_from_stub(stub: str):
     """
     return Model(stub).deployment.path
 
-
-def package(task: str, criterion: str):
-    pass

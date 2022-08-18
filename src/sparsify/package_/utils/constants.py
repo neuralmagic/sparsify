@@ -14,24 +14,28 @@
 
 __all__ = [
     "TASKS",
-    "CRITERIONS",
+    "METRICS",
     "DEPLOYMENT_SCENARIOS",
 ]
 
 TASKS = [
-    "question-answering",
-    "qa",
-    "text-classification",
-    "sentiment-analysis",
-    "yolo",
-    "yolact",
-    "image-classification",
+    "ic", "image-classification", "image_classification", "classification",
+    "od", "object-detection", "object_detection", "detection",
+    "segmentation",
+    "qa", "question-answering", "question_answering",
+    "text-classification", "text_classification", "glue",
+    "sentiment", "sentiment_analysis", "sentiment-analysis",
+    "token-classification", "token_classification",
+    "ner", "named-entity-recognition", "named_entity_recognition",
 ]
-
-CRITERIONS = [
-    "compression",
+METRICS = [
     "accuracy",
-    "throughput",
+    "f1",
+    "recall",
+    "mAP",
+    "latency",
+    "file_size",
+    "memory_usage",
 ]
 
 DEPLOYMENT_SCENARIOS = [

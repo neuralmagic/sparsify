@@ -13,55 +13,84 @@
 # limitations under the License.
 
 """
-Usage: sparsify.package [OPTIONS]s/sparsify sparsify ❯ sparsify.package --help                                                                                                                                                                                                                                 18:37:37
+❯ sparsify.package --help
+Usage: sparsify.package [OPTIONS] [DIRECTORY]
 
-  Utility to fetch a deployment directory for a task based on a criterion
+  Utility to fetch a deployment directory for a task based on a optimizing-
+  metric
 
 Options:
-  --task [question-answering|qa|text-classification|sentiment-analysis|yolo|yolact|
-  image-classification]
-                                  The task to find model for  [required]
-  --criterion [compression|accuracy|throughput]
-                                  The criterion to search model for  [default:
-                                  compression]
+  --task [ic|image-classification|image_classification|classification|od|object
+  -detection|object_detection|detection|segmentation|qa|question-answering
+  |question_answering|text-classification|text_classification|glue|sentiment
+  |sentiment_analysis|sentiment-analysis|token-classification|token_classification
+  |ner|named-entity-recognition|named_entity_recognition]
+                                  The task to find model for NOTE: This
+                                  argument is mutually exclusive with dataset
+  --dataset TEXT                  The public dataset used to train this model
+                                  NOTE: This argument is mutually exclusive
+                                  with task
+  --optimizing-metric [accuracy|f1|recall|mAP|latency|file_size|memory_usage]
+                                  The criterion to search model for
   --scenario [VNNI]               The deployment scenarios to choose from
                                   [default: VNNI]
   --help                          Show this message and exit.
-
 """
 
+from pathlib import Path
+
 import click
-from sparsify.package_.constants import CRITERIONS, DEPLOYMENT_SCENARIOS, TASKS
+from sparsify.package_.utils import METRICS, DEPLOYMENT_SCENARIOS, TASKS
+from sparsify.package_.utils.cli_helpers import NotRequiredIf, OptionEatAllArguments
 
 
-@click.command(
-    context_settings=dict(token_normalize_func=lambda x: x.replace("-", "_"))
+def _create_dir_callback(ctx, param, value):
+    return Path(value).mkdir(exist_ok=True)
+
+
+@click.command()
+@click.argument(
+    "directory",
+    type=click.Path(dir_okay=True, file_okay=False),
+    default="deployment_directory",
+    callback=_create_dir_callback,
 )
 @click.option(
     "--task",
     type=click.Choice(TASKS, case_sensitive=False),
-    required=True,
+    cls=NotRequiredIf,
+    not_required_if='dataset',
     help="The task to find model for",
 )
 @click.option(
-    "--criterion",
-    type=click.Choice(CRITERIONS, case_sensitive=False),
-    default=CRITERIONS[0] if len(CRITERIONS) else None,
+    "--dataset",
+    type=str,
+    cls=NotRequiredIf,
+    not_required_if='task',
+    help="The public dataset used to train this model",
+)
+@click.option(
+    "--optimizing-metric",
+    type=click.Choice(METRICS, case_sensitive=False),
+    default='accuracy',
+    cls=OptionEatAllArguments,
     help="The criterion to search model for",
-    show_default=True,
 )
 @click.option(
     "--scenario",
     type=click.Choice(DEPLOYMENT_SCENARIOS, case_sensitive=False),
-    default=DEPLOYMENT_SCENARIOS[0] if len(DEPLOYMENT_SCENARIOS) else None,
+    default=DEPLOYMENT_SCENARIOS[0] if len(DEPLOYMENT_SCENARIOS) else "VNNI",
     help="The deployment scenarios to choose from",
     show_default=True,
 )
-def main(task: str, criterion: str):
+def main(
+    *args, **kwargs
+):
     """
-    Utility to fetch a deployment directory for a task based on a criterion
+    Utility to fetch a deployment directory for a task based on a
+    optimizing-metric
     """
-    print(f"task = {task}, criterion = {criterion}")
+    print(kwargs)
 
 
 if __name__ == "__main__":

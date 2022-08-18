@@ -1,20 +1,35 @@
+# Copyright (c) 2021 - present / Neuralmagic, Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import click
 
 
 class NotRequiredIf(click.Option):
     """
-   A click.Option that creates Mutually exclusive args. Click does not support Mutually Exclusive
-   options. This class is a work around for this limitation.
-   Repurposed from https://stackoverflow.com/a/44349292
-   """
+    A click.Option that creates Mutually exclusive args. Click does not support Mutually Exclusive
+    options. This class is a work around for this limitation.
+    Repurposed from https://stackoverflow.com/a/44349292
+    """
 
     def __init__(self, *args, **kwargs):
-        self.not_required_if = kwargs.pop('not_required_if')
+        self.not_required_if = kwargs.pop("not_required_if")
         assert self.not_required_if, "'not_required_if' parameter required"
-        kwargs['help'] = (kwargs.get('help', '') +
-                          ' NOTE: This argument is mutually exclusive with %s' %
-                          self.not_required_if
-                          ).strip()
+        kwargs["help"] = (
+            kwargs.get("help", "")
+            + " NOTE: This argument is mutually exclusive with %s"
+            % self.not_required_if
+        ).strip()
         super(NotRequiredIf, self).__init__(*args, **kwargs)
 
     def handle_parse_result(self, ctx, opts, args):
@@ -24,13 +39,13 @@ class NotRequiredIf(click.Option):
         if other_present:
             if we_are_present:
                 raise click.UsageError(
-                    "Illegal usage: `%s` is mutually exclusive with `%s`" % (
-                        self.name, self.not_required_if))
+                    "Illegal usage: `%s` is mutually exclusive with `%s`"
+                    % (self.name, self.not_required_if)
+                )
             else:
                 self.prompt = None
 
-        return super(NotRequiredIf, self).handle_parse_result(
-            ctx, opts, args)
+        return super(NotRequiredIf, self).handle_parse_result(ctx, opts, args)
 
 
 class OptionEatAllArguments(click.Option):

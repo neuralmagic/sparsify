@@ -15,9 +15,7 @@
 from sparsezoo import Model
 
 
-__all__ = [
-    "download_directory_from_stub"
-]
+__all__ = ["download_directory_from_stub"]
 
 
 def download_directory_from_stub(stub: str):
@@ -28,4 +26,3 @@ def download_directory_from_stub(stub: str):
     :return: The local path of the deployment directory for the stub
     """
     return Model(stub).deployment.path
-

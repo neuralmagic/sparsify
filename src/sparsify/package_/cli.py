@@ -40,7 +40,7 @@ Options:
 from pathlib import Path
 
 import click
-from sparsify.package_.utils import METRICS, DEPLOYMENT_SCENARIOS, TASKS
+from sparsify.package_.utils import DEPLOYMENT_SCENARIOS, METRICS, TASKS
 from sparsify.package_.utils.cli_helpers import NotRequiredIf, OptionEatAllArguments
 
 
@@ -59,20 +59,20 @@ def _create_dir_callback(ctx, param, value):
     "--task",
     type=click.Choice(TASKS, case_sensitive=False),
     cls=NotRequiredIf,
-    not_required_if='dataset',
+    not_required_if="dataset",
     help="The task to find model for",
 )
 @click.option(
     "--dataset",
     type=str,
     cls=NotRequiredIf,
-    not_required_if='task',
+    not_required_if="task",
     help="The public dataset used to train this model",
 )
 @click.option(
     "--optimizing-metric",
     type=click.Choice(METRICS, case_sensitive=False),
-    default='accuracy',
+    default="accuracy",
     cls=OptionEatAllArguments,
     help="The criterion to search model for",
 )
@@ -83,9 +83,7 @@ def _create_dir_callback(ctx, param, value):
     help="The deployment scenarios to choose from",
     show_default=True,
 )
-def main(
-    *args, **kwargs
-):
+def main(*args, **kwargs):
     """
     Utility to fetch a deployment directory for a task based on a
     optimizing-metric

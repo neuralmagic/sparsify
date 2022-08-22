@@ -33,7 +33,7 @@ def main():
         if config is None:
             return False  # first loop
 
-        # training is complete if autosparse metrics satisfy the given config
+        # training is complete if sparsify.auto metrics satisfy the given config
         # or the total time of all runs exceeds the maximum training time
         return APIConfigCreator.metrics_satisfied(config, runner_outputs.metrics) or (
             time.time() - training_start_time > max_train_seconds

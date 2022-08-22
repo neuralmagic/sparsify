@@ -27,7 +27,7 @@ USER_OUT_DIRECTORY = "./output"
 
 class APIArgs(BaseModel):
     """
-    Class containing the front-end arguments for AutoSparse
+    Class containing the front-end arguments for Sparsify.Auto
     """
 
     task: str = Field(
@@ -128,7 +128,7 @@ class Metrics(BaseModel):
 
 class APIOutput(BaseModel):
     """
-    Class containing Autosparse output information
+    Class containing Sparsify.Auto output information
     """
 
     config: BaseModel = Field("config used to train model")
@@ -161,7 +161,7 @@ class APIOutput(BaseModel):
         :return: detailed text summarizing run results
         """
         return (
-            "-------------------- AutoSparse Results --------------------\n"
+            "-------------------- Sparsify.Auto Results --------------------\n"
             f"Finished training {self.config.task} model on your dataset.\n"
             "\n"
             f"{self.metrics.display_string}"

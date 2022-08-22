@@ -12,16 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""
-Library for automated sparsification runs using the SparseML package and
-its integrations
-"""
+from sparsify.version import (
+    __version__,
+    version,
+    version_bug,
+    version_major,
+    version_major_minor,
+    version_minor,
+)
 
-# flake8: noqa
-# isort: skip_file
 
-from .utils import *
-from .api import *
-from .configs import *
-from .tasks import *
-from .api.main import main
+def test_version():
+    assert __version__
+    assert version
+    assert version_major == version.split(".")[0]
+    assert version_minor == version.split(".")[1]
+    assert version_bug == version.split(".")[2]
+    assert version_major_minor == f"{version_major}.{version_minor}"

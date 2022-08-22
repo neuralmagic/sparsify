@@ -14,8 +14,8 @@
 
 
 """
-Base functionality for creating a sparsification config from the AutoSparse entrypoint
-API
+Base functionality for creating a sparsification config from the Sparsify.Auto
+entrypoint API
 """
 
 
@@ -76,7 +76,7 @@ class APIConfigCreator(ABC):
         """
         Generates a SparsificationTrainingConfig based on the given APIArgs
 
-        :param api_args: AutoSparse API entrypoint args object
+        :param api_args: Sparsify.Auto API entrypoint args object
         :return: generated SparsificationTrainingConfig
         """
         config_creator_constructor = cls._get_config_creator_constructor(

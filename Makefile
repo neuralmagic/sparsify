@@ -9,6 +9,11 @@ MDCHECKGLOBS := 'docs/**/*.md' 'docs/**/*.rst' 'examples/**/*.md' 'notebooks/**/
 MDCHECKFILES := CODE_OF_CONDUCT.md CONTRIBUTING.md DEVELOPING.md README.md
 SPARSEZOO_TEST_MODE := "true"
 PYTEST_ARGS ?= ""
+INTEGRATION_TEST_ARGS ?= ""
+ifneq ($(findstring auto,$(TARGETS)),auto)
+    PYTEST_ARGS := $(PYTEST_ARGS) --ignore tests/sparsify/auto
+	INTEGRATION_TEST_ARGS := $(INTEGRATION_TEST_ARGS) --ignore tests/sparsify/auto
+endif
 
 # run checks on all files for the repo
 quality:
@@ -30,7 +35,12 @@ style:
 # run tests for the repo
 test:
 	@echo "Running python tests";
-	@pytest $(PYTEST_ARGS);
+	SPARSEZOO_TEST_MODE="true" pytest tests/sparsify --ignore tests/integration $(PYTEST_ARGS);
+
+# run end to end integration tests
+test_integration:
+	@echo "Running integration tests";
+	SPARSEZOO_TEST_MODE="true" pytest tests/integration  --ignore tests/sparsify $(INTEGRATION_TEST_ARGS);
 
 # create docs
 docs:

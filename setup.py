@@ -13,7 +13,6 @@
 # limitations under the License.
 
 import os
-from sys import platform
 from typing import Dict, List, Tuple
 
 from setuptools import find_packages, setup
@@ -38,7 +37,7 @@ _deps = [
 ]
 _nm_deps = [
     f"{'sparsezoo' if is_release else 'sparsezoo-nightly'}~={version_nm_deps}",
-    f"{'sparseml' if is_release else 'sparseml-nightly'}[torchvision]~={version_nm_deps}",
+    f"{'sparseml' if is_release else 'sparseml-nightly'}[torchvision]~={version_nm_deps}",  # noqa E501
 ]
 
 _dev_deps = [
@@ -47,8 +46,9 @@ _dev_deps = [
     "isort>=5.7.0",
     "pytest>=6.0.0",
     "wheel>=0.36.2",
-    "fastai>=2.7.7"
+    "fastai>=2.7.7",
 ]
+
 
 def _setup_packages() -> List:
     return find_packages(

@@ -28,7 +28,7 @@ class HardwareSpecs(BaseModel):
     """
 
     cuda_available: bool = Field(description="Whether cuda is available on the system")
-    device_count: int = Field(description="Number of devices exposed to autosparse run")
+    device_count: int = Field(description="Number of devices detected")
     device_names: List[str] = Field(description="Names of devices available")
     fp16_available: bool = Field(description="True if mixed precision available")
 

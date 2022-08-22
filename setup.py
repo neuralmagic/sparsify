@@ -32,14 +32,7 @@ version_nm_deps = f"{version_major_minor}.0"
 _PACKAGE_NAME = "sparsify" if is_release else "sparsify-nightly"
 
 
-_deps = [
-    "apispec>=3.0.0",
-    "flasgger>=0.9.0",
-    "Flask>=1.0.0",
-    "Flask-Cors>=3.0.0",
-    "marshmallow>=3.0.0",
-    "peewee>=3.0.0",
-]
+_deps = []
 
 _nm_deps = [
     f"{'sparsezoo' if is_release else 'sparsezoo-nightly'}~={version_nm_deps}",
@@ -48,19 +41,9 @@ _nm_deps = [
 
 
 _dev_deps = [
-    "beautifulsoup4==4.9.3",
     "black>=20.8b1",
     "flake8>=3.8.3",
     "isort>=5.7.0",
-    "m2r2~=0.2.7",
-    "mistune==0.8.4",
-    "myst-parser~=0.14.0",
-    "rinohtype>=0.4.2",
-    "sphinx>=3.4.0",
-    "sphinx-copybutton>=0.3.0",
-    "sphinx-markdown-tables>=0.0.15",
-    "sphinx-multiversion==0.2.4",
-    "sphinx-rtd-theme",
     "pytest>=6.0.0",
     "wheel>=0.36.2",
 ]
@@ -88,7 +71,7 @@ def _setup_extras() -> Dict:
 
 
 def _setup_entry_points() -> Dict:
-    return {"console_scripts": ["sparsify=sparsify.app:main"]}
+    return {"console_scripts": []}
 
 
 def _setup_long_description() -> Tuple[str, str]:

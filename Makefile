@@ -4,6 +4,8 @@ BUILDDIR := $(PWD)
 BUILD_ARGS :=  # set nightly to build nightly release
 PYCHECKDIRS := examples tests src utils scripts setup.py
 PYCHECKGLOBS := 'examples/**/*.py' 'scripts/**/*.py' 'src/**/*.py' 'tests/**/*.py' 'utils/**/*.py' setup.py
+JSCHECKDIRS := src public
+JSCHECKGLOBS := 'public/**/*.html' 'public/**/*.js' 'public/**/*.css' 'src/**/*.html' 'src/**/*.jsx' 'tests/**/*.jsx'
 DOCDIR := docs
 MDCHECKGLOBS := 'docs/**/*.md' 'docs/**/*.rst' 'examples/**/*.md' 'notebooks/**/*.md' 'scripts/**/*.md'
 MDCHECKFILES := CODE_OF_CONDUCT.md CONTRIBUTING.md DEVELOPING.md README.md
@@ -60,6 +62,8 @@ docsupdate:
 # creates wheel file
 build:
 	@echo "Building UI";
+	yarn install;
+	yarn run build;
 	mv -v build/* src/sparsify/ui/;
 	@echo "Building python package";
 	python3 setup.py sdist bdist_wheel $(BUILD_ARGS);

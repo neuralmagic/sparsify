@@ -52,10 +52,6 @@ _dev_deps = [
 ]
 
 
-def _setup_packages() -> List:
-    return find_packages(
-        "src", include=["sparsify", "sparsify.*"], exclude=["*.__pycache__.*"]
-    )
 
 
 def _setup_package_dir() -> Dict:

@@ -25,14 +25,13 @@ import torch
 import pandas
 from pydantic import BaseModel
 from sparseml.yolov5.scripts import export as export_hook
-from sparseml.yolov5.scripts import train as train_hook
 from sparsify.auto.api import Metrics
 from sparsify.auto.configs import SparsificationTrainingConfig
 from sparsify.auto.tasks.object_detection.yolov5 import (
     Yolov5ExportArgs,
     Yolov5TrainArgs,
 )
-from sparsify.auto.tasks.runner import MAX_RETRY_ATTEMPTS, TaskRunner, retry_stage
+from sparsify.auto.tasks.runner import TaskRunner
 from sparsify.auto.utils import HardwareSpecs
 from yolov5.export import load_checkpoint
 
@@ -53,8 +52,12 @@ class Yolov5Runner(TaskRunner):
     at end of run for inference and deployment.
     """
 
+    export_hook = staticmethod(export_hook)
+    sparseml_entrypoint = "sparseml.yolov5"
+
     def __init__(self, config: SparsificationTrainingConfig):
         super().__init__(config)
+        self.dashed_cli_kwargs = True
         self._model_save_name = (
             "checkpoint-one-shot" if self.train_args.one_shot else "last"
         )
@@ -123,20 +126,6 @@ class Yolov5Runner(TaskRunner):
         self.export_args.weights = os.path.join(
             self._run_directory.name, self.export_args.weights
         )
-
-    @retry_stage(max_attempts=MAX_RETRY_ATTEMPTS, stage="train")
-    def train(self):
-        """
-        Run YOLOv5 training
-        """
-        train_hook(**self.train_args.dict())
-
-    @retry_stage(max_attempts=MAX_RETRY_ATTEMPTS, stage="export")
-    def export(self):
-        """
-        Run YOLOv5 export
-        """
-        export_hook(**self.export_args.dict())
 
     def memory_stepdown(self):
         """

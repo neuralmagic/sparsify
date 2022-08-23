@@ -2,10 +2,12 @@ name: Test Checks
 on: 
   pull_request:
     branches:
+      - sparsify.alpha  # TODO: delete after merge
       - main
       - 'release/*'
   push:
     branches:
+      - sparsify.alpha  # TODO: delete after merge
       - main
       - 'release/*'
 
@@ -34,7 +36,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: "⚙️ Install dependencies"
-        run: pip3 install .[dev]
+        run: pip3 install -e .[dev]
       - name: "🔬 Running tests"
         run: make test
         env:

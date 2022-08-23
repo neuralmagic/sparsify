@@ -22,9 +22,6 @@ import onnx
 from pydantic import BaseModel
 from sparseml.pytorch.optim.manager import ScheduledModifierManager
 from sparseml.transformers.export import export as export_hook
-from sparseml.transformers.question_answering import main as question_answering_hook
-from sparseml.transformers.text_classification import main as text_classification_hook
-from sparseml.transformers.token_classification import main as token_classification_hook
 from sparseml.transformers.utils import SparseAutoModel
 from sparsify.auto.api import Metrics
 from sparsify.auto.configs import SparsificationTrainingConfig
@@ -50,6 +47,8 @@ class _TransformersRunner(TaskRunner):
     training, one-shot, or zero-shot sparsification. Final models are exported to onnx
     at end of run for inference and deployment.
     """
+
+    export_hook = staticmethod(export_hook)
 
     def __init__(self, config: SparsificationTrainingConfig):
         super().__init__(config)
@@ -226,7 +225,7 @@ class TextClassificationRunner(_TransformersRunner):
     """
 
     train_args_class = TextClassificationArgs
-    train_hook = staticmethod(text_classification_hook)
+    sparseml_entrypoint = "sparseml.text_classification"
 
 
 @TaskRunner.register_task(task=TASK_REGISTRY["token_classification"])
@@ -236,7 +235,7 @@ class TokenClassificationRunner(_TransformersRunner):
     """
 
     train_args_class = TokenClassificationArgs
-    train_hook = staticmethod(token_classification_hook)
+    sparseml_entrypoint = "sparseml.token_classification"
 
 
 @TaskRunner.register_task(task=TASK_REGISTRY["question_answering"])
@@ -246,7 +245,7 @@ class QuestionAnsweringRunner(_TransformersRunner):
     """
 
     train_args_class = QuestionAnsweringArgs
-    train_hook = staticmethod(question_answering_hook)
+    sparseml_entrypoint = "sparseml.question_answering"
 
 
 _TASK_TO_EXPORT_TASK = {

@@ -23,7 +23,6 @@ import torch
 
 from pydantic import BaseModel
 from sparseml.pytorch.image_classification.export import main as export_hook
-from sparseml.pytorch.image_classification.train import main as train_hook
 from sparsify.auto.api import Metrics
 from sparsify.auto.configs import SparsificationTrainingConfig
 from sparsify.auto.tasks.image_classification.args import (
@@ -45,6 +44,9 @@ class ImageClassificationRunner(TaskRunner):
     training, one-shot, or zero-shot sparsification. Final models are exported to onnx
     at end of run for inference and deployment.
     """
+
+    export_hook = staticmethod(export_hook.callback)
+    sparseml_entrypoint = "sparseml.image_classification"
 
     def __init__(self, config: SparsificationTrainingConfig):
         super().__init__(config)
@@ -122,13 +124,6 @@ class ImageClassificationRunner(TaskRunner):
             self._run_directory.name, self.export_args.checkpoint_path
         )
         self.export_args.save_dir = self.train_args.save_dir
-
-    @retry_stage(max_attempts=MAX_RETRY_ATTEMPTS, stage="train")
-    def train(self):
-        """
-        Run YOLOv5 training
-        """
-        train_hook.callback(**self.train_args.dict())
 
     @retry_stage(max_attempts=MAX_RETRY_ATTEMPTS, stage="export")
     def export(self):

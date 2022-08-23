@@ -12,8 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import json
 from pathlib import Path
-from typing import Any, Dict, Optional, Union
+from typing import Optional, Union
 
 from pydantic import BaseModel, Field
 from sparseml.pytorch.utils import default_device
@@ -54,7 +55,7 @@ class _ImageClassificationBaseArgs(BaseModel):
     pretrained: str = Field(default="True", description="type of pretrained weights")
     pretrained_dataset: str = Field(default=None, description="checkpoint data name")
     model_kwargs: str = Field(
-        default=dict(), description="json string for model constructor args"
+        default=None, description="json string for model constructor args"
     )
     dataset_kwargs: str = Field(
         default=None, description="json string for dataset constructor args"
@@ -67,6 +68,9 @@ class ImageClassificationTrainArgs(_ImageClassificationBaseArgs):
     train_batch_size: int = Field(description="batch size to use in train loop")
     test_batch_size: int = Field(description="batch size to use in eval loop")
     init_lr: float = Field(default=1e-9, description="will be overwritten by recipe")
+    gradient_accum_steps: int = Field(
+        default=1, description="gradient accumulation steps"
+    )
     recipe_path: Union[str, Path] = Field(
         default=None, description="path to sparsification recipe"
     )
@@ -74,12 +78,14 @@ class ImageClassificationTrainArgs(_ImageClassificationBaseArgs):
     optim: str = Field(
         default="SGD", description="torch optimizer class to use, default SGD"
     )
-    optim_args: Dict[str, Any] = Field(
-        default_factory=lambda: {
-            "momentum": 0.9,
-            "nesterov": True,
-            "weight_decay": 0.0001,
-        },
+    optim_args: str = Field(
+        default=json.dumps(
+            {
+                "momentum": 0.9,
+                "nesterov": True,
+                "weight_decay": 0.0001,
+            }
+        ),
         description="json string of arguments to optimizer class",
     )
     logs_dir: Union[str, Path] = Field(

@@ -23,6 +23,17 @@ from functools import wraps
 from typing import Dict, List, Optional, Tuple
 
 import torch
+from torch.distributed.elastic.multiprocessing.errors import ChildFailedError
+
+
+try:
+    from torch.distributed.run import main as launch_ddp
+
+    ddp_entrypoint = "run"
+except ImportError:
+    from torch.distributed.launch import launch as launch_ddp
+
+    ddp_entrypoint = "launch"
 
 from pydantic import BaseModel
 from sparsify.auto.api import APIOutput, Metrics
@@ -32,7 +43,7 @@ from sparsify.auto.utils import HardwareSpecs, TaskName, analyze_hardware
 
 __all__ = ["MAX_RETRY_ATTEMPTS", "retry_stage", "TaskRunner"]
 
-MAX_RETRY_ATTEMPTS = os.environ.get("NM_MAX_SCRIPT_RETRY_ATTEMPTS", 3)  # default: 3
+MAX_RETRY_ATTEMPTS = os.environ.get("NM_MAX_SCRIPT_RETRY_ATTEMPTS", 3)
 MAX_MEMORY_STEPDOWNS = os.environ.get("NM_MAX_SCRIPT_MEMORY_STEPDOWNS", 10)
 _TASK_RUNNER_IMPLS = {}
 
@@ -44,7 +55,7 @@ def retry_stage(max_attempts: int, stage: str):
     :param max_attempts: maximum number of times to retry
     :param stage: name of stage to evalutate and potentially retry ('train', 'export')
     """
-
+    # TODO: repackage logic into an error handler class
     def _decorator(func):
         wraps(func)
 
@@ -62,6 +73,14 @@ def retry_stage(max_attempts: int, stage: str):
                 try:
                     out = func(self, *args, **kwargs)
                 except Exception as e:
+                    # if torch distributed exception thrown, attempt to reconstruct
+                    # original exception
+                    if isinstance(e, ChildFailedError):
+                        # Grabbing exception only from first worker
+                        _, first_error = e.get_first_failure()
+                        message = first_error.message["message"].split(": ")
+                        if message[0] in _CHILD_EXCEPTIONS_TO_CATCH:
+                            e = _CHILD_EXCEPTIONS_TO_CATCH[message[0]](message[1])
                     errors[attempt_num] = e
                 error = errors.get(attempt_num)
 
@@ -153,9 +172,10 @@ class TaskRunner:
     def __init__(self, config: SparsificationTrainingConfig):
         self._config = config
         self.train_args, self.export_args = self.config_to_args(self.config)
+        self.dashed_cli_kwargs = False  # True if CLI args require "-" as word separator
 
-        hardware_specs = analyze_hardware()
-        self.tune_args_for_hardware(hardware_specs)
+        self.hardware_specs = analyze_hardware()
+        self.tune_args_for_hardware(self.hardware_specs)
 
     @staticmethod
     def create(config: SparsificationTrainingConfig) -> "TaskRunner":
@@ -222,6 +242,47 @@ class TaskRunner:
             f"config_to_args() missing implementation for task {cls.task}"
         )
 
+    @staticmethod
+    def pydantic_args_to_cli(args, dashed_keywords=False) -> List[str]:
+        """
+        Handles logic for converting pydantic classes into valid argument strings.
+        This should set arg standards for all integrations and should generally not
+        be overridden. If the need to override comes up, consider updating this method
+        instead.
+
+        :return: string of the full CLI command
+        """
+        args_string_list = []
+        for key, value in args.dict().items():
+            key = "--" + key
+            key = key.replace("_", "-") if dashed_keywords else key
+            # Handles bool type args (e.g. --do-train)
+            if isinstance(value, bool):
+                if value:
+                    args_string_list.append(key)
+            elif isinstance(value, List):
+                if len(value) < 2:
+                    raise ValueError(
+                        "List arguments must have more one entry. "
+                        f"Received {key}:{value}"
+                    )
+                # Handles args that are both bool and value based (see evolve in yolov5)
+                if isinstance(value[0], bool):
+                    if value[0]:
+                        args_string_list.extend([key, str(value[1])])
+                # Handles args that have multiple values after the keyword.
+                # e.g. --freeze-layers 0 10 15
+                else:
+                    args_string_list.append(key)
+                    args_string_list.extend(map(str, value))
+            # Handles the most straightforward case of keyword followed by value
+            # e.g. --epochs 30
+            else:
+                if value is None:
+                    continue
+                args_string_list.extend([key, str(value)])
+        return args_string_list
+
     @property
     def config(self):
         return self._config
@@ -232,9 +293,15 @@ class TaskRunner:
         """
         Run training
         """
-        raise NotImplementedError(
-            f"train() missing implementation for task {self.task}"
-        )
+        ddp_args = [
+            "--no_python",
+            "--nproc_per_node",
+            "auto",
+            f"{self.sparseml_entrypoint}.train",
+        ]
+        ddp_args += self.pydantic_args_to_cli(self.train_args, self.dashed_cli_kwargs)
+
+        launch_ddp(ddp_args)
 
     @abstractmethod
     @retry_stage(max_attempts=MAX_RETRY_ATTEMPTS, stage="export")
@@ -242,9 +309,7 @@ class TaskRunner:
         """
         Run export
         """
-        raise NotImplementedError(
-            f"export() missing implementation for task {self.task}"
-        )
+        self.export_hook(**self.export_args.dict())
 
     @staticmethod
     def task_list() -> List[TaskName]:

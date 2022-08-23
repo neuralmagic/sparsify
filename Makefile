@@ -11,32 +11,38 @@ MDCHECKGLOBS := 'docs/**/*.md' 'docs/**/*.rst' 'examples/**/*.md' 'notebooks/**/
 MDCHECKFILES := CODE_OF_CONDUCT.md CONTRIBUTING.md DEVELOPING.md README.md
 SPARSEZOO_TEST_MODE := "true"
 PYTEST_ARGS ?= ""
+INTEGRATION_TEST_ARGS ?= ""
+ifneq ($(findstring auto,$(TARGETS)),auto)
+    PYTEST_ARGS := $(PYTEST_ARGS) --ignore tests/sparsify/auto
+	INTEGRATION_TEST_ARGS := $(INTEGRATION_TEST_ARGS) --ignore tests/sparsify/auto
+endif
 
 # run checks on all files for the repo
 quality:
 	@echo "Running copyright checks";
-	python utils/copyright.py quality $(PYCHECKGLOBS) $(JSCHECKGLOBS) $(MDCHECKGLOBS) $(MDCHECKFILES)
+	python utils/copyright.py quality $(PYCHECKGLOBS) $(MDCHECKGLOBS) $(MDCHECKFILES)
 	@echo "Running python quality checks";
 	black --check $(PYCHECKDIRS);
 	isort --check-only $(PYCHECKDIRS);
 	flake8 $(PYCHECKDIRS);
-	@echo "Running js/jsx quality checks";
-	yarn prettier --check $(JSCHECKDIRS);
 
 # style the code according to accepted standards for the repo
 style:
 	@echo "Running copyrighting";
-	python utils/copyright.py style $(PYCHECKGLOBS) $(JSCHECKGLOBS) $(MDCHECKGLOBS) $(MDCHECKFILES)
+	python utils/copyright.py style $(PYCHECKGLOBS) $(MDCHECKGLOBS) $(MDCHECKFILES)
 	@echo "Running python styling";
 	black $(PYCHECKDIRS);
 	isort $(PYCHECKDIRS);
-	@echo "Running js/jsx styling";
-	yarn prettier --write $(JSCHECKDIRS);
 
 # run tests for the repo
 test:
 	@echo "Running python tests";
-	@pytest $(PYTEST_ARGS);
+	SPARSEZOO_TEST_MODE="true" pytest tests/sparsify --ignore tests/integration $(PYTEST_ARGS);
+
+# run end to end integration tests
+test_integration:
+	@echo "Running integration tests";
+	SPARSEZOO_TEST_MODE="true" pytest tests/integration  --ignore tests/sparsify $(INTEGRATION_TEST_ARGS);
 
 # create docs
 docs:
@@ -66,4 +72,4 @@ clean:
 	rm -rf dist;
 	find src/sparsify/ui/* | grep -v .gitkeep | xargs rm -rf;
 	rm -rf src/sparsify.egg-info;
-	find $(PYCHECKDIRS) $(JSCHECKDIRS) | grep -E "(__pycache__|\.pyc|\.pyo)" | xargs rm -rf;
+	find $(PYCHECKDIRS) | grep -E "(__pycache__|\.pyc|\.pyo)" | xargs rm -rf;

@@ -78,9 +78,10 @@ def retry_stage(max_attempts: int, stage: str):
                     if isinstance(e, ChildFailedError):
                         # Grabbing exception only from first worker
                         _, first_error = e.get_first_failure()
-                        message = first_error.message["message"].split(": ")
-                        if message[0] in _CHILD_EXCEPTIONS_TO_CATCH:
-                            e = _CHILD_EXCEPTIONS_TO_CATCH[message[0]](message[1])
+                        if isinstance(first_error.message, dict):
+                            message = first_error.message["message"].split(": ")
+                            if message[0] in _CHILD_EXCEPTIONS_TO_CATCH:
+                                e = _CHILD_EXCEPTIONS_TO_CATCH[message[0]](message[1])
                     errors[attempt_num] = e
                 error = errors.get(attempt_num)
 

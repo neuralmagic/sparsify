@@ -91,13 +91,6 @@ class _TransformersRunner(TaskRunner):
         )
         self.export_args.model_path = self.train_args.output_dir
 
-    @retry_stage(max_attempts=MAX_RETRY_ATTEMPTS, stage="train")
-    def train(self):
-        """
-        Run Transformers training
-        """
-        self.train_hook(**self.train_args.dict())
-
     @retry_stage(max_attempts=MAX_RETRY_ATTEMPTS, stage="export")
     def export(self):
         """

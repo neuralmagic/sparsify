@@ -57,6 +57,7 @@ def _setup_packages() -> List:
         "src", include=["sparsify", "sparsify.*"], exclude=["*.__pycache__.*"]
     )
 
+
 def _setup_package_dir() -> Dict:
     return {"": "src"}
 

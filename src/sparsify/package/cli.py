@@ -33,12 +33,15 @@ Options:
   question_answering|text-classification|text_classification|glue|sentiment|
   sentiment_analysis|sentiment-analysis|token-classification|token_classification|
   ner|named-entity-recognition|named_entity_recognition]
-                                  The task to find model for
-  -d, --dataset TEXT              The public dataset used to train this model
+                                  The task to find model for, must be
+                                  specified if `--dataset` not provided
+  -d, --dataset [imagenette|imagenet|coco|squad|mnli|qqp|sst2|conll2003]
+                                  The public dataset used to train this model,
+                                  must be specified if `--task` not provided
   -m, --optimizing-metric, --optimizing_metric [accuracy|f1|recall|mAP|compression|
-  latency|throughput]
-                                  The criterion to search model for
-                                  [default: accuracy]
+  latency|file_size|memory_usage]
+                                  The criterion to search model for  [default:
+                                  accuracy]
   -s, --scenario [VNNI|NO_VNNI]   The deployment scenarios to choose from
                                   [default: VNNI]
   --help                          Show this message and exit.
@@ -49,7 +52,7 @@ from typing import Any, Dict
 
 import click
 from sparsify import package
-from sparsify.utils import DEPLOYMENT_SCENARIOS, METRICS, TASKS
+from sparsify.utils import DATASETS, DEPLOYMENT_SCENARIOS, METRICS, TASKS
 from sparsify.version import __version__
 
 
@@ -73,13 +76,15 @@ def _create_dir_callback(ctx, param, value):
     "--task",
     "-t",
     type=click.Choice(TASKS, case_sensitive=False),
-    help="The task to find model for",
+    help="The task to find model for, must be specified if `--dataset` " "not provided",
 )
 @click.option(
     "--dataset",
     "-d",
-    type=str,
-    help="The public dataset used to train this model",
+    type=click.Choice(DATASETS, case_sensitive=False),
+    default=DATASETS[0] if len(DATASETS) else None,
+    help="The public dataset used to train this model, must be specified if "
+    "`--task` not provided",
 )
 @click.option(
     "--optimizing-metric",

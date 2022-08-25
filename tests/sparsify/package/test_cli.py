@@ -66,7 +66,7 @@ def test_multiple_metrics(cli_args):
 
 @pytest.mark.parametrize(
     "cli_args",
-    ["--task blah", "--task ic -m blah"],
+    ["--task blah", "--task ic -m blah", "-d blah", "-d mnli -t blah"],
 )
 def test_click_error_on_invalid_invocation(cli_args):
     result = _run_with_cli_runner(cli_args.split())

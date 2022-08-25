@@ -19,7 +19,7 @@ import pytest
 from sparsify import package
 
 
-@patch("sparsify.package_module.main.search_function")
+@patch("sparsify.package_module.main.search_models")
 @patch("sparsify.package_module.main.download_deployment_directory_from_stub")
 def test_valid_execution(download_function, search_function):
     download_function.return_value = ""
@@ -33,7 +33,7 @@ def test_valid_execution(download_function, search_function):
     assert package(task="qa", dataset="squad", scenario="vnni") == ""
 
 
-@patch("sparsify.package_module.main.search_function")
+@patch("sparsify.package_module.main.search_models")
 def test_value_error(search_function):
     # search results empty
     search_function.return_value = []

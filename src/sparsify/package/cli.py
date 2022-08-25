@@ -82,7 +82,6 @@ def _create_dir_callback(ctx, param, value):
     "--dataset",
     "-d",
     type=click.Choice(DATASETS, case_sensitive=False),
-    default=DATASETS[0] if len(DATASETS) else None,
     help="The public dataset used to train this model, must be specified if "
     "`--task` not provided",
 )

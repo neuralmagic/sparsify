@@ -48,11 +48,12 @@ METRICS = [
     "f1",
     "recall",
     "mAP",
+    "compression",
     "latency",
-    "file_size",
-    "memory_usage",
+    "throughput",
 ]
 
 DEPLOYMENT_SCENARIOS = [
     "VNNI",
+    "NO_VNNI",
 ]

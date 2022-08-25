@@ -35,9 +35,10 @@ Options:
   ner|named-entity-recognition|named_entity_recognition]
                                   The task to find model for
   -d, --dataset TEXT              The public dataset used to train this model
-  -m, --optimizing-metric, --optimizing_metric [accuracy|f1|recall|mAP|compression|latency|throughput]
-                                  The criterion to search model for  [default:
-                                  accuracy]
+  -m, --optimizing-metric, --optimizing_metric [accuracy|f1|recall|mAP|compression|
+  latency|throughput]
+                                  The criterion to search model for
+                                  [default: accuracy]
   -s, --scenario [VNNI|NO_VNNI]   The deployment scenarios to choose from
                                   [default: VNNI]
   --help                          Show this message and exit.
@@ -86,7 +87,7 @@ def _create_dir_callback(ctx, param, value):
     "-m",
     default=("accuracy",),
     type=click.Choice(METRICS, case_sensitive=False),
-    help=f"The criterion to search model for",
+    help="The criterion to search model for",
     show_default=True,
     multiple=True,
     callback=lambda ctx, self, value: tuple(metric.lower() for metric in value),

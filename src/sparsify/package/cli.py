@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 # Copyright (c) 2021 - present / Neuralmagic, Inc. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,37 +15,44 @@
 # limitations under the License.
 
 """
-❯ sparsify.package --help
 Usage: sparsify.package [OPTIONS] [DIRECTORY]
 
   Utility to fetch a deployment directory for a task based on a optimizing-
   metric
 
+  Example for using sparsify.package:
+
+       `sparsify.package --task image_classification -m accuracy`
+
+       `sparsify.package --t ic -m accuracy -m compression -s VNNI`
+
 Options:
-  --task [ic|image-classification|image_classification|classification|od|object
-  -detection|object_detection|detection|segmentation|qa|question-answering
-  |question_answering|text-classification|text_classification|glue|sentiment
-  |sentiment_analysis|sentiment-analysis|token-classification|token_classification
-  |ner|named-entity-recognition|named_entity_recognition]
-                                  The task to find model for NOTE: This
-                                  argument is mutually exclusive with dataset
-  --dataset TEXT                  The public dataset used to train this model
-                                  NOTE: This argument is mutually exclusive
-                                  with task
-  --optimizing-metric [accuracy|f1|recall|mAP|latency|file_size|memory_usage]
-                                  The criterion to search model for
-  --scenario [VNNI]               The deployment scenarios to choose from
+  --version                       Show the version and exit.
+  -t, --task [ic|image-classification|image_classification|classification|od|
+  object-detection|object_detection|detection|segmentation|qa|question-answering|
+  question_answering|text-classification|text_classification|glue|sentiment|
+  sentiment_analysis|sentiment-analysis|token-classification|token_classification|
+  ner|named-entity-recognition|named_entity_recognition]
+                                  The task to find model for
+  -d, --dataset TEXT              The public dataset used to train this model
+  -m, --optimizing-metric, --optimizing_metric [accuracy|f1|recall|mAP|compression|latency|throughput]
+                                  The criterion to search model for  [default:
+                                  accuracy]
+  -s, --scenario [VNNI|NO_VNNI]   The deployment scenarios to choose from
                                   [default: VNNI]
   --help                          Show this message and exit.
 """
-
+import logging
 from pathlib import Path
 from typing import Any, Dict
 
 import click
 from sparsify import package
-from sparsify.package_.utils import DEPLOYMENT_SCENARIOS, METRICS, TASKS
-from sparsify.package_.utils.cli_helpers import NotRequiredIf, OptionEatAllArguments
+from sparsify.utils import DEPLOYMENT_SCENARIOS, METRICS, TASKS
+from sparsify.version import __version__
+
+
+_LOGGER = logging.getLogger(__name__)
 
 
 def _create_dir_callback(ctx, param, value):
@@ -52,6 +61,7 @@ def _create_dir_callback(ctx, param, value):
 
 
 @click.command()
+@click.version_option(version=__version__)
 @click.argument(
     "directory",
     type=click.Path(dir_okay=True, file_okay=False),
@@ -60,41 +70,49 @@ def _create_dir_callback(ctx, param, value):
 )
 @click.option(
     "--task",
+    "-t",
     type=click.Choice(TASKS, case_sensitive=False),
-    cls=NotRequiredIf,
-    not_required_if="dataset",
     help="The task to find model for",
 )
 @click.option(
     "--dataset",
+    "-d",
     type=str,
-    cls=NotRequiredIf,
-    not_required_if="task",
     help="The public dataset used to train this model",
 )
 @click.option(
     "--optimizing-metric",
-    type=tuple,
+    "--optimizing_metric",
+    "-m",
     default=("accuracy",),
-    cls=OptionEatAllArguments,
-    help=f"The criterion to search model for, one of {METRICS}",
+    type=click.Choice(METRICS, case_sensitive=False),
+    help=f"The criterion to search model for",
     show_default=True,
+    multiple=True,
     callback=lambda ctx, self, value: tuple(metric.lower() for metric in value),
 )
 @click.option(
     "--scenario",
+    "-s",
     type=click.Choice(DEPLOYMENT_SCENARIOS, case_sensitive=False),
     default=DEPLOYMENT_SCENARIOS[0] if len(DEPLOYMENT_SCENARIOS) else "VNNI",
     help="The deployment scenarios to choose from",
     show_default=True,
 )
-def parse_args(**kwargs):
+def parse_args(**kwargs) -> Dict[str, Any]:
     """
     Utility to fetch a deployment directory for a task based on a
     optimizing-metric
+
+    Example for using sparsify.package:
+
+         `sparsify.package --task image_classification -m accuracy`
+
+         `sparsify.package --t ic -m accuracy -m compression -s VNNI`
     """
     if not (kwargs.get("task") or kwargs.get("dataset")):
         raise ValueError("At-least one of the `task` or `dataset`")
+    _LOGGER.debug(f"{kwargs}")
     return kwargs
 
 

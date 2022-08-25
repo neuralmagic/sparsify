@@ -11,11 +11,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from typing import List
 
 import pytest
 
 from click.testing import CliRunner
-from sparsify.package_.cli import parse_args
+from sparsify.package.cli import parse_args
 
 
 def _test_default_values(args):
@@ -23,7 +24,7 @@ def _test_default_values(args):
     assert args.get("optimizing_metric") == ("accuracy",)
 
 
-def run_with_cli_runner(args):
+def _run_with_cli_runner(args: List[str]):
     runner = CliRunner()
     result = runner.invoke(parse_args, args=args)
     return result
@@ -40,7 +41,7 @@ def run_with_cli_runner(args):
     ],
 )
 def test_valid_invocation(cli_args):
-    result = run_with_cli_runner(cli_args.split())
+    result = _run_with_cli_runner(cli_args.split())
     assert result.exit_code == 0
 
     output = parse_args.main(cli_args.split(), standalone_mode=False)
@@ -50,11 +51,25 @@ def test_valid_invocation(cli_args):
 @pytest.mark.parametrize(
     "cli_args",
     [
-        "--task blah",
+        "--task ic --optimizing-metric accuracy --optimizing_metric compression",
+        "--task ic --optimizing-metric accuracy -m compression",
+        "-t ic -m accuracy -m compression",
     ],
 )
+def test_multiple_metrics(cli_args):
+    result = _run_with_cli_runner(cli_args.split())
+    assert result.exit_code == 0
+
+    output = parse_args.main(cli_args.split(), standalone_mode=False)
+    assert output.get("optimizing_metric") == ("accuracy", "compression")
+
+
+@pytest.mark.parametrize(
+    "cli_args",
+    ["--task blah", "--task ic -m blah"],
+)
 def test_click_error_on_invalid_invocation(cli_args):
-    result = run_with_cli_runner(cli_args.split())
+    result = _run_with_cli_runner(cli_args.split())
     assert result.exit_code == 2
 
 

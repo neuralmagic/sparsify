@@ -25,6 +25,7 @@ import torch
 import pandas
 from pydantic import BaseModel
 from sparseml.yolov5.scripts import export as export_hook
+from sparseml.yolov5.scripts import train as train_hook
 from sparsify.auto.api import Metrics
 from sparsify.auto.configs import SparsificationTrainingConfig
 from sparsify.auto.tasks.object_detection.yolov5 import (
@@ -52,8 +53,9 @@ class Yolov5Runner(TaskRunner):
     at end of run for inference and deployment.
     """
 
+    train_hook = staticmethod(train_hook)
     export_hook = staticmethod(export_hook)
-    sparseml_entrypoint = "sparseml.yolov5"
+    sparseml_train_entrypoint = "sparseml.yolov5.train"
 
     def __init__(self, config: SparsificationTrainingConfig):
         super().__init__(config)

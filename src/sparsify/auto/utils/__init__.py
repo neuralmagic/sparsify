@@ -14,5 +14,6 @@
 
 # flake8: noqa
 
+from .error_handler import *
 from .hardware_analyzer import *
 from .task_name import *

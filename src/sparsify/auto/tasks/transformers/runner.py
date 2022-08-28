@@ -22,10 +22,13 @@ import onnx
 from pydantic import BaseModel
 from sparseml.pytorch.optim.manager import ScheduledModifierManager
 from sparseml.transformers.export import export as export_hook
+from sparseml.transformers.question_answering import main as question_answering_hook
+from sparseml.transformers.text_classification import main as text_classification_hook
+from sparseml.transformers.token_classification import main as token_classification_hook
 from sparseml.transformers.utils import SparseAutoModel
 from sparsify.auto.api import Metrics
 from sparsify.auto.configs import SparsificationTrainingConfig
-from sparsify.auto.tasks.runner import MAX_RETRY_ATTEMPTS, TaskRunner, retry_stage
+from sparsify.auto.tasks.runner import TaskRunner
 from sparsify.auto.tasks.transformers import (
     QuestionAnsweringArgs,
     TextClassificationArgs,
@@ -90,13 +93,6 @@ class _TransformersRunner(TaskRunner):
             self._run_directory.name, self.train_args.output_dir
         )
         self.export_args.model_path = self.train_args.output_dir
-
-    @retry_stage(max_attempts=MAX_RETRY_ATTEMPTS, stage="export")
-    def export(self):
-        """
-        Run Transformers export
-        """
-        export_hook(**self.export_args.dict())
 
     def memory_stepdown(self):
         """
@@ -204,10 +200,10 @@ class _TransformersRunner(TaskRunner):
         """
         return [
             os.path.relpath(
-                os.path.join(self.export_args.model_path, file),
+                os.path.join(os.path.dirname(self.export_args.model_path), dir),
                 self._run_directory.name,
             )
-            for file in os.listdir(self.export_args.model_path)
+            for dir in os.listdir(self._run_directory.name)
         ]
 
 
@@ -217,8 +213,9 @@ class TextClassificationRunner(_TransformersRunner):
     Class for managing a single Question Answering run
     """
 
+    train_hook = staticmethod(text_classification_hook)
     train_args_class = TextClassificationArgs
-    sparseml_entrypoint = "sparseml.text_classification"
+    sparseml_train_entrypoint = "sparseml.transformers.text_classification"
 
 
 @TaskRunner.register_task(task=TASK_REGISTRY["token_classification"])
@@ -227,8 +224,9 @@ class TokenClassificationRunner(_TransformersRunner):
     Class for managing a single Question Answering run
     """
 
+    train_hook = staticmethod(token_classification_hook)
     train_args_class = TokenClassificationArgs
-    sparseml_entrypoint = "sparseml.token_classification"
+    sparseml_train_entrypoint = "sparseml.transformers.token_classification"
 
 
 @TaskRunner.register_task(task=TASK_REGISTRY["question_answering"])
@@ -237,8 +235,9 @@ class QuestionAnsweringRunner(_TransformersRunner):
     Class for managing a single Question Answering run
     """
 
+    train_hook = staticmethod(question_answering_hook)
     train_args_class = QuestionAnsweringArgs
-    sparseml_entrypoint = "sparseml.question_answering"
+    sparseml_train_entrypoint = "sparseml.transformers.question_answering"
 
 
 _TASK_TO_EXPORT_TASK = {

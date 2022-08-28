@@ -56,6 +56,8 @@ def _find_file_recursively(directory: str, file_name_or_extension: str) -> bool:
             [
                 "--task",
                 "image_classification",
+                "--dataset",
+                "~/data/imagenette-160",
                 "--save_directory",
                 f"{_OUTPUT_DIRECTORY}",
                 "--kwargs",
@@ -155,8 +157,8 @@ class TestAbridgedCLIRun:
         if TASK_REGISTRY[task] == "image_classification":
             shutil.rmtree(data_path)
 
-        if os.path.exists(_OUTPUT_DIRECTORY):
-            shutil.rmtree(_OUTPUT_DIRECTORY)
+        # if os.path.exists(_OUTPUT_DIRECTORY):
+        # shutil.rmtree(_OUTPUT_DIRECTORY)
         if os.path.exists(_RUN_DIRECTORY):
             shutil.rmtree(_RUN_DIRECTORY)
 

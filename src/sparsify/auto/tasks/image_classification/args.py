@@ -54,9 +54,6 @@ class _ImageClassificationBaseArgs(BaseModel):
     )
     pretrained: str = Field(default="True", description="type of pretrained weights")
     pretrained_dataset: str = Field(default=None, description="checkpoint data name")
-    model_kwargs: str = Field(
-        default=None, description="json string for model constructor args"
-    )
     dataset_kwargs: str = Field(
         default=None, description="json string for dataset constructor args"
     )
@@ -121,6 +118,9 @@ class ImageClassificationTrainArgs(_ImageClassificationBaseArgs):
         default=False,
         description="Apply recipe in a one-shot fashion and save the model",
     )
+    model_kwargs: str = Field(
+        default=None, description="json string for model constructor args"
+    )
 
 
 class ImageClassificationExportArgs(_ImageClassificationBaseArgs):
@@ -139,4 +139,7 @@ class ImageClassificationExportArgs(_ImageClassificationBaseArgs):
     )
     num_classes: Optional[int] = Field(
         default=None, description="number of classes for model load/export"
+    )
+    model_kwargs: str = Field(
+        default=dict(), description="json string for model constructor args"
     )

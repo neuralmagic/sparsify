@@ -18,44 +18,47 @@ import shutil
 import tempfile
 import warnings
 from abc import abstractmethod
-from collections import OrderedDict
 from functools import wraps
 from typing import Dict, List, Optional, Tuple
 
 import torch
-from torch.distributed.elastic.multiprocessing.errors import ChildFailedError
 
 
 try:
     from torch.distributed.run import main as launch_ddp
 
-    ddp_entrypoint = "run"
-except ImportError:
-    from torch.distributed.launch import launch as launch_ddp
+    disable_ddp = False
 
-    ddp_entrypoint = "launch"
+except ImportError:
+    disable_ddp = True
+
 
 from pydantic import BaseModel
 from sparsify.auto.api import APIOutput, Metrics
 from sparsify.auto.configs import SparsificationTrainingConfig
-from sparsify.auto.utils import HardwareSpecs, TaskName, analyze_hardware
+from sparsify.auto.utils import (
+    AutoErrorHandler,
+    HardwareSpecs,
+    TaskName,
+    analyze_hardware,
+)
 
 
-__all__ = ["MAX_RETRY_ATTEMPTS", "retry_stage", "TaskRunner"]
+__all__ = ["retry_stage", "TaskRunner"]
 
 MAX_RETRY_ATTEMPTS = os.environ.get("NM_MAX_SCRIPT_RETRY_ATTEMPTS", 3)
 MAX_MEMORY_STEPDOWNS = os.environ.get("NM_MAX_SCRIPT_MEMORY_STEPDOWNS", 10)
 _TASK_RUNNER_IMPLS = {}
 
 
-def retry_stage(max_attempts: int, stage: str):
+def retry_stage(stage: str):
     """
     Decorator function for catching and trying to continue failed sparseml runs
 
     :param max_attempts: maximum number of times to retry
     :param stage: name of stage to evalutate and potentially retry ('train', 'export')
     """
-    # TODO: repackage logic into an error handler class
+
     def _decorator(func):
         wraps(func)
 
@@ -64,26 +67,13 @@ def retry_stage(max_attempts: int, stage: str):
                 raise RuntimeError(
                     f"retry_stage only supported for TaskRunner, found {type(self)}"
                 )
-
-            attempt_num = 0
-            memory_stepdowns_attempted = 0
-            errors = OrderedDict()  # 1-indexed mapping of attempt number to error
-            while attempt_num < max_attempts:
-                attempt_num += 1
+            exception = None
+            error_handler = AutoErrorHandler()
+            while not error_handler.max_attempts_exceeded():
                 try:
                     out = func(self, *args, **kwargs)
                 except Exception as e:
-                    # if torch distributed exception thrown, attempt to reconstruct
-                    # original exception
-                    if isinstance(e, ChildFailedError):
-                        # Grabbing exception only from first worker
-                        _, first_error = e.get_first_failure()
-                        if isinstance(first_error.message, dict):
-                            message = first_error.message["message"].split(": ")
-                            if message[0] in _CHILD_EXCEPTIONS_TO_CATCH:
-                                e = _CHILD_EXCEPTIONS_TO_CATCH[message[0]](message[1])
-                    errors[attempt_num] = e
-                error = errors.get(attempt_num)
+                    exception = error_handler.save_error(e)
 
                 # clear hanging memory
                 torch.cuda.empty_cache()
@@ -91,70 +81,25 @@ def retry_stage(max_attempts: int, stage: str):
 
                 # If run is verified as completed and no error was thrown, run is
                 # considered successful
-                if not error and self.completion_check(stage):
+                if not exception:
+                    if not self.completion_check(stage):
+                        warnings.warn(
+                            "Could not verify proper run completion. Attempting to "
+                            "return best model"
+                        )
                     return out
 
-                # Handle out of memory errors as a special case
-                if isinstance(error, RuntimeError) and (
-                    "CUDA out of memory" in error.args[0]
-                    or "Caught RuntimeError in replica" in error.args[0]
-                ):
-                    if memory_stepdowns_attempted < MAX_MEMORY_STEPDOWNS:
-                        warnings.warn(
-                            "Failed to fit model and data into memory. Cutting "
-                            "batch size by half to reduce memory usage"
-                        )
-                        self.memory_stepdown()
-                        memory_stepdowns_attempted += 1
-
-                        # remove error and attempt from regular error history
-                        del errors[attempt_num]
-                        attempt_num -= 1
-
-                    else:
-                        raise RuntimeError(
-                            "Failed to fit model and data into memory after "
-                            f"stepping down memory {memory_stepdowns_attempted} "
-                            "times"
-                        )
+                if error_handler.is_memory_error():
+                    warnings.warn(
+                        "Failed to fit model and data into memory. Cutting "
+                        "batch size by half to reduce memory usage"
+                    )
+                    self.memory_stepdown()
 
                 # Run did not succeed. Update args to attempt to resume run.
-                self.update_args_post_failure(stage, errors.get(attempt_num))
+                self.update_args_post_failure(stage, exception)
 
-            if not len(errors):
-                warnings.warn(
-                    "Could not verify proper run completion. Attempting to return best"
-                    "model"
-                )
-                return out
-
-            first_error = list(errors.values())[0]
-            # If identical errors raised, print error just once. Otherwise, enumerate
-            # errors in printout.
-            if all(
-                [
-                    (
-                        (type(error) == type(first_error))
-                        and (error.args == first_error.args)
-                    )
-                    for error in errors.values()
-                ]
-            ):
-                raise RuntimeError(
-                    f"Run failed after {attempt_num} attempts with error: {first_error}"
-                )
-
-            else:
-                error_list = "\n".join(
-                    [
-                        f"Attempt {attempt_num}: {error}"
-                        for attempt_num, error in errors.items()
-                    ]
-                )
-                raise RuntimeError(
-                    f"Run failed after {attempt_num} with the following errors:\n"
-                    f"{error_list}"
-                )
+            error_handler.raise_exception()
 
         return _wrapper
 
@@ -173,10 +118,14 @@ class TaskRunner:
     def __init__(self, config: SparsificationTrainingConfig):
         self._config = config
         self.train_args, self.export_args = self.config_to_args(self.config)
-        self.dashed_cli_kwargs = False  # True if CLI args require "-" as word separator
 
         self.hardware_specs = analyze_hardware()
         self.tune_args_for_hardware(self.hardware_specs)
+
+        self.use_distributed_training = (
+            False if disable_ddp or os.environ.get("NM_AUTO_DISABLE_DDP") else True
+        )
+        self.dashed_cli_kwargs = False  # True if CLI args require "-" as word separator
 
     @staticmethod
     def create(config: SparsificationTrainingConfig) -> "TaskRunner":
@@ -289,8 +238,8 @@ class TaskRunner:
         return self._config
 
     @abstractmethod
-    @retry_stage(max_attempts=MAX_RETRY_ATTEMPTS, stage="train")
-    def train(self):
+    @retry_stage(stage="train")
+    def train_distributed(self):
         """
         Run training
         """
@@ -298,14 +247,21 @@ class TaskRunner:
             "--no_python",
             "--nproc_per_node",
             "auto",
-            f"{self.sparseml_entrypoint}.train",
+            self.sparseml_train_entrypoint,
         ]
         ddp_args += self.pydantic_args_to_cli(self.train_args, self.dashed_cli_kwargs)
 
         launch_ddp(ddp_args)
 
+    @retry_stage(stage="train")
+    def train_(self):
+        """
+        Run YOLOv5 training
+        """
+        self.train_hook.callback(**self.train_args.dict())
+
     @abstractmethod
-    @retry_stage(max_attempts=MAX_RETRY_ATTEMPTS, stage="export")
+    @retry_stage(stage="export")
     def export(self):
         """
         Run export
@@ -334,8 +290,14 @@ class TaskRunner:
         """
         self._run_directory = tempfile.TemporaryDirectory()
         self.update_run_directory_args()
-        self.train()
+
+        if self.use_distributed_training:
+            self.train_distributed
+        else:
+            self.train()
+
         self.export()
+
         return self.build_output()
 
     def update_run_directory_args(self):

@@ -22,38 +22,39 @@ from sparsify.auto.tasks import TaskRunner
 def main():
     # Parse CLI args
     api_args = APIArgs.from_cli()
+
     max_train_seconds = api_args.max_train_time * 60 * 60
 
     # setup run loop variables
-    config = None
-    runner_outputs = None
-    training_start_time = None
+    configs = []
+    runner_outputs = []
+
+    # initialize configs list with first config
+    configs.append(APIConfigCreator.get_config(api_args))
 
     def _training_complete():
-        if config is None:
-            return False  # first loop
-
-        # training is complete if sparsify.auto metrics satisfy the given config
-        # or the total time of all runs exceeds the maximum training time
-        return APIConfigCreator.metrics_satisfied(config, runner_outputs.metrics) or (
-            time.time() - training_start_time > max_train_seconds
+        return (
+            new_config is not None
+            or (time.time() - training_start_time) >= max_train_seconds
         )
 
+    training_start_time = time.time()
+
     while not _training_complete():
-        # create or update training config
-        if config is None:
-            config = APIConfigCreator.get_config(api_args)
-            training_start_time = time.time()  # start training time after config init
-        else:
-            config = APIConfigCreator.update_hyperparameters(
-                config, runner_outputs.metrics
-            )
 
         # Create a runner for the task and config
-        runner = TaskRunner.create(config)
+        runner = TaskRunner.create(configs[-1])
 
         # Execute integration run and build output object
-        runner_outputs = runner.run()
+        runner_outputs.append(runner.run())
+
+        # Update hyperparameters for the next run
+        new_config = APIConfigCreator.update_hyperparameters(
+            configs, [output.metrics for output in runner_outputs]
+        )
+
+        if new_config:
+            configs.append(new_config)
 
     # Conduct any generic post-processing and display results to user
     results = runner_outputs.finalize()

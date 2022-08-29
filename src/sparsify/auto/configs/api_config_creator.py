@@ -159,15 +159,29 @@ class APIConfigCreator(ABC):
 
     @staticmethod
     def update_hyperparameters(
-        config: SparsificationTrainingConfig, metrics: Metrics
+        configs: List[SparsificationTrainingConfig], metrics: List[Metrics]
     ) -> SparsificationTrainingConfig:
         """
         Use metrics to tune training hyperparameters for improved results
         """
+
+        if len(configs) == 0:
+            raise ValueError("Request Error: configs list must be non-empty")
+
+        if len(configs) != len(metrics):
+            raise ValueError(
+                "Request Error: config and metrics lists must be the same length. "
+                f"Received {len(configs)} configs and {len(metrics)} metrics"
+            )
+
+        if any(config.task != configs[0].task for config in configs):
+            raise ValueError("Request Error: configs must correspond to the same task")
+
         config_creator_class = APIConfigCreator._get_config_creator_constructor(
-            config.task
+            configs[0].task
         )
-        return config_creator_class.update_hyperparameters(config, metrics)
+
+        return config_creator_class.hyperparameter_tuning_strategy(configs, metrics)
 
     @staticmethod
     def metrics_satisfied(
@@ -180,6 +194,9 @@ class APIConfigCreator(ABC):
             config.task
         )
         return config_creator_class.metrics_satisfied(config, metrics)
+
+    def hyperparameter_tuning_strategy(self):
+        return
 
     @staticmethod
     def _get_config_creator_constructor(task):

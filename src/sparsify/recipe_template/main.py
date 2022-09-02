@@ -12,11 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# flake8: noqa
-# isort: skip_file
 
-from . import package as package_module
-from . import recipe_template as recipe_template_module
+import logging
 
-from .package import *
-from .recipe_template import *
+
+__all__ = [
+    "recipe_template",
+]
+
+_LOGGER = logging.getLogger(__file__)
+
+
+def recipe_template(*args, **kwargs):
+    """
+    A function that returns a relevant recipe based off of specified options
+    """
+    raise NotImplementedError

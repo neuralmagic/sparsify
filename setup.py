@@ -75,6 +75,7 @@ def _setup_entry_points() -> Dict:
         "console_scripts": [
             "sparsify.auto=sparsify.auto:main",
             "sparsify.package=sparsify.package.cli:main",
+            "sparsify.recipe_template=sparsify.recipe_template.cli:main",
         ]
     }
 

@@ -13,10 +13,5 @@
 # limitations under the License.
 
 # flake8: noqa
-# isort: skip_file
 
-from . import package as package_module
-from . import recipe_template as recipe_template_module
-
-from .package import *
-from .recipe_template import *
+from .main import *

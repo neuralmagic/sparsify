@@ -142,9 +142,8 @@ class Yolov5Runner(TaskRunner):
         """
         Update run args in the event of an out of memory error, to reduce memory usage
         """
-        # Yolov5 nominal batch size is 64. For smaller batch sizes gradient accumulation
-        # is automatically adjusted. For larger ones LR is automatically adjusted.
         self.train_args.batch_size //= 2
+        self.train_args.gradient_accum_steps *= 2
 
     def _train_completion_check(self) -> bool:
         """

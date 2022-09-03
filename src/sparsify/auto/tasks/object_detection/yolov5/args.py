@@ -46,6 +46,9 @@ class Yolov5TrainArgs(BaseModel):
     batch_size: int = Field(
         default=16, description="total batch size for all GPUs, -1 for autobatch"
     )
+    gradient_accum_steps: int = Field(
+        default=1, description="Number of gradient accumulation steps"
+    )
     imgsz: int = Field(default=640, description="train, val image size (pixels)")
     rect: bool = Field(default=False, description="rectangular training")
     resume: bool = Field(default=False, description="resume most recent training")

@@ -26,12 +26,19 @@ from sparseml.pytorch.image_classification.export import main as export_hook
 from sparseml.pytorch.image_classification.train import main as train_hook
 from sparsify.auto.api import Metrics
 from sparsify.auto.configs import SparsificationTrainingConfig
-from sparsify.auto.tasks.image_classification.args import (
-    ImageClassificationExportArgs,
-    ImageClassificationTrainArgs,
-)
-from sparsify.auto.tasks.runner import TaskRunner
+from sparsify.auto.tasks.image_classification.args import ImageClassificationExportArgs
+from sparsify.auto.tasks.runner import TaskRunner, disable_ddp
 from sparsify.auto.utils import HardwareSpecs
+
+
+if disable_ddp:
+    from sparsify.auto.tasks.image_classification.args import (
+        ImageClassificationTrainArgs,
+    )
+else:
+    from sparsify.auto.tasks.image_classification.args import (
+        ImageClassificationTrainArgsCLI as ImageClassificationTrainArgs,
+    )
 
 
 __all__ = ["ImageClassificationRunner"]

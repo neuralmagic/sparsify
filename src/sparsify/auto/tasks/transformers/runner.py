@@ -98,7 +98,7 @@ class _TransformersRunner(TaskRunner):
         Update run args in the event of an out of memory error, to reduce memory usage
         """
         self.train_args.per_device_train_batch_size //= 2
-        self.train_args.gradient_accumulation_steps *= 2
+        # self.train_args.gradient_accumulation_steps *= 2
         if (
             self.train_args.per_device_eval_batch_size
             > self.train_args.per_device_train_batch_size
@@ -142,7 +142,7 @@ class _TransformersRunner(TaskRunner):
         Checks if export run completed successfully
         """
 
-        onnx_file = os.path.join(self.export_args.model_path, "model.onnx")
+        onnx_file = os.path.join(self._run_directory.name, "deployment", "model.onnx")
 
         # Check mode file exists
         if not os.path.isfile(onnx_file):

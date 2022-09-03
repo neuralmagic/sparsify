@@ -22,11 +22,12 @@ __all__ = [
 
 from typing import List, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import Field
 from sparseml.transformers.text_classification import _TASK_TO_KEYS
+from sparsify.auto.tasks import BaseArgs
 
 
-class _TransformersTrainArgs(BaseModel):
+class _TransformersTrainArgs(BaseArgs):
     model_name_or_path: str = Field(
         description=(
             "Path to pretrained model, sparsezoo stub. or model identifier from "
@@ -328,7 +329,7 @@ class _TransformersTrainArgs(BaseModel):
         description="Whether to use full float16 evaluation instead of 32-bit",
     )
     tf32: bool = Field(
-        default=None,
+        default=False,
         description="Whether to enable tf32 mode, available in Ampere and newer "
         "GPU architectures. This is an experimental API and it may change.",
     )
@@ -350,7 +351,7 @@ class _TransformersTrainArgs(BaseModel):
         "TPU: Whether to print debug metrics",
     )
     debug: Optional[str] = Field(
-        default=None,
+        default="",
         description="Whether or not to enable debug mode. Current options: "
         "`underflow_overflow` (Detect underflow and overflow in activations and "
         "weights), `tpu_metrics_debug` (print debug metrics on TPU).",
@@ -414,7 +415,7 @@ class _TransformersTrainArgs(BaseModel):
         "and batches to get to the same training data.",
     )
     sharded_ddp: Optional[str] = Field(
-        default=None,
+        default="",
         description="Whether or not to use sharded DDP training (in distributed "
         "training only). The base option should be `simple`, `zero_dp_2` or "
         "`zero_dp_3` and you can add CPU-offload to `zero_dp_2` or `zero_dp_3` like "
@@ -515,7 +516,7 @@ class _TransformersTrainArgs(BaseModel):
     )
     _n_gpu: int = Field(init=False, repr=False, default=-1)
     mp_parameters: Optional[str] = Field(
-        default=None,
+        default="",
         description="Used by the SageMaker launcher to send mp-specific args. "
         "Ignored in Trainer",
     )
@@ -653,7 +654,7 @@ class MaskedLanguageModellingArgs(_TransformersTrainArgs):
     )
 
 
-class TransformersExportArgs(BaseModel):
+class TransformersExportArgs(BaseArgs):
     task: str = Field(
         description="Task to create the model for. i.e. mlm, qa, glue, ner"
     )

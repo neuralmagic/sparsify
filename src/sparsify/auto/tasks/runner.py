@@ -53,20 +53,25 @@ def retry_stage(stage: str):
     """
     Decorator function for catching and trying to continue failed sparseml runs
 
-    :param max_attempts: maximum number of times to retry
-    :param stage: name of stage to evalutate and potentially retry ('train', 'export')
+    :param stage: name of stage to evaluate and potentially retry ('train', 'export')
     """
 
     def _decorator(func):
         wraps(func)
 
         def _wrapper(self, *args, **kwargs):
+
             if not isinstance(self, TaskRunner):
                 raise RuntimeError(
                     f"retry_stage only supported for TaskRunner, found {type(self)}"
                 )
+
+            # initialize error handling
             exception = None
-            error_handler = AutoErrorHandler()
+            error_handler = AutoErrorHandler(distributed_training=not disable_ddp)
+
+            # attempt run and catch errors until success or maximum number of attempts
+            # exceeded
             while not error_handler.max_attempts_exceeded():
                 try:
                     out = func(self, *args, **kwargs)
@@ -77,7 +82,7 @@ def retry_stage(stage: str):
                 torch.cuda.empty_cache()
                 gc.collect()
 
-                # If run is verified as completed and no error was thrown, run is
+                # if run is verified as completed and no error was thrown, run is
                 # considered successful
                 if not exception:
                     if not self.completion_check(stage):
@@ -87,6 +92,8 @@ def retry_stage(stage: str):
                         )
                     return out
 
+                # in the case of out of memory error, reduce run memory usage prior
+                # to new attempt
                 if error_handler.is_memory_error():
                     warnings.warn(
                         "Failed to fit model and data into memory. Cutting "
@@ -94,10 +101,11 @@ def retry_stage(stage: str):
                     )
                     self.memory_stepdown()
 
-                # Run did not succeed. Update args to attempt to resume run.
+                # run did not succeed. Update args to attempt to resume run.
                 self.update_args_post_failure(stage, exception)
 
-            error_handler.raise_exception()
+            # run failed - raise exception summary for user
+            error_handler.raise_exception_summary()
 
         return _wrapper
 
@@ -115,15 +123,19 @@ class TaskRunner:
 
     def __init__(self, config: SparsificationTrainingConfig):
         self._config = config
+
+        # distributed training supported for torch>=1.9, as ddp error propagation was
+        # introduced in 1.9
+        self.use_distributed_training = (
+            False if (disable_ddp or os.environ.get("NM_AUTO_DISABLE_DDP")) else True
+        )
+
+        self.dashed_cli_kwargs = False  # True if CLI args require "-" as word separator
+
         self.train_args, self.export_args = self.config_to_args(self.config)
 
         self.hardware_specs = analyze_hardware()
         self.tune_args_for_hardware(self.hardware_specs)
-
-        self.use_distributed_training = (
-            False if disable_ddp or os.environ.get("NM_AUTO_DISABLE_DDP") else True
-        )
-        self.dashed_cli_kwargs = False  # True if CLI args require "-" as word separator
 
     @staticmethod
     def create(config: SparsificationTrainingConfig) -> "TaskRunner":
@@ -192,47 +204,6 @@ class TaskRunner:
             f"config_to_args() missing implementation for task {cls.task}"
         )
 
-    @staticmethod
-    def pydantic_args_to_cli(args, dashed_keywords=False) -> List[str]:
-        """
-        Handles logic for converting pydantic classes into valid argument strings.
-        This should set arg standards for all integrations and should generally not
-        be overridden. If the need to override comes up, consider updating this method
-        instead.
-
-        :return: string of the full CLI command
-        """
-        args_string_list = []
-        for key, value in args.dict().items():
-            key = "--" + key
-            key = key.replace("_", "-") if dashed_keywords else key
-            # Handles bool type args (e.g. --do-train)
-            if isinstance(value, bool):
-                if value:
-                    args_string_list.append(key)
-            elif isinstance(value, List):
-                if len(value) < 2:
-                    raise ValueError(
-                        "List arguments must have more one entry. "
-                        f"Received {key}:{value}"
-                    )
-                # Handles args that are both bool and value based (see evolve in yolov5)
-                if isinstance(value[0], bool):
-                    if value[0]:
-                        args_string_list.extend([key, str(value[1])])
-                # Handles args that have multiple values after the keyword.
-                # e.g. --freeze-layers 0 10 15
-                else:
-                    args_string_list.append(key)
-                    args_string_list.extend(map(str, value))
-            # Handles the most straightforward case of keyword followed by value
-            # e.g. --epochs 30
-            else:
-                if value is None:
-                    continue
-                args_string_list.extend([key, str(value)])
-        return args_string_list
-
     @property
     def config(self):
         return self._config
@@ -241,7 +212,7 @@ class TaskRunner:
     @retry_stage(stage="train")
     def train_distributed(self):
         """
-        Run training
+        Invoke sparseml training script via pytorch ddp API
         """
         ddp_args = [
             "--no_python",
@@ -249,16 +220,16 @@ class TaskRunner:
             "auto",
             self.sparseml_train_entrypoint,
         ]
-        ddp_args += self.pydantic_args_to_cli(self.train_args, self.dashed_cli_kwargs)
+        ddp_args += self.train_args.serialize_to_cli_string(self.dashed_cli_kwargs)
 
         launch_ddp(ddp_args)
 
     @retry_stage(stage="train")
-    def train_(self):
+    def train(self):
         """
-        Run YOLOv5 training
+        Run training through sparseml hook
         """
-        self.train_hook.callback(**self.train_args.dict())
+        self.train_hook(**self.train_args.dict())
 
     @abstractmethod
     @retry_stage(stage="export")
@@ -292,7 +263,7 @@ class TaskRunner:
         self.update_run_directory_args()
 
         if self.use_distributed_training:
-            self.train_distributed
+            self.train_distributed()
         else:
             self.train()
 

@@ -22,8 +22,8 @@ from fastai.vision.all import URLs, untar_data
 from sparsify.auto.utils import TaskName
 
 
-_OUTPUT_DIRECTORY = "./pytest_output"
-_RUN_DIRECTORY = "./pytest_run"
+_OUTPUT_DIRECTORY = "pytest_output"
+_RUN_DIRECTORY = "pytest_run"
 
 
 def _find_file_recursively(directory: str, file_name_or_extension: str) -> bool:
@@ -47,7 +47,7 @@ def _find_file_recursively(directory: str, file_name_or_extension: str) -> bool:
                 "--save_directory",
                 f"{_OUTPUT_DIRECTORY}",
                 "--kwargs",
-                (str({"epochs": 1, "batch_size": 64, "project": _RUN_DIRECTORY})),
+                (str({"epochs": 1, "batch_size": 32, "project": _RUN_DIRECTORY})),
             ],
             ["last.pt", "last.onnx"],
         ),
@@ -123,7 +123,7 @@ def _find_file_recursively(directory: str, file_name_or_extension: str) -> bool:
             "token_classification",
             [
                 "--task",
-                "question_answering",
+                "token_classification",
                 "--dataset",
                 "conll2003",
                 "--save_directory",
@@ -157,8 +157,8 @@ class TestAbridgedCLIRun:
         if TaskName(task) == "image_classification":
             shutil.rmtree(data_path)
 
-        # if os.path.exists(_OUTPUT_DIRECTORY):
-        # shutil.rmtree(_OUTPUT_DIRECTORY)
+        if os.path.exists(_OUTPUT_DIRECTORY):
+            shutil.rmtree(_OUTPUT_DIRECTORY)
         if os.path.exists(_RUN_DIRECTORY):
             shutil.rmtree(_RUN_DIRECTORY)
 

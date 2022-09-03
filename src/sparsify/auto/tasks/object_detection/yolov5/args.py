@@ -15,17 +15,18 @@
 from pathlib import Path
 from typing import List, Optional, Tuple, Union
 
-from pydantic import BaseModel, Field
+from pydantic import Field
+from sparsify.auto.tasks import BaseArgs
 
+
+__all__ = ["Yolov5TrainArgs", "Yolov5TrainArgsCLI", "Yolov5ExportArgs"]
 
 ROOT = Path("yolov5")
 
 
-class Yolov5TrainArgs(BaseModel):
-    weights: Union[str, Path, None] = Field(
-        default=None, description="initial weights path"
-    )
-    cfg: Union[str, Path, None] = Field(default=None, description="model.yaml path")
+class Yolov5TrainArgs(BaseArgs):
+    weights: Union[str, Path] = Field(default="", description="initial weights path")
+    cfg: Union[str, Path] = Field(default="", description="model.yaml path")
     data: Union[str, Path] = Field(
         default="coco128.yaml", description="dataset.yaml path"
     )
@@ -54,19 +55,17 @@ class Yolov5TrainArgs(BaseModel):
     nosave: bool = Field(default=False, description="only save final checkpoint")
     noval: bool = Field(default=False, description="only validate final epoch")
     noautoanchor: bool = Field(default=False, description="disable AutoAnchor")
-    evolve: Tuple[bool, int] = Field(
-        default=[False, 300], description="evolve hyperparameters for x generations"
+    evolve: Optional[int] = Field(
+        default=None, description="evolve hyperparameters for x generations"
     )
-    bucket: Optional[str] = Field(default=None, description="gsutil bucket")
+    bucket: str = Field(default="", description="gsutil bucket")
     cache: str = Field(
         default="ram", description='--cache images in "ram" (default) or "disk"'
     )
     image_weights: bool = Field(
         default=False, description="use weighted image selection for training"
     )
-    device: Optional[str] = Field(
-        default=None, description="cuda device, i.e. 0 or 0,1,2,3 or cpu"
-    )
+    device: str = Field(default="", description="cuda device, i.e. 0 or 0,1,2,3 or cpu")
     multi_scale: bool = Field(default=False, description="vary img-size +/- 50%%")
     single_cls: bool = Field(
         default=False, description="train multi-class data as single-class"
@@ -91,8 +90,8 @@ class Yolov5TrainArgs(BaseModel):
     patience: int = Field(
         default=0, description="EarlyStopping patience (epochs without improvement)"
     )
-    freeze: str = Field(
-        default="0", description="Freeze layers: backbone=10, first3=0 1 2"
+    freeze: List[int] = Field(
+        default=[0], description="Freeze layers: backbone=10, first3=0 1 2"
     )
     save_period: int = Field(
         default=-1, description="Save checkpoint every x epochs (disabled if < 1)"
@@ -126,7 +125,16 @@ class Yolov5TrainArgs(BaseModel):
             )
 
 
-class Yolov5ExportArgs(BaseModel):
+class Yolov5TrainArgsCLI(Yolov5TrainArgs):
+    evolve: Tuple[bool, int] = Field(
+        default=[False, 300], description="evolve hyperparameters for x generations"
+    )
+    freeze: str = Field(
+        default="0", description="Freeze layers: backbone=10, first3=0 1 2"
+    )
+
+
+class Yolov5ExportArgs(BaseArgs):
     weights: Union[str, Path] = Field(
         default=ROOT / "yolov5s.pt", description="initial weights path"
     )

@@ -15,7 +15,8 @@
 # flake8: noqa
 # isort: skip_file
 
-from .image_classification import *
 from .runner import *
+from .args import *
+from .image_classification import *
 from .object_detection import *
 from .transformers import *

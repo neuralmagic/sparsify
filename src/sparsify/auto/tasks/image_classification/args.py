@@ -14,10 +14,11 @@
 
 import json
 from pathlib import Path
-from typing import Optional, Union
+from typing import Any, Dict, Optional, Union
 
-from pydantic import BaseModel, Field
+from pydantic import Field
 from sparseml.pytorch.utils import default_device
+from sparsify.auto.tasks import BaseArgs
 
 
 __all__ = [
@@ -29,7 +30,7 @@ __all__ = [
 ROOT = Path("image_classification_runs")
 
 
-class _ImageClassificationBaseArgs(BaseModel):
+class _ImageClassificationBaseArgs(BaseArgs):
     # shared args
     dataset: str = Field(
         default=None,
@@ -54,8 +55,11 @@ class _ImageClassificationBaseArgs(BaseModel):
     )
     pretrained: str = Field(default="True", description="type of pretrained weights")
     pretrained_dataset: str = Field(default=None, description="checkpoint data name")
+    model_kwargs: str = Field(
+        default=dict(), description="json string for model constructor args"
+    )
     dataset_kwargs: str = Field(
-        default=None, description="json string for dataset constructor args"
+        default=dict(), description="json string for dataset constructor args"
     )
     model_tag: str = Field(description="required - tag for model under save_dir")
     save_dir: Union[str, Path] = Field(default=ROOT)
@@ -75,14 +79,12 @@ class ImageClassificationTrainArgs(_ImageClassificationBaseArgs):
     optim: str = Field(
         default="SGD", description="torch optimizer class to use, default SGD"
     )
-    optim_args: str = Field(
-        default=json.dumps(
-            {
-                "momentum": 0.9,
-                "nesterov": True,
-                "weight_decay": 0.0001,
-            }
-        ),
+    optim_args: Dict[str, Any] = Field(
+        default_factory=lambda: {
+            "momentum": 0.9,
+            "nesterov": True,
+            "weight_decay": 0.0001,
+        },
         description="json string of arguments to optimizer class",
     )
     logs_dir: Union[str, Path] = Field(
@@ -118,8 +120,18 @@ class ImageClassificationTrainArgs(_ImageClassificationBaseArgs):
         default=False,
         description="Apply recipe in a one-shot fashion and save the model",
     )
-    model_kwargs: str = Field(
-        default=None, description="json string for model constructor args"
+
+
+class ImageClassificationTrainArgsCLI(ImageClassificationTrainArgs):
+    optim_args: str = Field(
+        default=json.dumps(
+            {
+                "momentum": 0.9,
+                "nesterov": True,
+                "weight_decay": 0.0001,
+            }
+        ),
+        description="json string of arguments to optimizer class",
     )
 
 
@@ -139,7 +151,4 @@ class ImageClassificationExportArgs(_ImageClassificationBaseArgs):
     )
     num_classes: Optional[int] = Field(
         default=None, description="number of classes for model load/export"
-    )
-    model_kwargs: str = Field(
-        default=dict(), description="json string for model constructor args"
     )

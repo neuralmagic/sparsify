@@ -28,14 +28,19 @@ from sparseml.yolov5.scripts import export as export_hook
 from sparseml.yolov5.scripts import train as train_hook
 from sparsify.auto.api import Metrics
 from sparsify.auto.configs import SparsificationTrainingConfig
-from sparsify.auto.tasks.object_detection.yolov5 import (
-    Yolov5ExportArgs,
-    Yolov5TrainArgs,
-)
-from sparsify.auto.tasks.runner import TaskRunner
+from sparsify.auto.tasks.object_detection.yolov5 import Yolov5ExportArgs
+from sparsify.auto.tasks.runner import TaskRunner, disable_ddp
 from sparsify.auto.utils import HardwareSpecs
 from sparsify.utils import TASK_REGISTRY
 from yolov5.export import load_checkpoint
+
+
+if disable_ddp:
+    from sparsify.auto.tasks.object_detection.yolov5 import Yolov5TrainArgs
+else:
+    from sparsify.auto.tasks.object_detection.yolov5 import (
+        Yolov5TrainArgsCLI as Yolov5TrainArgs,
+    )
 
 
 __all__ = [
@@ -193,8 +198,10 @@ class Yolov5Runner(TaskRunner):
         if os.path.isfile(model_file):
             self.train_args.resume = True
         # If not, clear directory
-        else:
-            shutil.rmtree(self.train_args.project)
+        elif os.path.exists(self.train_args.project) and os.path.isdir(
+            self.train_args.project
+        ):
+            shutil.rmtree(os.path.dirname(self.train_args.project))
 
     def _update_export_args_post_failure(self, error_type: Exception):
         """

@@ -15,11 +15,12 @@
 import builtins
 import os
 
-from torch.distributed.elastic.multiprocessing.errors import ChildFailedError
+import torch
 
 from pydantic import BaseModel, Field
 
 
+# substrings of exception message that identify out of memory errors
 _MEMORY_ERROR_SUBSTRINGS = [
     "CUDA out of memory",
     "Caught RuntimeError in replica",
@@ -39,7 +40,7 @@ class AutoError(BaseModel):
 
 
 class AutoErrorHandler:
-    def __init__(self):
+    def __init__(self, distributed_training=False):
         self._max_retry_attempts = os.environ.get("NM_MAX_SCRIPT_RETRY_ATTEMPTS", 3)
         self._number_of_attempts = 0
         self._max_memory_stepdowns = os.environ.get(
@@ -52,6 +53,8 @@ class AutoErrorHandler:
             for name, value in builtins.__dict__.items()
             if isinstance(value, type) and issubclass(value, BaseException)
         }
+
+        self.distributed_training = distributed_training
 
     @property
     def max_retry_attempts(self):
@@ -86,7 +89,9 @@ class AutoErrorHandler:
     def save_error(self, exception: Exception):
         # if torch distributed exception thrown, attempt to reconstruct
         # original exception
-        if isinstance(exception, ChildFailedError):
+        if self.distributed_training and isinstance(
+            exception, torch.distributed.elastic.multiprocessing.errors.ChildFailedError
+        ):
             # Grabbing exception only from first worker
             _, first_error = exception.get_first_failure()
             if isinstance(first_error.message, dict):
@@ -115,7 +120,7 @@ class AutoErrorHandler:
     def is_memory_error(self):
         return self._caught_errors[-1].is_memory_error
 
-    def raise_exception(self):
+    def raise_exception_summary(self):
         if self._number_of_attempts >= self._max_retry_attempts:
             first_error = self._caught_errors[0].error
             # If identical errors raised, print error just once. Otherwise, enumerate

@@ -26,6 +26,7 @@ from sparsify.auto.configs.config_creators.helpers import (
 from sparsify.auto.configs.sparsification_training_config import (
     SparsificationTrainingConfig,
 )
+from sparsify.utils import TASK_REGISTRY
 
 
 __all__ = [
@@ -33,7 +34,7 @@ __all__ = [
 ]
 
 
-@APIConfigCreator.register(task="image_classification")
+@APIConfigCreator.register(task=TASK_REGISTRY["image_classification"])
 class ImageClassificationAPIConfigCreator(APIConfigCreator):
     @staticmethod
     def update_hyperparameters(

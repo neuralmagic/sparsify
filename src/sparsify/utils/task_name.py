@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import Union
+from typing import List, Union
 
 
 class TaskName:
@@ -31,22 +31,36 @@ class TaskName:
         this TaskName. e.g. TaskName("yolov5") == "YOLOv5" -> True.
     """
 
-    __slots__ = ("name", "aliases")
+    __slots__ = ("name", "aliases", "domain", "sub_domain")
 
-    def __init__(self, name: str):
-        if not isinstance(name, str):
-            raise ValueError("'name' must be a string")
+    def __init__(
+        self, name: str, domain: str, sub_domain: str, aliases: List[str] = []
+    ):
+        for field in [name, domain, sub_domain]:
+            if not isinstance(field, str):
+                raise ValueError(f"'{field}' must be a string")
+
         super(TaskName, self).__setattr__("name", name.lower().replace("-", "_"))
         super(TaskName, self).__setattr__("aliases", self._get_supported_aliases(name))
+        super(TaskName, self).__setattr__("domain", domain)
+        super(TaskName, self).__setattr__("sub_domain", sub_domain)
+
+        for alias in aliases:
+            if not isinstance(alias, str):
+                raise ValueError("'alias' must be a string")
+            self._add_alias(alias)
 
     def __setattr__(self, name, value):
         """
         Prevent modification of attributes
         """
-        raise AttributeError("Task name cannot be modified")
+        raise AttributeError("TaskName cannot be modified")
 
     def __repr__(self):
-        return self.name
+        return (
+            f'TaskName(name="{self.name}", aliases={self.aliases}, '
+            f'domain="{self.domain}", sub_domain="{self.sub_domain}"'
+        )
 
     def __str__(self):
         return self.name
@@ -62,8 +76,8 @@ class TaskName:
     def __hash__(self):
         return hash(self.name)
 
-    def add_alias(self, alias):
-        self.aliases.append(*self._get_supported_aliases(alias))
+    def _add_alias(self, alias):
+        self.aliases.extend(self._get_supported_aliases(alias))
 
     def _get_supported_aliases(self, task: str):
         task = task.lower().replace("-", "_")

@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from collections import namedtuple
+from sparsify.utils import TaskName
 
 
 __all__ = [
@@ -20,12 +20,9 @@ __all__ = [
     "DEPLOYMENT_SCENARIOS",
     "TASKS",
     "TASK_REGISTRY",
-    "TaskInfo",
     "DATASET_REGISTRY",
     "DATASETS",
 ]
-
-TaskInfo = namedtuple("TaskInfo", "domain, subdomain")
 
 METRICS = [
     "accuracy",
@@ -44,44 +41,54 @@ DEPLOYMENT_SCENARIOS = [
 ]
 
 TASK_REGISTRY = {
-    "ic": TaskInfo(domain="cv", subdomain="classification"),
-    "image-classification": TaskInfo(domain="cv", subdomain="classification"),
-    "image_classification": TaskInfo(domain="cv", subdomain="classification"),
-    "classification": TaskInfo(domain="cv", subdomain="classification"),
-    "od": TaskInfo(domain="cv", subdomain="detection"),
-    "object-detection": TaskInfo(domain="cv", subdomain="detection"),
-    "object_detection": TaskInfo(domain="cv", subdomain="detection"),
-    "detection": TaskInfo(domain="cv", subdomain="detection"),
-    "segmentation": TaskInfo(domain="cv", subdomain="segmentation"),
-    "qa": TaskInfo(domain="nlp", subdomain="question_answering"),
-    "question-answering": TaskInfo(domain="nlp", subdomain="question_answering"),
-    "question_answering": TaskInfo(domain="nlp", subdomain="question_answering"),
-    "text-classification": TaskInfo(domain="nlp", subdomain="text_classification"),
-    "text_classification": TaskInfo(domain="nlp", subdomain="text_classification"),
-    "glue": TaskInfo(domain="nlp", subdomain="text_classification"),
-    "sentiment": TaskInfo(domain="nlp", subdomain="sentiment_analysis"),
-    "sentiment_analysis": TaskInfo(domain="nlp", subdomain="sentiment_analysis"),
-    "sentiment-analysis": TaskInfo(domain="nlp", subdomain="sentiment_analysis"),
-    "token-classification": TaskInfo(domain="nlp", subdomain="token_classification"),
-    "token_classification": TaskInfo(domain="nlp", subdomain="token_classification"),
-    "ner": TaskInfo(domain="nlp", subdomain="token_classification"),
-    "named-entity-recognition": TaskInfo(
-        domain="nlp", subdomain="token_classification"
+    "image_classification": TaskName(
+        name="image_classification",
+        aliases=["ic", "classification"],
+        domain="cv",
+        sub_domain="classification",
     ),
-    "named_entity_recognition": TaskInfo(
-        domain="nlp", subdomain="token_classification"
+    "object_detection": TaskName(
+        name="object_detection",
+        aliases=["od", "detection"],
+        domain="cv",
+        sub_domain="detection",
+    ),
+    "segmentation": TaskName("segmentation", domain="cv", sub_domain="segmentation"),
+    "question_answering": TaskName(
+        name="question_answering",
+        aliases=["qa"],
+        domain="nlp",
+        sub_domain="question_answering",
+    ),
+    "text_classification": TaskName(
+        name="text_classification",
+        aliases=["glue"],
+        domain="nlp",
+        sub_domain="text_classification",
+    ),
+    "sentiment_analysis": TaskName(
+        name="sentiment_analysis",
+        aliases=["sentiment"],
+        domain="nlp",
+        sub_domain="sentiment_analysis",
+    ),
+    "token_classification": TaskName(
+        name="token_classification",
+        aliases=["ner", "named_entity_recognition"],
+        domain="nlp",
+        sub_domain="token_classification",
     ),
 }
 
 DATASET_REGISTRY = {
-    "imagenette": TaskInfo(domain="cv", subdomain="classification"),
-    "imagenet": TaskInfo(domain="cv", subdomain="classification"),
-    "coco": TaskInfo(domain="cv", subdomain="detection"),
-    "squad": TaskInfo(domain="nlp", subdomain="question_answering"),
-    "mnli": TaskInfo(domain="nlp", subdomain="text_classification"),
-    "qqp": TaskInfo(domain="nlp", subdomain="text_classification"),
-    "sst2": TaskInfo(domain="nlp", subdomain="text_classification"),
-    "conll2003": TaskInfo(domain="nlp", subdomain="token_classification"),
+    "imagenette": TASK_REGISTRY["image_classification"],
+    "imagenet": TASK_REGISTRY["image_classification"],
+    "coco": TASK_REGISTRY["object_detection"],
+    "squad": TASK_REGISTRY["question_answering"],
+    "mnli": TASK_REGISTRY["text_classification"],
+    "qqp": TASK_REGISTRY["text_classification"],
+    "sst2": TASK_REGISTRY["text_classification"],
+    "conll2003": TASK_REGISTRY["token_classification"],
 }
 
 TASKS = list(TASK_REGISTRY.keys())

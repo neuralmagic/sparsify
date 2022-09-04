@@ -86,14 +86,13 @@ class APIConfigCreator(ABC):
         return config_creator.config
 
     @classmethod
-    def register(cls, task: str):
+    def register(cls, task: TaskName):
         """
         Decorator to register task implementations of APIConfigCreator with the
         get_config method registry
 
         :param task: main task name the implementor class creates configs for
         """
-        task = TaskName(task)
 
         def _register_config_creator_decorator(config_creator_class: APIConfigCreator):
             if not issubclass(config_creator_class, cls):

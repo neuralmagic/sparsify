@@ -13,5 +13,7 @@
 # limitations under the License.
 
 # flake8: noqa
+# isort: skip_file
 
+from .task_name import *
 from .constants import *

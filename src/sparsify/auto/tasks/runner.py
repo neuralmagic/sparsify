@@ -178,12 +178,11 @@ class TaskRunner:
         return task_runner_constructor(config)
 
     @classmethod
-    def register_task(cls, task: str):
+    def register_task(cls, task: TaskName):
         """
         Decorator class that registers a runner under a task name. Task names are unique
         and their aliases may not be duplicated either.
         """
-        task = TaskName(task)
 
         def _register_task_decorator(task_class: TaskRunner):
             if not issubclass(task_class, cls):

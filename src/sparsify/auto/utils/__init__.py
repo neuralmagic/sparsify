@@ -13,6 +13,7 @@
 # limitations under the License.
 
 # flake8: noqa
+# isort: skip_file
 
 from .hardware_analyzer import *
-from .task_name import *
+from sparsify.utils.task_name import *

@@ -32,12 +32,13 @@ from sparsify.auto.tasks.image_classification.args import (
 )
 from sparsify.auto.tasks.runner import MAX_RETRY_ATTEMPTS, TaskRunner, retry_stage
 from sparsify.auto.utils import HardwareSpecs
+from sparsify.utils import TASK_REGISTRY
 
 
 __all__ = ["ImageClassificationRunner"]
 
 
-@TaskRunner.register_task(task="image_classification")
+@TaskRunner.register_task(task=TASK_REGISTRY["image_classification"])
 class ImageClassificationRunner(TaskRunner):
     """
     Class for managing a single run of YOLOv5. A run may involve

@@ -79,9 +79,7 @@ class APIConfigCreator(ABC):
         :param api_args: Sparsify.Auto API entrypoint args object
         :return: generated SparsificationTrainingConfig
         """
-        config_creator_constructor = cls._get_config_creator_constructor(
-            TaskName(api_args.task)
-        )
+        config_creator_constructor = cls._get_config_creator_constructor(api_args.task)
         config_creator = config_creator_constructor(api_args)
         return config_creator.config
 

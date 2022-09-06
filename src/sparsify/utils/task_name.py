@@ -57,13 +57,16 @@ class TaskName:
         raise AttributeError("TaskName cannot be modified")
 
     def __repr__(self):
-        return (
-            f'TaskName(name="{self.name}", aliases={self.aliases}, '
-            f'domain="{self.domain}", sub_domain="{self.sub_domain}"'
-        )
+        return f"TaskName({self.pretty_print()})"
 
     def __str__(self):
         return self.name
+
+    def pretty_print(self):
+        return (
+            f'name="{self.name}", domain="{self.domain}", '
+            f'sub_domain="{self.sub_domain}", aliases={self.aliases}',
+        )
 
     def __eq__(self, other: Union[str, "TaskName"]):
         if isinstance(other, TaskName):

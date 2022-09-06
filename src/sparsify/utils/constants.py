@@ -53,7 +53,9 @@ TASK_REGISTRY = {
         domain="cv",
         sub_domain="detection",
     ),
-    "segmentation": TaskName("segmentation", domain="cv", sub_domain="segmentation"),
+    "segmentation": TaskName(
+        name="segmentation", domain="cv", sub_domain="segmentation"
+    ),
     "question_answering": TaskName(
         name="question_answering",
         aliases=["qa"],
@@ -90,6 +92,7 @@ DATASET_REGISTRY = {
     "sst2": TASK_REGISTRY["text_classification"],
     "conll2003": TASK_REGISTRY["token_classification"],
 }
+
 
 TASKS = list(TASK_REGISTRY.keys())
 DATASETS = list(DATASET_REGISTRY.keys())

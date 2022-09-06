@@ -47,6 +47,7 @@ Options:
   --help                          Show this message and exit.
 """
 import logging
+import sys
 from pathlib import Path
 from typing import Any, Dict
 
@@ -106,7 +107,7 @@ def _create_dir_callback(ctx, param, value):
 )
 def parse_args(**kwargs) -> Dict[str, Any]:
     """
-    Utility to fetch a deployment directory for a task based on a
+    Utility to fetch a deployment directory for a task based on specified
     optimizing-metric
 
     Example for using sparsify.package:
@@ -125,8 +126,11 @@ def main():
     """
     Driver function
     """
-    args: Dict[str, Any] = parse_args()
-    package(**args)
+    args: Dict[str, Any] = parse_args.make_context(
+        "parse_args", args=sys.argv[1:]
+    ).params
+    results = package(**args)
+    print(f"Relevant Stubs: {results}")
 
 
 if __name__ == "__main__":

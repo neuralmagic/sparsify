@@ -34,7 +34,7 @@ __all__ = ["MAX_RETRY_ATTEMPTS", "retry_stage", "TaskRunner"]
 
 MAX_RETRY_ATTEMPTS = os.environ.get("NM_MAX_SCRIPT_RETRY_ATTEMPTS", 3)  # default: 3
 MAX_MEMORY_STEPDOWNS = os.environ.get("NM_MAX_SCRIPT_MEMORY_STEPDOWNS", 10)
-_REGISTERED_TASKS = {}
+_TASK_RUNNER_IMPLS = {}
 
 
 def retry_stage(max_attempts: int, stage: str):
@@ -164,26 +164,24 @@ class TaskRunner:
 
         :param config: training config defining the run
         """
-        task = TaskName(config.task)
 
-        if task not in _REGISTERED_TASKS:
+        if config.task not in _TASK_RUNNER_IMPLS:
             raise ValueError(
-                f"Unknown task {task}. Task runners must be declared with the "
+                f"Unknown task {config.task}. Task runners must be declared with the "
                 "TaskRunner.register decorator. Currently registered tasks: "
-                f"{list(_REGISTERED_TASKS.keys())}"
+                f"{list(_TASK_RUNNER_IMPLS.keys())}"
             )
 
-        task_runner_constructor = _REGISTERED_TASKS[task]
+        task_runner_constructor = _TASK_RUNNER_IMPLS[config.task]
 
         return task_runner_constructor(config)
 
     @classmethod
-    def register_task(cls, task: str):
+    def register_task(cls, task: TaskName):
         """
         Decorator class that registers a runner under a task name. Task names are unique
         and their aliases may not be duplicated either.
         """
-        task = TaskName(task)
 
         def _register_task_decorator(task_class: TaskRunner):
             if not issubclass(task_class, cls):
@@ -191,15 +189,15 @@ class TaskRunner:
                     f"Attempting to register task {task_class}. "
                     f"Registered tasks must inherit from {cls}"
                 )
-            if task in _REGISTERED_TASKS and (
-                task_class is not _REGISTERED_TASKS[task]
+            if task in _TASK_RUNNER_IMPLS and (
+                task_class is not _TASK_RUNNER_IMPLS[task]
             ):
                 raise RuntimeError(
                     f"task {task} already registered by TaskRunner.register. "
                     f"attempting to register task: {task_class}, but"
-                    f"task: {_REGISTERED_TASKS[task]}, already registered"
+                    f"task: {_TASK_RUNNER_IMPLS[task]}, already registered"
                 )
-            _REGISTERED_TASKS[task] = task_class
+            _TASK_RUNNER_IMPLS[task] = task_class
 
             # set task and task_aliases as class level property
             task_class.task = task
@@ -253,7 +251,7 @@ class TaskRunner:
         """
         Return a list of registered tasks
         """
-        return list(_REGISTERED_TASKS.keys())
+        return list(_TASK_RUNNER_IMPLS.keys())
 
     @staticmethod
     def task_aliases_dict() -> Dict[str, List[str]]:
@@ -261,7 +259,7 @@ class TaskRunner:
         Return a dictionary mapping the default task name (str) to a list of task
         aliases (str)
         """
-        return {str(task): task.aliases for task in _REGISTERED_TASKS}
+        return {str(task): task.aliases for task in _TASK_RUNNER_IMPLS}
 
     @abstractmethod
     def run(self) -> APIOutput:

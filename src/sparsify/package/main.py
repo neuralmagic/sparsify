@@ -16,10 +16,15 @@ __all__ = [
     "package",
 ]
 
+import logging
+
+
+_LOGGER = logging.getLogger(__file__)
+
 
 def package(*args, **kwargs):
     """
     A function that returns a deployment directory given the task or dataset,
     and an optimizing criterion
     """
-    raise NotImplementedError
+    print("Package will be invoked")

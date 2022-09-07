@@ -67,7 +67,6 @@ def retry_stage(stage: str):
                 )
 
             # initialize error handling
-            exception = None
             error_handler = AutoErrorHandler(distributed_training=not disable_ddp)
 
             # attempt run and catch errors until success or maximum number of attempts
@@ -75,8 +74,11 @@ def retry_stage(stage: str):
             while not error_handler.max_attempts_exceeded():
                 try:
                     out = func(self, *args, **kwargs)
+                    exception = None
                 except Exception as e:
-                    exception = error_handler.save_error(e)
+                    exception = e
+
+                error_handler.save_error(exception)
 
                 # clear hanging memory
                 torch.cuda.empty_cache()

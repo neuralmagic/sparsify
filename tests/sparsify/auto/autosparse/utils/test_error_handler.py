@@ -134,8 +134,6 @@ def test_error_handler(expected_outcome, errors, is_oom_error):
             [errors, is_oom_error], error_handler.max_memory_stepsdowns - 1
         )
 
-    error_handler = AutoErrorHandler(distributed_training=not disable_ddp)
-
     # test error handling
     for error, is_oom in zip(errors, is_oom_error):
         assert not error_handler.max_attempts_exceeded()

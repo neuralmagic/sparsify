@@ -20,7 +20,7 @@ import torch
 
 
 # substrings of exception message that identify out of memory errors
-_MEMORY_ERROR_SUBSTRINGS = [
+MEMORY_ERROR_SUBSTRINGS = [
     "CUDA out of memory",
     "Caught RuntimeError in replica",
     "Unable to find a valid cuDNN algorithm to run convolution",
@@ -116,7 +116,7 @@ class AutoErrorHandler:
                 any(
                     [
                         memory_substring in exception.args[0]
-                        for memory_substring in _MEMORY_ERROR_SUBSTRINGS
+                        for memory_substring in MEMORY_ERROR_SUBSTRINGS
                     ]
                 )
             ):

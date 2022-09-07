@@ -21,6 +21,10 @@ __all__ = ["BaseArgs"]
 
 
 class BaseArgs(BaseModel):
+    """
+    Base class for representing integration stage args (train or export)
+    """
+
     def serialize_to_cli_string(self, dashed_keywords) -> List[str]:
         """
         Handles logic for converting pydantic classes into valid argument strings.

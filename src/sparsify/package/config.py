@@ -15,17 +15,9 @@
 import os
 
 
-__all__ = ["BACKEND_URL"]
+__all__ = ["BACKEND_URL", "BASE_URL"]
 _END_POINT = "/v1/sparsify/package/recommend-stub"
+_DEFAULT_BASE_URL = "http://0.0.0.0:8000"
 
-
-def _get_backend_url():
-    """
-    Returns the backend url for sparsify.package service
-    """
-    default_base_url = "http://0.0.0.0:8000"
-    base_url = os.getenv("SPARSIFY_BACKEND_URL", default=default_base_url)
-    return base_url + _END_POINT
-
-
-BACKEND_URL = _get_backend_url()
+BASE_URL = os.getenv("SPARSIFY_BACKEND_URL", default=_DEFAULT_BASE_URL)
+BACKEND_URL = BASE_URL + _END_POINT

@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import logging
-from typing import List, Optional
+from typing import Iterable, Optional, Union
 
 import requests
 
@@ -27,12 +27,11 @@ _LOGGER = logging.getLogger(__name__)
 
 
 def package(
-    directory: Optional[str] = None,
     task: Optional[str] = None,
     dataset: Optional[str] = None,
     scenario: Optional[str] = None,
-    optimizing_metric: Optional[List[str]] = None,
-    return_directory: bool = False,
+    optimizing_metric: Optional[Union[Iterable[str], str]] = None,
+    **kwargs,
 ) -> str:
     """
     A function that returns appropriate SparseZoo stub or deployment directory given
@@ -43,10 +42,8 @@ def package(
     :param task: str A supported task
     :param dataset: str The public dataset this model was trained for
     :param scenario: Optional[str] `VNNI` or `vnni for a VNNI compatible machine
-    :param optimizing_metric: Optional[Iterable[str] representing different metrics
+    :param optimizing_metric: Optional[List[str], str] representing different metrics
         to prioritize for when searching for models
-    :param return_directory: boolean flag to return a deployment directory instead of
-        stub
     :return: The appropriate stub based on specified arguments
     """
     optimizing_metric = (

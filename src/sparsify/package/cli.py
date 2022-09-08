@@ -53,7 +53,7 @@ from typing import Any, Dict
 
 import click
 from sparsify import package
-from sparsify.utils import DATASETS, DEPLOYMENT_SCENARIOS, METRICS, TASKS
+from sparsify.utils import DATASETS, DEPLOYMENT_SCENARIOS, METRICS, TASKS_WITH_ALIASES
 from sparsify.version import __version__
 
 
@@ -76,7 +76,7 @@ def _create_dir_callback(ctx, param, value):
 @click.option(
     "--task",
     "-t",
-    type=click.Choice(TASKS, case_sensitive=False),
+    type=click.Choice(TASKS_WITH_ALIASES, case_sensitive=False),
     help="The task to find model for, must be specified if `--dataset` " "not provided",
 )
 @click.option(
@@ -126,9 +126,8 @@ def main():
     """
     Driver function
     """
-    args: Dict[str, Any] = parse_args.make_context(
-        "parse_args", args=sys.argv[1:]
-    ).params
+    context = parse_args.make_context("parse_args", args=sys.argv[1:])
+    args: Dict[str, Any] = context.params
     results = package(**args)
     print(f"Relevant Stubs: {results}")
 

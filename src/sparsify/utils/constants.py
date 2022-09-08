@@ -22,6 +22,7 @@ __all__ = [
     "TASK_REGISTRY",
     "DATASET_REGISTRY",
     "DATASETS",
+    "TASKS_WITH_ALIASES",
 ]
 
 METRICS = [
@@ -96,3 +97,9 @@ DATASET_REGISTRY = {
 
 TASKS = list(TASK_REGISTRY.keys())
 DATASETS = list(DATASET_REGISTRY.keys())
+
+TASKS_WITH_ALIASES = []
+
+for task in TASKS:
+    TASKS_WITH_ALIASES.append(task)
+    TASKS_WITH_ALIASES.extend(TASK_REGISTRY[task].aliases)

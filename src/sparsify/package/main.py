@@ -24,7 +24,7 @@ _LOGGER = logging.getLogger(__file__)
 
 def package(*args, **kwargs):
     """
-    A function that returns a deployment directory given the task or dataset,
+    A function that returns relevant sparsezoo stubs given the task or dataset,
     and an optimizing criterion
     """
     print("Package will be invoked")

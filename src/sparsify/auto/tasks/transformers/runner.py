@@ -98,7 +98,7 @@ class _TransformersRunner(TaskRunner):
         Update run args in the event of an out of memory error, to reduce memory usage
         """
         self.train_args.per_device_train_batch_size //= 2
-        # self.train_args.gradient_accumulation_steps *= 2
+        self.train_args.gradient_accumulation_steps *= 2
         if (
             self.train_args.per_device_eval_batch_size
             > self.train_args.per_device_train_batch_size

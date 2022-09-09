@@ -100,38 +100,38 @@ class ErrorHandler:
 
         :param exception: raised exception or None (if the run was successful)
         """
-        if exception:
-            # if torch distributed exception thrown, attempt to reconstruct
-            # original exception
-            if self.distributed_training and isinstance(
-                exception,
-                torch.distributed.elastic.multiprocessing.errors.ChildFailedError,
-            ):
-                # Grabbing exception only from first worker
-                _, first_error = exception.get_first_failure()
-                if isinstance(first_error.message, dict):
-                    message = first_error.message["message"].split(": ")
-                    if message[0] in self._python_exceptions:
-                        exception = self._python_exceptions[message[0]](message[1])
+        if exception is None:
+            self._caught_memory_error_on_last_attempt = False
+            return
 
-            # Check if an out of memory error was thrown by comparing error message with
-            # substrings that are known to represent out of memory errors
-            if isinstance(exception, RuntimeError) and (
-                any(
-                    [
-                        memory_substring in exception.args[0]
-                        for memory_substring in MEMORY_ERROR_SUBSTRINGS
-                    ]
-                )
-            ):
-                self._caught_memory_errors.append(exception)
-                self._caught_memory_error_on_last_attempt = True
+        # if torch distributed exception thrown, attempt to reconstruct
+        # original exception
+        if self.distributed_training and isinstance(
+            exception,
+            torch.distributed.elastic.multiprocessing.errors.ChildFailedError,
+        ):
+            # Grabbing exception only from first worker
+            _, first_error = exception.get_first_failure()
+            if isinstance(first_error.message, dict):
+                message = first_error.message["message"].split(": ")
+                if message[0] in self._python_exceptions:
+                    exception = self._python_exceptions[message[0]](message[1])
 
-            else:
-                self._caught_runtime_errors.append(exception)
-                self._caught_memory_error_on_last_attempt = False
+        # Check if an out of memory error was thrown by comparing error message with
+        # substrings that are known to represent out of memory errors
+        if isinstance(exception, RuntimeError) and (
+            any(
+                [
+                    memory_substring in exception.args[0]
+                    for memory_substring in MEMORY_ERROR_SUBSTRINGS
+                ]
+            )
+        ):
+            self._caught_memory_errors.append(exception)
+            self._caught_memory_error_on_last_attempt = True
 
         else:
+            self._caught_runtime_errors.append(exception)
             self._caught_memory_error_on_last_attempt = False
 
     def is_memory_error(self) -> bool:

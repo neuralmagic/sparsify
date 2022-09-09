@@ -25,7 +25,7 @@ class BaseArgs(BaseModel):
     Base class for representing integration stage args (train or export)
     """
 
-    def serialize_to_cli_string(self, dashed_keywords) -> List[str]:
+    def serialize_to_cli_string(self, underscores_to_dashes) -> List[str]:
         """
         Handles logic for converting pydantic classes into valid argument strings.
         This should set arg standards for all integrations and should generally not
@@ -37,7 +37,7 @@ class BaseArgs(BaseModel):
         args_string_list = []
         for key, value in self.dict().items():
             key = "--" + key
-            key = key.replace("_", "-") if dashed_keywords else key
+            key = key.replace("_", "-") if underscores_to_dashes else key
             # Handles bool type args (e.g. --do-train)
             if isinstance(value, bool):
                 if value:

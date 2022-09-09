@@ -27,7 +27,7 @@ MEMORY_ERROR_SUBSTRINGS = [
 ]
 
 
-class AutoErrorHandler:
+class ErrorHandler:
     """
     Class for managing raised exceptions when invoking sparseml runs. Utility includes
     processing raised errors into desired format and providing error history and info
@@ -40,7 +40,7 @@ class AutoErrorHandler:
             "NM_MAX_SCRIPT_MEMORY_STEPDOWNS", 10
         )
 
-        # list dictionary of built in python exceptions for rebuilding exceptions
+        # dictionary of built in python exceptions for rebuilding exceptions
         # caught by torch ddp
         self._python_exceptions = {
             name: value

@@ -36,12 +36,7 @@ except ImportError:
 from pydantic import BaseModel
 from sparsify.auto.api import APIOutput, Metrics
 from sparsify.auto.configs import SparsificationTrainingConfig
-from sparsify.auto.utils import (
-    AutoErrorHandler,
-    HardwareSpecs,
-    TaskName,
-    analyze_hardware,
-)
+from sparsify.auto.utils import ErrorHandler, HardwareSpecs, TaskName, analyze_hardware
 
 
 __all__ = ["retry_stage", "TaskRunner"]
@@ -67,7 +62,7 @@ def retry_stage(stage: str):
                 )
 
             # initialize error handling
-            error_handler = AutoErrorHandler(distributed_training=not disable_ddp)
+            error_handler = ErrorHandler(distributed_training=not disable_ddp)
 
             # attempt run and catch errors until success or maximum number of attempts
             # exceeded

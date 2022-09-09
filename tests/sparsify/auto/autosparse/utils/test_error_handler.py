@@ -18,7 +18,7 @@ from typing import Any, List
 
 import pytest
 
-from sparsify.auto.utils import MEMORY_ERROR_SUBSTRINGS, AutoErrorHandler
+from sparsify.auto.utils import MEMORY_ERROR_SUBSTRINGS, ErrorHandler
 
 
 try:
@@ -99,7 +99,7 @@ def test_error_handler(expected_outcome, errors, is_oom_error):
     assert len(errors) == len(is_oom_error)
     assert expected_outcome in _EXPECTED_OUTCOMES.values()
 
-    error_handler = AutoErrorHandler(distributed_training=not disable_ddp)
+    error_handler = ErrorHandler(distributed_training=not disable_ddp)
 
     # Test expected field intialization
     assert error_handler.max_retry_attempts > 0

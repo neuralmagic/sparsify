@@ -12,13 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import argparse
-import json
 import os
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, Optional
 
-from pydantic import BaseModel, Field, validator
-from sparsify.utils import TASK_REGISTRY
+from pydantic import BaseModel, Field
+from sparsify.utils import BaseCLIArgs
 
 
 __all__ = ["APIArgs", "Metrics", "APIOutput", "USER_OUT_DIRECTORY"]
@@ -26,15 +24,11 @@ __all__ = ["APIArgs", "Metrics", "APIOutput", "USER_OUT_DIRECTORY"]
 USER_OUT_DIRECTORY = "./output"
 
 
-class APIArgs(BaseModel):
+class APIArgs(BaseCLIArgs):
     """
     Class containing the front-end arguments for Sparsify.Auto
     """
 
-    task: str = Field(
-        title="task",
-        description="task to train the sparsified model on",
-    )
     dataset: str = Field(
         title="dataset",
         description="path to dataset to train on",
@@ -43,16 +37,6 @@ class APIArgs(BaseModel):
         title="save_directory",
         description="Absolute path to save directory",
         default=USER_OUT_DIRECTORY,
-    )
-    performance: Union[str, float] = Field(
-        title="performance",
-        description=(
-            "Preferred tradeoff between accuracy and performance. Can be a string or a "
-            "float value in the range [0, 1]. Currently supported strings (and their "
-            "respective float values are `accuracy` (0), `balanced` (0.5), and "
-            "`performant` (1.0)"
-        ),
-        default="balanced",
     )
     base_model: Optional[str] = Field(
         title="base_model",
@@ -88,30 +72,6 @@ class APIArgs(BaseModel):
         description="optional task specific arguments to add to config",
         default_factory=dict,
     )
-
-    @validator("task")
-    def task_must_be_registered(cls, v):
-        for task in TASK_REGISTRY.values():
-            if v == task:
-                return task.name
-        nl = "\n"  # backslash not allowed in f string expression
-        raise ValueError(
-            f"Task '{v}' is not a recognize task. List of supported domains and and "
-            "their accepted task name aliases:"
-            f"{nl.join([task.pretty_print() for task in TASK_REGISTRY.values()])}"
-        )
-
-    @classmethod
-    def from_cli(cls, args: Optional[List[str]] = None):
-        """
-        :param args: optional args list to override sys.argv with. Default None
-        :return: APIArgs object populated from cli args
-        """
-        arg_parser = argparse.ArgumentParser()
-        _add_schema_to_parser(arg_parser, cls)
-        parsed_args = arg_parser.parse_args(args)
-        _convert_dict_args(parsed_args, cls)
-        return cls(**vars(parsed_args))
 
 
 class Metrics(BaseModel):
@@ -182,50 +142,3 @@ class APIOutput(BaseModel):
             "You can find your sparsified model and everything you need to deploy "
             f"in {self.model_directory}\n"
         )
-
-
-def _add_schema_to_parser(parser: argparse.ArgumentParser, model: BaseModel):
-    # populate ArgumentParser args from pydantic model
-    fields = model.__fields__
-    for name, field in fields.items():
-        argument_kwargs = {}
-
-        is_dict = field.default_factory and isinstance(field.default_factory(), dict)
-        is_union = getattr(field.type_, "__origin__", None) is Union
-
-        argument_kwargs["type"] = (
-            str if is_dict else _str_number_union_parser if is_union else field.type_
-        )
-        if field.required:
-            argument_kwargs["required"] = True
-        else:
-            argument_kwargs["default"] = (
-                field.default if not is_dict else str(field.default_factory())
-            )
-
-        parser.add_argument(
-            f"--{name}", dest=name, help=field.field_info.description, **argument_kwargs
-        )
-
-
-def _str_number_union_parser(value: str):
-    # type conversion function for "Union" type support with argparse. Supports string
-    # and numeric values only
-    if value.isdigit():
-        return int(value)
-    try:
-        return float(value)
-    except ValueError:
-        return value
-
-
-def _convert_dict_args(args: argparse.ArgumentParser, model: BaseModel):
-    # convert argparse args that should be dicts from str
-    fields = model.__fields__
-    for name, field in fields.items():
-        is_dict = field.default_factory and isinstance(field.default_factory(), dict)
-        if not is_dict or not hasattr(args, name):
-            # field is not a dict field or field not parsed
-            continue
-        field_val_str = getattr(args, name).replace("'", '"')  # use double quotes
-        setattr(args, name, json.loads(field_val_str))

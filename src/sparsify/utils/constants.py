@@ -30,8 +30,9 @@ METRICS = [
     "f1",
     "recall",
     "mAP",
-    "compression",
+    "throughput",
     "latency",
+    "compression",
     "file_size",
     "memory_usage",
 ]

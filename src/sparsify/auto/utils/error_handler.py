@@ -28,7 +28,11 @@ MEMORY_ERROR_SUBSTRINGS = [
 
 
 class AutoErrorHandler:
-    """ """
+    """
+    Class for managing raised exceptions when invoking sparseml runs. Utility includes
+    processing raised errors into desired format and providing error history and info
+    needed to make decisions on sparseml run re-attempts and sparsify run termination
+    """
 
     def __init__(self, distributed_training=False):
         self._max_retry_attempts = os.environ.get("NM_MAX_SCRIPT_RETRY_ATTEMPTS", 3)

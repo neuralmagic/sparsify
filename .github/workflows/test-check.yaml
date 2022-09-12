@@ -42,5 +42,5 @@ jobs:
         run: make test
       - name: "🔬 Running package tests"
         run: make test TARGETS=package
-      - name: "🔬 Running base tests"
+      - name: "🔬 Running auto tests"
         run: make test TARGETS=auto

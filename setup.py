@@ -28,6 +28,7 @@ exec(open(os.path.join("src", "sparsify", "version.py")).read())
 print(f"loaded version {version} from src/sparsify/version.py")
 version_nm_deps = f"{version_major_minor}.0"
 
+
 _PACKAGE_NAME = "sparsify" if is_release else "sparsify-nightly"
 
 

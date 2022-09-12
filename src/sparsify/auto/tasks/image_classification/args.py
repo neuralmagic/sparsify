@@ -22,7 +22,8 @@ from sparsify.auto.tasks import BaseArgs
 
 
 __all__ = [
-    "ImageClassificationTrainArgs",
+    "ImageClassificationTrainArgsCLI",
+    "ImageClassificationTrainArgsAPI",
     "ImageClassificationExportArgs",
 ]
 
@@ -65,7 +66,7 @@ class _ImageClassificationBaseArgs(BaseArgs):
     save_dir: Union[str, Path] = Field(default=ROOT)
 
 
-class ImageClassificationTrainArgs(_ImageClassificationBaseArgs):
+class _ImageClassificationBaseTrainArgs(_ImageClassificationBaseArgs):
     train_batch_size: int = Field(description="batch size to use in train loop")
     test_batch_size: int = Field(description="batch size to use in eval loop")
     init_lr: float = Field(default=1e-9, description="will be overwritten by recipe")
@@ -78,14 +79,6 @@ class ImageClassificationTrainArgs(_ImageClassificationBaseArgs):
     eval_mode: bool = Field(default=False, description="defaults to only run eval")
     optim: str = Field(
         default="SGD", description="torch optimizer class to use, default SGD"
-    )
-    optim_args: Dict[str, Any] = Field(
-        default_factory=lambda: {
-            "momentum": 0.9,
-            "nesterov": True,
-            "weight_decay": 0.0001,
-        },
-        description="json string of arguments to optimizer class",
     )
     logs_dir: Union[str, Path] = Field(
         default=ROOT / "tensorboard_logs",
@@ -122,7 +115,7 @@ class ImageClassificationTrainArgs(_ImageClassificationBaseArgs):
     )
 
 
-class ImageClassificationTrainArgsCLI(ImageClassificationTrainArgs):
+class ImageClassificationTrainArgsCLI(_ImageClassificationBaseTrainArgs):
     optim_args: str = Field(
         default=json.dumps(
             {
@@ -131,6 +124,17 @@ class ImageClassificationTrainArgsCLI(ImageClassificationTrainArgs):
                 "weight_decay": 0.0001,
             }
         ),
+        description="json string of arguments to optimizer class",
+    )
+
+
+class ImageClassificationTrainArgsAPI(_ImageClassificationBaseTrainArgs):
+    optim_args: Dict[str, Any] = Field(
+        default_factory=lambda: {
+            "momentum": 0.9,
+            "nesterov": True,
+            "weight_decay": 0.0001,
+        },
         description="json string of arguments to optimizer class",
     )
 

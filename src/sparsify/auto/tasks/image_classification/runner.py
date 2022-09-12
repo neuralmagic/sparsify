@@ -31,9 +31,9 @@ from sparsify.auto.tasks.runner import TaskRunner, disable_ddp
 from sparsify.auto.utils import HardwareSpecs
 
 
-if disable_ddp:
+if disable_ddp or os.environ.get("NM_AUTO_DISABLE_DDP"):
     from sparsify.auto.tasks.image_classification.args import (
-        ImageClassificationTrainArgs,
+        ImageClassificationTrainArgsAPI as ImageClassificationTrainArgs,
     )
 else:
     from sparsify.auto.tasks.image_classification.args import (

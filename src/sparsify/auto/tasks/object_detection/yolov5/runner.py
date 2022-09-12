@@ -34,8 +34,10 @@ from sparsify.auto.utils import HardwareSpecs
 from yolov5.export import load_checkpoint
 
 
-if disable_ddp:
-    from sparsify.auto.tasks.object_detection.yolov5 import Yolov5TrainArgs
+if disable_ddp or os.environ.get("NM_AUTO_DISABLE_DDP"):
+    from sparsify.auto.tasks.object_detection.yolov5 import (
+        Yolov5TrainArgsAPI as Yolov5TrainArgs,
+    )
 else:
     from sparsify.auto.tasks.object_detection.yolov5 import (
         Yolov5TrainArgsCLI as Yolov5TrainArgs,

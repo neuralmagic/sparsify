@@ -123,8 +123,8 @@ class TaskRunner:
 
         # distributed training supported for torch>=1.9, as ddp error propagation was
         # introduced in 1.9
-        self.use_distributed_training = (
-            not (disable_ddp or os.environ.get("NM_AUTO_DISABLE_DDP"))
+        self.use_distributed_training = not (
+            disable_ddp or os.environ.get("NM_AUTO_DISABLE_DDP")
         )
 
         self.dashed_cli_kwargs = False  # True if CLI args require "-" as word separator

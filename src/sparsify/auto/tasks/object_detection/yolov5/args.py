@@ -19,12 +19,12 @@ from pydantic import Field
 from sparsify.auto.tasks import BaseArgs
 
 
-__all__ = ["Yolov5TrainArgs", "Yolov5TrainArgsCLI", "Yolov5ExportArgs"]
+__all__ = ["Yolov5TrainArgsCLI", "Yolov5TrainArgsAPI", "Yolov5ExportArgs"]
 
 ROOT = Path("yolov5")
 
 
-class Yolov5TrainArgs(BaseArgs):
+class _Yolov5BaseTrainArgs(BaseArgs):
     weights: Union[str, Path] = Field(default="", description="initial weights path")
     cfg: Union[str, Path] = Field(default="", description="model.yaml path")
     data: Union[str, Path] = Field(
@@ -55,9 +55,6 @@ class Yolov5TrainArgs(BaseArgs):
     nosave: bool = Field(default=False, description="only save final checkpoint")
     noval: bool = Field(default=False, description="only validate final epoch")
     noautoanchor: bool = Field(default=False, description="disable AutoAnchor")
-    evolve: Optional[int] = Field(
-        default=None, description="evolve hyperparameters for x generations"
-    )
     bucket: str = Field(default="", description="gsutil bucket")
     cache: str = Field(
         default="ram", description='--cache images in "ram" (default) or "disk"'
@@ -89,9 +86,6 @@ class Yolov5TrainArgs(BaseArgs):
     label_smoothing: float = Field(default=0.0, description="Label smoothing epsilon")
     patience: int = Field(
         default=0, description="EarlyStopping patience (epochs without improvement)"
-    )
-    freeze: List[int] = Field(
-        default=[0], description="Freeze layers: backbone=10, first3=0 1 2"
     )
     save_period: int = Field(
         default=-1, description="Save checkpoint every x epochs (disabled if < 1)"
@@ -125,12 +119,21 @@ class Yolov5TrainArgs(BaseArgs):
             )
 
 
-class Yolov5TrainArgsCLI(Yolov5TrainArgs):
+class Yolov5TrainArgsCLI(_Yolov5BaseTrainArgs):
     evolve: Tuple[bool, int] = Field(
         default=[False, 300], description="evolve hyperparameters for x generations"
     )
     freeze: str = Field(
         default="0", description="Freeze layers: backbone=10, first3=0 1 2"
+    )
+
+
+class Yolov5TrainArgsAPI(_Yolov5BaseTrainArgs):
+    evolve: Optional[int] = Field(
+        default=None, description="evolve hyperparameters for x generations"
+    )
+    freeze: List[int] = Field(
+        default=[0], description="Freeze layers: backbone=10, first3=0 1 2"
     )
 
 

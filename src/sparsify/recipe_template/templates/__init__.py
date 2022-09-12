@@ -13,3 +13,5 @@
 # limitations under the License.
 
 # flake8: noqa
+
+from .templates import PRUNE_TEMPLATE, QUANT_TEMPLATE, PRUNE_QUANT_TEMPLATE

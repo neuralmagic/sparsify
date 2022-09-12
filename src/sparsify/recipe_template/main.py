@@ -12,11 +12,37 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
+from typing import Optional
+from sparsify.recipe_template.templates import (
+    PRUNE_TEMPLATE, QUANT_TEMPLATE,
+    PRUNE_QUANT_TEMPLATE,
+)
+
 __all__ = ["recipe_template"]
 
 
-def recipe_template(*args, **kwargs):
+def recipe_template(
+    pruning: Optional[str] = "false",
+    quantization: Optional[str] = "false",
+    **kwargs,
+):
     """
-    Utility function to return a recipe template
+    Utility function to return a valid recipe
+
+    :param pruning: An Optional string representing which pruning algo must be applied,
+        when `true` Gradual Magnitude Pruning is applied. (As of now only GMP supported)
+    :param quantization: An Optional string representing the kind of quantization to
+        be applied or not, set to `vnni` for 4-block, `false` to skip quantization
+        altogether
+
+    :return: A valid yaml string representing the recipe
     """
-    raise NotImplementedError
+
+    if pruning != "false" and quantization != "false":
+        return PRUNE_QUANT_TEMPLATE
+
+    elif pruning != "false":
+        return PRUNE_TEMPLATE
+    else:
+        return QUANT_TEMPLATE

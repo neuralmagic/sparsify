@@ -15,6 +15,7 @@
 # limitations under the License.
 
 import logging
+import sys
 from typing import Any, Dict
 
 import click
@@ -27,12 +28,6 @@ _LOGGER = logging.getLogger(__name__)
 
 @click.command()
 @click.version_option(version=__version__)
-@click.argument(
-    "model",
-    type=click.Path(dir_okay=False, file_okay=True, exists=True),
-    default=None,
-    required=False,
-)
 @click.option(
     "--pruning",
     "-p",
@@ -80,7 +75,8 @@ def main():
     """
     Driver function
     """
-    args: Dict[str, Any] = parse_args()
+    context = parse_args.make_context("parse_args", args=sys.argv[1:])
+    args: Dict[str, Any] = context.params
     template = recipe_template(**args)
     print(f"Template:\n{template}")
 

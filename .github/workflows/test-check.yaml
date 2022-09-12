@@ -16,28 +16,31 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       python-diff: ${{ steps.python-check.outputs.output }}
-      full-check: ${{ steps.full-check.outputs.output }}
     steps:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
       - name: "Checking if sparsify python code was changed"
         id: python-check
+        # TODO: delete sparsify.alpha reference after merge
         run: >
-          ((git diff --name-only origin/main HEAD | grep -E "[src|tests]/sparsify|setup.py")
+          ((git diff --name-only origin/sparsify.alpha HEAD | grep -E "[src|tests]/sparsify|setup.py")
           || (echo $GITHUB_REF | grep -E "refs/heads/[release/|main]"))
           && echo "::set-output name=output::1" || echo "::set-output name=output::0"
   python-tests:
     runs-on: ubuntu-latest
     env:
       SPARSEZOO_TEST_MODE: "true"
+      SPARSEZOO_API_URL: https://staging-api.neuralmagic.com
     needs: test-setup
     if: ${{needs.test-setup.outputs.python-diff == 1}}
     steps:
       - uses: actions/checkout@v2
       - name: "⚙️ Install dependencies"
         run: pip3 install -e .[dev]
-      - name: "🔬 Running tests"
+      - name: "🔬 Running base tests"
         run: make test
-        env:
-          SPARSEZOO_API_URL: https://staging-api.neuralmagic.com
+      - name: "🔬 Running package tests"
+        run: make test TARGETS=package
+      - name: "🔬 Running base tests"
+        run: make test TARGETS=auto

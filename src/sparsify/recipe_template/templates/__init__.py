@@ -14,4 +14,8 @@
 
 # flake8: noqa
 
-from .templates import PRUNE_TEMPLATE, QUANT_TEMPLATE, PRUNE_QUANT_TEMPLATE
+from .templates import (
+    PRUNE_TEMPLATE,
+    PRUNE_QUANT_TEMPLATE,
+    QUANT_TEMPLATE,
+)

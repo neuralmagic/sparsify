@@ -14,10 +14,13 @@
 
 
 from typing import Optional
+
 from sparsify.recipe_template.templates import (
-    PRUNE_TEMPLATE, QUANT_TEMPLATE,
     PRUNE_QUANT_TEMPLATE,
+    PRUNE_TEMPLATE,
+    QUANT_TEMPLATE,
 )
+
 
 __all__ = ["recipe_template"]
 

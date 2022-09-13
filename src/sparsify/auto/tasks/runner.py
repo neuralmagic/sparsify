@@ -27,11 +27,10 @@ import torch
 try:
     from torch.distributed.run import main as launch_ddp
 
-    disable_ddp = False
+    import_ddp_error = None
 
-except ImportError:
-    disable_ddp = True
-
+except ImportError as ddp_error:
+    import_ddp_error = ddp_error
 
 from pydantic import BaseModel
 from sparsify.auto.api import APIOutput, Metrics
@@ -39,8 +38,9 @@ from sparsify.auto.configs import SparsificationTrainingConfig
 from sparsify.auto.utils import ErrorHandler, HardwareSpecs, TaskName, analyze_hardware
 
 
-__all__ = ["retry_stage", "TaskRunner"]
+__all__ = ["retry_stage", "TaskRunner", "DDP_ENABLED"]
 
+DDP_ENABLED = not (import_ddp_error or os.environ.get("NM_AUTO_DISABLE_DDP"))
 _REGISTERED_TASKS = {}
 
 
@@ -62,7 +62,7 @@ def retry_stage(stage: str):
                 )
 
             # initialize error handling
-            error_handler = ErrorHandler(distributed_training=not disable_ddp)
+            error_handler = ErrorHandler(distributed_training=DDP_ENABLED)
 
             # attempt run and catch errors until success or maximum number of attempts
             # exceeded
@@ -123,9 +123,7 @@ class TaskRunner:
 
         # distributed training supported for torch>=1.9, as ddp error propagation was
         # introduced in 1.9
-        self.use_distributed_training = not (
-            disable_ddp or os.environ.get("NM_AUTO_DISABLE_DDP")
-        )
+        self.use_distributed_training = DDP_ENABLED
 
         self.dashed_cli_kwargs = False  # True if CLI args require "-" as word separator
 

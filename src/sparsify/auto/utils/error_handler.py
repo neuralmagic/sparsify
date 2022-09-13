@@ -178,7 +178,7 @@ class ErrorHandler:
                 )
 
         # Run failed due to memory error that couldn't be overcome
-        elif self._max_memory_stepdowns >= self._max_memory_stepdowns:
+        elif len(self._caught_memory_errors) >= self._max_memory_stepdowns:
             raise RuntimeError(
                 "Failed to fit model and data into memory after "
                 f"stepping down memory {len(self._caught_memory_errors)} "

@@ -27,17 +27,17 @@ from sparseml.pytorch.image_classification.train import main as train_hook
 from sparsify.auto.api import Metrics
 from sparsify.auto.configs import SparsificationTrainingConfig
 from sparsify.auto.tasks.image_classification.args import ImageClassificationExportArgs
-from sparsify.auto.tasks.runner import TaskRunner, disable_ddp
+from sparsify.auto.tasks.runner import DDP_ENABLED, TaskRunner
 from sparsify.auto.utils import HardwareSpecs
 
 
-if disable_ddp or os.environ.get("NM_AUTO_DISABLE_DDP"):
+if DDP_ENABLED:
     from sparsify.auto.tasks.image_classification.args import (
-        ImageClassificationTrainArgsAPI as ImageClassificationTrainArgs,
+        ImageClassificationTrainArgsCLI as ImageClassificationTrainArgs,
     )
 else:
     from sparsify.auto.tasks.image_classification.args import (
-        ImageClassificationTrainArgsCLI as ImageClassificationTrainArgs,
+        ImageClassificationTrainArgsAPI as ImageClassificationTrainArgs,
     )
 
 

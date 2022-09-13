@@ -29,18 +29,18 @@ from sparseml.yolov5.scripts import train as train_hook
 from sparsify.auto.api import Metrics
 from sparsify.auto.configs import SparsificationTrainingConfig
 from sparsify.auto.tasks.object_detection.yolov5 import Yolov5ExportArgs
-from sparsify.auto.tasks.runner import TaskRunner, disable_ddp
+from sparsify.auto.tasks.runner import DDP_ENABLED, TaskRunner
 from sparsify.auto.utils import HardwareSpecs
 from yolov5.export import load_checkpoint
 
 
-if disable_ddp or os.environ.get("NM_AUTO_DISABLE_DDP"):
+if DDP_ENABLED:
     from sparsify.auto.tasks.object_detection.yolov5 import (
-        Yolov5TrainArgsAPI as Yolov5TrainArgs,
+        Yolov5TrainArgsCLI as Yolov5TrainArgs,
     )
 else:
     from sparsify.auto.tasks.object_detection.yolov5 import (
-        Yolov5TrainArgsCLI as Yolov5TrainArgs,
+        Yolov5TrainArgsAPI as Yolov5TrainArgs,
     )
 
 

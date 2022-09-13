@@ -13,6 +13,7 @@
 # limitations under the License.
 
 
+import os
 from itertools import cycle, islice
 from typing import Any, List
 
@@ -24,10 +25,12 @@ from sparsify.auto.utils import MEMORY_ERROR_SUBSTRINGS, ErrorHandler
 try:
     from torch.distributed.run import main  # noqa F401
 
-    disable_ddp = False
+    import_ddp_error = None
 
-except ImportError:
-    disable_ddp = True
+except ImportError as ddp_error:
+    import_ddp_error = ddp_error
+
+DDP_ENABLED = not (import_ddp_error or os.environ.get("NM_AUTO_DISABLE_DDP"))
 
 
 _EXPECTED_OUTCOMES = {
@@ -99,7 +102,7 @@ def test_error_handler(expected_outcome, errors, is_oom_error):
     assert len(errors) == len(is_oom_error)
     assert expected_outcome in _EXPECTED_OUTCOMES.values()
 
-    error_handler = ErrorHandler(distributed_training=not disable_ddp)
+    error_handler = ErrorHandler(distributed_training=DDP_ENABLED)
 
     # Test expected field intialization
     assert error_handler.max_retry_attempts > 0
@@ -107,7 +110,7 @@ def test_error_handler(expected_outcome, errors, is_oom_error):
     assert len(error_handler.caught_runtime_errors) == 0
     assert len(error_handler.caught_memory_errors) == 0
     assert not error_handler.is_memory_error()
-    assert error_handler.distributed_training == (not disable_ddp)
+    assert error_handler.distributed_training == (DDP_ENABLED)
     assert not error_handler.max_attempts_exceeded()
 
     # expected failure after too many attempts

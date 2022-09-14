@@ -202,7 +202,7 @@ class Yolov5Runner(TaskRunner):
         elif os.path.exists(self.train_args.project) and os.path.isdir(
             self.train_args.project
         ):
-            shutil.rmtree(os.path.dirname(self.train_args.project))
+            shutil.rmtree(self.train_args.project)
 
     def _update_export_args_post_failure(self, error_type: Exception):
         """

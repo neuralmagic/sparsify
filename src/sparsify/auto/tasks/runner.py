@@ -15,6 +15,7 @@
 import gc
 import os
 import shutil
+import socket
 import tempfile
 import warnings
 from abc import abstractmethod
@@ -213,6 +214,7 @@ class TaskRunner:
             "--no_python",
             "--nproc_per_node",
             "auto",
+            f"--master_port={_get_open_port_()}",
             self.sparseml_train_entrypoint,
         ]
         ddp_args += self.train_args.serialize_to_cli_string(self.dashed_cli_kwargs)
@@ -423,3 +425,13 @@ class TaskRunner:
         raise NotImplementedError(
             f"_get_output_files() missing implementation for task {self.task}"
         )
+
+
+def _get_open_port_():
+    """
+    Find random open port. Used to circumvent issue with ddp trying to re-use
+    the same port between run attempts.
+    """
+    sock = socket.socket()
+    sock.bind(("", 0))
+    return sock.getsockname()[1]

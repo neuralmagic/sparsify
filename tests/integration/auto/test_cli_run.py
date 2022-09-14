@@ -47,7 +47,7 @@ def _find_file_recursively(directory: str, file_name_or_extension: str) -> bool:
                 "--save_directory",
                 f"{_OUTPUT_DIRECTORY}",
                 "--kwargs",
-                (str({"epochs": 1, "batch_size": 32, "project": _RUN_DIRECTORY})),
+                (str({"epochs": 1, "batch_size": 64, "project": _RUN_DIRECTORY})),
             ],
             ["last.pt", "last.onnx"],
         ),

@@ -28,12 +28,29 @@ from pydantic import BaseModel
 from sparsify.auto.api import APIOutput, Metrics
 from sparsify.auto.configs import SparsificationTrainingConfig
 from sparsify.auto.utils import HardwareSpecs, TaskName, analyze_hardware
+from sparsify.utils import TASK_REGISTRY
 
 
-__all__ = ["MAX_RETRY_ATTEMPTS", "retry_stage", "TaskRunner"]
+__all__ = [
+    "MAX_RETRY_ATTEMPTS",
+    "MAX_MEMORY_STEPDOWNS",
+    "SUPPORTED_TASKS",
+    "retry_stage",
+    "TaskRunner",
+]
 
 MAX_RETRY_ATTEMPTS = os.environ.get("NM_MAX_SCRIPT_RETRY_ATTEMPTS", 3)  # default: 3
 MAX_MEMORY_STEPDOWNS = os.environ.get("NM_MAX_SCRIPT_MEMORY_STEPDOWNS", 10)
+SUPPORTED_TASKS = [
+    TASK_REGISTRY[task]
+    for task in [
+        "image_classification",
+        "object_detection",
+        "question_answering",
+        "text_classification",
+        "token_classification",
+    ]
+]
 _TASK_RUNNER_IMPLS = {}
 
 
@@ -165,12 +182,7 @@ class TaskRunner:
         :param config: training config defining the run
         """
 
-        if config.task not in _TASK_RUNNER_IMPLS:
-            raise ValueError(
-                f"Unknown task {config.task}. Task runners must be declared with the "
-                "TaskRunner.register decorator. Currently registered tasks: "
-                f"{list(_TASK_RUNNER_IMPLS.keys())}"
-            )
+        _dynamically_register_integration_runner(config.task)
 
         task_runner_constructor = _TASK_RUNNER_IMPLS[config.task]
 
@@ -247,19 +259,19 @@ class TaskRunner:
         )
 
     @staticmethod
-    def task_list() -> List[TaskName]:
+    def supported_tasks() -> List[TaskName]:
         """
         Return a list of registered tasks
         """
-        return list(_TASK_RUNNER_IMPLS.keys())
+        return SUPPORTED_TASKS
 
     @staticmethod
-    def task_aliases_dict() -> Dict[str, List[str]]:
+    def supported_task_aliases() -> Dict[str, List[str]]:
         """
         Return a dictionary mapping the default task name (str) to a list of task
         aliases (str)
         """
-        return {str(task): task.aliases for task in _TASK_RUNNER_IMPLS}
+        return {str(task): task.aliases for task in SUPPORTED_TASKS}
 
     @abstractmethod
     def run(self) -> APIOutput:
@@ -277,7 +289,7 @@ class TaskRunner:
         Update run directories to save to the temporary run directory
         """
         raise NotImplementedError(
-            "update_run_directory_args() missing implementation for task {self.task}"
+            f"update_run_directory_args() missing implementation for task {self.task}"
         )
 
     def completion_check(self, stage: str) -> bool:
@@ -314,7 +326,7 @@ class TaskRunner:
             return self._update_export_args_post_failure(error_type)
 
         raise ValueError(
-            "Unrecognized stage value: {stage}. Supported values are train and export"
+            f"Unrecognized stage value: {stage}. Supported values are train and export"
         )
 
     def tune_args_for_hardware(self, hardware_specs: HardwareSpecs):
@@ -322,7 +334,7 @@ class TaskRunner:
         Update run args based on detected hardware specifications
         """
         raise NotImplementedError(
-            "tune_args_for_hardware() missing implementation for task {self.task}"
+            f"tune_args_for_hardware() missing implementation for task {self.task}"
         )
 
     def memory_stepdown(self):
@@ -330,7 +342,7 @@ class TaskRunner:
         Update run args in the event of an out of memory error, to reduce memory usage
         """
         raise NotImplementedError(
-            "memory_stepdown() missing implementation for task {self.task}"
+            f"memory_stepdown() missing implementation for task {self.task}"
         )
 
     def build_output(self) -> APIOutput:
@@ -428,4 +440,36 @@ class TaskRunner:
         """
         raise NotImplementedError(
             f"_get_output_files() missing implementation for task {self.task}"
+        )
+
+
+def _dynamically_register_integration_runner(task: str):
+    """
+    Dynamically import integration runner to trigger TaskRunner registration. This is
+    done to prevent auto-install of integration libraries, triggered by sparseml imports
+    """
+    if TASK_REGISTRY[task].domain == "nlp":
+        from sparsify.auto.tasks.transformers import (  # noqa F401
+            QuestionAnsweringRunner,
+        )
+    elif (
+        TASK_REGISTRY[task].domain == "cv"
+        and TASK_REGISTRY[task].sub_domain == "detection"
+    ):
+        from sparsify.auto.tasks.object_detection.yolov5 import (  # noqa F401
+            Yolov5Runner,
+        )
+    elif (
+        TASK_REGISTRY[task].domain == "cv"
+        and TASK_REGISTRY[task].sub_domain == "classification"
+    ):
+        from sparsify.auto.tasks.image_classification import (  # noqa F401
+            ImageClassificationRunner,
+        )
+
+    else:
+        raise ValueError(
+            f"Task {task} is not yet supported. TaskRunner implementation "
+            "missing. Currently registered tasks: "
+            f"{[str(task) for task in SUPPORTED_TASKS]}"
         )

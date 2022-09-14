@@ -116,14 +116,14 @@ class APIConfigCreator(ABC):
         return _register_config_creator_decorator
 
     @staticmethod
-    def task_list() -> List[TaskName]:
+    def supported_tasks() -> List[TaskName]:
         """
         Return a list of registered tasks
         """
         return list(str(key) for key in _CONFIG_CREATOR_IMPLS.keys())
 
     @staticmethod
-    def task_aliases_dict() -> Dict[str, List[str]]:
+    def supported_task_aliases() -> Dict[str, List[str]]:
         """
         Return a dictionary mapping the default task name (str) to a list of task
         aliases (str)

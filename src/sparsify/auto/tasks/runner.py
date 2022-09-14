@@ -459,10 +459,17 @@ def _dynamically_register_integration_runner(task: str):
         from sparsify.auto.tasks.object_detection.yolov5 import (  # noqa F401
             Yolov5Runner,
         )
+    elif (
+        TASK_REGISTRY[task].domain == "cv"
+        and TASK_REGISTRY[task].sub_domain == "classification"
+    ):
+        from sparsify.auto.tasks.image_classification import (  # noqa F401
+            ImageClassificationRunner,
+        )
 
     else:
         raise ValueError(
             f"Task {task} is not yet supported. TaskRunner implementation "
             "missing. Currently registered tasks: "
-            f"{SUPPORTED_TASKS}"
+            f"{[str(task) for task in SUPPORTED_TASKS]}"
         )

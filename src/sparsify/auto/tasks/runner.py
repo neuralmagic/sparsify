@@ -15,23 +15,33 @@
 import gc
 import os
 import shutil
+import socket
 import tempfile
 import warnings
 from abc import abstractmethod
-from collections import OrderedDict
 from functools import wraps
 from typing import Dict, List, Optional, Tuple
 
 import torch
 
+
+try:
+    from torch.distributed.run import main as launch_ddp
+
+    import_ddp_error = None
+
+except ImportError as ddp_error:
+    import_ddp_error = ddp_error
+
 from pydantic import BaseModel
 from sparsify.auto.api import APIOutput, Metrics
 from sparsify.auto.configs import SparsificationTrainingConfig
-from sparsify.auto.utils import HardwareSpecs, TaskName, analyze_hardware
+from sparsify.auto.utils import ErrorHandler, HardwareSpecs, TaskName, analyze_hardware
 from sparsify.utils import TASK_REGISTRY
 
 
 __all__ = [
+    "DDP_ENABLED",
     "MAX_RETRY_ATTEMPTS",
     "MAX_MEMORY_STEPDOWNS",
     "SUPPORTED_TASKS",
@@ -39,6 +49,7 @@ __all__ = [
     "TaskRunner",
 ]
 
+DDP_ENABLED = not (import_ddp_error or os.environ.get("NM_AUTO_DISABLE_DDP"))
 MAX_RETRY_ATTEMPTS = os.environ.get("NM_MAX_SCRIPT_RETRY_ATTEMPTS", 3)  # default: 3
 MAX_MEMORY_STEPDOWNS = os.environ.get("NM_MAX_SCRIPT_MEMORY_STEPDOWNS", 10)
 SUPPORTED_TASKS = [
@@ -54,104 +65,65 @@ SUPPORTED_TASKS = [
 _TASK_RUNNER_IMPLS = {}
 
 
-def retry_stage(max_attempts: int, stage: str):
+def retry_stage(stage: str):
     """
     Decorator function for catching and trying to continue failed sparseml runs
 
-    :param max_attempts: maximum number of times to retry
-    :param stage: name of stage to evalutate and potentially retry ('train', 'export')
+    :param stage: name of stage to evaluate and potentially retry ('train', 'export')
     """
 
     def _decorator(func):
         wraps(func)
 
         def _wrapper(self, *args, **kwargs):
+
             if not isinstance(self, TaskRunner):
                 raise RuntimeError(
                     f"retry_stage only supported for TaskRunner, found {type(self)}"
                 )
 
-            attempt_num = 0
-            memory_stepdowns_attempted = 0
-            errors = OrderedDict()  # 1-indexed mapping of attempt number to error
-            while attempt_num < max_attempts:
-                attempt_num += 1
+            # initialize error handling
+            error_handler = ErrorHandler(distributed_training=DDP_ENABLED)
+
+            # attempt run and catch errors until success or maximum number of attempts
+            # exceeded
+            while not error_handler.max_attempts_exceeded():
                 try:
                     out = func(self, *args, **kwargs)
+                    exception = None
                 except Exception as e:
-                    errors[attempt_num] = e
-                error = errors.get(attempt_num)
+                    exception = e
+
+                error_handler.save_error(exception)
 
                 # clear hanging memory
                 torch.cuda.empty_cache()
                 gc.collect()
 
-                # If run is verified as completed and no error was thrown, run is
+                # if run is verified as completed and no error was thrown, run is
                 # considered successful
-                if not error and self.completion_check(stage):
+                if not exception:
+                    if not self.completion_check(stage):
+                        warnings.warn(
+                            "Could not verify proper run completion. Attempting to "
+                            "return best model"
+                        )
                     return out
 
-                # Handle out of memory errors as a special case
-                if isinstance(error, RuntimeError) and (
-                    "CUDA out of memory" in error.args[0]
-                    or "Caught RuntimeError in replica" in error.args[0]
-                ):
-                    if memory_stepdowns_attempted < MAX_MEMORY_STEPDOWNS:
-                        warnings.warn(
-                            "Failed to fit model and data into memory. Cutting "
-                            "batch size by half to reduce memory usage"
-                        )
-                        self.memory_stepdown()
-                        memory_stepdowns_attempted += 1
-
-                        # remove error and attempt from regular error history
-                        del errors[attempt_num]
-                        attempt_num -= 1
-
-                    else:
-                        raise RuntimeError(
-                            "Failed to fit model and data into memory after "
-                            f"stepping down memory {memory_stepdowns_attempted} "
-                            "times"
-                        )
-
-                # Run did not succeed. Update args to attempt to resume run.
-                self.update_args_post_failure(stage, errors.get(attempt_num))
-
-            if not len(errors):
-                warnings.warn(
-                    "Could not verify proper run completion. Attempting to return best"
-                    "model"
-                )
-                return out
-
-            first_error = list(errors.values())[0]
-            # If identical errors raised, print error just once. Otherwise, enumerate
-            # errors in printout.
-            if all(
-                [
-                    (
-                        (type(error) == type(first_error))
-                        and (error.args == first_error.args)
+                # in the case of out of memory error, reduce run memory usage prior
+                # to new attempt
+                if error_handler.is_memory_error():
+                    warnings.warn(
+                        "Failed to fit model and data into memory. Cutting "
+                        "batch size by half to reduce memory usage"
                     )
-                    for error in errors.values()
-                ]
-            ):
-                raise RuntimeError(
-                    f"Run failed after {attempt_num} attempts with error: {first_error}"
-                )
+                    self.memory_stepdown()
 
-            else:
-                error_list = "\n".join(
-                    [
-                        f"Attempt {attempt_num}: {error}"
-                        for attempt_num, error in errors.items()
-                    ]
-                )
-                raise RuntimeError(
-                    f"Run failed after {attempt_num} with the following errors:\n"
-                    f"{error_list}"
-                )
+                # run did not succeed. Update args to attempt to resume run.
+                self.update_args_post_failure(stage, exception)
+
+            # run failed - raise exception summary for user
+            error_handler.raise_exception_summary()
 
         return _wrapper
 
@@ -169,10 +141,17 @@ class TaskRunner:
 
     def __init__(self, config: SparsificationTrainingConfig):
         self._config = config
+
+        # distributed training supported for torch>=1.9, as ddp error propagation was
+        # introduced in 1.9
+        self.use_distributed_training = DDP_ENABLED
+
+        self.dashed_cli_kwargs = False  # True if CLI args require "-" as word separator
+
         self.train_args, self.export_args = self.config_to_args(self.config)
 
-        hardware_specs = analyze_hardware()
-        self.tune_args_for_hardware(hardware_specs)
+        self.hardware_specs = analyze_hardware()
+        self.tune_args_for_hardware(self.hardware_specs)
 
     @staticmethod
     def create(config: SparsificationTrainingConfig) -> "TaskRunner":
@@ -239,24 +218,36 @@ class TaskRunner:
         return self._config
 
     @abstractmethod
-    @retry_stage(max_attempts=MAX_RETRY_ATTEMPTS, stage="train")
+    @retry_stage(stage="train")
+    def train_distributed(self):
+        """
+        Invoke sparseml training script via pytorch ddp API
+        """
+        ddp_args = [
+            "--no_python",
+            "--nproc_per_node",
+            "auto",
+            f"--master_port={_get_open_port_()}",
+            self.sparseml_train_entrypoint,
+        ]
+        ddp_args += self.train_args.serialize_to_cli_string(self.dashed_cli_kwargs)
+
+        launch_ddp(ddp_args)
+
+    @retry_stage(stage="train")
     def train(self):
         """
-        Run training
+        Run training through sparseml hook
         """
-        raise NotImplementedError(
-            f"train() missing implementation for task {self.task}"
-        )
+        self.train_hook(**self.train_args.dict())
 
     @abstractmethod
-    @retry_stage(max_attempts=MAX_RETRY_ATTEMPTS, stage="export")
+    @retry_stage(stage="export")
     def export(self):
         """
         Run export
         """
-        raise NotImplementedError(
-            f"export() missing implementation for task {self.task}"
-        )
+        self.export_hook(**self.export_args.dict())
 
     @staticmethod
     def supported_tasks() -> List[TaskName]:
@@ -280,8 +271,14 @@ class TaskRunner:
         """
         self._run_directory = tempfile.TemporaryDirectory()
         self.update_run_directory_args()
-        self.train()
+
+        if self.use_distributed_training:
+            self.train_distributed()
+        else:
+            self.train()
+
         self.export()
+
         return self.build_output()
 
     def update_run_directory_args(self):
@@ -473,3 +470,15 @@ def _dynamically_register_integration_runner(task: str):
             "missing. Currently registered tasks: "
             f"{[str(task) for task in SUPPORTED_TASKS]}"
         )
+
+
+def _get_open_port_():
+    """
+    Find random open port. Used to circumvent issue with ddp trying to re-use
+    the same port between run attempts.
+    """
+    sock = socket.socket()
+    sock.bind(("", 0))
+    port = sock.getsockname()[1]
+    sock.close()
+    return port

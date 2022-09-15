@@ -22,8 +22,8 @@ from fastai.vision.all import URLs, untar_data
 from sparsify.utils import TASK_REGISTRY
 
 
-_OUTPUT_DIRECTORY = "./pytest_output"
-_RUN_DIRECTORY = "./pytest_run"
+_OUTPUT_DIRECTORY = "pytest_output"
+_RUN_DIRECTORY = "pytest_run"
 
 
 def _find_file_recursively(directory: str, file_name_or_extension: str) -> bool:
@@ -47,7 +47,7 @@ def _find_file_recursively(directory: str, file_name_or_extension: str) -> bool:
                 "--save_directory",
                 f"{_OUTPUT_DIRECTORY}",
                 "--kwargs",
-                (str({"epochs": 1, "batch_size": 1024, "project": _RUN_DIRECTORY})),
+                (str({"epochs": 1, "batch_size": 64, "project": _RUN_DIRECTORY})),
             ],
             ["last.pt", "last.onnx"],
         ),
@@ -56,6 +56,8 @@ def _find_file_recursively(directory: str, file_name_or_extension: str) -> bool:
             [
                 "--task",
                 "image_classification",
+                "--dataset",
+                "~/data/imagenette-160",
                 "--save_directory",
                 f"{_OUTPUT_DIRECTORY}",
                 "--kwargs",
@@ -63,7 +65,7 @@ def _find_file_recursively(directory: str, file_name_or_extension: str) -> bool:
                     str(
                         {
                             "max_train_steps": 2,
-                            "train_batch_size": 1024,
+                            "train_batch_size": 64,
                             "save_dir": _RUN_DIRECTORY,
                         }
                     )
@@ -85,7 +87,7 @@ def _find_file_recursively(directory: str, file_name_or_extension: str) -> bool:
                     str(
                         {
                             "max_steps": 20,
-                            "per_device_train_batch_size": 1024,
+                            "per_device_train_batch_size": 64,
                             "output_dir": _RUN_DIRECTORY,
                         }
                     )
@@ -108,7 +110,7 @@ def _find_file_recursively(directory: str, file_name_or_extension: str) -> bool:
                         {
                             "task_name": "mnli",
                             "max_steps": 20,
-                            "per_device_train_batch_size": 1024,
+                            "per_device_train_batch_size": 64,
                             "output_dir": _RUN_DIRECTORY,
                             "label_column_name": "label",
                         }
@@ -121,7 +123,7 @@ def _find_file_recursively(directory: str, file_name_or_extension: str) -> bool:
             "token_classification",
             [
                 "--task",
-                "question_answering",
+                "token_classification",
                 "--dataset",
                 "conll2003",
                 "--save_directory",
@@ -131,7 +133,7 @@ def _find_file_recursively(directory: str, file_name_or_extension: str) -> bool:
                     str(
                         {
                             "max_steps": 20,
-                            "per_device_train_batch_size": 1024,
+                            "per_device_train_batch_size": 64,
                             "output_dir": _RUN_DIRECTORY,
                         }
                     )

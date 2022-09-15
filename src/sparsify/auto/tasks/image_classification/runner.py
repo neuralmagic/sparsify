@@ -26,13 +26,20 @@ from sparseml.pytorch.image_classification.export import main as export_hook
 from sparseml.pytorch.image_classification.train import main as train_hook
 from sparsify.auto.api import Metrics
 from sparsify.auto.configs import SparsificationTrainingConfig
-from sparsify.auto.tasks.image_classification.args import (
-    ImageClassificationExportArgs,
-    ImageClassificationTrainArgs,
-)
-from sparsify.auto.tasks.runner import MAX_RETRY_ATTEMPTS, TaskRunner, retry_stage
+from sparsify.auto.tasks.image_classification.args import ImageClassificationExportArgs
+from sparsify.auto.tasks.runner import DDP_ENABLED, TaskRunner
 from sparsify.auto.utils import HardwareSpecs
 from sparsify.utils import TASK_REGISTRY
+
+
+if DDP_ENABLED:
+    from sparsify.auto.tasks.image_classification.args import (
+        ImageClassificationTrainArgsCLI as ImageClassificationTrainArgs,
+    )
+else:
+    from sparsify.auto.tasks.image_classification.args import (
+        ImageClassificationTrainArgsAPI as ImageClassificationTrainArgs,
+    )
 
 
 __all__ = ["ImageClassificationRunner"]
@@ -45,6 +52,10 @@ class ImageClassificationRunner(TaskRunner):
     training, one-shot, or zero-shot sparsification. Final models are exported to onnx
     at end of run for inference and deployment.
     """
+
+    train_hook = staticmethod(train_hook.callback)
+    export_hook = staticmethod(export_hook.callback)
+    sparseml_train_entrypoint = "sparseml.image_classification.train"
 
     def __init__(self, config: SparsificationTrainingConfig):
         super().__init__(config)
@@ -122,20 +133,6 @@ class ImageClassificationRunner(TaskRunner):
             self._run_directory.name, self.export_args.checkpoint_path
         )
         self.export_args.save_dir = self.train_args.save_dir
-
-    @retry_stage(max_attempts=MAX_RETRY_ATTEMPTS, stage="train")
-    def train(self):
-        """
-        Run YOLOv5 training
-        """
-        train_hook.callback(**self.train_args.dict())
-
-    @retry_stage(max_attempts=MAX_RETRY_ATTEMPTS, stage="export")
-    def export(self):
-        """
-        Run YOLOv5 export
-        """
-        export_hook.callback(**self.export_args.dict())
 
     def memory_stepdown(self):
         """

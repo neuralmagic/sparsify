@@ -22,11 +22,12 @@ __all__ = [
 
 from typing import List, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import Field
 from sparseml.transformers.text_classification import _TASK_TO_KEYS
+from sparsify.auto.tasks import BaseArgs
 
 
-class _TransformersTrainArgs(BaseModel):
+class _TransformersTrainArgs(BaseArgs):
     model_name_or_path: str = Field(
         description=(
             "Path to pretrained model, sparsezoo stub. or model identifier from "
@@ -221,7 +222,7 @@ class _TransformersTrainArgs(BaseModel):
     max_grad_norm: float = Field(default=1.0, description="Max gradient norm.")
 
     num_train_epochs: Optional[float] = Field(
-        default=3.0, description="Total number of training epochs to perform."
+        default=None, description="Total number of training epochs to perform."
     )
     max_steps: int = Field(
         default=-1,
@@ -653,7 +654,7 @@ class MaskedLanguageModellingArgs(_TransformersTrainArgs):
     )
 
 
-class TransformersExportArgs(BaseModel):
+class TransformersExportArgs(BaseArgs):
     task: str = Field(
         description="Task to create the model for. i.e. mlm, qa, glue, ner"
     )

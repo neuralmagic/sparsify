@@ -22,40 +22,62 @@ Usage: sparsify.package [OPTIONS] [DIRECTORY]
 
   Example for using sparsify.package:
 
-       `sparsify.package --task image_classification -m accuracy`
+       1) `sparsify.package --task image_classification -m accuracy`
 
-       `sparsify.package --t ic -m accuracy -m compression -s VNNI`
+       2) `sparsify.package --task ic --optimizing_metric accuracy
+       --optimizing_metric compression --target VNNI`
 
 Options:
   --version                       Show the version and exit.
-  -t, --task [ic|image-classification|image_classification|classification|od|
+  --task [ic|image-classification|image_classification|classification|od|
   object-detection|object_detection|detection|segmentation|qa|question-answering|
   question_answering|text-classification|text_classification|glue|sentiment|
   sentiment_analysis|sentiment-analysis|token-classification|token_classification|
   ner|named-entity-recognition|named_entity_recognition]
                                   The task to find model for, must be
                                   specified if `--dataset` not provided
-  -d, --dataset [imagenette|imagenet|coco|squad|mnli|qqp|sst2|conll2003]
+  --dataset [imagenette|imagenet|coco|squad|mnli|qqp|sst2|conll2003]
                                   The public dataset used to train this model,
                                   must be specified if `--task` not provided
-  -m, --optimizing-metric, --optimizing_metric [accuracy|f1|recall|mAP|compression|
+  --optimizing-metric, --optimizing_metric [accuracy|f1|recall|mAP|compression|
   latency|file_size|memory_usage]
-                                  The criterion to search model for  [default:
-                                  accuracy]
-  -s, --scenario [VNNI|NO_VNNI]   The deployment scenarios to choose from
-                                  [default: VNNI]
-  --help                          Show this message and exit.
+                                  The criterion to search model for, multiple
+                                  metrics can be specified like the following
+                                  `--optimizing_metric [METRIC-1]
+                                  --optimizing_metric [METRIC-2]` where
+                                  METRIC-1, METRIC-2 can be any supported
+                                  optimizing metric  [default: accuracy]
+  --target [VNNI|DEFAULT]         Deployment target scenario (ie 'VNNI' for
+                                  VNNI capable CPUs)  [default: DEFAULT]
+  --help                          Show this message and exit.  [default:
+                                  False]
+##########
+Examples:
+    1) Fetch the smallest Image Classification Model trained on imagenette
+        sparsify.package --dataset imagenette --optimizing_metric compression
+    2) Fetch the most accurate Image Classification  Model trained on imagenette
+        sparsify.package --dataset imagenette --optimizing_metric accuracy
+    3) Fetch the most performant Question Answering model trained on squad
+        sparsify.package --task qa --dataset squad --optimizing_metric latency
+    4) Fetch the smallest most performant Question Answering model trained on squad
+        sparsify.package --task qa --dataset squad \
+            --optimizing_metric compression \
+            --optimizing_metric accuracy
 """
 import logging
 
 import click
 from sparsify import package
 from sparsify.utils import (
-    DATASETS, DEFAULT_DEPLOYMENT_SCENARIO, DEFAULT_OPTIMIZING_METRIC,
+    DATASETS,
+    DEFAULT_DEPLOYMENT_SCENARIO,
+    DEFAULT_OPTIMIZING_METRIC,
     DEPLOYMENT_SCENARIOS,
-    METRICS, TASKS_WITH_ALIASES,
+    METRICS,
+    TASKS_WITH_ALIASES,
 )
 from sparsify.version import __version__
+
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -76,7 +98,7 @@ _LOGGER = logging.getLogger(__name__)
     "--dataset",
     type=click.Choice(DATASETS, case_sensitive=False),
     help="The public dataset used to train this model, must be specified if "
-         "`--task` not provided",
+    "`--task` not provided",
 )
 @click.option(
     "--optimizing-metric",
@@ -84,9 +106,9 @@ _LOGGER = logging.getLogger(__name__)
     default=(DEFAULT_OPTIMIZING_METRIC,),
     type=click.Choice(METRICS, case_sensitive=False),
     help="The criterion to search model for, multiple metrics can be specified "
-         "like the following  `--optimizing_metric [METRIC-1] "
-         "--optimizing_metric [METRIC-2]` where METRIC-1, METRIC-2 can be any "
-         "supported optimizing metric",
+    "like the following  `--optimizing_metric [METRIC-1] "
+    "--optimizing_metric [METRIC-2]` where METRIC-1, METRIC-2 can be any "
+    "supported optimizing metric",
     multiple=True,
     callback=lambda ctx, self, value: tuple(metric.lower() for metric in value),
 )
@@ -106,10 +128,8 @@ def main(**kwargs):
 
          1) `sparsify.package --task image_classification -m accuracy`
 
-         2) `sparsify.package --task ic \
-            --optimizing_metric accuracy \
-            --optimizing_metric compression \
-            --target VNNI`
+         2) `sparsify.package --task ic --optimizing_metric accuracy \
+         --optimizing_metric compression --target VNNI`
     """
     if not (kwargs.get("task") or kwargs.get("dataset")):
         raise ValueError("At-least one of the `task` or `dataset`")

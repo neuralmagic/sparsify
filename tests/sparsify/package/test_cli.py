@@ -11,10 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from typing import List
 from unittest.mock import patch
+
 import pytest
 
-from typing import List
 from click.testing import CliRunner
 from sparsify.package.cli import main
 
@@ -24,6 +25,7 @@ def _run_with_cli_runner(args: List[str]):
     result = runner.invoke(main, args=args)
     return result
 
+
 @pytest.mark.parametrize(
     "cli_args",
     [
@@ -31,7 +33,9 @@ def _run_with_cli_runner(args: List[str]):
         "--task ic --optimizing_metric blah",
         "--dataset blah",
         "--dataset mnli --task blah",
-        "-d", "-m", "-t"
+        "-d",
+        "-m",
+        "-t",
     ],
 )
 @patch("sparsify.package_module.cli.package")
@@ -62,4 +66,3 @@ def test_value_error_when_dataset_and_task_not_provided(package_function, cli_ar
 def test_valid_invocation(package_function, cli_args):
     result = _run_with_cli_runner(cli_args.split())
     assert result.exit_code == 0
-

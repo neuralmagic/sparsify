@@ -47,88 +47,74 @@ Options:
   --help                          Show this message and exit.
 """
 import logging
-import sys
-from pathlib import Path
-from typing import Any, Dict
 
 import click
 from sparsify import package
-from sparsify.utils import DATASETS, DEPLOYMENT_SCENARIOS, METRICS, TASKS_WITH_ALIASES
+from sparsify.utils import (
+    DATASETS, DEFAULT_DEPLOYMENT_SCENARIO, DEFAULT_OPTIMIZING_METRIC,
+    DEPLOYMENT_SCENARIOS,
+    METRICS, TASKS_WITH_ALIASES,
+)
 from sparsify.version import __version__
-
 
 _LOGGER = logging.getLogger(__name__)
 
 
-def _create_dir_callback(ctx, param, value):
-    Path(value).mkdir(exist_ok=True)
-    return value
-
-
-@click.command()
+@click.command(context_settings=dict(show_default=True))
 @click.version_option(version=__version__)
 @click.argument(
     "directory",
-    type=click.Path(dir_okay=True, file_okay=False),
-    default="deployment_directory",
-    callback=_create_dir_callback,
+    type=str,
+    default="",  # defaulting to `None` throws a missing argument Error
 )
 @click.option(
     "--task",
-    "-t",
     type=click.Choice(TASKS_WITH_ALIASES, case_sensitive=False),
-    help="The task to find model for, must be specified if `--dataset` " "not provided",
+    help="The task to find model for, must be specified if `--dataset` not provided",
 )
 @click.option(
     "--dataset",
-    "-d",
     type=click.Choice(DATASETS, case_sensitive=False),
     help="The public dataset used to train this model, must be specified if "
-    "`--task` not provided",
+         "`--task` not provided",
 )
 @click.option(
     "--optimizing-metric",
     "--optimizing_metric",
-    "-m",
-    default=("accuracy",),
+    default=(DEFAULT_OPTIMIZING_METRIC,),
     type=click.Choice(METRICS, case_sensitive=False),
-    help="The criterion to search model for",
-    show_default=True,
+    help="The criterion to search model for, multiple metrics can be specified "
+         "like the following  `--optimizing_metric [METRIC-1] "
+         "--optimizing_metric [METRIC-2]` where METRIC-1, METRIC-2 can be any "
+         "supported optimizing metric",
     multiple=True,
     callback=lambda ctx, self, value: tuple(metric.lower() for metric in value),
 )
 @click.option(
-    "--scenario",
-    "-s",
+    "--target",
     type=click.Choice(DEPLOYMENT_SCENARIOS, case_sensitive=False),
-    default=DEPLOYMENT_SCENARIOS[0] if len(DEPLOYMENT_SCENARIOS) else "VNNI",
-    help="The deployment scenarios to choose from",
+    default=DEFAULT_DEPLOYMENT_SCENARIO,
+    help="Deployment target scenario (ie 'VNNI' for VNNI capable CPUs)",
     show_default=True,
 )
-def parse_args(**kwargs) -> Dict[str, Any]:
+def main(**kwargs):
     """
     Utility to fetch a deployment directory for a task based on specified
     optimizing-metric
 
     Example for using sparsify.package:
 
-         `sparsify.package --task image_classification -m accuracy`
+         1) `sparsify.package --task image_classification -m accuracy`
 
-         `sparsify.package --t ic -m accuracy -m compression -s VNNI`
+         2) `sparsify.package --task ic \
+            --optimizing_metric accuracy \
+            --optimizing_metric compression \
+            --target VNNI`
     """
     if not (kwargs.get("task") or kwargs.get("dataset")):
         raise ValueError("At-least one of the `task` or `dataset`")
     _LOGGER.debug(f"{kwargs}")
-    return kwargs
-
-
-def main():
-    """
-    Driver function
-    """
-    context = parse_args.make_context("parse_args", args=sys.argv[1:])
-    args: Dict[str, Any] = context.params
-    results = package(**args)
+    results = package(**kwargs)
     print(f"Relevant Stubs: {results}")
 
 

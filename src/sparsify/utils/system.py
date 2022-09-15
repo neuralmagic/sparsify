@@ -59,11 +59,12 @@ def available_ml_engines() -> List[str]:
     if deepsparse is not None:
         engines.append("deepsparse")
 
-    ort_providers = onnxruntime.get_available_providers()
-    if "CPUExecutionProvider" in ort_providers:
-        engines.append("ort_cpu")
-    if "CUDAExecutionProvider" in ort_providers:
-        engines.append("ort_gpu")
+    if onnxruntime is not None:
+        ort_providers = onnxruntime.get_available_providers()
+        if "CPUExecutionProvider" in ort_providers:
+            engines.append("ort_cpu")
+        if "CUDAExecutionProvider" in ort_providers:
+            engines.append("ort_gpu")
 
     return engines
 

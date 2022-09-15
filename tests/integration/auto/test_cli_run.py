@@ -19,7 +19,7 @@ import subprocess
 import pytest
 
 from fastai.vision.all import URLs, untar_data
-from sparsify.auto.utils import TaskName
+from sparsify.utils import TASK_REGISTRY
 
 
 _OUTPUT_DIRECTORY = "./pytest_output"
@@ -144,7 +144,7 @@ def _find_file_recursively(directory: str, file_name_or_extension: str) -> bool:
 class TestAbridgedCLIRun:
     @pytest.fixture()
     def setup(self, task, command):
-        if TaskName(task) == "image_classification":
+        if TASK_REGISTRY[task] == "image_classification":
             data_path = untar_data(URLs.IMAGENETTE_160)
             command = command + ["--dataset", str(data_path)]
 
@@ -152,7 +152,7 @@ class TestAbridgedCLIRun:
 
         yield task
 
-        if TaskName(task) == "image_classification":
+        if TASK_REGISTRY[task] == "image_classification":
             shutil.rmtree(data_path)
 
         if os.path.exists(_OUTPUT_DIRECTORY):

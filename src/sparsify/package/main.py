@@ -12,7 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# flake8: noqa
-# isort: skip_file
+__all__ = [
+    "package",
+]
 
-from .runner import *
+import logging
+
+
+_LOGGER = logging.getLogger(__file__)
+
+
+def package(*args, **kwargs):
+    """
+    A function that returns relevant sparsezoo stubs given the task or dataset,
+    and an optimizing criterion
+    """
+    raise NotImplementedError

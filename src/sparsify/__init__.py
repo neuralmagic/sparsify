@@ -15,4 +15,5 @@
 # flake8: noqa
 # isort: skip_file
 
-from .runner import *
+from . import package as package_module
+from .package import *

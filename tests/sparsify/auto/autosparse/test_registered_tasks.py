@@ -17,14 +17,14 @@ from sparsify.auto.tasks import TaskRunner
 
 def test_task_names_runner_and_config():
     # Test that the config creator and task runner have the same tasks registered
-    config_tasks = APIConfigCreator.task_list()
-    runner_tasks = TaskRunner.task_list()
+    config_tasks = APIConfigCreator.supported_tasks()
+    runner_tasks = TaskRunner.supported_tasks()
 
     assert set(config_tasks) == set(runner_tasks)
 
     # Test that the config creator and task runner recognize the same task name aliases
-    config_task_aliases = APIConfigCreator.task_aliases_dict()
-    runner_task_aliases = TaskRunner.task_aliases_dict()
+    config_task_aliases = APIConfigCreator.supported_task_aliases()
+    runner_task_aliases = TaskRunner.supported_task_aliases()
 
     for task, config_aliases in config_task_aliases.items():
         assert set(config_aliases) == set(runner_task_aliases[task])

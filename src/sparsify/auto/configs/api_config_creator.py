@@ -79,21 +79,18 @@ class APIConfigCreator(ABC):
         :param api_args: Sparsify.Auto API entrypoint args object
         :return: generated SparsificationTrainingConfig
         """
-        config_creator_constructor = cls._get_config_creator_constructor(
-            TaskName(api_args.task)
-        )
+        config_creator_constructor = cls._get_config_creator_constructor(api_args.task)
         config_creator = config_creator_constructor(api_args)
         return config_creator.config
 
     @classmethod
-    def register(cls, task: str):
+    def register(cls, task: TaskName):
         """
         Decorator to register task implementations of APIConfigCreator with the
         get_config method registry
 
         :param task: main task name the implementor class creates configs for
         """
-        task = TaskName(task)
 
         def _register_config_creator_decorator(config_creator_class: APIConfigCreator):
             if not issubclass(config_creator_class, cls):
@@ -119,14 +116,14 @@ class APIConfigCreator(ABC):
         return _register_config_creator_decorator
 
     @staticmethod
-    def task_list() -> List[TaskName]:
+    def supported_tasks() -> List[TaskName]:
         """
         Return a list of registered tasks
         """
         return list(str(key) for key in _CONFIG_CREATOR_IMPLS.keys())
 
     @staticmethod
-    def task_aliases_dict() -> Dict[str, List[str]]:
+    def supported_task_aliases() -> Dict[str, List[str]]:
         """
         Return a dictionary mapping the default task name (str) to a list of task
         aliases (str)

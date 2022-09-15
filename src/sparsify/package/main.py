@@ -27,4 +27,4 @@ def package(*args, **kwargs):
     A function that returns relevant sparsezoo stubs given the task or dataset,
     and an optimizing criterion
     """
-    print("Package will be invoked")
+    raise NotImplementedError

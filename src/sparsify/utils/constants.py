@@ -16,17 +16,20 @@ from sparsify.utils import TaskName
 
 
 __all__ = [
-    "METRICS",
+    "DATASETS",
+    "DATASET_REGISTRY",
+    "DEFAULT_DEPLOYMENT_SCENARIO",
+    "DEFAULT_OPTIMIZING_METRIC",
     "DEPLOYMENT_SCENARIOS",
+    "METRICS",
     "TASKS",
     "TASK_REGISTRY",
-    "DATASET_REGISTRY",
-    "DATASETS",
     "TASKS_WITH_ALIASES",
 ]
 
+DEFAULT_OPTIMIZING_METRIC = "accuracy"
 METRICS = [
-    "accuracy",
+    DEFAULT_OPTIMIZING_METRIC,
     "f1",
     "recall",
     "mAP",
@@ -36,9 +39,10 @@ METRICS = [
     "memory_usage",
 ]
 
+DEFAULT_DEPLOYMENT_SCENARIO = "DEFAULT"
 DEPLOYMENT_SCENARIOS = [
     "VNNI",
-    "NO_VNNI",
+    DEFAULT_DEPLOYMENT_SCENARIO,
 ]
 
 TASK_REGISTRY = {

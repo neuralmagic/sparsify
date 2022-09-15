@@ -17,7 +17,8 @@ import json
 import os
 from typing import Any, Dict, List, Optional, Union
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, validator
+from sparsify.utils import TASK_REGISTRY
 
 
 __all__ = ["APIArgs", "Metrics", "APIOutput", "USER_OUT_DIRECTORY"]
@@ -87,6 +88,18 @@ class APIArgs(BaseModel):
         description="optional task specific arguments to add to config",
         default_factory=dict,
     )
+
+    @validator("task")
+    def task_must_be_registered(cls, v):
+        for task in TASK_REGISTRY.values():
+            if v == task:
+                return task.name
+        nl = "\n"  # backslash not allowed in f string expression
+        raise ValueError(
+            f"Task '{v}' is not a recognize task. List of supported domains and and "
+            "their accepted task name aliases:"
+            f"{nl.join([task.pretty_print() for task in TASK_REGISTRY.values()])}"
+        )
 
     @classmethod
     def from_cli(cls, args: Optional[List[str]] = None):

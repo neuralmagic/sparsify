@@ -434,4 +434,6 @@ def _get_open_port_():
     """
     sock = socket.socket()
     sock.bind(("", 0))
-    return sock.getsockname()[1]
+    port = sock.getsockname()[1]
+    sock.close()
+    return port

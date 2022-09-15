@@ -28,14 +28,21 @@ from sparseml.yolov5.scripts import export as export_hook
 from sparseml.yolov5.scripts import train as train_hook
 from sparsify.auto.api import Metrics
 from sparsify.auto.configs import SparsificationTrainingConfig
-from sparsify.auto.tasks.object_detection.yolov5 import (
-    Yolov5ExportArgs,
-    Yolov5TrainArgs,
-)
-from sparsify.auto.tasks.runner import MAX_RETRY_ATTEMPTS, TaskRunner, retry_stage
+from sparsify.auto.tasks.object_detection.yolov5 import Yolov5ExportArgs
+from sparsify.auto.tasks.runner import DDP_ENABLED, TaskRunner
 from sparsify.auto.utils import HardwareSpecs
 from sparsify.utils import TASK_REGISTRY
 from yolov5.export import load_checkpoint
+
+
+if DDP_ENABLED:
+    from sparsify.auto.tasks.object_detection.yolov5 import (
+        Yolov5TrainArgsCLI as Yolov5TrainArgs,
+    )
+else:
+    from sparsify.auto.tasks.object_detection.yolov5 import (
+        Yolov5TrainArgsAPI as Yolov5TrainArgs,
+    )
 
 
 __all__ = [
@@ -54,8 +61,13 @@ class Yolov5Runner(TaskRunner):
     at end of run for inference and deployment.
     """
 
+    train_hook = staticmethod(train_hook)
+    export_hook = staticmethod(export_hook)
+    sparseml_train_entrypoint = "sparseml.yolov5.train"
+
     def __init__(self, config: SparsificationTrainingConfig):
         super().__init__(config)
+        self.dashed_cli_kwargs = True
         self._model_save_name = (
             "checkpoint-one-shot" if self.train_args.one_shot else "last"
         )
@@ -125,20 +137,6 @@ class Yolov5Runner(TaskRunner):
             self._run_directory.name, self.export_args.weights
         )
 
-    @retry_stage(max_attempts=MAX_RETRY_ATTEMPTS, stage="train")
-    def train(self):
-        """
-        Run YOLOv5 training
-        """
-        train_hook(**self.train_args.dict())
-
-    @retry_stage(max_attempts=MAX_RETRY_ATTEMPTS, stage="export")
-    def export(self):
-        """
-        Run YOLOv5 export
-        """
-        export_hook(**self.export_args.dict())
-
     def memory_stepdown(self):
         """
         Update run args in the event of an out of memory error, to reduce memory usage
@@ -202,7 +200,9 @@ class Yolov5Runner(TaskRunner):
         if os.path.isfile(model_file):
             self.train_args.resume = True
         # If not, clear directory
-        else:
+        elif os.path.exists(self.train_args.project) and os.path.isdir(
+            self.train_args.project
+        ):
             shutil.rmtree(self.train_args.project)
 
     def _update_export_args_post_failure(self, error_type: Exception):

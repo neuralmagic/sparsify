@@ -129,13 +129,13 @@ num_qat_finetuning_epochs: 2.5
 # LR params
 init_lr: 1.5e-4
 final_lr: 0
-lr_func: linear  # swap in based on lr type from user
+lr_func: {learning_rate}  # swap in based on lr type from user
 
 # Pruning Params
 pruning_init_sparsity: 0.7
 pruning_final_sparsity: 0.9
 pruning_update_frequency: 0.01
-mask_type: "unstructured"  # when user specifies VNNI target, use "block4", "2:4" for 
+mask_type: "{mask_type}"  # when user specifies VNNI target, use "block4", "2:4" for 
 tensorrt
 global_sparsity: False
 
@@ -164,9 +164,9 @@ training_modifiers:
 
 pruning_modifiers:  
   - !MagnitudePruningModifier 
-    params: __ALL_PRUNABLE__  
+    params: {prunable_params}  
     start_epoch: 0
-    end_epoch: eval(num_pruning_activce_epochs)
+    end_epoch: eval(num_pruning_active_epochs)
     init_sparsity: eval(pruning_init_sparsity)
     final_sparsity: eval(pruning_final_sparsity)
     update_frequency: eval(pruning_update_frequency)

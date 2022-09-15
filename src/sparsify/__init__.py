@@ -15,6 +15,5 @@
 # flake8: noqa
 # isort: skip_file
 
-from .error_handler import *
-from .hardware_analyzer import *
-from sparsify.utils.task_name import *
+from . import package as package_module
+from .package import *

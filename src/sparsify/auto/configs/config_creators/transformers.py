@@ -29,6 +29,7 @@ from sparsify.auto.configs.config_creators.helpers import (
 from sparsify.auto.configs.sparsification_training_config import (
     SparsificationTrainingConfig,
 )
+from sparsify.utils import TASK_REGISTRY
 
 
 __all__ = [
@@ -110,7 +111,7 @@ class TransformersAPIConfigCreator(APIConfigCreator):
         return select_best_recipe_type(recipe_types, ["transfer", "original"])
 
 
-@APIConfigCreator.register(task="text_classification")
+@APIConfigCreator.register(task=TASK_REGISTRY["text_classification"])
 class TextClassificationAPIConfigCreator(TransformersAPIConfigCreator):
     def _select_full_sparsification_recipe_stub(self) -> str:
         # TODO: placeholder - using QA recipe because there is currently
@@ -127,7 +128,7 @@ class TextClassificationAPIConfigCreator(TransformersAPIConfigCreator):
         )
 
 
-@APIConfigCreator.register(task="token_classification")
+@APIConfigCreator.register(task=TASK_REGISTRY["token_classification"])
 class TokenClassificationAPIConfigCreator(TransformersAPIConfigCreator):
     def _select_full_sparsification_recipe_stub(self) -> str:
         return (
@@ -142,7 +143,7 @@ class TokenClassificationAPIConfigCreator(TransformersAPIConfigCreator):
         )
 
 
-@APIConfigCreator.register(task="question_answering")
+@APIConfigCreator.register(task=TASK_REGISTRY["question_answering"])
 class QuestionAnsweringAPIConfigCreator(TransformersAPIConfigCreator):
     def _select_full_sparsification_recipe_stub(self) -> str:
         return (

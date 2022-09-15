@@ -29,6 +29,7 @@ from sparsify.auto.configs import SparsificationTrainingConfig
 from sparsify.auto.tasks.image_classification.args import ImageClassificationExportArgs
 from sparsify.auto.tasks.runner import DDP_ENABLED, TaskRunner
 from sparsify.auto.utils import HardwareSpecs
+from sparsify.utils import TASK_REGISTRY
 
 
 if DDP_ENABLED:
@@ -44,7 +45,7 @@ else:
 __all__ = ["ImageClassificationRunner"]
 
 
-@TaskRunner.register_task(task="image_classification")
+@TaskRunner.register_task(task=TASK_REGISTRY["image_classification"])
 class ImageClassificationRunner(TaskRunner):
     """
     Class for managing a single run of YOLOv5. A run may involve

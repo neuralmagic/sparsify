@@ -31,6 +31,7 @@ from sparsify.auto.configs import SparsificationTrainingConfig
 from sparsify.auto.tasks.object_detection.yolov5 import Yolov5ExportArgs
 from sparsify.auto.tasks.runner import DDP_ENABLED, TaskRunner
 from sparsify.auto.utils import HardwareSpecs
+from sparsify.utils import TASK_REGISTRY
 from yolov5.export import load_checkpoint
 
 
@@ -52,7 +53,7 @@ __all__ = [
 _ACCURACY_KEYS = ["metrics/mAP_0.5", "metrics/mAP_0.5:0.95"]
 
 
-@TaskRunner.register_task(task="object_detection")
+@TaskRunner.register_task(task=TASK_REGISTRY["object_detection"])
 class Yolov5Runner(TaskRunner):
     """
     Class for managing a single run of YOLOv5. A run may involve

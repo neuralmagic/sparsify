@@ -36,6 +36,7 @@ from sparsify.auto.tasks.transformers import (
     TransformersExportArgs,
 )
 from sparsify.auto.utils import HardwareSpecs
+from sparsify.utils import TASK_REGISTRY
 
 
 __all__ = [
@@ -218,7 +219,7 @@ class _TransformersRunner(TaskRunner):
         ]
 
 
-@TaskRunner.register_task(task="text_classification")
+@TaskRunner.register_task(task=TASK_REGISTRY["text_classification"])
 class TextClassificationRunner(_TransformersRunner):
     """
     Class for managing a single Question Answering run
@@ -228,7 +229,7 @@ class TextClassificationRunner(_TransformersRunner):
     train_hook = staticmethod(text_classification_hook)
 
 
-@TaskRunner.register_task(task="token_classification")
+@TaskRunner.register_task(task=TASK_REGISTRY["token_classification"])
 class TokenClassificationRunner(_TransformersRunner):
     """
     Class for managing a single Question Answering run
@@ -238,7 +239,7 @@ class TokenClassificationRunner(_TransformersRunner):
     train_hook = staticmethod(token_classification_hook)
 
 
-@TaskRunner.register_task(task="question_answering")
+@TaskRunner.register_task(task=TASK_REGISTRY["question_answering"])
 class QuestionAnsweringRunner(_TransformersRunner):
     """
     Class for managing a single Question Answering run

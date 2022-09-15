@@ -13,6 +13,3 @@
 # limitations under the License.
 
 # flake8: noqa
-# isort: skip_file
-
-from .runner import *

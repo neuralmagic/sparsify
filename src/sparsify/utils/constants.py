@@ -23,12 +23,15 @@ __all__ = [
     "DEFAULT_OPTIMIZING_METRIC",
     "DEPLOYMENT_SCENARIOS",
     "METRICS",
+    "NEURAL_MAGIC_API_ADDRESS",
     "TASKS",
     "TASK_REGISTRY",
     "TASKS_WITH_ALIASES",
     "get_dataset_info",
     "get_task_info",
 ]
+
+NEURAL_MAGIC_API_ADDRESS = "http://0.0.0.0:8000"
 
 DEFAULT_OPTIMIZING_METRIC = "accuracy"
 METRICS = [

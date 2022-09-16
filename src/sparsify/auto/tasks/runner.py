@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 import gc
 import os
 import shutil
@@ -34,8 +35,7 @@ except ImportError as ddp_error:
     import_ddp_error = ddp_error
 
 from pydantic import BaseModel
-from sparsify.auto.api import APIOutput, Metrics
-from sparsify.auto.configs import SparsificationTrainingConfig
+from sparsify.auto.api import APIOutput, Metrics, SparsificationTrainingConfig
 from sparsify.auto.utils import ErrorHandler, HardwareSpecs, TaskName, analyze_hardware
 from sparsify.utils import TASK_REGISTRY
 

@@ -19,7 +19,7 @@ Tests APIConfigCreator and its implementations
 import pytest
 
 from sparsify.auto import (
-    USER_OUT_DIRECTORY,
+    DEFAULT_OUTPUT_DIRECTORY,
     APIArgs,
     APIConfigCreator,
     SparsificationTrainingConfig,
@@ -40,7 +40,7 @@ from sparsify.auto import (
                     "zoo:cv/detection/yolov5-l/pytorch/ultralytics/coco/"
                     "pruned_quant-aggressive_95?recipe_type=transfer"
                 ),
-                save_directory=USER_OUT_DIRECTORY,
+                save_directory=DEFAULT_OUTPUT_DIRECTORY,
                 recipe=(
                     "zoo:cv/detection/yolov5-l/pytorch/ultralytics/coco/"
                     "pruned_quant-aggressive_95?recipe_type=transfer"
@@ -59,7 +59,7 @@ from sparsify.auto import (
                 task="object_detection",
                 dataset="/path/to/dataset",
                 base_model="/path/to/local/model",
-                save_directory=USER_OUT_DIRECTORY,
+                save_directory=DEFAULT_OUTPUT_DIRECTORY,
                 recipe=(
                     "zoo:cv/detection/yolov5-l/pytorch/ultralytics/coco/"
                     "pruned_quant-aggressive_95"
@@ -80,7 +80,7 @@ from sparsify.auto import (
                 task="image_classification",
                 dataset="/path/to/dataset",
                 base_model="/path/to/local/model",
-                save_directory=USER_OUT_DIRECTORY,
+                save_directory=DEFAULT_OUTPUT_DIRECTORY,
                 recipe=(
                     "zoo:cv/classification/resnet_v1-50/pytorch/sparseml/imagenet/"
                     "pruned90_quant-none"
@@ -106,7 +106,7 @@ from sparsify.auto import (
                 dataset="/path/to/dataset",
                 base_model="/path/to/local/model",
                 distill_teacher="/path/to/local/model",
-                save_directory=USER_OUT_DIRECTORY,
+                save_directory=DEFAULT_OUTPUT_DIRECTORY,
                 recipe=(
                     "zoo:nlp/token_classification/bert-base/pytorch/huggingface/"
                     "conll2003/12layer_pruned80_quant-none-vnni"
@@ -127,7 +127,7 @@ from sparsify.auto import (
                     "zoo:nlp/masked_language_modeling/bert-base/pytorch/huggingface/"
                     "wikipedia_bookcorpus/12layer_pruned80_quant-none-vnni"
                 ),
-                save_directory=USER_OUT_DIRECTORY,
+                save_directory=DEFAULT_OUTPUT_DIRECTORY,
                 recipe=(
                     "zoo:nlp/masked_language_modeling/bert-base/pytorch/huggingface/"
                     "wikipedia_bookcorpus/12layer_pruned80_quant-none-vnni"
@@ -148,7 +148,7 @@ from sparsify.auto import (
                 dataset="/path/to/dataset",
                 base_model="/path/to/local/model",
                 distill_teacher="/path/to/local/model",
-                save_directory=USER_OUT_DIRECTORY,
+                save_directory=DEFAULT_OUTPUT_DIRECTORY,
                 recipe=(
                     "zoo:nlp/token_classification/bert-base/pytorch/huggingface/"
                     "conll2003/12layer_pruned80_quant-none-vnni"
@@ -169,7 +169,7 @@ from sparsify.auto import (
                     "zoo:nlp/masked_language_modeling/bert-base/pytorch/huggingface/"
                     "wikipedia_bookcorpus/12layer_pruned80_quant-none-vnni"
                 ),
-                save_directory=USER_OUT_DIRECTORY,
+                save_directory=DEFAULT_OUTPUT_DIRECTORY,
                 recipe=(
                     "zoo:nlp/masked_language_modeling/bert-base/pytorch/huggingface/"
                     "wikipedia_bookcorpus/12layer_pruned80_quant-none-vnni"

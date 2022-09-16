@@ -12,18 +12,31 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+Pydantic model classes defining the standards for user input, communication with
+the Neural Magic API, and output to user
+"""
+
 import argparse
 import json
 import os
 from typing import Any, Dict, List, Optional, Union
 
+import yaml
+
 from pydantic import BaseModel, Field, validator
 from sparsify.utils import TASK_REGISTRY
 
 
-__all__ = ["APIArgs", "Metrics", "APIOutput", "USER_OUT_DIRECTORY"]
+__all__ = [
+    "APIArgs",
+    "SparsificationTrainingConfig",
+    "Metrics",
+    "APIOutput",
+    "DEFAULT_OUTPUT_DIRECTORY",
+]
 
-USER_OUT_DIRECTORY = "./output"
+DEFAULT_OUTPUT_DIRECTORY = "./output"
 
 
 class APIArgs(BaseModel):
@@ -42,7 +55,7 @@ class APIArgs(BaseModel):
     save_directory: str = Field(
         title="save_directory",
         description="Absolute path to save directory",
-        default=USER_OUT_DIRECTORY,
+        default=DEFAULT_OUTPUT_DIRECTORY,
     )
     performance: Union[str, float] = Field(
         title="performance",
@@ -74,15 +87,22 @@ class APIArgs(BaseModel):
         description="optional path to a distillation teacher model for training",
         default=None,
     )
+    num_iterations: Optional[int] = Field(
+        title="num_iterations",
+        description=(
+            "Number of tuning iterations to be run before returning best found "
+            "model. max_train_time may limit the actual num_iterations ran"
+        ),
+        default=None,
+    )
     max_train_time: float = Field(
         title="max_train_time",
         description=(
-            "Maximum number of hours to train before returning best trained "
-            "model. At least one model will be trained in a given run regardless of "
-            "the maximum train time set here."
+            "Maximum number of hours to train before returning best trained " "model."
         ),
         default=12.0,
     )
+
     kwargs: Optional[Dict[str, Any]] = Field(
         title="kwargs",
         description="optional task specific arguments to add to config",
@@ -112,6 +132,74 @@ class APIArgs(BaseModel):
         parsed_args = arg_parser.parse_args(args)
         _convert_dict_args(parsed_args, cls)
         return cls(**vars(parsed_args))
+
+
+class SparsificationTrainingConfig(BaseModel):
+    """
+    Configuration class for sparsification aware training using SparseML and its
+    training integrations
+    """
+
+    task: str = Field(
+        title="task",
+        description="task to train the sparsified model on",
+    )
+    dataset: str = Field(
+        title="dataset",
+        description="path to the dataset to train the task on",
+    )
+    base_model: str = Field(
+        title="base_model",
+        description="path to the model to be sparsified",
+    )
+    save_directory: str = Field(
+        title="save_directory",
+        description="Absolute path to save directory",
+    )
+    distill_teacher: Optional[str] = Field(
+        title="distil_teacher",
+        description="optional path to a distillation teacher for training",
+        default=None,
+    )
+    recipe: str = Field(
+        title="recipe",
+        description="file path to or zoo stub of sparsification recipe to be applied",
+    )
+    recipe_args: Dict[str, Any] = Field(
+        title="recipe_args",
+        description="keyword args to override recipe variables with",
+        default_factory=dict,
+    )
+    kwargs: Dict[str, Any] = Field(
+        title="kwargs",
+        description="optional task specific arguments to add to config",
+        default_factory=dict,
+    )
+
+    @classmethod
+    def from_yaml(cls, config_yaml: str):
+        """
+        :param config_yaml: raw yaml string or file path to config yaml file to load
+        :return: loaded sparsification training config
+        """
+        if os.path.exists(config_yaml):
+            with open(config_yaml) as yaml_file:
+                config_yaml = yaml_file.read()
+
+        return cls.parse_obj(yaml.safe_load(config_yaml))
+
+    def yaml(self, file_path: Optional[str] = None):
+        """
+        :param file_path: optional file path to write the generated yaml config to
+        :return: this config represented as a yaml string
+        """
+        config_dict = self.dict()
+
+        if file_path:
+            with open(file_path, "w") as config_file:
+                yaml.dump(config_dict, config_file)
+
+        return yaml.dump(config_dict)
 
 
 class Metrics(BaseModel):

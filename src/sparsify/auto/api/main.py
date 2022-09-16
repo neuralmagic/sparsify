@@ -12,48 +12,65 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import math
 import time
 
-from sparsify.auto.api.args import APIArgs
-from sparsify.auto.configs import APIConfigCreator
+import requests
+
+from sparsify.auto.api.api_models import APIArgs, SparsificationTrainingConfig
 from sparsify.auto.tasks import TaskRunner
+from sparsify.utils import NEURAL_MAGIC_API_ADDRESS
 
 
 def main():
     # Parse CLI args
     api_args = APIArgs.from_cli()
     max_train_seconds = api_args.max_train_time * 60 * 60
+    max_tune_iterations = api_args.num_iterations or math.inf
 
     # setup run loop variables
-    config = None
-    runner_outputs = None
-    training_start_time = None
+    configs = []
+    runner_outputs = []
+    training_start_time = time.time()
 
-    def _training_complete():
-        if config is None:
-            return False  # first loop
-
-        # training is complete if sparsify.auto metrics satisfy the given config
-        # or the total time of all runs exceeds the maximum training time
-        return APIConfigCreator.metrics_satisfied(config, runner_outputs.metrics) or (
-            time.time() - training_start_time > max_train_seconds
-        )
-
-    while not _training_complete():
-        # create or update training config
-        if config is None:
-            config = APIConfigCreator.get_config(api_args)
-            training_start_time = time.time()  # start training time after config init
-        else:
-            config = APIConfigCreator.update_hyperparameters(
-                config, runner_outputs.metrics
+    # tune until either (in order of precedence):
+    # 1. number of tuning iterations used up
+    # 2. maximum tuning time exceeded
+    # 3. tuning early stopping condition met
+    while not (len(configs) >= max_tune_iterations) or (
+        time.time() - training_start_time > max_train_seconds
+    ):
+        # request initial training config
+        if len(configs) == 0:
+            # TODO: add proper server error handling. Waiting for server to have
+            # graceful failure protocol
+            response = requests.post(
+                f"{NEURAL_MAGIC_API_ADDRESS}/v1/sparsify/auto/training-config",
+                json=api_args.dict(),
             )
+            configs.append(SparsificationTrainingConfig(**response.json()))
 
-        # Create a runner for the task and config
-        runner = TaskRunner.create(config)
+        last_config = configs[-1]
+
+        # Create a runner from the config, based on the task specified by config.task
+        runner = TaskRunner.create(last_config)
 
         # Execute integration run and build output object
-        runner_outputs = runner.run()
+        runner_outputs.append(runner.run())
+
+        # request a config with a new set of hyperparameters
+        response = requests.post(
+            f"{NEURAL_MAGIC_API_ADDRESS}/v1/sparsify/auto/training-config/tune",
+            json={
+                "configs": [config.dict() for config in configs],
+                "metrics": [output.metrics.dict() for output in runner_outputs],
+            },
+        )
+
+        if response.json().get("tuning_complete"):
+            break
+
+        configs.append(SparsificationTrainingConfig(**response.json()))
 
     # Conduct any generic post-processing and display results to user
     results = runner_outputs.finalize()

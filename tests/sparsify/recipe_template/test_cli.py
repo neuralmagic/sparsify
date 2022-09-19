@@ -13,39 +13,18 @@
 # limitations under the License.
 
 from typing import List
+from unittest.mock import patch
 
 import pytest
 
 from click.testing import CliRunner
-from sparsify.recipe_template.cli import parse_args
-
-
-def _test_default_values(args):
-    assert args.get("pruning") == "false"
-    assert args.get("quantization") == "false"
-    assert args.get("lr") == "constant"
+from sparsify.recipe_template.cli import main
 
 
 def _run_with_cli_runner(args: List[str]):
     runner = CliRunner()
-    result = runner.invoke(parse_args, args=args)
+    result = runner.invoke(main, args=args)
     return result
-
-
-@pytest.mark.parametrize(
-    "cli_args",
-    [
-        "--pruning false --quantization false",
-        "",
-        "-p false -q false --lr constant",
-    ],
-)
-def test_defaults(cli_args):
-    result = _run_with_cli_runner(cli_args.split())
-    assert result.exit_code == 0
-
-    output = parse_args.main(cli_args.split(), standalone_mode=False)
-    _test_default_values(output)
 
 
 @pytest.mark.parametrize(
@@ -53,19 +32,26 @@ def test_defaults(cli_args):
     [
         "--pruning true --quantization true",
         "",
-        "-p true -q false --lr constant",
-        "-p gmp -q vnni --lr cyclic",
+        "--pruning true --quantization false --lr constant",
+        "--pruning gmp --quantization true --lr cyclic --target vnni",
+        "--pruning false --quantization false",
+        "",
+        "--target tensorrt",
+        "--target vnni",
+        "--help",
     ],
 )
-def test_valid_invocation(cli_args):
+@patch("sparsify.recipe_template_module.cli.recipe_template")
+def test_valid_invocation(recipe_template_func, cli_args):
     result = _run_with_cli_runner(cli_args.split())
     assert result.exit_code == 0
 
 
 @pytest.mark.parametrize(
     "cli_args",
-    ["--pruning blah", "--quantization blah", "--lr blah", "model"],
+    ["--pruning blah", "--quantization blah", "--lr blah", "--target blah"],
 )
-def test_click_error_on_invalid_invocation(cli_args):
+@patch("sparsify.recipe_template_module.cli.recipe_template")
+def test_click_error_on_invalid_invocation(recipe_template_func, cli_args):
     result = _run_with_cli_runner(cli_args.split())
     assert result.exit_code == 2

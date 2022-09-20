@@ -24,6 +24,7 @@ from sparsify.auto.utils import (
     create_save_directory,
     get_trial_artifact_directory,
 )
+from tensorboard import program
 
 
 def main():
@@ -44,6 +45,12 @@ def main():
 
     # set up directory for saving
     create_save_directory(api_args)
+
+    # launch tensorboard server
+    tb = program.TensorBoard()
+    tb.configure(argv=[None, "--logdir", config.log_directory])
+    url = tb.launch()
+    print(f"TensorBoard listening on {url}")
 
     # tune until either (in order of precedence):
     # 1. number of tuning trials used up

@@ -86,7 +86,10 @@ class Yolov5Runner(TaskRunner):
         :return: tuple of training and export arguments
         """
         train_args = Yolov5TrainArgs(
-            weights=config.base_model, data=config.dataset, **config.kwargs
+            weights=config.base_model,
+            data=config.dataset,
+            log_directory=config.log_directory,
+            **config.kwargs,
         )
 
         # Determine the imminent train output directory

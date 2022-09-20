@@ -101,6 +101,9 @@ class _Yolov5BaseTrainArgs(BaseArgs):
     disable_ema: bool = Field(
         default=False, description="Disable EMA model updates (enabled by default)"
     )
+    log_directory: Optional[str] = Field(
+        default=None, description="Directory to log to. Defaults to save directory"
+    )
 
     def __init__(self, **data):
         super().__init__(**data)

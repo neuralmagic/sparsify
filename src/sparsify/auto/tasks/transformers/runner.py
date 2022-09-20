@@ -71,6 +71,7 @@ class _TransformersRunner(TaskRunner):
         train_args = cls.train_args_class(
             model_name_or_path=config.base_model,
             dataset_name=config.dataset,
+            logging_dir=
             **config.kwargs,
         )
 

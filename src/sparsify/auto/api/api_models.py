@@ -215,6 +215,9 @@ class Metrics(BaseModel):
         description="model accuracy as a percentage of the dense model's accuracy",
         default=None,
     )
+    train_time: Optional[float] = Field(
+        description="Total train time, including hyperparameter tuning", default=None
+    )
 
     @property
     def display_string(self) -> str:
@@ -241,9 +244,6 @@ class APIOutput(BaseModel):
     )
     deployment_directory: str = Field(
         description="Pipeline compatible deployment directory"
-    )
-    train_time: Optional[float] = Field(
-        description="Total train time, including hyperparameter tuning", default=None
     )
 
     def finalize(self):

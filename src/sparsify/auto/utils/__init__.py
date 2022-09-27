@@ -17,4 +17,4 @@
 
 from .error_handler import *
 from .hardware_analyzer import *
-from sparsify.utils.task_name import *
+from .nm_api import *

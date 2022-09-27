@@ -36,8 +36,8 @@ except ImportError as ddp_error:
 
 from pydantic import BaseModel
 from sparsify.auto.api import APIOutput, Metrics, SparsificationTrainingConfig
-from sparsify.auto.utils import ErrorHandler, HardwareSpecs, TaskName, analyze_hardware
-from sparsify.utils import TASK_REGISTRY
+from sparsify.auto.utils import ErrorHandler, HardwareSpecs, analyze_hardware
+from sparsify.utils import TASK_REGISTRY, TaskName
 
 
 __all__ = [

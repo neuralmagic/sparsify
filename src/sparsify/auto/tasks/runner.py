@@ -27,8 +27,13 @@ import torch
 from torch.distributed.run import main as launch_ddp
 
 from pydantic import BaseModel
+<<<<<<< HEAD
 from sparsify.auto.api import Metrics, SparsificationTrainingConfig
 from sparsify.auto.utils import SAVE_DIR, ErrorHandler, HardwareSpecs, analyze_hardware
+=======
+from sparsify.auto.api import APIOutput, Metrics, SparsificationTrainingConfig
+from sparsify.auto.utils import ErrorHandler, HardwareSpecs, analyze_hardware
+>>>>>>> Consolidate runs into history
 from sparsify.utils import TASK_REGISTRY, TaskName
 
 

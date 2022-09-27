@@ -26,7 +26,7 @@ def test_task_names_runner_and_config():
     )
     assert response.status_code
 
-    assert [char in response.text for char in ["]", "["]]
+    assert [char in response.text for char in ["[]"]]
     config_tasks = [TASK_REGISTRY[task] for task in ast.literal_eval(response.text)]
 
     runner_tasks = TaskRunner.supported_tasks()

@@ -88,7 +88,6 @@ class Yolov5Runner(TaskRunner):
         train_args = Yolov5TrainArgs(
             weights=config.base_model,
             data=config.dataset,
-            log_directory=config.log_directory,
             **config.kwargs,
         )
 
@@ -106,16 +105,22 @@ class Yolov5Runner(TaskRunner):
             experiment_number = int(last_experiment.group()) if last_experiment else 2
 
         # construct path to imminent run directory and weights path
-        experiment_dir = (
-            os.path.join(train_args.project, f"exp{experiment_number}")
-            if experiment_number > 1
-            else os.path.join(train_args.project, "exp")
+        relative_experiment_dir = (
+            f"exp{experiment_number}" if experiment_number > 1 else "exp"
+        )
+        absolute_experiment_dir = os.path.join(
+            train_args.project, relative_experiment_dir
+        )
+
+        # update log directory to maintain same subdirectory structure as runs
+        train_args.log_directory = os.path.join(
+            config.log_directory, relative_experiment_dir
         )
 
         # Default export args
         export_args = Yolov5ExportArgs(
             weights=os.path.join(
-                experiment_dir,
+                absolute_experiment_dir,
                 "weights",
                 "checkpoint-one-shot.pt" if train_args.one_shot else "last.pt",
             ),

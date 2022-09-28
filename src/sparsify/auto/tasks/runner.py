@@ -137,6 +137,7 @@ class TaskRunner:
 
     def __init__(self, config: SparsificationTrainingConfig):
         self._config = config
+        self.run_dir = SAVE_DIR.format(task=str(self.task))
 
         if self.export_model_kwarg is None:
             raise ValueError(

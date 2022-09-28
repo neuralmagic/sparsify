@@ -17,7 +17,12 @@ import time
 
 from sparsify.auto.api.api_models import APIArgs, SparsificationTrainingConfig
 from sparsify.auto.tasks import TaskRunner
-from sparsify.auto.utils import api_request_config, api_request_tune
+from sparsify.auto.utils import (
+    api_request_config,
+    api_request_tune,
+    create_run_directory,
+    remove_iteration_directory,
+)
 
 
 def main():
@@ -25,13 +30,18 @@ def main():
     api_args = APIArgs.from_cli()
     max_train_seconds = api_args.max_train_time * 60 * 60
     max_tune_iterations = api_args.num_iterations or math.inf
+    maximum_model_saves = api_args.maximum_model_saves or math.inf
 
     # setup run loop variables
     history = []
-    training_start_time = time.time()
+    iteration_idx = 1
 
     # request initial training config
     config = SparsificationTrainingConfig(**api_request_config(api_args))
+    training_start_time = time.time()
+
+    # set up directory for saving
+    create_run_directory(api_args)
 
     # tune until either (in order of precedence):
     # 1. number of tuning iterations used up
@@ -44,11 +54,23 @@ def main():
         # Create a runner from the config, based on the task specified by config.task
         runner = TaskRunner.create(config)
 
-        # Execute integration run and build output object
-        output = runner.run()
+        # Execute integration run and return metrics
+        metrics = runner.run()
+
+        # Move models from temporary directory to save directory, while only keeping
+        # the best n models
+        if len(history) < maximum_model_saves or any(
+            metrics > best_metrics for _, best_metrics in history
+        ):
+            if len(history) == maximum_model_saves:
+                metrics_list = [best_metrics for _, best_metrics in history]
+                remove_iteration_directory(
+                    api_args.save_directory, metrics_list.index(min(metrics_list))
+                )
+            runner.move_output(iteration_idx)
 
         # save run history as list of pairs of (config, metrics)
-        history.append((config, output.metrics))
+        history.append((config, metrics))
 
         # request a config with a new set of hyperparameters
         config_dict = api_request_tune(history)
@@ -58,9 +80,9 @@ def main():
 
         config = SparsificationTrainingConfig(**config_dict)
 
+        iteration_idx += 1
+
     # Conduct any generic post-processing and display results to user
-    results = output.finalize()
-    print(results)
 
 
 if __name__ == "__main__":

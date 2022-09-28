@@ -130,10 +130,10 @@ class Yolov5Runner(TaskRunner):
         Update run directories to save to the temporary run directory
         """
         self.train_args.project = os.path.join(
-            self._run_directory.name, self.train_args.project
+            self._tmp_save_directory.name, self.train_args.project
         )
         self.export_args.weights = os.path.join(
-            self._run_directory.name, self.export_args.weights
+            self._tmp_save_directory.name, self.export_args.weights
         )
 
     def memory_stepdown(self):
@@ -233,7 +233,8 @@ class Yolov5Runner(TaskRunner):
         """
         return [
             os.path.relpath(
-                f"{self.export_args.weights[:-3]}.{extension}", self._run_directory.name
+                f"{self.export_args.weights[:-3]}.{extension}",
+                self._tmp_save_directory.name,
             )
             for extension in ["onnx", "pt"]
         ]

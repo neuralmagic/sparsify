@@ -32,7 +32,6 @@ __all__ = [
     "APIArgs",
     "SparsificationTrainingConfig",
     "Metrics",
-    "APIOutput",
     "DEFAULT_OUTPUT_DIRECTORY",
 ]
 
@@ -102,7 +101,15 @@ class APIArgs(BaseModel):
         ),
         default=12.0,
     )
-
+    maximum_model_saves: Optional[int] = Field(
+        title="maximum_model_saves",
+        description=(
+            "Number of best models to save on the drive. If this value is set to n, "
+            "then at most n+1 models will be saved at any given time on the machine. "
+            "Default value of None allows for unlimited model saving"
+        ),
+        default=None,
+    )
     kwargs: Optional[Dict[str, Any]] = Field(
         title="kwargs",
         description="optional task specific arguments to add to config",
@@ -228,23 +235,6 @@ class Metrics(BaseModel):
             [f"{metric}: {value}" for metric, value in self.accuracy.items()]
         )
         return f"Post-training metrics:\n{string_body}\n"
-
-
-class APIOutput(BaseModel):
-    """
-    Class containing Sparsify.Auto output information
-    """
-
-    config: BaseModel = Field("config used to train model")
-    metrics: Metrics = Field(description="Post-training metrics")
-    model_directory: str = Field(
-        description=(
-            "path to SparseZoo compatible model directory generated integration run"
-        )
-    )
-    deployment_directory: str = Field(
-        description="Pipeline compatible deployment directory"
-    )
 
     def finalize(self):
         """

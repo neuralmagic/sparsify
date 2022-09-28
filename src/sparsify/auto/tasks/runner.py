@@ -27,8 +27,8 @@ import torch
 from torch.distributed.run import main as launch_ddp
 
 from pydantic import BaseModel
-from sparsify.auto.api import APIOutput, Metrics, SparsificationTrainingConfig
-from sparsify.auto.utils import ErrorHandler, HardwareSpecs, analyze_hardware
+from sparsify.auto.api import Metrics, SparsificationTrainingConfig
+from sparsify.auto.utils import SAVE_DIR, ErrorHandler, HardwareSpecs, analyze_hardware
 from sparsify.utils import TASK_REGISTRY, TaskName
 
 
@@ -133,6 +133,7 @@ class TaskRunner:
 
     def __init__(self, config: SparsificationTrainingConfig):
         self._config = config
+        self.run_dir = SAVE_DIR.format(task=str(self.task))
 
         # distributed training supported for torch>=1.9, as ddp error propagation was
         # introduced in 1.9
@@ -257,11 +258,11 @@ class TaskRunner:
         return {str(task): task.aliases for task in SUPPORTED_TASKS}
 
     @abstractmethod
-    def run(self) -> APIOutput:
+    def run(self) -> Metrics:
         """
         Run train and export
         """
-        self._run_directory = tempfile.TemporaryDirectory()
+        self._tmp_save_directory = tempfile.TemporaryDirectory()
         self.update_run_directory_args()
 
         if self.use_distributed_training:
@@ -271,7 +272,7 @@ class TaskRunner:
 
         self.export()
 
-        return self.build_output()
+        return self._get_metrics()
 
     def update_run_directory_args(self):
         """
@@ -334,10 +335,17 @@ class TaskRunner:
             f"memory_stepdown() missing implementation for task {self.task}"
         )
 
-    def build_output(self) -> APIOutput:
+    def move_output(self, iteration_idx: int):
         """
-        Construct APIOutput object from completed run information
+        Move output into target directory
         """
+        target_directory = os.path.join(
+            self.config.save_directory,
+            SAVE_DIR,
+            "run_artifacts",
+            f"iteration_{iteration_idx}",
+        )
+
         if not (self.completion_check("train") and self.completion_check("export")):
             warnings.warn(
                 "Run did not complete successfully. Output generated may not reflect "
@@ -346,30 +354,21 @@ class TaskRunner:
 
         files = self._get_output_files()
 
-        # Build output in generic manner
-        output = APIOutput(
-            config=self.config,
-            metrics=self._get_metrics(),
-            model_directory=self.config.save_directory,
-            deployment_directory="",
-        )
-
         # Move files to be saved to user output directory and delete run directory
         for file in files:
-            target_directory = os.path.dirname(
-                os.path.join(self.config.save_directory, file)
-            )
-            if not os.path.exists(target_directory):
-                os.makedirs(target_directory)
+            origin_path = os.path.join(self._tmp_save_directory.name, file)
+            target_path = os.path.dirname(os.path.join(target_directory, file))
+
+            if os.path.isdir(file) and not os.path.exists(target_path):
+                os.makedirs(target_path)
+
             shutil.move(
-                os.path.join(self._run_directory.name, file),
-                os.path.join(self.config.save_directory, file),
+                origin_path,
+                target_path,
             )
 
         # Clean up run directory
-        self._run_directory.cleanup()
-
-        return output
+        self._tmp_save_directory.cleanup()
 
     @abstractmethod
     def _train_completion_check(self) -> bool:

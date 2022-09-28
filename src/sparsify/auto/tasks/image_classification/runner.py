@@ -126,10 +126,10 @@ class ImageClassificationRunner(TaskRunner):
         Update run directories to save to the temporary run directory
         """
         self.train_args.save_dir = os.path.join(
-            self._run_directory.name, self.train_args.save_dir
+            self._tmp_save_directory.name, self.train_args.save_dir
         )
         self.export_args.checkpoint_path = os.path.join(
-            self._run_directory.name, self.export_args.checkpoint_path
+            self._tmp_save_directory.name, self.export_args.checkpoint_path
         )
         self.export_args.save_dir = self.train_args.save_dir
 

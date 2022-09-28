@@ -91,7 +91,7 @@ class _TransformersRunner(TaskRunner):
         Update run directories to save to the temporary run directory
         """
         self.train_args.output_dir = os.path.join(
-            self._run_directory.name, self.train_args.output_dir
+            self._tmp_save_directory.name, self.train_args.output_dir
         )
         self.export_args.model_path = self.train_args.output_dir
 
@@ -144,7 +144,9 @@ class _TransformersRunner(TaskRunner):
         Checks if export run completed successfully
         """
 
-        onnx_file = os.path.join(self._run_directory.name, "deployment", "model.onnx")
+        onnx_file = os.path.join(
+            self._tmp_save_directory.name, "deployment", "model.onnx"
+        )
 
         # Check mode file exists
         if not os.path.isfile(onnx_file):

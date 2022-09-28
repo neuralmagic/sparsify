@@ -133,6 +133,7 @@ class TaskRunner:
 
     def __init__(self, config: SparsificationTrainingConfig):
         self._config = config
+        self.run_dir = SAVE_DIR.format(task=str(self.task))
 
         # distributed training supported for torch>=1.9, as ddp error propagation was
         # introduced in 1.9
@@ -343,6 +344,13 @@ class TaskRunner:
         """
         Move output into target directory
         """
+        target_directory = os.path.join(
+            self.config.save_directory,
+            SAVE_DIR,
+            "run_artifacts",
+            f"iteration_{iteration_idx}",
+        )
+
         if not (self.completion_check("train") and self.completion_check("export")):
             warnings.warn(
                 "Run did not complete successfully. Output generated may not reflect "

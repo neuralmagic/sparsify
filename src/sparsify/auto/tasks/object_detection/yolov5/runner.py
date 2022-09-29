@@ -70,6 +70,7 @@ class Yolov5Runner(TaskRunner):
         self._model_save_name = (
             "checkpoint-one-shot" if self.train_args.one_shot else "last"
         )
+        self.origin_directory = Path(self.export_args.weights).parents[1]
 
     @classmethod
     def config_to_args(
@@ -226,15 +227,3 @@ class Yolov5Runner(TaskRunner):
             },
             recovery=None,
         )
-
-    def _get_output_files(self) -> List[str]:
-        """
-        Return list of files to copy into user output directory
-        """
-        return [
-            os.path.relpath(
-                f"{self.export_args.weights[:-3]}.{extension}",
-                self._tmp_save_directory.name,
-            )
-            for extension in ["onnx", "pt"]
-        ]

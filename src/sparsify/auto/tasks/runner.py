@@ -133,7 +133,6 @@ class TaskRunner:
 
     def __init__(self, config: SparsificationTrainingConfig):
         self._config = config
-        self.run_dir = SAVE_DIR.format(task=str(self.task))
 
         # distributed training supported for torch>=1.9, as ddp error propagation was
         # introduced in 1.9
@@ -142,6 +141,9 @@ class TaskRunner:
         self.dashed_cli_kwargs = False  # True if CLI args require "-" as word separator
 
         self.train_args, self.export_args = self.config_to_args(self.config)
+
+        # TODO: refactor all directory handling into a custom handler class
+        self.run_directory = os.path.join(self.config.save_directory, SAVE_DIR.format(task=str(self.task)))
 
         self.hardware_specs = analyze_hardware()
         self.tune_args_for_hardware(self.hardware_specs)
@@ -339,33 +341,22 @@ class TaskRunner:
         """
         Move output into target directory
         """
-        target_directory = os.path.join(
-            self.config.save_directory,
-            SAVE_DIR,
-            "run_artifacts",
-            f"iteration_{iteration_idx}",
-        )
-
         if not (self.completion_check("train") and self.completion_check("export")):
             warnings.warn(
                 "Run did not complete successfully. Output generated may not reflect "
                 "a valid run"
             )
 
-        files = self._get_output_files()
+        # Determine save subdirectory and create it
+        target_directory = os.path.join(
+            self.run_directory,
+            "run_artifacts",
+            f"iteration_{iteration_idx}",
+        )
+        os.mkdir(target_directory)
 
-        # Move files to be saved to user output directory and delete run directory
-        for file in files:
-            origin_path = os.path.join(self._tmp_save_directory.name, file)
-            target_path = os.path.dirname(os.path.join(target_directory, file))
-
-            if os.path.isdir(file) and not os.path.exists(target_path):
-                os.makedirs(target_path)
-
-            shutil.move(
-                origin_path,
-                target_path,
-            )
+        # move directory
+        shutil.move(self.origin_directory, target_directory)
 
         # Clean up run directory
         self._tmp_save_directory.cleanup()
@@ -420,16 +411,6 @@ class TaskRunner:
         raise NotImplementedError(
             f"_get_metrics() missing implementation for task {self.task}"
         )
-
-    @abstractmethod
-    def _get_output_files(self):
-        """
-        Return list of files to copy into user output directory
-        """
-        raise NotImplementedError(
-            f"_get_output_files() missing implementation for task {self.task}"
-        )
-
 
 def _dynamically_register_integration_runner(task: str):
     """

@@ -195,18 +195,6 @@ class _TransformersRunner(TaskRunner):
             recovery=None,
         )
 
-    def _get_output_files(self) -> List[str]:
-        """
-        Return list of files to copy into user output directory
-        """
-        return [
-            os.path.relpath(
-                os.path.join(os.path.dirname(self.export_args.model_path), dir),
-                self._tmp_save_directory.name,
-            )
-            for dir in os.listdir(self._tmp_save_directory.name)
-        ]
-
 
 @TaskRunner.register_task(task=TASK_REGISTRY["text_classification"])
 class TextClassificationRunner(_TransformersRunner):

@@ -218,18 +218,3 @@ class ImageClassificationRunner(TaskRunner):
             accuracy=results,
             recovery=None,
         )
-
-    def _get_output_files(self) -> List[str]:
-        """
-        Return list of files to copy into user output directory
-        """
-        return [
-            os.path.relpath(file_path, self._tmp_save_directory.name)
-            for file_path in [
-                self.export_args.checkpoint_path,
-                os.path.join(
-                    Path(self.export_args.checkpoint_path).parents[1],
-                    f"{self._model_save_name}.onnx",
-                ),
-            ]
-        ]

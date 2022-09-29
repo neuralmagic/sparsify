@@ -24,7 +24,7 @@ from sparsify.auto.api.api_models import APIArgs
 
 __all__ = ["SAVE_DIR", "create_run_directory", "remove_iteration_directory"]
 
-SAVE_DIR = "auto_{{task}} {:_%Y_%m_%d_%H_%M_%S}".format(datetime.now())
+SAVE_DIR = "auto_{{task}}{:_%Y_%m_%d_%H_%M_%S}".format(datetime.now())
 
 
 def create_run_directory(api_args: APIArgs):
@@ -32,11 +32,11 @@ def create_run_directory(api_args: APIArgs):
     Create base directory structure for a single sparsify.auto run
 
     """
-    run_dir = os.path.join(api_args.save_directory, SAVE_DIR.format(task=api_args.task))
-    os.mkdir(os.path.join(run_dir))
-    os.mkdir(os.path.join(run_dir, "deployment"))
-    os.mkdir(os.path.join(run_dir, "run_artifacts"))
-    os.mkdir(os.path.join(run_dir, "logs"))
+    run_directory = os.path.join(api_args.save_directory, SAVE_DIR.format(task=api_args.task))
+    os.mkdir(os.path.join(run_directory))
+    os.mkdir(os.path.join(run_directory, "deployment"))
+    os.mkdir(os.path.join(run_directory, "run_artifacts"))
+    os.mkdir(os.path.join(run_directory, "logs"))
 
 
 def remove_iteration_directory(save_directory: str, iteration_idx: int):

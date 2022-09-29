@@ -73,6 +73,7 @@ class Yolov5Runner(TaskRunner):
             if self.train_args.one_shot
             else f"{self.export_model_kwarg}/last.pt"
         )
+        self.origin_directory = Path(self.export_args.weights).parents[1]
 
     @classmethod
     def config_to_args(

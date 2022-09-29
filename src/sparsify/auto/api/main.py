@@ -58,6 +58,8 @@ def main():
 
         config = SparsificationTrainingConfig(**config_dict)
 
+    runner.export()
+
     # Conduct any generic post-processing and display results to user
     results = output.finalize()
     print(results)

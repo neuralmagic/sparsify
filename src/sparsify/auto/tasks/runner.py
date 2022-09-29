@@ -24,15 +24,7 @@ from functools import wraps
 from typing import Dict, List, Optional, Tuple
 
 import torch
-
-
-try:
-    from torch.distributed.run import main as launch_ddp
-
-    import_ddp_error = None
-
-except ImportError as ddp_error:
-    import_ddp_error = ddp_error
+from torch.distributed.run import main as launch_ddp
 
 from pydantic import BaseModel
 from sparsify.auto.api import APIOutput, Metrics, SparsificationTrainingConfig
@@ -49,7 +41,7 @@ __all__ = [
     "TaskRunner",
 ]
 
-DDP_ENABLED = not (import_ddp_error or os.environ.get("NM_AUTO_DISABLE_DDP"))
+DDP_ENABLED = os.environ.get("NM_AUTO_DISABLE_DDP")
 MAX_RETRY_ATTEMPTS = os.environ.get("NM_MAX_SCRIPT_RETRY_ATTEMPTS", 3)  # default: 3
 MAX_MEMORY_STEPDOWNS = os.environ.get("NM_MAX_SCRIPT_MEMORY_STEPDOWNS", 10)
 SUPPORTED_TASKS = [

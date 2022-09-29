@@ -56,7 +56,7 @@ def main():
         runner = TaskRunner.create(config)
 
         # Execute integration run and return metrics
-        metrics = runner.run()
+        metrics = runner.train()
 
         # Move models from temporary directory to save directory, while only keeping
         # the best n models

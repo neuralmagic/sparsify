@@ -217,7 +217,7 @@ class TaskRunner:
 
     @abstractmethod
     @retry_stage(stage="train")
-    def train_distributed(self):
+    def _train_distributed(self):
         """
         Invoke sparseml training script via pytorch ddp API
         """
@@ -233,11 +233,23 @@ class TaskRunner:
         launch_ddp(ddp_args)
 
     @retry_stage(stage="train")
-    def train(self):
+    def _train_api(self):
         """
         Run training through sparseml hook
         """
         self.train_hook(**self.train_args.dict())
+
+    def train(self) -> Metrics:
+        """
+        Training entrypoint
+        """
+        self._run_directory = tempfile.TemporaryDirectory()
+        self.update_run_directory_args()
+
+        if self.use_distributed_training:
+            self._train_distributed()
+        else:
+            self._train_api()
 
     @abstractmethod
     @retry_stage(stage="export")
@@ -261,23 +273,6 @@ class TaskRunner:
         aliases (str)
         """
         return {str(task): task.aliases for task in SUPPORTED_TASKS}
-
-    @abstractmethod
-    def run(self) -> Metrics:
-        """
-        Run train and export
-        """
-        self._tmp_save_directory = tempfile.TemporaryDirectory()
-        self.update_run_directory_args()
-
-        if self.use_distributed_training:
-            self.train_distributed()
-        else:
-            self.train()
-
-        self.export()
-
-        return self._get_metrics()
 
     def update_run_directory_args(self):
         """

@@ -41,7 +41,7 @@ __all__ = [
     "TaskRunner",
 ]
 
-DDP_ENABLED = os.environ.get("NM_AUTO_DISABLE_DDP")
+DDP_ENABLED = not (os.environ.get("NM_AUTO_DISABLE_DDP", False))
 MAX_RETRY_ATTEMPTS = os.environ.get("NM_MAX_SCRIPT_RETRY_ATTEMPTS", 3)  # default: 3
 MAX_MEMORY_STEPDOWNS = os.environ.get("NM_MAX_SCRIPT_MEMORY_STEPDOWNS", 10)
 SUPPORTED_TASKS = [

@@ -34,6 +34,7 @@ def main():
 
     # setup run loop variables
     history = []
+    best_n_models = []
     iteration_idx = 1
 
     # request initial training config
@@ -59,15 +60,16 @@ def main():
 
         # Move models from temporary directory to save directory, while only keeping
         # the best n models
-        if len(history) < maximum_model_saves or any(
+        if len(best_n_models) < maximum_model_saves or any(
             metrics > best_metrics for _, best_metrics in history
         ):
-            if len(history) == maximum_model_saves:
-                metrics_list = [best_metrics for _, best_metrics in history]
+            if len(best_n_models) == maximum_model_saves:
+                metrics_list = [best_metrics for _, best_metrics in best_n_models]
                 remove_iteration_directory(
-                    api_args.save_directory, metrics_list.index(min(metrics_list))
+                    api_args.save_directory, metrics_list.index(max(metrics_list))
                 )
             runner.move_output(iteration_idx)
+            best_n_models.append((iteration_idx, config, metrics))
 
         # save run history as list of pairs of (config, metrics)
         history.append((config, metrics))
@@ -83,6 +85,7 @@ def main():
         iteration_idx += 1
 
     # Conduct any generic post-processing and display results to user
+    runner.create_deployment_directory(best_n_models.index(max(best_n_models)))
 
 
 if __name__ == "__main__":

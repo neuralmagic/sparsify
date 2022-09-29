@@ -143,7 +143,9 @@ class TaskRunner:
         self.train_args, self.export_args = self.config_to_args(self.config)
 
         # TODO: refactor all directory handling into a custom handler class
-        self.run_directory = os.path.join(self.config.save_directory, SAVE_DIR.format(task=str(self.task)))
+        self.run_directory = os.path.join(
+            self.config.save_directory, SAVE_DIR.format(task=str(self.task))
+        )
 
         self.hardware_specs = analyze_hardware()
         self.tune_args_for_hardware(self.hardware_specs)
@@ -351,15 +353,55 @@ class TaskRunner:
         target_directory = os.path.join(
             self.run_directory,
             "run_artifacts",
-            f"iteration_{iteration_idx}",
         )
-        os.mkdir(target_directory)
 
-        # move directory
-        shutil.move(self.origin_directory, target_directory)
+        # move model files to save directory
+        origin_directory = self._get_copy_origin_directory()  # directory to move
+        moved_directory = os.path.join(
+            target_directory, os.path.basename(os.path.normpath(origin_directory))
+        )  # anticipated path to the moved directory, after moving
+
+        # this should only arise as a result of dev error and not user error
+        if os.path.exists(moved_directory):
+            raise OSError(f"Directory {moved_directory} already exists")
+
+        shutil.move(origin_directory, target_directory)
+
+        # rename directory to one indicating the iteration number
+        new_directory_name = os.path.join(
+            target_directory, f"iteration_{iteration_idx}"
+        )
+
+        # this should only arise as a result of dev error and not user error
+        if os.path.exists(new_directory_name):
+            raise OSError(f"Directory {new_directory_name} already exists")
+
+        os.rename(
+            moved_directory,
+            new_directory_name,
+        )  # rename directory to one indicating the iteration number
 
         # Clean up run directory
         self._tmp_save_directory.cleanup()
+
+    def create_deployment_directory(self, iteration_idx: int):
+        """
+        Creates and/or moves deployment directory to the deployment directory for the
+        mode corresponding to the iteration_idx
+        """
+        origin_directory = os.path.join(
+            self.run_directory,
+            "run_artifacts",
+            f"iteration_{iteration_idx}",
+            "deployment",
+        )
+        target_directory = self.run_directory
+
+        shutil.move(origin_directory, target_directory)
+
+        # TODO: add proper deployment instructions .txt
+        with open(os.path.join(target_directory, "deployment", "readme.txt"), "x") as f:
+            f.write("deployment instructions will go here")
 
     @abstractmethod
     def _train_completion_check(self) -> bool:
@@ -411,6 +453,16 @@ class TaskRunner:
         raise NotImplementedError(
             f"_get_metrics() missing implementation for task {self.task}"
         )
+
+    @abstractmethod
+    def _get_copy_origin_directory(self) -> str:
+        """
+        Return the absolute path to the directory to copy the model artifacts from
+        """
+        raise NotImplementedError(
+            f"_get_copy_origin_directory missing implementation for task {self.task}"
+        )
+
 
 def _dynamically_register_integration_runner(task: str):
     """

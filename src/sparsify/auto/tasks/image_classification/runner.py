@@ -15,8 +15,7 @@
 
 import json
 import os
-from pathlib import Path
-from typing import List, Tuple
+from typing import Tuple
 
 import onnx
 import torch
@@ -218,3 +217,9 @@ class ImageClassificationRunner(TaskRunner):
             accuracy=results,
             recovery=None,
         )
+
+    def _get_copy_origin_directory(self) -> str:
+        """
+        Return the absolute path to the directory to copy the model artifacts from
+        """
+        return os.path.join(self.train_args.save_dir, self.train_args.model_tag)

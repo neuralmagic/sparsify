@@ -17,7 +17,7 @@ import os
 import re
 import shutil
 from pathlib import Path
-from typing import List, Tuple
+from typing import Tuple
 
 import onnx
 import torch
@@ -70,7 +70,6 @@ class Yolov5Runner(TaskRunner):
         self._model_save_name = (
             "checkpoint-one-shot" if self.train_args.one_shot else "last"
         )
-        self.origin_directory = Path(self.export_args.weights).parents[1]
 
     @classmethod
     def config_to_args(
@@ -227,3 +226,9 @@ class Yolov5Runner(TaskRunner):
             },
             recovery=None,
         )
+
+    def _get_copy_origin_directory(self) -> str:
+        """
+        Return the absolute path to the directory to copy the model artifacts from
+        """
+        return str(Path(self.export_args.weights).parents[1])

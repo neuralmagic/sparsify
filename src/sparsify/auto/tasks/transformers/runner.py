@@ -15,7 +15,7 @@
 import json
 import math
 import os
-from typing import List, Tuple
+from typing import Tuple
 
 import onnx
 
@@ -194,6 +194,12 @@ class _TransformersRunner(TaskRunner):
             else {"eval_accuracy": results["eval_accuracy"]},
             recovery=None,
         )
+
+    def _get_copy_origin_directory(self) -> str:
+        """
+        Return the absolute path to the directory to copy the model artifacts from
+        """
+        return self.export_args.model_path
 
 
 @TaskRunner.register_task(task=TASK_REGISTRY["text_classification"])

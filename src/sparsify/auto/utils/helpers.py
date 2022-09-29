@@ -32,9 +32,10 @@ def create_run_directory(api_args: APIArgs):
     Create base directory structure for a single sparsify.auto run
 
     """
-    run_directory = os.path.join(api_args.save_directory, SAVE_DIR.format(task=api_args.task))
+    run_directory = os.path.join(
+        api_args.save_directory, SAVE_DIR.format(task=api_args.task)
+    )
     os.mkdir(os.path.join(run_directory))
-    os.mkdir(os.path.join(run_directory, "deployment"))
     os.mkdir(os.path.join(run_directory, "run_artifacts"))
     os.mkdir(os.path.join(run_directory, "logs"))
 

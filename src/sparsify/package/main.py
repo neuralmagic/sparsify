@@ -15,7 +15,7 @@
 import logging
 from typing import Iterable, Optional, Union
 import requests
-from sparsify.package.config import BACKEND_URL
+from sparsify.package.config import get_backend_url
 
 
 __all__ = [
@@ -57,7 +57,7 @@ def package(
     }
 
     response = requests.get(
-        url=BACKEND_URL,
+        url=get_backend_url(),
         headers={"Content-Type": "application/json"},
         params=payload,
     )

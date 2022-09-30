@@ -17,18 +17,18 @@ import subprocess
 import pytest
 import requests
 
-from sparsify.package.config import BASE_URL
+from sparsify.package.config import get_base_url
 
 
 smallest_qa_model = (
-    "zoo:nlp/question_answering/distilbert-none/pytorch/huggingface"
-    "/squad/pruned80_quant-none-vnni"
+    "zoo:nlp/question_answering/bert-base/pytorch/huggingface/"
+    "squad/pruned95_obs_quant-none"
 )
 
 
 @pytest.mark.dependency()
 def test_server_is_up():
-    response = requests.get(BASE_URL)
+    response = requests.get(get_base_url())
     assert response.status_code == 200
 
 
@@ -36,10 +36,16 @@ def test_server_is_up():
 @pytest.mark.slow()
 @pytest.mark.parametrize(
     "command, expected_stub",
-    [("sparsify.package -t qa -d squad -m compression", smallest_qa_model)],
+    [
+        (
+            "sparsify.package --task qa --dataset squad "
+            "--optimizing_metric compression",
+            smallest_qa_model,
+        )
+    ],
 )
 def test_end_to_end_run(command, expected_stub):
     subprocess.check_call(command.split())
 
     output = subprocess.check_output(command.split())
-    assert expected_stub in str(output)
+    assert expected_stub in output.decode()

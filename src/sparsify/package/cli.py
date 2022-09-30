@@ -82,6 +82,19 @@ from sparsify.version import __version__
 _LOGGER = logging.getLogger(__name__)
 
 
+def _get_template(results: str):
+    return f"""
+    Relevant Stub: {results}
+    Use sparsezoo to download the deployment directory as follows:
+    ```python
+    from sparsezoo import Model
+    model = Model("{results}")
+    model.deployment.download()
+    print(model.deployment.path)
+    ```
+    """
+
+
 @click.command(context_settings=dict(show_default=True))
 @click.version_option(version=__version__)
 @click.argument(
@@ -126,16 +139,18 @@ def main(**kwargs):
 
     Example for using sparsify.package:
 
-         1) `sparsify.package --task image_classification -m accuracy`
+         1) `sparsify.package --task image_classification \
+            --optimizing_metric accuracy`
 
          2) `sparsify.package --task ic --optimizing_metric accuracy \
          --optimizing_metric compression --target VNNI`
     """
     if not (kwargs.get("task") or kwargs.get("dataset")):
-        raise ValueError("At-least one of the `task` or `dataset`")
+        raise ValueError("At-least one of the `task` or `dataset` must be specified")
     _LOGGER.debug(f"{kwargs}")
     results = package(**kwargs)
-    print(f"Relevant Stubs: {results}")
+
+    print(_get_template(results))
 
 
 if __name__ == "__main__":

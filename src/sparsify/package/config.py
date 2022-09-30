@@ -17,7 +17,7 @@ import os
 
 __all__ = ["get_backend_url", "get_base_url"]
 _END_POINT = "/v1/sparsify/package/recommend-stub"
-_DEFAULT_BASE_URL = "http://0.0.0.0:8000"
+_DEFAULT_BASE_URL = "https://api.neuralmagic.com"
 
 
 def get_base_url() -> str:

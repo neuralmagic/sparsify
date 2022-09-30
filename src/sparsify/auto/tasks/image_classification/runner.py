@@ -31,6 +31,7 @@ from sparsify.auto.tasks.runner import DDP_ENABLED, TaskRunner
 from sparsify.auto.utils import HardwareSpecs
 from sparsify.utils import TASK_REGISTRY
 
+
 if DDP_ENABLED:
     from sparsify.auto.tasks.image_classification.args import (
         ImageClassificationTrainArgsCLI as ImageClassificationTrainArgs,
@@ -39,7 +40,6 @@ else:
     from sparsify.auto.tasks.image_classification.args import (
         ImageClassificationTrainArgsAPI as ImageClassificationTrainArgs,
     )
-
 
 
 __all__ = ["ImageClassificationRunner"]

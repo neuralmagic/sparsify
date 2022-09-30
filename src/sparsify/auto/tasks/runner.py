@@ -131,9 +131,18 @@ class TaskRunner:
     :param config: training config to base run on
     """
 
+    # name of the field for the export model path. e.g. "model_path" for transformers
+    export_model_kwarg: Optional[str] = None
+
     def __init__(self, config: SparsificationTrainingConfig):
         self._config = config
         self.run_dir = SAVE_DIR.format(task=str(self.task))
+
+        if self.export_model_kwarg is None:
+            raise ValueError(
+                "export_model_kwarg must be set for integration runner class for task"
+                f"{self.task}"
+            )
 
         # distributed training supported for torch>=1.9, as ddp error propagation was
         # introduced in 1.9
@@ -253,10 +262,19 @@ class TaskRunner:
 
     @abstractmethod
     @retry_stage(stage="export")
-    def export(self):
+    def export(self, iteration_idx: int):
         """
         Run export
         """
+        updated_export_args = self.export_args.copy()
+        setattr(
+            updated_export_args,
+            self.export_model_kwarg,
+            os.path.join(
+                self.run_directory, "run_artifacts", f"iteration_{iteration_idx}"
+            ),
+        )
+
         self.export_hook(**self.export_args.dict())
 
     @staticmethod

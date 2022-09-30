@@ -63,6 +63,7 @@ class Yolov5Runner(TaskRunner):
     train_hook = staticmethod(train_hook)
     export_hook = staticmethod(export_hook)
     sparseml_train_entrypoint = "sparseml.yolov5.train"
+    export_model_kwarg = "weights"
 
     def __init__(self, config: SparsificationTrainingConfig):
         super().__init__(config)

@@ -54,6 +54,7 @@ class ImageClassificationRunner(TaskRunner):
     train_hook = staticmethod(train_hook.callback)
     export_hook = staticmethod(export_hook.callback)
     sparseml_train_entrypoint = "sparseml.image_classification.train"
+    model_path = "checkpoint_path"
 
     def __init__(self, config: SparsificationTrainingConfig):
         super().__init__(config)

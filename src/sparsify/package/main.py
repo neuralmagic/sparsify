@@ -14,7 +14,9 @@
 
 import logging
 from typing import Iterable, Optional, Union
+
 import requests
+
 from sparsify.package.config import get_backend_url
 
 

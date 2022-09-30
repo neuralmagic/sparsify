@@ -12,15 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import json
 from pathlib import Path
 from typing import Any, Dict, Optional, Union
 
-from pydantic import BaseModel, Field
+from pydantic import Field
 from sparseml.pytorch.utils import default_device
+from sparsify.auto.tasks import BaseArgs
 
 
 __all__ = [
-    "ImageClassificationTrainArgs",
+    "ImageClassificationTrainArgsCLI",
+    "ImageClassificationTrainArgsAPI",
     "ImageClassificationExportArgs",
 ]
 
@@ -28,7 +31,7 @@ __all__ = [
 ROOT = Path("image_classification_runs")
 
 
-class _ImageClassificationBaseArgs(BaseModel):
+class _ImageClassificationBaseArgs(BaseArgs):
     # shared args
     dataset: str = Field(
         default=None,
@@ -57,30 +60,25 @@ class _ImageClassificationBaseArgs(BaseModel):
         default=dict(), description="json string for model constructor args"
     )
     dataset_kwargs: str = Field(
-        default=None, description="json string for dataset constructor args"
+        default=dict(), description="json string for dataset constructor args"
     )
     model_tag: str = Field(description="required - tag for model under save_dir")
     save_dir: Union[str, Path] = Field(default=ROOT)
 
 
-class ImageClassificationTrainArgs(_ImageClassificationBaseArgs):
+class _ImageClassificationBaseTrainArgs(_ImageClassificationBaseArgs):
     train_batch_size: int = Field(description="batch size to use in train loop")
     test_batch_size: int = Field(description="batch size to use in eval loop")
     init_lr: float = Field(default=1e-9, description="will be overwritten by recipe")
+    gradient_accum_steps: int = Field(
+        default=1, description="gradient accumulation steps"
+    )
     recipe_path: Union[str, Path] = Field(
         default=None, description="path to sparsification recipe"
     )
     eval_mode: bool = Field(default=False, description="defaults to only run eval")
     optim: str = Field(
         default="SGD", description="torch optimizer class to use, default SGD"
-    )
-    optim_args: Dict[str, Any] = Field(
-        default_factory=lambda: {
-            "momentum": 0.9,
-            "nesterov": True,
-            "weight_decay": 0.0001,
-        },
-        description="json string of arguments to optimizer class",
     )
     logs_dir: Union[str, Path] = Field(
         default=ROOT / "tensorboard_logs",
@@ -114,6 +112,30 @@ class ImageClassificationTrainArgs(_ImageClassificationBaseArgs):
     one_shot: bool = Field(
         default=False,
         description="Apply recipe in a one-shot fashion and save the model",
+    )
+
+
+class ImageClassificationTrainArgsCLI(_ImageClassificationBaseTrainArgs):
+    optim_args: str = Field(
+        default=json.dumps(
+            {
+                "momentum": 0.9,
+                "nesterov": True,
+                "weight_decay": 0.0001,
+            }
+        ),
+        description="json string of arguments to optimizer class",
+    )
+
+
+class ImageClassificationTrainArgsAPI(_ImageClassificationBaseTrainArgs):
+    optim_args: Dict[str, Any] = Field(
+        default_factory=lambda: {
+            "momentum": 0.9,
+            "nesterov": True,
+            "weight_decay": 0.0001,
+        },
+        description="json string of arguments to optimizer class",
     )
 
 

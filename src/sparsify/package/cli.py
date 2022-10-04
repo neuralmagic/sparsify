@@ -107,7 +107,6 @@ def _get_template(results: Mapping[str, Any], metrics: Iterable[str]):
         Relevant Stub: {stub}
     """
     model_metrics = results.get("metrics") or []
-    model_metrics = [abs(metric) for metric in model_metrics]
     metrics_info = (
         f"""
         Model Metrics: {list(zip(metrics, model_metrics))}

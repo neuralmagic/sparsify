@@ -131,8 +131,17 @@ class TaskRunner:
     :param config: training config to base run on
     """
 
+    # name of the field for the export model path. e.g. "model_path" for transformers
+    export_model_kwarg: Optional[str] = None
+
     def __init__(self, config: SparsificationTrainingConfig):
         self._config = config
+
+        if self.export_model_kwarg is None:
+            raise ValueError(
+                "export_model_kwarg must be set for integration runner class for task"
+                f"{self.task}"
+            )
 
         # distributed training supported for torch>=1.9, as ddp error propagation was
         # introduced in 1.9
@@ -216,7 +225,7 @@ class TaskRunner:
 
     @abstractmethod
     @retry_stage(stage="train")
-    def train_distributed(self):
+    def _train_distributed(self):
         """
         Invoke sparseml training script via pytorch ddp API
         """
@@ -232,18 +241,39 @@ class TaskRunner:
         launch_ddp(ddp_args)
 
     @retry_stage(stage="train")
-    def train(self):
+    def _train_api(self):
         """
         Run training through sparseml hook
         """
         self.train_hook(**self.train_args.dict())
 
+    def train(self) -> Metrics:
+        """
+        Training entrypoint
+        """
+        self._run_directory = tempfile.TemporaryDirectory()
+        self.update_run_directory_args()
+
+        if self.use_distributed_training:
+            self._train_distributed()
+        else:
+            self._train_api()
+
     @abstractmethod
     @retry_stage(stage="export")
-    def export(self):
+    def export(self, iteration_idx: int):
         """
         Run export
         """
+        updated_export_args = self.export_args.copy()
+        setattr(
+            updated_export_args,
+            self.export_model_kwarg,
+            os.path.join(
+                self.run_directory, "run_artifacts", f"iteration_{iteration_idx}"
+            ),
+        )
+
         self.export_hook(**self.export_args.dict())
 
     @staticmethod
@@ -260,23 +290,6 @@ class TaskRunner:
         aliases (str)
         """
         return {str(task): task.aliases for task in SUPPORTED_TASKS}
-
-    @abstractmethod
-    def run(self) -> Metrics:
-        """
-        Run train and export
-        """
-        self._tmp_save_directory = tempfile.TemporaryDirectory()
-        self.update_run_directory_args()
-
-        if self.use_distributed_training:
-            self.train_distributed()
-        else:
-            self.train()
-
-        self.export()
-
-        return self._get_metrics()
 
     def update_run_directory_args(self):
         """
@@ -343,6 +356,13 @@ class TaskRunner:
         """
         Move output into target directory
         """
+        target_directory = os.path.join(
+            self.config.save_directory,
+            SAVE_DIR,
+            "run_artifacts",
+            f"iteration_{iteration_idx}",
+        )
+
         if not (self.completion_check("train") and self.completion_check("export")):
             warnings.warn(
                 "Run did not complete successfully. Output generated may not reflect "

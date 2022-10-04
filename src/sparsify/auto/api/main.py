@@ -56,7 +56,7 @@ def main():
         runner = TaskRunner.create(config)
 
         # Execute integration run and return metrics
-        metrics = runner.run()
+        metrics = runner.train()
 
         # Move models from temporary directory to save directory, while only keeping
         # the best n models
@@ -84,8 +84,10 @@ def main():
 
         iteration_idx += 1
 
-    # Conduct any generic post-processing and display results to user
-    runner.create_deployment_directory(best_n_models.index(max(best_n_models)))
+    # Export model and create deployment folder
+    best_iteration_idx = best_n_models.index(max(best_n_models))
+    runner.export(best_iteration_idx)
+    runner.create_deployment_directory(best_iteration_idx)
 
 
 if __name__ == "__main__":

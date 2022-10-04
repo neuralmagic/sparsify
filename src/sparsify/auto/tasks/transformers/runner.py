@@ -51,6 +51,7 @@ class _TransformersRunner(TaskRunner):
     """
 
     export_hook = staticmethod(export_hook)
+    export_model_kwarg = "model_path"
 
     def __init__(self, config: SparsificationTrainingConfig):
         super().__init__(config)

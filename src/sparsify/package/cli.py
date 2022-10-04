@@ -90,10 +90,10 @@ def _csv_callback(ctx, self, value):
     """
     current_metrics = []
     for metric in value.split(","):
-        normalized_metric = metric.lower().strip()
-        if normalized_metric not in METRICS:
-            raise ValueError(f"Specified metric {normalized_metric} is not supported")
-        current_metrics.append(normalized_metric)
+        metric_ = metric.lower().strip()
+        if metric_ not in METRICS:
+            raise ValueError(f"Specified metric {metric_} is not supported")
+        current_metrics.append(metric_)
     return current_metrics
 
 

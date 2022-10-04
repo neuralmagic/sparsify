@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import logging
-from typing import Iterable, Optional, Union
+from typing import Any, Iterable, Mapping, Optional, Union
 
 import requests
 
@@ -33,7 +33,7 @@ def package(
     scenario: Optional[str] = None,
     optimizing_metric: Optional[Union[Iterable[str], str]] = None,
     **kwargs,
-) -> str:
+) -> Mapping[str, Any]:
     """
     A function that returns appropriate SparseZoo stub or deployment directory given
     the task or dataset, optimizing criterions and a deployment scenario
@@ -45,7 +45,7 @@ def package(
     :param scenario: Optional[str] `VNNI` or `vnni for a VNNI compatible machine
     :param optimizing_metric: Optional[List[str], str] representing different metrics
         to prioritize for when searching for models
-    :return: The appropriate stub based on specified arguments
+    :return: A dict type object with the relevant stub and model metrics
     """
     optimizing_metric = (
         [optimizing_metric] if isinstance(optimizing_metric, str) else optimizing_metric
@@ -57,7 +57,7 @@ def package(
         "scenario": scenario,
         "optimizing_metric": optimizing_metric,
     }
-
+    _LOGGER.info("Making a request to backend server")
     response = requests.get(
         url=get_backend_url(),
         headers={"Content-Type": "application/json"},

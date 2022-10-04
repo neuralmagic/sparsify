@@ -39,14 +39,14 @@ Options:
   --dataset [imagenette|imagenet|coco|squad|mnli|qqp|sst2|conll2003]
                                   The public dataset used to train this model,
                                   must be specified if `--task` not provided
-  --optimizing-metric, --optimizing_metric [accuracy|f1|recall|mAP|compression|
-  latency|file_size|memory_usage]
+  --optimizing-metric, --optimizing_metric TEXT
                                   The criterion to search model for, multiple
-                                  metrics can be specified like the following
-                                  `--optimizing_metric [METRIC-1]
-                                  --optimizing_metric [METRIC-2]` where
-                                  METRIC-1, METRIC-2 can be any supported
-                                  optimizing metric  [default: accuracy]
+                                  metrics can be specified as comma
+                                  separated values, supported metrics are
+                                  ['accuracy', 'f1', 'recall', 'mAP',
+                                  'latency', 'throughput', 'compression',
+                                  'file_size', 'memory_usage']  [default:
+                                  accuracy]
   --target [VNNI|DEFAULT]         Deployment target scenario (ie 'VNNI' for
                                   VNNI capable CPUs)  [default: DEFAULT]
   --help                          Show this message and exit.  [default:
@@ -65,6 +65,7 @@ Examples:
             --optimizing_metric accuracy
 """
 import logging
+from typing import Any, Iterable, Mapping
 
 import click
 from sparsify import package
@@ -82,17 +83,49 @@ from sparsify.version import __version__
 _LOGGER = logging.getLogger(__name__)
 
 
-def _get_template(results: str):
-    return f"""
-    Relevant Stub: {results}
-    Use sparsezoo to download the deployment directory as follows:
-    ```python
-    from sparsezoo import Model
-    model = Model("{results}")
-    model.deployment.download()
-    print(model.deployment.path)
-    ```
+def _csv_callback(ctx, self, value):
     """
+    A click callback function to parse a comma separated string with metrics
+    into a list
+    """
+    current_metrics = []
+    for metric in value.split(","):
+        normalized_metric = metric.lower().strip()
+        if normalized_metric not in METRICS:
+            raise ValueError(f"Specified metric {normalized_metric} is not supported")
+        current_metrics.append(normalized_metric)
+    return current_metrics
+
+
+def _get_template(results: Mapping[str, Any], metrics: Iterable[str]):
+    stub = results.get("stub")
+
+    if not stub:
+        return "No relevant models found for specified metrics"
+
+    stub_info = f"""
+        Relevant Stub: {stub}
+    """
+    model_metrics = results.get("metrics") or []
+    model_metrics = [abs(metric) for metric in model_metrics]
+    metrics_info = (
+        f"""
+        Model Metrics: {list(zip(metrics, model_metrics))}
+        """
+        if metrics
+        else ""
+    )
+    download_instructions = f"""
+        Use sparsezoo to download the deployment directory as follows:
+        ```python
+        from sparsezoo import Model
+        stub = "{stub}"
+        model = Model(stub)
+        model.deployment.download()
+        print(model.deployment.path)
+        ```
+    """
+    return "".join((stub_info, metrics_info, download_instructions))
 
 
 @click.command(context_settings=dict(show_default=True))
@@ -116,14 +149,11 @@ def _get_template(results: str):
 @click.option(
     "--optimizing-metric",
     "--optimizing_metric",
-    default=(DEFAULT_OPTIMIZING_METRIC,),
-    type=click.Choice(METRICS, case_sensitive=False),
+    default=DEFAULT_OPTIMIZING_METRIC,
+    type=str,
     help="The criterion to search model for, multiple metrics can be specified "
-    "like the following  `--optimizing_metric [METRIC-1] "
-    "--optimizing_metric [METRIC-2]` where METRIC-1, METRIC-2 can be any "
-    "supported optimizing metric",
-    multiple=True,
-    callback=lambda ctx, self, value: tuple(metric.lower() for metric in value),
+    f"as comma separated values, supported metrics are {METRICS}",
+    callback=_csv_callback,
 )
 @click.option(
     "--target",
@@ -142,15 +172,15 @@ def main(**kwargs):
          1) `sparsify.package --task image_classification \
             --optimizing_metric accuracy`
 
-         2) `sparsify.package --task ic --optimizing_metric accuracy \
-         --optimizing_metric compression --target VNNI`
+         2) `sparsify.package --task ic --optimizing_metric "accuracy, compression" \
+         --target VNNI`
     """
     if not (kwargs.get("task") or kwargs.get("dataset")):
         raise ValueError("At-least one of the `task` or `dataset` must be specified")
     _LOGGER.debug(f"{kwargs}")
     results = package(**kwargs)
 
-    print(_get_template(results))
+    print(_get_template(results=results, metrics=kwargs.get("optimizing_metric")))
 
 
 if __name__ == "__main__":

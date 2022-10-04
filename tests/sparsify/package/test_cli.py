@@ -17,7 +17,7 @@ from unittest.mock import patch
 import pytest
 
 from click.testing import CliRunner
-from sparsify.package.cli import main
+from sparsify.package.cli import _csv_callback, _get_template, main
 
 
 def _run_with_cli_runner(args: List[str]):
@@ -41,7 +41,7 @@ def _run_with_cli_runner(args: List[str]):
 @patch("sparsify.package_module.cli.package")
 def test_click_error_on_invalid_invocation(package_function, cli_args):
     result = _run_with_cli_runner(cli_args.split())
-    assert result.exit_code == 2
+    assert result.exit_code >= 1
 
 
 @pytest.mark.parametrize("cli_args", ["", "--optimizing-metric accuracy"])
@@ -59,10 +59,40 @@ def test_value_error_when_dataset_and_task_not_provided(package_function, cli_ar
         "--task ic --dataset imagenette"
         "deployment_directory --task ic --dataset imagenette --optimizing-metric "
         "accuracy",
-        "--task ic --optimizing-metric accuracy --optimizing_metric compression",
+        "--task ic --optimizing-metric accuracy,compression",
     ],
 )
 @patch("sparsify.package_module.cli.package")
 def test_valid_invocation(package_function, cli_args):
     result = _run_with_cli_runner(cli_args.split())
     assert result.exit_code == 0
+
+
+@pytest.mark.parametrize(
+    "results, metrics",
+    [
+        ({"stub": "zoo://", "metrics": (99, -234567)}, ["accuracy", "compression"]),
+    ],
+)
+def test_get_template_has_model_metrics(results, metrics):
+    output = _get_template(results=results, metrics=metrics)
+    assert isinstance(output, str)
+    for metric in results.get("metrics"):
+        assert str(abs(metric)) in output
+
+
+@pytest.mark.parametrize(
+    "value, expected",
+    [
+        ("accuracy, compression", ["accuracy", "compression"]),
+        ("accuracy,compression", ["accuracy", "compression"]),
+        ("accuracy, c", ValueError()),
+    ],
+)
+def test_csv_callback(value, expected):
+    if isinstance(expected, ValueError):
+        with pytest.raises(ValueError):
+            _csv_callback(ctx=None, self=None, value=value)
+    else:
+        actual = _csv_callback(ctx=None, self=None, value=value)
+        assert actual == expected

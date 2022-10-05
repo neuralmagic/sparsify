@@ -103,7 +103,7 @@ DATASET_REGISTRY: Dict[str, TaskName] = {
 }
 
 
-def get_task_info(task_name: str) -> Optional[TaskName]:
+def get_task_info(task_name: Optional[str]) -> Optional[TaskName]:
     """
     :param task_name: The task name to get information for
     :return: A TaskName object if information found else None

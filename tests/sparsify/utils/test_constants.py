@@ -11,9 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from typing import Optional
 
-import pytest
 
 from sparsify.utils.constants import TaskName, get_dataset_info, get_task_info
 
@@ -33,31 +31,15 @@ _TEXT_CLASSIFICATION_TASK = TaskName(
 )
 
 
-@pytest.mark.parametrize(
-    "task_name, expected",
-    [
-        ("ic", _IC_TASK),
-        ("image_Classification", _IC_TASK),
-        ("classification", _IC_TASK),
-        (None, None),
-        (0, None),
-    ],
-)
-def test_get_task_info(task_name: Optional[str], expected):
-    actual = get_task_info(task_name)
-    assert actual == expected
+def test_get_task_info():
+    assert get_task_info("ic") == _IC_TASK
+    assert get_task_info("image_Classification") == _IC_TASK
+    assert get_task_info("classification") == _IC_TASK
+    assert get_task_info(None) is None
 
 
-@pytest.mark.parametrize(
-    "dataset_name, expected",
-    [
-        ("mnli", _TEXT_CLASSIFICATION_TASK),
-        ("MnLi", _TEXT_CLASSIFICATION_TASK),
-        (" mnlI", _TEXT_CLASSIFICATION_TASK),
-        (None, None),
-        (0, None),
-    ],
-)
-def test_get_dataset_info(dataset_name: Optional[str], expected):
-    actual = get_dataset_info(dataset_name)
-    assert actual == expected
+def test_get_dataset_info():
+    assert get_dataset_info("mnli") == _TEXT_CLASSIFICATION_TASK
+    assert get_dataset_info("MnLi") == _TEXT_CLASSIFICATION_TASK
+    assert get_dataset_info("  mNli ") == _TEXT_CLASSIFICATION_TASK
+    assert get_dataset_info(None) is None

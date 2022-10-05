@@ -26,6 +26,7 @@ from typing import Any, Dict, List, Optional, Union
 import yaml
 
 from pydantic import BaseModel, Field, validator
+from sparsify.auto.utils import SampledHyperparameter
 from sparsify.utils import TASK_REGISTRY
 
 
@@ -180,6 +181,22 @@ class SparsificationTrainingConfig(BaseModel):
     kwargs: Dict[str, Any] = Field(
         description="optional task specific arguments to add to config",
         default_factory=dict,
+    )
+    tuning_parameters: List[SampledHyperparameter] = Field(
+        title="tuning_parameters",
+        description=(
+            "List of tuning hyperparameters. Values are used to overwrite respective "
+            "recipe fields"
+        ),
+        default=[],
+    )
+    optimizing_metrics: List[str] = Field(
+        title="optimizing_metrics",
+        description=(
+            "List of metrics to optimize for during hyperparameter tuning. Each "
+            "element must match name of field in Metrics class"
+        ),
+        default=["accuracy"],
     )
 
     @classmethod

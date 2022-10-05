@@ -124,7 +124,7 @@ def get_dataset_info(dataset_name: str) -> Optional[TaskName]:
     :param dataset_name: The dataset name to get information for
     :return: A TaskName object if information found else None
     """
-    dataset_name = dataset_name.lower().strip().replace("-", "_")
+    dataset_name: str = dataset_name.lower().strip().replace("-", "_")
     return DATASET_REGISTRY.get(dataset_name)
 
 

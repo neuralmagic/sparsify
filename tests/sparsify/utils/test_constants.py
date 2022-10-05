@@ -18,30 +18,46 @@ import pytest
 from sparsify.utils.constants import TaskName, get_dataset_info, get_task_info
 
 
+_IC_TASK = TaskName(
+    name="image_classification",
+    aliases=["ic", "classification"],
+    domain="cv",
+    sub_domain="classification",
+)
+
+_TEXT_CLASSIFICATION_TASK = TaskName(
+    name="text_classification",
+    aliases=["glue"],
+    domain="nlp",
+    sub_domain="text_classification",
+)
+
+
 @pytest.mark.parametrize(
-    "task_name",
+    "task_name, expected",
     [
-        "ic",
-        "image_Classification",
-        "classification",
-        None,
-        0,
+        ("ic", _IC_TASK),
+        ("image_Classification", _IC_TASK),
+        ("classification", _IC_TASK),
+        (None, None),
+        (0, None),
     ],
 )
-def test_get_task_info(task_name: Optional[str]):
-    task_info = get_task_info(task_name)
-    if task_name:
-        assert task_info
-        assert isinstance(task_info, TaskName)
-    else:
-        assert task_info is None
+def test_get_task_info(task_name: Optional[str], expected):
+    actual = get_task_info(task_name)
+    assert actual == expected
 
 
-@pytest.mark.parametrize("dataset_name", ["mnli", "MNLI", " mnLI ", None, 0])
-def test_get_dataset_info(dataset_name: Optional[str]):
-    dataset_info = get_dataset_info(dataset_name)
-    if dataset_name:
-        assert dataset_info
-        assert isinstance(dataset_info, TaskName)
-    else:
-        assert dataset_info is None
+@pytest.mark.parametrize(
+    "dataset_name, expected",
+    [
+        ("mnli", _TEXT_CLASSIFICATION_TASK),
+        ("MnLi", _TEXT_CLASSIFICATION_TASK),
+        (" mnlI", _TEXT_CLASSIFICATION_TASK),
+        (None, None),
+        (0, None),
+    ],
+)
+def test_get_dataset_info(dataset_name: Optional[str], expected):
+    actual = get_dataset_info(dataset_name)
+    assert actual == expected

@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from typing import Dict, Optional
 
 from sparsify.utils import TaskName
 
@@ -25,6 +26,8 @@ __all__ = [
     "TASKS",
     "TASK_REGISTRY",
     "TASKS_WITH_ALIASES",
+    "get_dataset_info",
+    "get_task_info",
 ]
 
 DEFAULT_OPTIMIZING_METRIC = "accuracy"
@@ -46,7 +49,7 @@ DEPLOYMENT_SCENARIOS = [
     DEFAULT_DEPLOYMENT_SCENARIO,
 ]
 
-TASK_REGISTRY = {
+TASK_REGISTRY: Dict[str, TaskName] = {
     "image_classification": TaskName(
         name="image_classification",
         aliases=["ic", "classification"],
@@ -88,7 +91,7 @@ TASK_REGISTRY = {
     ),
 }
 
-DATASET_REGISTRY = {
+DATASET_REGISTRY: Dict[str, TaskName] = {
     "imagenette": TASK_REGISTRY["image_classification"],
     "imagenet": TASK_REGISTRY["image_classification"],
     "coco": TASK_REGISTRY["object_detection"],
@@ -98,6 +101,32 @@ DATASET_REGISTRY = {
     "sst2": TASK_REGISTRY["text_classification"],
     "conll2003": TASK_REGISTRY["token_classification"],
 }
+
+
+def get_task_info(task_name: Optional[str]) -> Optional[TaskName]:
+    """
+    :param task_name: The task name to get information for
+    :return: A TaskName object if information found else None
+    """
+    task_info: Optional[TaskName] = TASK_REGISTRY.get(task_name)
+
+    if task_info:
+        return task_info
+
+    # search in aliases
+    for name, current_task_info in TASK_REGISTRY.items():
+        if task_name == current_task_info:
+            return current_task_info
+
+
+def get_dataset_info(dataset_name: Optional[str]) -> Optional[TaskName]:
+    """
+    :param dataset_name: The dataset name to get information for
+    :return: A TaskName object if information found else None
+    """
+    if dataset_name:
+        dataset_name = dataset_name.lower().strip().replace("-", "_")
+    return DATASET_REGISTRY.get(dataset_name)
 
 
 TASKS = list(TASK_REGISTRY.keys())

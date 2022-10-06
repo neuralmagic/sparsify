@@ -425,25 +425,6 @@ class TaskRunner:
         with open(os.path.join(target_directory, "deployment", "readme.txt"), "x") as f:
             f.write("deployment instructions will go here")
 
-    def create_deployment_directory(self, trial_idx: int):
-        """
-        Creates and/or moves deployment directory to the deployment directory for the
-        mode corresponding to the trial_idx
-        """
-        origin_directory = os.path.join(
-            self.run_directory,
-            "run_artifacts",
-            f"trial_{trial_idx}",
-            "deployment",
-        )
-        target_directory = self.run_directory
-
-        shutil.move(origin_directory, target_directory)
-
-        # TODO: add proper deployment instructions .txt
-        with open(os.path.join(target_directory, "deployment", "readme.txt"), "x") as f:
-            f.write("deployment instructions will go here")
-
     @abstractmethod
     def _train_completion_check(self) -> bool:
         """

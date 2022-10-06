@@ -13,12 +13,23 @@
 # limitations under the License.
 import ast
 
+import pytest
 import requests
+from requests.exceptions import ConnectionError
 
 from sparsify.auto.tasks import TaskRunner
 from sparsify.utils import NEURAL_MAGIC_API_ADDRESS, TASK_REGISTRY
 
 
+def _is_service_online():
+    try:
+        requests.get(NEURAL_MAGIC_API_ADDRESS)
+        return True
+    except ConnectionError:
+        return False
+
+
+@pytest.mark.skipif(not _is_service_online(), reason="NM API service not online")
 def test_task_names_runner_and_config():
     # Test that the config creator and task runner have the same tasks registered
     response = requests.get(

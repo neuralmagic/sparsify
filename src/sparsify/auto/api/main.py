@@ -50,9 +50,7 @@ def main():
     # 1. number of tuning trials used up
     # 2. maximum tuning time exceeded
     # 3. tuning early stopping condition met
-    while not (len(history) >= max_tune_trials) or (
-        time.time() - training_start_time > max_train_seconds
-    ):
+    while len(history) < max_tune_trials and time.time() - training_start_time <= max_train_seconds:
 
         # Create a runner from the config, based on the task specified by config.task
         runner = TaskRunner.create(config)

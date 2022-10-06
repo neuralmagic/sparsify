@@ -54,12 +54,12 @@ class ImageClassificationRunner(TaskRunner):
     train_hook = staticmethod(train_hook.callback)
     export_hook = staticmethod(export_hook.callback)
     sparseml_train_entrypoint = "sparseml.image_classification.train"
-    model_path = "checkpoint_path"
+    export_model_kwarg = "checkpoint_path"
 
     def __init__(self, config: SparsificationTrainingConfig):
         super().__init__(config)
         self._model_save_name = (
-            "model-one-shot" if self.train_args.one_shot else "model"
+            "model-one-shot.pth" if self.train_args.one_shot else "model.pth"
         )
 
     @classmethod
@@ -126,10 +126,10 @@ class ImageClassificationRunner(TaskRunner):
         Update run directories to save to the temporary run directory
         """
         self.train_args.save_dir = os.path.join(
-            self._tmp_save_directory.name, self.train_args.save_dir
+            self._run_directory.name, self.train_args.save_dir
         )
         self.export_args.checkpoint_path = os.path.join(
-            self._tmp_save_directory.name, self.export_args.checkpoint_path
+            self._run_directory.name, self.export_args.checkpoint_path
         )
         self.export_args.save_dir = self.train_args.save_dir
 

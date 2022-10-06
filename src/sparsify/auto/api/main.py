@@ -21,22 +21,21 @@ from sparsify.auto.utils import (
     api_request_config,
     api_request_tune,
     create_run_directory,
-    remove_iteration_directory,
+    remove_trial_directory,
 )
-
 
 
 def main():
     # Parse CLI args
     api_args = APIArgs.from_cli()
     max_train_seconds = api_args.max_train_time * 60 * 60
-    max_tune_iterations = api_args.num_iterations or math.inf
-    maximum_model_saves = api_args.maximum_model_saves or math.inf
+    max_tune_trials = api_args.num_trials or math.inf
+    maximum_trial_saves = api_args.maximum_trial_saves or math.inf
 
     # setup run loop variables
     history = []
     best_n_models = []
-    iteration_idx = 1
+    trial_idx = 1
 
     # request initial training config
     config = SparsificationTrainingConfig(**api_request_config(api_args))
@@ -46,10 +45,10 @@ def main():
     create_run_directory(api_args)
 
     # tune until either (in order of precedence):
-    # 1. number of tuning iterations used up
+    # 1. number of tuning trials used up
     # 2. maximum tuning time exceeded
     # 3. tuning early stopping condition met
-    while not (len(history) >= max_tune_iterations) or (
+    while not (len(history) >= max_tune_trials) or (
         time.time() - training_start_time > max_train_seconds
     ):
 
@@ -61,16 +60,16 @@ def main():
 
         # Move models from temporary directory to save directory, while only keeping
         # the best n models
-        if len(best_n_models) < maximum_model_saves or any(
+        if len(best_n_models) < maximum_trial_saves or any(
             metrics > best_metrics for _, best_metrics in history
         ):
-            if len(best_n_models) == maximum_model_saves:
+            if len(best_n_models) == maximum_trial_saves:
                 metrics_list = [best_metrics for _, best_metrics in best_n_models]
-                remove_iteration_directory(
+                remove_trial_directory(
                     api_args.save_directory, metrics_list.index(max(metrics_list))
                 )
-            runner.move_output(iteration_idx)
-            best_n_models.append((iteration_idx, config, metrics))
+            runner.move_output(trial_idx)
+            best_n_models.append((trial_idx, config, metrics))
 
         # save run history as list of pairs of (config, metrics)
         history.append((config, metrics))
@@ -83,12 +82,12 @@ def main():
 
         config = SparsificationTrainingConfig(**config_dict)
 
-        iteration_idx += 1
+        trial_idx += 1
 
     # Export model and create deployment folder
-    best_iteration_idx = best_n_models.index(max(best_n_models))
-    runner.export(best_iteration_idx)
-    runner.create_deployment_directory(best_iteration_idx)
+    best_trial_idx = best_n_models.index(max(best_n_models))
+    runner.export(best_trial_idx)
+    runner.create_deployment_directory(best_trial_idx)
 
 
 if __name__ == "__main__":

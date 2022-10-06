@@ -79,6 +79,7 @@ def retry_stage(stage: str):
 
             # attempt run and catch errors until success or maximum number of attempts
             # exceeded
+            out = func(self, *args, **kwargs)
             while not error_handler.max_attempts_exceeded():
                 try:
                     out = func(self, *args, **kwargs)
@@ -139,7 +140,7 @@ class TaskRunner:
 
         if self.export_model_kwarg is None:
             raise ValueError(
-                "export_model_kwarg must be set for integration runner class for task"
+                "export_model_kwarg must be set for integration runner class for task "
                 f"{self.task}"
             )
 
@@ -152,7 +153,7 @@ class TaskRunner:
         self.train_args, self.export_args = self.config_to_args(self.config)
 
         # TODO: refactor all directory handling into a custom handler class
-        self.run_directory = os.path.join(
+        self.save_directory = os.path.join(
             self.config.save_directory, SAVE_DIR.format(task=str(self.task))
         )
 
@@ -223,7 +224,6 @@ class TaskRunner:
     def config(self):
         return self._config
 
-    @abstractmethod
     @retry_stage(stage="train")
     def _train_distributed(self):
         """
@@ -259,9 +259,10 @@ class TaskRunner:
         else:
             self._train_api()
 
-    @abstractmethod
+        return self._get_metrics()
+
     @retry_stage(stage="export")
-    def export(self, iteration_idx: int):
+    def export(self, trial_idx: int):
         """
         Run export
         """
@@ -270,11 +271,14 @@ class TaskRunner:
             updated_export_args,
             self.export_model_kwarg,
             os.path.join(
-                self.run_directory, "run_artifacts", f"iteration_{iteration_idx}"
+                self.save_directory,
+                "run_artifacts",
+                f"trial_{trial_idx}",
+                self._model_save_name,
             ),
         )
 
-        self.export_hook(**self.export_args.dict())
+        self.export_hook(**updated_export_args.dict())
 
     @staticmethod
     def supported_tasks() -> List[TaskName]:
@@ -352,7 +356,7 @@ class TaskRunner:
             f"memory_stepdown() missing implementation for task {self.task}"
         )
 
-    def move_output(self, iteration_idx: int):
+    def move_output(self, trial_idx: int):
         """
         Move output into target directory
         """
@@ -360,7 +364,7 @@ class TaskRunner:
             self.config.save_directory,
             SAVE_DIR,
             "run_artifacts",
-            f"iteration_{iteration_idx}",
+            f"trial_{trial_idx}",
         )
 
         if not (self.completion_check("train") and self.completion_check("export")):
@@ -371,7 +375,7 @@ class TaskRunner:
 
         # Determine save subdirectory and create it
         target_directory = os.path.join(
-            self.run_directory,
+            self.save_directory,
             "run_artifacts",
         )
 
@@ -387,10 +391,8 @@ class TaskRunner:
 
         shutil.move(origin_directory, target_directory)
 
-        # rename directory to one indicating the iteration number
-        new_directory_name = os.path.join(
-            target_directory, f"iteration_{iteration_idx}"
-        )
+        # rename directory to one indicating the trial number
+        new_directory_name = os.path.join(target_directory, f"trial_{trial_idx}")
 
         # this should only arise as a result of dev error and not user error
         if os.path.exists(new_directory_name):
@@ -399,23 +401,23 @@ class TaskRunner:
         os.rename(
             moved_directory,
             new_directory_name,
-        )  # rename directory to one indicating the iteration number
+        )  # rename directory to one indicating the trial number
 
         # Clean up run directory
-        self._tmp_save_directory.cleanup()
+        self._run_directory.cleanup()
 
-    def create_deployment_directory(self, iteration_idx: int):
+    def create_deployment_directory(self, trial_idx: int):
         """
         Creates and/or moves deployment directory to the deployment directory for the
-        mode corresponding to the iteration_idx
+        mode corresponding to the trial_idx
         """
         origin_directory = os.path.join(
-            self.run_directory,
+            self.save_directory,
             "run_artifacts",
-            f"iteration_{iteration_idx}",
+            f"trial_{trial_idx}",
             "deployment",
         )
-        target_directory = self.run_directory
+        target_directory = self.save_directory
 
         shutil.move(origin_directory, target_directory)
 

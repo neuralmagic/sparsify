@@ -86,11 +86,11 @@ class APIArgs(BaseModel):
         description="optional path to a distillation teacher model for training",
         default=None,
     )
-    num_iterations: Optional[int] = Field(
-        title="num_iterations",
+    num_trials: Optional[int] = Field(
+        title="num_trials",
         description=(
-            "Number of tuning iterations to be run before returning best found "
-            "model. max_train_time may limit the actual num_iterations ran"
+            "Number of tuning trials to be run before returning best found "
+            "model. max_train_time may limit the actual num_trials ran"
         ),
         default=None,
     )
@@ -101,12 +101,13 @@ class APIArgs(BaseModel):
         ),
         default=12.0,
     )
-    maximum_model_saves: Optional[int] = Field(
-        title="maximum_model_saves",
+    maximum_trial_saves: Optional[int] = Field(
+        title="maximum_trial_saves",
         description=(
-            "Number of best models to save on the drive. If this value is set to n, "
-            "then at most n+1 models will be saved at any given time on the machine. "
-            "Default value of None allows for unlimited model saving"
+            "Number of best trials to save on the drive. Items saved for a tial "
+            "include the trained model and associated artifacts. If this value is set "
+            "to n, then at most n+1 models will be saved at any given time on the "
+            "machine. Default value of None allows for unlimited model saving"
         ),
         default=None,
     )

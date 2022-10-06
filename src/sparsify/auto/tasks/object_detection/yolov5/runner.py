@@ -69,7 +69,9 @@ class Yolov5Runner(TaskRunner):
         super().__init__(config)
         self.dashed_cli_kwargs = True
         self._model_save_name = (
-            "checkpoint-one-shot" if self.train_args.one_shot else "last"
+            "weights/checkpoint-one-shot.pt"
+            if self.train_args.one_shot
+            else "weights/last.pt"
         )
 
     @classmethod
@@ -131,10 +133,10 @@ class Yolov5Runner(TaskRunner):
         Update run directories to save to the temporary run directory
         """
         self.train_args.project = os.path.join(
-            self._tmp_save_directory.name, self.train_args.project
+            self._run_directory.name, self.train_args.project
         )
         self.export_args.weights = os.path.join(
-            self._tmp_save_directory.name, self.export_args.weights
+            self._run_directory.name, self.export_args.weights
         )
 
     def memory_stepdown(self):

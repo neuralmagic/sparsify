@@ -22,7 +22,7 @@ from datetime import datetime
 from sparsify.auto.api.api_models import APIArgs
 
 
-__all__ = ["SAVE_DIR", "create_run_directory", "remove_iteration_directory"]
+__all__ = ["SAVE_DIR", "create_run_directory", "remove_trial_directory"]
 
 SAVE_DIR = "auto_{{task}}{:_%Y_%m_%d_%H_%M_%S}".format(datetime.now())
 
@@ -40,9 +40,7 @@ def create_run_directory(api_args: APIArgs):
     os.mkdir(os.path.join(run_directory, "logs"))
 
 
-def remove_iteration_directory(save_directory: str, iteration_idx: int):
+def remove_trial_directory(save_directory: str, trial_idx: int):
     shutil.rmtree(
-        os.path.join(
-            save_directory, SAVE_DIR, "run_artifacts", f"iteration_{iteration_idx}"
-        )
+        os.path.join(save_directory, SAVE_DIR, "run_artifacts", f"trial_{trial_idx}")
     )

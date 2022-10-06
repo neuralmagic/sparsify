@@ -15,7 +15,7 @@
 import json
 import math
 import os
-from typing import List, Tuple
+from typing import Tuple
 
 import onnx
 
@@ -51,9 +51,11 @@ class _TransformersRunner(TaskRunner):
     """
 
     export_hook = staticmethod(export_hook)
+    export_model_kwarg = "model_path"
 
     def __init__(self, config: SparsificationTrainingConfig):
         super().__init__(config)
+        self._model_save_name = ""
 
     @classmethod
     def config_to_args(
@@ -193,17 +195,11 @@ class _TransformersRunner(TaskRunner):
             recovery=None,
         )
 
-    def _get_output_files(self) -> List[str]:
+    def _get_copy_origin_directory(self) -> str:
         """
-        Return list of files to copy into user output directory
+        Return the absolute path to the directory to copy the model artifacts from
         """
-        return [
-            os.path.relpath(
-                os.path.join(os.path.dirname(self.export_args.model_path), dir),
-                self._run_directory.name,
-            )
-            for dir in os.listdir(self._run_directory.name)
-        ]
+        return self.export_args.model_path
 
 
 @TaskRunner.register_task(task=TASK_REGISTRY["text_classification"])

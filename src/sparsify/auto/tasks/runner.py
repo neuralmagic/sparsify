@@ -27,8 +27,8 @@ import torch
 from torch.distributed.run import main as launch_ddp
 
 from pydantic import BaseModel
-from sparsify.auto.api import APIOutput, Metrics, SparsificationTrainingConfig
-from sparsify.auto.utils import ErrorHandler, HardwareSpecs, analyze_hardware
+from sparsify.auto.api import Metrics, SparsificationTrainingConfig
+from sparsify.auto.utils import SAVE_DIR, ErrorHandler, HardwareSpecs, analyze_hardware
 from sparsify.utils import TASK_REGISTRY, TaskName
 
 
@@ -79,6 +79,7 @@ def retry_stage(stage: str):
 
             # attempt run and catch errors until success or maximum number of attempts
             # exceeded
+            out = func(self, *args, **kwargs)
             while not error_handler.max_attempts_exceeded():
                 try:
                     out = func(self, *args, **kwargs)
@@ -131,8 +132,17 @@ class TaskRunner:
     :param config: training config to base run on
     """
 
+    # name of the field for the export model path. e.g. "model_path" for transformers
+    export_model_kwarg: Optional[str] = None
+
     def __init__(self, config: SparsificationTrainingConfig):
         self._config = config
+
+        if self.export_model_kwarg is None:
+            raise ValueError(
+                "export_model_kwarg must be set for integration runner class for task "
+                f"{self.task}"
+            )
 
         # distributed training supported for torch>=1.9, as ddp error propagation was
         # introduced in 1.9
@@ -141,6 +151,11 @@ class TaskRunner:
         self.dashed_cli_kwargs = False  # True if CLI args require "-" as word separator
 
         self.train_args, self.export_args = self.config_to_args(self.config)
+
+        # TODO: refactor all directory handling into a custom handler class
+        self.save_directory = os.path.join(
+            self.config.save_directory, SAVE_DIR.format(task=str(self.task))
+        )
 
         self.hardware_specs = analyze_hardware()
         self.tune_args_for_hardware(self.hardware_specs)
@@ -209,9 +224,8 @@ class TaskRunner:
     def config(self):
         return self._config
 
-    @abstractmethod
     @retry_stage(stage="train")
-    def train_distributed(self):
+    def _train_distributed(self):
         """
         Invoke sparseml training script via pytorch ddp API
         """
@@ -227,19 +241,44 @@ class TaskRunner:
         launch_ddp(ddp_args)
 
     @retry_stage(stage="train")
-    def train(self):
+    def _train_api(self):
         """
         Run training through sparseml hook
         """
         self.train_hook(**self.train_args.dict())
 
-    @abstractmethod
+    def train(self) -> Metrics:
+        """
+        Training entrypoint
+        """
+        self._run_directory = tempfile.TemporaryDirectory()
+        self.update_run_directory_args()
+
+        if self.use_distributed_training:
+            self._train_distributed()
+        else:
+            self._train_api()
+
+        return self._get_metrics()
+
     @retry_stage(stage="export")
-    def export(self):
+    def export(self, trial_idx: int):
         """
         Run export
         """
-        self.export_hook(**self.export_args.dict())
+        updated_export_args = self.export_args.copy()
+        setattr(
+            updated_export_args,
+            self.export_model_kwarg,
+            os.path.join(
+                self.save_directory,
+                "run_artifacts",
+                f"trial_{trial_idx}",
+                self._model_save_name,
+            ),
+        )
+
+        self.export_hook(**updated_export_args.dict())
 
     @staticmethod
     def supported_tasks() -> List[TaskName]:
@@ -255,23 +294,6 @@ class TaskRunner:
         aliases (str)
         """
         return {str(task): task.aliases for task in SUPPORTED_TASKS}
-
-    @abstractmethod
-    def run(self) -> APIOutput:
-        """
-        Run train and export
-        """
-        self._run_directory = tempfile.TemporaryDirectory()
-        self.update_run_directory_args()
-
-        if self.use_distributed_training:
-            self.train_distributed()
-        else:
-            self.train()
-
-        self.export()
-
-        return self.build_output()
 
     def update_run_directory_args(self):
         """
@@ -334,42 +356,74 @@ class TaskRunner:
             f"memory_stepdown() missing implementation for task {self.task}"
         )
 
-    def build_output(self) -> APIOutput:
+    def move_output(self, trial_idx: int):
         """
-        Construct APIOutput object from completed run information
+        Move output into target directory
         """
+        target_directory = os.path.join(
+            self.config.save_directory,
+            SAVE_DIR,
+            "run_artifacts",
+            f"trial_{trial_idx}",
+        )
+
         if not (self.completion_check("train") and self.completion_check("export")):
             warnings.warn(
                 "Run did not complete successfully. Output generated may not reflect "
                 "a valid run"
             )
 
-        files = self._get_output_files()
-
-        # Build output in generic manner
-        output = APIOutput(
-            config=self.config,
-            metrics=self._get_metrics(),
-            model_directory=self.config.save_directory,
-            deployment_directory="",
+        # Determine save subdirectory and create it
+        target_directory = os.path.join(
+            self.save_directory,
+            "run_artifacts",
         )
 
-        # Move files to be saved to user output directory and delete run directory
-        for file in files:
-            target_directory = os.path.dirname(
-                os.path.join(self.config.save_directory, file)
-            )
-            if not os.path.exists(target_directory):
-                os.makedirs(target_directory)
-            shutil.move(
-                os.path.join(self._run_directory.name, file),
-                os.path.join(self.config.save_directory, file),
-            )
+        # move model files to save directory
+        origin_directory = self._get_copy_origin_directory()  # directory to move
+        moved_directory = os.path.join(
+            target_directory, os.path.basename(os.path.normpath(origin_directory))
+        )  # anticipated path to the moved directory, after moving
+
+        # this should only arise as a result of dev error and not user error
+        if os.path.exists(moved_directory):
+            raise OSError(f"Directory {moved_directory} already exists")
+
+        shutil.move(origin_directory, target_directory)
+
+        # rename directory to one indicating the trial number
+        new_directory_name = os.path.join(target_directory, f"trial_{trial_idx}")
+
+        # this should only arise as a result of dev error and not user error
+        if os.path.exists(new_directory_name):
+            raise OSError(f"Directory {new_directory_name} already exists")
+
+        os.rename(
+            moved_directory,
+            new_directory_name,
+        )  # rename directory to one indicating the trial number
 
         # Clean up run directory
         self._run_directory.cleanup()
 
-        return output
+    def create_deployment_directory(self, trial_idx: int):
+        """
+        Creates and/or moves deployment directory to the deployment directory for the
+        mode corresponding to the trial_idx
+        """
+        origin_directory = os.path.join(
+            self.save_directory,
+            "run_artifacts",
+            f"trial_{trial_idx}",
+            "deployment",
+        )
+        target_directory = self.save_directory
+
+        shutil.move(origin_directory, target_directory)
+
+        # TODO: add proper deployment instructions .txt
+        with open(os.path.join(target_directory, "deployment", "readme.txt"), "x") as f:
+            f.write("deployment instructions will go here")
 
     @abstractmethod
     def _train_completion_check(self) -> bool:
@@ -423,12 +477,12 @@ class TaskRunner:
         )
 
     @abstractmethod
-    def _get_output_files(self):
+    def _get_copy_origin_directory(self) -> str:
         """
-        Return list of files to copy into user output directory
+        Return the absolute path to the directory to copy the model artifacts from
         """
         raise NotImplementedError(
-            f"_get_output_files() missing implementation for task {self.task}"
+            f"_get_copy_origin_directory missing implementation for task {self.task}"
         )
 
 

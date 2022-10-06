@@ -32,7 +32,6 @@ __all__ = [
     "APIArgs",
     "SparsificationTrainingConfig",
     "Metrics",
-    "APIOutput",
     "DEFAULT_OUTPUT_DIRECTORY",
 ]
 
@@ -87,11 +86,11 @@ class APIArgs(BaseModel):
         description="optional path to a distillation teacher model for training",
         default=None,
     )
-    num_iterations: Optional[int] = Field(
-        title="num_iterations",
+    num_trials: Optional[int] = Field(
+        title="num_trials",
         description=(
-            "Number of tuning iterations to be run before returning best found "
-            "model. max_train_time may limit the actual num_iterations ran"
+            "Number of tuning trials to be run before returning best found "
+            "model. max_train_time may limit the actual num_trials ran"
         ),
         default=None,
     )
@@ -102,7 +101,16 @@ class APIArgs(BaseModel):
         ),
         default=12.0,
     )
-
+    maximum_trial_saves: Optional[int] = Field(
+        title="maximum_trial_saves",
+        description=(
+            "Number of best trials to save on the drive. Items saved for a tial "
+            "include the trained model and associated artifacts. If this value is set "
+            "to n, then at most n+1 models will be saved at any given time on the "
+            "machine. Default value of None allows for unlimited model saving"
+        ),
+        default=None,
+    )
     kwargs: Optional[Dict[str, Any]] = Field(
         title="kwargs",
         description="optional task specific arguments to add to config",
@@ -228,23 +236,6 @@ class Metrics(BaseModel):
             [f"{metric}: {value}" for metric, value in self.accuracy.items()]
         )
         return f"Post-training metrics:\n{string_body}\n"
-
-
-class APIOutput(BaseModel):
-    """
-    Class containing Sparsify.Auto output information
-    """
-
-    config: BaseModel = Field("config used to train model")
-    metrics: Metrics = Field(description="Post-training metrics")
-    model_directory: str = Field(
-        description=(
-            "path to SparseZoo compatible model directory generated integration run"
-        )
-    )
-    deployment_directory: str = Field(
-        description="Pipeline compatible deployment directory"
-    )
 
     def finalize(self):
         """

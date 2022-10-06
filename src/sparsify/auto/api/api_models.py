@@ -91,8 +91,12 @@ class APIArgs(BaseModel):
         title="num_trials",
         description=(
             "Number of tuning trials to be run before returning best found "
+<<<<<<< HEAD
             "model. Set to None to not impose a trial limit. max_train_time may limit "
             "the actual num_trials ran"
+=======
+            "model. max_train_time may limit the actual num_trials ran"
+>>>>>>> Update directory saving flow (#139)
         ),
         default=None,
     )

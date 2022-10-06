@@ -27,13 +27,8 @@ import torch
 from torch.distributed.run import main as launch_ddp
 
 from pydantic import BaseModel
-<<<<<<< HEAD
 from sparsify.auto.api import Metrics, SparsificationTrainingConfig
 from sparsify.auto.utils import SAVE_DIR, ErrorHandler, HardwareSpecs, analyze_hardware
-=======
-from sparsify.auto.api import APIOutput, Metrics, SparsificationTrainingConfig
-from sparsify.auto.utils import ErrorHandler, HardwareSpecs, analyze_hardware
->>>>>>> Consolidate runs into history
 from sparsify.utils import TASK_REGISTRY, TaskName
 
 
@@ -84,6 +79,7 @@ def retry_stage(stage: str):
 
             # attempt run and catch errors until success or maximum number of attempts
             # exceeded
+            out = func(self, *args, **kwargs)
             while not error_handler.max_attempts_exceeded():
                 try:
                     out = func(self, *args, **kwargs)
@@ -363,6 +359,13 @@ class TaskRunner:
         """
         Move output into target directory
         """
+        target_directory = os.path.join(
+            self.config.save_directory,
+            SAVE_DIR,
+            "run_artifacts",
+            f"trial_{trial_idx}",
+        )
+
         if not (self.completion_check("train") and self.completion_check("export")):
             warnings.warn(
                 "Run did not complete successfully. Output generated may not reflect "

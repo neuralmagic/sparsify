@@ -15,8 +15,7 @@
 
 import json
 import os
-from pathlib import Path
-from typing import List, Tuple
+from typing import Tuple
 
 import onnx
 import torch
@@ -55,11 +54,12 @@ class ImageClassificationRunner(TaskRunner):
     train_hook = staticmethod(train_hook.callback)
     export_hook = staticmethod(export_hook.callback)
     sparseml_train_entrypoint = "sparseml.image_classification.train"
+    export_model_kwarg = "checkpoint_path"
 
     def __init__(self, config: SparsificationTrainingConfig):
         super().__init__(config)
         self._model_save_name = (
-            "model-one-shot" if self.train_args.one_shot else "model"
+            "model-one-shot.pth" if self.train_args.one_shot else "model.pth"
         )
 
     @classmethod
@@ -219,17 +219,8 @@ class ImageClassificationRunner(TaskRunner):
             recovery=None,
         )
 
-    def _get_output_files(self) -> List[str]:
+    def _get_copy_origin_directory(self) -> str:
         """
-        Return list of files to copy into user output directory
+        Return the absolute path to the directory to copy the model artifacts from
         """
-        return [
-            os.path.relpath(file_path, self._run_directory.name)
-            for file_path in [
-                self.export_args.checkpoint_path,
-                os.path.join(
-                    Path(self.export_args.checkpoint_path).parents[1],
-                    f"{self._model_save_name}.onnx",
-                ),
-            ]
-        ]
+        return os.path.join(self.train_args.save_dir, self.train_args.model_tag)

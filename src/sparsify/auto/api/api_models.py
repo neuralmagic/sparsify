@@ -20,6 +20,7 @@ the Neural Magic API, and output to user
 import argparse
 import json
 import os
+from functools import total_ordering
 from typing import Any, Dict, List, Optional, Union
 
 import yaml
@@ -210,6 +211,8 @@ class SparsificationTrainingConfig(BaseModel):
         return yaml.dump(config_dict)
 
 
+# TODO: add unit tests
+@total_ordering
 class Metrics(BaseModel):
     """
     Class containing metrics for a trained model. Contains all information needed to
@@ -219,6 +222,9 @@ class Metrics(BaseModel):
     accuracy: Dict[str, float] = (
         Field(description="Model accuracy on validation set"),
     )
+    tracked_accuracy_key: str = Field(
+        description="key of the accuracy dict, for the metric used to track run quality"
+    )
     recovery: Optional[float] = Field(
         description="model accuracy as a percentage of the dense model's accuracy",
         default=None,
@@ -226,6 +232,33 @@ class Metrics(BaseModel):
     train_time: Optional[float] = Field(
         description="Total train time, including hyperparameter tuning", default=None
     )
+
+    def _check_valid_operand(self, other):
+        if not isinstance(other, Metrics):
+            raise TypeError(
+                "Comparison not supported between instances of 'Metrics' and "
+                f"{type(other)}"
+            )
+        if self.tracked_accuracy_key != other.tracked_accuracy_key:
+            raise ValueError(
+                "Comparison not supported between instances of 'Metrics' with "
+                f"differing 'tracked_accuracy_key' of '{self.tracked_accuracy_key}' "
+                f"and '{other.tracked_accuracy_key}'"
+            )
+
+    def __eq__(self, other):
+        self._check_valid_operand(other)
+        return (
+            self.accuracy[self.tracked_accuracy_key]
+            == other.accuracy[self.tracked_accuracy_key]
+        )
+
+    def __lt__(self, other):
+        self._check_valid_operand(other)
+        return (
+            self.accuracy[self.tracked_accuracy_key]
+            < other.accuracy[self.tracked_accuracy_key]
+        )
 
     @property
     def display_string(self) -> str:

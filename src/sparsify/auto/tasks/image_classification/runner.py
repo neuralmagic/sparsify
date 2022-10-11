@@ -216,6 +216,7 @@ class ImageClassificationRunner(TaskRunner):
 
         return Metrics(
             accuracy=results,
+            tracked_accuracy_key=list(results.keys())[0],  # using first key for now
             recovery=None,
         )
 

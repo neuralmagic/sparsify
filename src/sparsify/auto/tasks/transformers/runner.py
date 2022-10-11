@@ -188,10 +188,13 @@ class _TransformersRunner(TaskRunner):
         with open(os.path.join(self.export_args.model_path, "eval_results.json")) as f:
             results = json.load(f)
 
+        tracked_accuracy_key = (
+            "eval_f1" if not self.task == "text_classification" else "eval_accuracy"
+        )
+
         return Metrics(
-            accuracy={"eval_f1": results["eval_f1"]}
-            if not self.task == "text_classification"
-            else {"eval_accuracy": results["eval_accuracy"]},
+            accuracy={tracked_accuracy_key: results[tracked_accuracy_key]},
+            tracked_accuracy_key=tracked_accuracy_key,
             recovery=None,
         )
 

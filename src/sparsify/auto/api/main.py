@@ -13,15 +13,17 @@
 # limitations under the License.
 
 import math
+import shutil
 import time
+from collections import OrderedDict
 
 from sparsify.auto.api.api_models import APIArgs, SparsificationTrainingConfig
 from sparsify.auto.tasks import TaskRunner
 from sparsify.auto.utils import (
     api_request_config,
     api_request_tune,
-    create_run_directory,
-    remove_trial_directory,
+    create_save_directory,
+    get_trial_artifact_directory,
 )
 
 
@@ -34,15 +36,15 @@ def main():
 
     # setup run loop variables
     history = []
-    best_n_models = []
-    trial_idx = 1
+    best_n_trial_metrics = OrderedDict()  # map trail_idx to metrics
+    trial_idx = 0
 
     # request initial training config
     config = SparsificationTrainingConfig(**api_request_config(api_args))
     training_start_time = time.time()
 
     # set up directory for saving
-    create_run_directory(api_args)
+    create_save_directory(api_args)
 
     # tune until either (in order of precedence):
     # 1. number of tuning trials used up
@@ -60,16 +62,16 @@ def main():
 
         # Move models from temporary directory to save directory, while only keeping
         # the best n models
-        if len(best_n_models) < maximum_trial_saves or any(
-            metrics > best_metrics for _, best_metrics in history
+        if len(best_n_trial_metrics) < maximum_trial_saves or any(
+            metrics > best_metrics for best_metrics in best_n_trial_metrics.values()
         ):
-            if len(best_n_models) == maximum_trial_saves:
-                metrics_list = [best_metrics for _, best_metrics in best_n_models]
-                remove_trial_directory(
-                    api_args.save_directory, metrics_list.index(max(metrics_list))
-                )
             runner.move_output(trial_idx)
-            best_n_models.append((trial_idx, config, metrics))
+            best_n_trial_metrics[trial_idx] = metrics
+
+        if len(best_n_trial_metrics) > maximum_trial_saves:
+            drop_trial_idx = min(best_n_trial_metrics, key=best_n_trial_metrics.get)
+            shutil.rmtree(get_trial_artifact_directory(api_args, drop_trial_idx))
+            del best_n_trial_metrics[drop_trial_idx]
 
         # save run history as list of pairs of (config, metrics)
         history.append((config, metrics))
@@ -85,7 +87,7 @@ def main():
         trial_idx += 1
 
     # Export model and create deployment folder
-    best_trial_idx = best_n_models.index(max(best_n_models))
+    best_trial_idx = max(best_n_trial_metrics, key=best_n_trial_metrics.get)
     runner.export(best_trial_idx)
     runner.create_deployment_directory(best_trial_idx)
 

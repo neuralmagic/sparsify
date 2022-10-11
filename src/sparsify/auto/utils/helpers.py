@@ -16,31 +16,34 @@
 Generic helpers for sparsify.auto
 """
 import os
-import shutil
 from datetime import datetime
 
 from sparsify.auto.api.api_models import APIArgs
 
 
-__all__ = ["SAVE_DIR", "create_run_directory", "remove_trial_directory"]
+__all__ = ["SAVE_DIR", "create_save_directory", "get_trial_artifact_directory"]
 
 SAVE_DIR = "auto_{{task}}{:_%Y_%m_%d_%H_%M_%S}".format(datetime.now())
 
 
-def create_run_directory(api_args: APIArgs):
+def create_save_directory(api_args: APIArgs):
     """
-    Create base directory structure for a single sparsify.auto run
+    Create base save directory structure for a single sparsify.auto run
 
     """
-    run_directory = os.path.join(
+    save_directory = os.path.join(
         api_args.save_directory, SAVE_DIR.format(task=api_args.task)
     )
-    os.mkdir(os.path.join(run_directory))
-    os.mkdir(os.path.join(run_directory, "run_artifacts"))
-    os.mkdir(os.path.join(run_directory, "logs"))
+    os.makedirs(os.path.join(save_directory), exist_ok=True)
+    os.mkdir(os.path.join(save_directory, "run_artifacts"))
+    os.mkdir(os.path.join(save_directory, "logs"))
 
 
-def remove_trial_directory(save_directory: str, trial_idx: int):
-    shutil.rmtree(
-        os.path.join(save_directory, SAVE_DIR, "run_artifacts", f"trial_{trial_idx}")
+def get_trial_artifact_directory(api_args: APIArgs, trial_idx: int) -> str:
+    "Return the path to a trial's save directory"
+    return os.path.join(
+        api_args.save_directory,
+        SAVE_DIR.format(task=api_args.task),
+        "run_artifacts",
+        f"trial_{trial_idx}",
     )

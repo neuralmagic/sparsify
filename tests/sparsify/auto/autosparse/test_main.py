@@ -80,7 +80,8 @@ def _export_side_effect_mock(self, trial_idx):
 @pytest.fixture(autouse=True)
 def _cleanup_directory():
     yield
-    shutil.rmtree(_SAVE_DIRECTORY)
+    if os.path.exists(_SAVE_DIRECTORY):
+        shutil.rmtree(_SAVE_DIRECTORY)
 
 
 def _test_trial_artifact_directory(trial_idx: int) -> bool:

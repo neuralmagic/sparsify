@@ -359,13 +359,6 @@ class TaskRunner:
         """
         Move output into target directory
         """
-        target_directory = os.path.join(
-            self.config.save_directory,
-            SAVE_DIR,
-            "run_artifacts",
-            f"trial_{trial_idx}",
-        )
-
         if not (self.completion_check("train") and self.completion_check("export")):
             warnings.warn(
                 "Run did not complete successfully. Output generated may not reflect "

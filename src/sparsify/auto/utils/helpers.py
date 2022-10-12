@@ -34,7 +34,7 @@ def create_save_directory(api_args: APIArgs):
     save_directory = os.path.join(
         api_args.save_directory, SAVE_DIR.format(task=api_args.task)
     )
-    os.makedirs(os.path.join(save_directory), exist_ok=True)
+    os.makedirs(save_directory, exist_ok=True)
     os.mkdir(os.path.join(save_directory, "run_artifacts"))
     os.mkdir(os.path.join(save_directory, "logs"))
 

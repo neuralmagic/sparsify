@@ -206,7 +206,7 @@ class SparsificationTrainingConfig(BaseModel):
 
         if file_path:
             with open(file_path, "w") as config_file:
-                yaml.dump(config_dict, config_file)
+                yaml.dump(data=config_dict, stream=config_file)
 
         return yaml.dump(config_dict)
 

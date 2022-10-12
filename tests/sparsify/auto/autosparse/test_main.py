@@ -14,6 +14,7 @@
 
 import os
 import shutil
+from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -61,8 +62,7 @@ def _train_side_effect_mock(self):
     train_artifact_path = self._get_copy_origin_directory()
     os.makedirs(train_artifact_path)  # create train output directory
     # add a dummy file and sub_directory
-    with open(os.path.join(train_artifact_path, "train_output"), mode="a"):
-        pass
+    Path(os.path.join(train_artifact_path, "train_output")).touch()
     os.mkdir(os.path.join(train_artifact_path, "artifact_subdirectory"))
 
 
@@ -73,8 +73,7 @@ def _export_side_effect_mock(self, trial_idx):
     )
     os.makedirs(deployment_path)  # create deployment dir
     # add dummy onnx file
-    with open(os.path.join(deployment_path, "export_output.onnx"), mode="a"):
-        pass
+    Path(os.path.join(deployment_path, "export_output.onnx")).touch()
 
 
 @pytest.fixture(autouse=True)

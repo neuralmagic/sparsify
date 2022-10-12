@@ -402,6 +402,8 @@ class TaskRunner:
         """
         Creates and/or moves deployment directory to the deployment directory for the
         mode corresponding to the trial_idx
+
+        :param trial_idx: index of the trial to create a deployment directory from
         """
         origin_directory = os.path.join(
             self.save_directory,
@@ -413,7 +415,6 @@ class TaskRunner:
 
         shutil.move(origin_directory, target_directory)
 
-        # TODO: add proper deployment instructions .txt
         with open(os.path.join(target_directory, "deployment", "readme.txt"), "x") as f:
             f.write("deployment instructions will go here")
 

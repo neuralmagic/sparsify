@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import math
 import shutil
 import time
 from collections import OrderedDict
@@ -31,8 +30,8 @@ def main():
     # Parse CLI args
     api_args = APIArgs.from_cli()
     max_train_seconds = api_args.max_train_time * 60 * 60
-    max_tune_trials = api_args.num_trials or math.inf
-    maximum_trial_saves = api_args.maximum_trial_saves or math.inf
+    max_tune_trials = api_args.num_trials or float("inf")
+    maximum_trial_saves = api_args.maximum_trial_saves or float("inf")
 
     # setup run loop variables
     history = []
@@ -63,12 +62,14 @@ def main():
 
         # Move models from temporary directory to save directory, while only keeping
         # the best n models
-        if len(best_n_trial_metrics) < maximum_trial_saves or any(
+        is_better_than_top_n = any(
             metrics > best_metrics for best_metrics in best_n_trial_metrics.values()
-        ):
+        )
+        if (len(best_n_trial_metrics) < maximum_trial_saves) or is_better_than_top_n:
             runner.move_output(trial_idx)
             best_n_trial_metrics[trial_idx] = metrics
 
+        # If better trial was saved to a total of n+1 saved trials, drop worst one
         if len(best_n_trial_metrics) > maximum_trial_saves:
             drop_trial_idx = min(best_n_trial_metrics, key=best_n_trial_metrics.get)
             shutil.rmtree(get_trial_artifact_directory(api_args, drop_trial_idx))

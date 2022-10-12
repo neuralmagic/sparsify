@@ -40,7 +40,9 @@ def create_save_directory(api_args: APIArgs):
 
 
 def get_trial_artifact_directory(api_args: APIArgs, trial_idx: int) -> str:
-    "Return the path to a trial's save directory"
+    """
+    Return the path to a trial's save directory
+    """
     return os.path.join(
         api_args.save_directory,
         SAVE_DIR.format(task=api_args.task),

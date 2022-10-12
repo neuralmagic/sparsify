@@ -211,7 +211,6 @@ class SparsificationTrainingConfig(BaseModel):
         return yaml.dump(config_dict)
 
 
-# TODO: add unit tests
 @total_ordering
 class Metrics(BaseModel):
     """

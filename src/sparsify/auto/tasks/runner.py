@@ -151,7 +151,6 @@ class TaskRunner:
 
         self.train_args, self.export_args = self.config_to_args(self.config)
 
-        # TODO: refactor all directory handling into a custom handler class
         self.save_directory = os.path.join(
             self.config.save_directory, SAVE_DIR.format(task=str(self.task))
         )

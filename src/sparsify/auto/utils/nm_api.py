@@ -20,10 +20,13 @@ from typing import Tuple
 import requests
 
 from sparsify.auto.api.api_models import APIArgs, Metrics, SparsificationTrainingConfig
-from sparsify.utils import NEURAL_MAGIC_API_ADDRESS
+from sparsify.utils import get_base_url
 
 
 __all__ = ["api_request_config", "api_request_tune"]
+
+_CONFIG_REQUEST_END_POINT = "/v1/sparsify/auto/training-config"
+_CONFIG_TUNE_END_POINT = "/v1/sparsify/auto/training-config/tune"
 
 
 def api_request_config(api_args: APIArgs) -> dict:
@@ -33,11 +36,9 @@ def api_request_config(api_args: APIArgs) -> dict:
     :return: dictionary of SparsificationTrainingConfig object
     """
     response = requests.post(
-        f"{NEURAL_MAGIC_API_ADDRESS}/v1/sparsify/auto/training-config",
+        f"{get_base_url()}{_CONFIG_REQUEST_END_POINT}",
         json=api_args.dict(),
     )
-    # TODO: add proper server error handling. Waiting for server to have
-    # graceful failure protocol
     return response.json()
 
 
@@ -49,7 +50,7 @@ def api_request_tune(history: Tuple[SparsificationTrainingConfig, Metrics]) -> d
     """
 
     response = requests.post(
-        f"{NEURAL_MAGIC_API_ADDRESS}/v1/sparsify/auto/training-config/tune",
+        f"{get_base_url()}{_CONFIG_TUNE_END_POINT}",
         json=[(config.dict(), metrics.dict()) for config, metrics in history],
     )
 

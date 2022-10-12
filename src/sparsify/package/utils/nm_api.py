@@ -12,9 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# flake8: noqa
-# isort: skip_file
+from sparsify.utils import get_base_url
 
-from .task_name import *
-from .constants import *
-from .nm_api import *
+
+__all__ = ["get_backend_url"]
+_END_POINT = "/v1/sparsify/package/recommend-stub"
+
+
+def get_backend_url() -> str:
+    """
+    :return The backend url  for sparsify.package server
+    """
+    return get_base_url() + _END_POINT

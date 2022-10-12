@@ -17,7 +17,7 @@ import subprocess
 import pytest
 import requests
 
-from sparsify.package.config import get_base_url
+from sparsify.utils import get_base_url
 
 
 smallest_qa_model = (

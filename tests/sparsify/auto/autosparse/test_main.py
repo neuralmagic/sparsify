@@ -128,5 +128,13 @@ def test_main(*args):
 
     assert os.path.exists(_SAVE_DIRECTORY)
 
+    output_path = os.path.join(
+        _SAVE_DIRECTORY, SAVE_DIR.format(task=_TEST_CONFIG["task"])
+    )
+    assert all(
+        os.path.exists(os.path.join(output_path, folder))
+        for folder in ["run_artifacts", "logs", "deployment"]
+    )
+
     for idx in top_n_trial_idx:
         _test_trial_artifact_directory(idx)

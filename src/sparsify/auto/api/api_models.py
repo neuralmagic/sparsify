@@ -91,7 +91,8 @@ class APIArgs(BaseModel):
         title="num_trials",
         description=(
             "Number of tuning trials to be run before returning best found "
-            "model. max_train_time may limit the actual num_trials ran"
+            "model. Set to None to not impose a trial limit. max_train_time may limit "
+            "the actual num_trials ran"
         ),
         default=None,
     )
@@ -150,37 +151,29 @@ class SparsificationTrainingConfig(BaseModel):
     """
 
     task: str = Field(
-        title="task",
         description="task to train the sparsified model on",
     )
     dataset: str = Field(
-        title="dataset",
         description="path to the dataset to train the task on",
     )
     base_model: str = Field(
-        title="base_model",
         description="path to the model to be sparsified",
     )
     save_directory: str = Field(
-        title="save_directory",
         description="Absolute path to save directory",
     )
     distill_teacher: Optional[str] = Field(
-        title="distil_teacher",
         description="optional path to a distillation teacher for training",
         default=None,
     )
     recipe: str = Field(
-        title="recipe",
         description="file path to or zoo stub of sparsification recipe to be applied",
     )
     recipe_args: Dict[str, Any] = Field(
-        title="recipe_args",
         description="keyword args to override recipe variables with",
         default_factory=dict,
     )
     kwargs: Dict[str, Any] = Field(
-        title="kwargs",
         description="optional task specific arguments to add to config",
         default_factory=dict,
     )

@@ -135,6 +135,7 @@ def test_main(*args):
         os.path.exists(os.path.join(output_path, folder))
         for folder in ["run_artifacts", "logs", "deployment"]
     )
+    assert len(os.listdir(os.path.join(output_path, "run_artifacts"))) == _MAXIMUM_SAVES
 
     for idx in top_n_trial_idx:
         _test_trial_artifact_directory(idx)

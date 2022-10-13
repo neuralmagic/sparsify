@@ -99,7 +99,7 @@ class APIArgs(BaseModel):
     max_train_time: float = Field(
         title="max_train_time",
         description=(
-            "Maximum number of hours to train before returning best trained " "model."
+            "Maximum number of hours to train before returning best trained model."
         ),
         default=12.0,
     )

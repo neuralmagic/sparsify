@@ -23,7 +23,9 @@ from sparsify.utils import TASK_REGISTRY, get_base_url
 
 def _is_service_online():
     try:
-        requests.get(get_base_url())
+        response = requests.get(get_base_url())
+        if not response.ok:
+            return False
         return True
     except ConnectionError:
         return False

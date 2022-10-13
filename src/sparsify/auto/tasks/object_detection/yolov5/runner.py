@@ -17,7 +17,7 @@ import os
 import re
 import shutil
 from pathlib import Path
-from typing import List, Tuple
+from typing import Tuple
 
 import onnx
 import torch
@@ -26,8 +26,7 @@ import pandas
 from pydantic import BaseModel
 from sparseml.yolov5.scripts import export as export_hook
 from sparseml.yolov5.scripts import train as train_hook
-from sparsify.auto.api import Metrics
-from sparsify.auto.configs import SparsificationTrainingConfig
+from sparsify.auto.api import Metrics, SparsificationTrainingConfig
 from sparsify.auto.tasks.object_detection.yolov5 import Yolov5ExportArgs
 from sparsify.auto.tasks.runner import DDP_ENABLED, TaskRunner
 from sparsify.auto.utils import HardwareSpecs
@@ -64,12 +63,15 @@ class Yolov5Runner(TaskRunner):
     train_hook = staticmethod(train_hook)
     export_hook = staticmethod(export_hook)
     sparseml_train_entrypoint = "sparseml.yolov5.train"
+    export_model_kwarg = "weights"
 
     def __init__(self, config: SparsificationTrainingConfig):
         super().__init__(config)
         self.dashed_cli_kwargs = True
         self._model_save_name = (
-            "checkpoint-one-shot" if self.train_args.one_shot else "last"
+            "weights/checkpoint-one-shot.pt"
+            if self.train_args.one_shot
+            else f"{self.export_model_kwarg}/last.pt"
         )
 
     @classmethod
@@ -225,16 +227,12 @@ class Yolov5Runner(TaskRunner):
             accuracy={
                 key.split("/")[1]: results[key].iloc[-1] for key in _ACCURACY_KEYS
             },
+            tracked_accuracy_key=_ACCURACY_KEYS[0].split("/")[1],
             recovery=None,
         )
 
-    def _get_output_files(self) -> List[str]:
+    def _get_copy_origin_directory(self) -> str:
         """
-        Return list of files to copy into user output directory
+        Return the absolute path to the directory to copy the model artifacts from
         """
-        return [
-            os.path.relpath(
-                f"{self.export_args.weights[:-3]}.{extension}", self._run_directory.name
-            )
-            for extension in ["onnx", "pt"]
-        ]
+        return str(Path(self.export_args.weights).parents[1])

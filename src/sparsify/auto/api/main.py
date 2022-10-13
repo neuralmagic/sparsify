@@ -12,52 +12,86 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import shutil
 import time
+from collections import OrderedDict
 
-from sparsify.auto.api.args import APIArgs
-from sparsify.auto.configs import APIConfigCreator
+from sparsify.auto.api.api_models import APIArgs, SparsificationTrainingConfig
 from sparsify.auto.tasks import TaskRunner
+from sparsify.auto.utils import (
+    api_request_config,
+    api_request_tune,
+    create_save_directory,
+    get_trial_artifact_directory,
+)
 
 
 def main():
     # Parse CLI args
     api_args = APIArgs.from_cli()
     max_train_seconds = api_args.max_train_time * 60 * 60
+    max_tune_trials = api_args.num_trials or float("inf")
+    maximum_trial_saves = api_args.maximum_trial_saves or float("inf")
 
     # setup run loop variables
-    config = None
-    runner_outputs = None
-    training_start_time = None
+    history = []
+    best_n_trial_metrics = OrderedDict()  # map trail_idx to metrics
+    trial_idx = 0
 
-    def _training_complete():
-        if config is None:
-            return False  # first loop
+    # request initial training config
+    config = SparsificationTrainingConfig(**api_request_config(api_args))
+    training_start_time = time.time()
 
-        # training is complete if sparsify.auto metrics satisfy the given config
-        # or the total time of all runs exceeds the maximum training time
-        return APIConfigCreator.metrics_satisfied(config, runner_outputs.metrics) or (
-            time.time() - training_start_time > max_train_seconds
-        )
+    # set up directory for saving
+    create_save_directory(api_args)
 
-    while not _training_complete():
-        # create or update training config
-        if config is None:
-            config = APIConfigCreator.get_config(api_args)
-            training_start_time = time.time()  # start training time after config init
-        else:
-            config = APIConfigCreator.update_hyperparameters(
-                config, runner_outputs.metrics
-            )
+    # tune until either (in order of precedence):
+    # 1. number of tuning trials used up
+    # 2. maximum tuning time exceeded
+    # 3. tuning early stopping condition met
+    while (
+        len(history) < max_tune_trials
+        and time.time() - training_start_time <= max_train_seconds
+    ):
 
-        # Create a runner for the task and config
+        # Create a runner from the config, based on the task specified by config.task
         runner = TaskRunner.create(config)
 
-        # Execute integration run and build output object
-        runner_outputs = runner.run()
+        # Execute integration run and return metrics
+        metrics = runner.train()
 
-    # Conduct any generic post-processing and display results to user
-    results = runner_outputs.finalize()
-    print(results)
+        # Move models from temporary directory to save directory, while only keeping
+        # the best n models
+        is_better_than_top_n = any(
+            metrics > best_metrics for best_metrics in best_n_trial_metrics.values()
+        )
+        if (len(best_n_trial_metrics) < maximum_trial_saves) or is_better_than_top_n:
+            runner.move_output(trial_idx)
+            best_n_trial_metrics[trial_idx] = metrics
+
+        # If better trial was saved to a total of n+1 saved trials, drop worst one
+        if len(best_n_trial_metrics) > maximum_trial_saves:
+            drop_trial_idx = min(best_n_trial_metrics, key=best_n_trial_metrics.get)
+            shutil.rmtree(get_trial_artifact_directory(api_args, drop_trial_idx))
+            del best_n_trial_metrics[drop_trial_idx]
+
+        # save run history as list of pairs of (config, metrics)
+        history.append((config, metrics))
+
+        # request a config with a new set of hyperparameters
+        config_dict = api_request_tune(history)
+
+        if config_dict.get("tuning_complete"):
+            break
+
+        config = SparsificationTrainingConfig(**config_dict)
+
+        trial_idx += 1
+
+    # Export model and create deployment folder
+    best_trial_idx = max(best_n_trial_metrics, key=best_n_trial_metrics.get)
+    runner.export(best_trial_idx)
+    runner.create_deployment_directory(best_trial_idx)
 
 
 if __name__ == "__main__":

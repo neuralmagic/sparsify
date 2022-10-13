@@ -12,14 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""
-Submodule containing registered implementations of APIConfigCreator.
-Register decorators will be called when included on initialization of this submodule
-"""
-
 # flake8: noqa
 
-from .helpers import *
-from .image_classification import *
-from .transformers import *
-from .yolov5 import *
+from .nm_api import *

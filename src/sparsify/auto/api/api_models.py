@@ -12,18 +12,31 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+Pydantic model classes defining the standards for user input, communication with
+the Neural Magic API, and output to user
+"""
+
 import argparse
 import json
 import os
+from functools import total_ordering
 from typing import Any, Dict, List, Optional, Union
+
+import yaml
 
 from pydantic import BaseModel, Field, validator
 from sparsify.utils import TASK_REGISTRY
 
 
-__all__ = ["APIArgs", "Metrics", "APIOutput", "USER_OUT_DIRECTORY"]
+__all__ = [
+    "APIArgs",
+    "SparsificationTrainingConfig",
+    "Metrics",
+    "DEFAULT_OUTPUT_DIRECTORY",
+]
 
-USER_OUT_DIRECTORY = "./output"
+DEFAULT_OUTPUT_DIRECTORY = "./output"
 
 
 class APIArgs(BaseModel):
@@ -42,7 +55,7 @@ class APIArgs(BaseModel):
     save_directory: str = Field(
         title="save_directory",
         description="Absolute path to save directory",
-        default=USER_OUT_DIRECTORY,
+        default=DEFAULT_OUTPUT_DIRECTORY,
     )
     performance: Union[str, float] = Field(
         title="performance",
@@ -74,14 +87,31 @@ class APIArgs(BaseModel):
         description="optional path to a distillation teacher model for training",
         default=None,
     )
+    num_trials: Optional[int] = Field(
+        title="num_trials",
+        description=(
+            "Number of tuning trials to be run before returning best found "
+            "model. Set to None to not impose a trial limit. max_train_time may limit "
+            "the actual num_trials ran"
+        ),
+        default=None,
+    )
     max_train_time: float = Field(
         title="max_train_time",
         description=(
-            "Maximum number of hours to train before returning best trained "
-            "model. At least one model will be trained in a given run regardless of "
-            "the maximum train time set here."
+            "Maximum number of hours to train before returning best trained model."
         ),
         default=12.0,
+    )
+    maximum_trial_saves: Optional[int] = Field(
+        title="maximum_trial_saves",
+        description=(
+            "Number of best trials to save on the drive. Items saved for a tial "
+            "include the trained model and associated artifacts. If this value is set "
+            "to n, then at most n+1 models will be saved at any given time on the "
+            "machine. Default value of None allows for unlimited model saving"
+        ),
+        default=None,
     )
     kwargs: Optional[Dict[str, Any]] = Field(
         title="kwargs",
@@ -114,6 +144,67 @@ class APIArgs(BaseModel):
         return cls(**vars(parsed_args))
 
 
+class SparsificationTrainingConfig(BaseModel):
+    """
+    Configuration class for sparsification aware training using SparseML and its
+    training integrations
+    """
+
+    task: str = Field(
+        description="task to train the sparsified model on",
+    )
+    dataset: str = Field(
+        description="path to the dataset to train the task on",
+    )
+    base_model: str = Field(
+        description="path to the model to be sparsified",
+    )
+    save_directory: str = Field(
+        description="Absolute path to save directory",
+    )
+    distill_teacher: Optional[str] = Field(
+        description="optional path to a distillation teacher for training",
+        default=None,
+    )
+    recipe: str = Field(
+        description="file path to or zoo stub of sparsification recipe to be applied",
+    )
+    recipe_args: Dict[str, Any] = Field(
+        description="keyword args to override recipe variables with",
+        default_factory=dict,
+    )
+    kwargs: Dict[str, Any] = Field(
+        description="optional task specific arguments to add to config",
+        default_factory=dict,
+    )
+
+    @classmethod
+    def from_yaml(cls, config_yaml: str):
+        """
+        :param config_yaml: raw yaml string or file path to config yaml file to load
+        :return: loaded sparsification training config
+        """
+        if os.path.exists(config_yaml):
+            with open(config_yaml) as yaml_file:
+                config_yaml = yaml_file.read()
+
+        return cls.parse_obj(yaml.safe_load(config_yaml))
+
+    def yaml(self, file_path: Optional[str] = None):
+        """
+        :param file_path: optional file path to write the generated yaml config to
+        :return: this config represented as a yaml string
+        """
+        config_dict = self.dict()
+
+        if file_path:
+            with open(file_path, "w") as config_file:
+                yaml.dump(data=config_dict, stream=config_file)
+
+        return yaml.dump(config_dict)
+
+
+@total_ordering
 class Metrics(BaseModel):
     """
     Class containing metrics for a trained model. Contains all information needed to
@@ -123,10 +214,43 @@ class Metrics(BaseModel):
     accuracy: Dict[str, float] = (
         Field(description="Model accuracy on validation set"),
     )
+    tracked_accuracy_key: str = Field(
+        description="key of the accuracy dict, for the metric used to track run quality"
+    )
     recovery: Optional[float] = Field(
         description="model accuracy as a percentage of the dense model's accuracy",
         default=None,
     )
+    train_time: Optional[float] = Field(
+        description="Total train time, including hyperparameter tuning", default=None
+    )
+
+    def _check_valid_operand(self, other):
+        if not isinstance(other, Metrics):
+            raise TypeError(
+                "Comparison not supported between instances of 'Metrics' and "
+                f"{type(other)}"
+            )
+        if self.tracked_accuracy_key != other.tracked_accuracy_key:
+            raise ValueError(
+                "Comparison not supported between instances of 'Metrics' with "
+                f"differing 'tracked_accuracy_key' of '{self.tracked_accuracy_key}' "
+                f"and '{other.tracked_accuracy_key}'"
+            )
+
+    def __eq__(self, other):
+        self._check_valid_operand(other)
+        return (
+            self.accuracy[self.tracked_accuracy_key]
+            == other.accuracy[self.tracked_accuracy_key]
+        )
+
+    def __lt__(self, other):
+        self._check_valid_operand(other)
+        return (
+            self.accuracy[self.tracked_accuracy_key]
+            < other.accuracy[self.tracked_accuracy_key]
+        )
 
     @property
     def display_string(self) -> str:
@@ -137,26 +261,6 @@ class Metrics(BaseModel):
             [f"{metric}: {value}" for metric, value in self.accuracy.items()]
         )
         return f"Post-training metrics:\n{string_body}\n"
-
-
-class APIOutput(BaseModel):
-    """
-    Class containing Sparsify.Auto output information
-    """
-
-    config: BaseModel = Field("config used to train model")
-    metrics: Metrics = Field(description="Post-training metrics")
-    model_directory: str = Field(
-        description=(
-            "path to SparseZoo compatible model directory generated integration run"
-        )
-    )
-    deployment_directory: str = Field(
-        description="Pipeline compatible deployment directory"
-    )
-    train_time: Optional[float] = Field(
-        description="Total train time, including hyperparameter tuning", default=None
-    )
 
     def finalize(self):
         """

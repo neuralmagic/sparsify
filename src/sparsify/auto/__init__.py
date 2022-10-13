@@ -21,7 +21,6 @@ its integrations
 # isort: skip_file
 
 from .utils import *
-from .api import *
-from .configs import *
+from .api.api_models import *
 from .tasks import *
 from .api.main import main

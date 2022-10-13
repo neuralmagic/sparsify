@@ -12,8 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# flake8: noqa
+from sparsify.utils import get_base_url
 
-from .api_config_creator import *
-from .config_creators import *
-from .sparsification_training_config import *
+
+__all__ = ["get_backend_url"]
+_END_POINT = "/v1/sparsify/package/recommend-stub"
+
+
+def get_backend_url() -> str:
+    """
+    :return The backend url  for sparsify.package server
+    """
+    return get_base_url() + _END_POINT

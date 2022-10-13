@@ -131,10 +131,7 @@ def test_main(*args):
     output_path = os.path.join(
         _SAVE_DIRECTORY, SAVE_DIR.format(task=_TEST_CONFIG["task"])
     )
-    assert all(
-        os.path.exists(os.path.join(output_path, folder))
-        for folder in ["run_artifacts", "logs", "deployment"]
-    )
+    assert sorted(os.listdir(output_path)) == ["deployment", "logs", "run_artifacts"]
     assert len(os.listdir(os.path.join(output_path, "run_artifacts"))) == _MAXIMUM_SAVES
 
     for idx in top_n_trial_idx:

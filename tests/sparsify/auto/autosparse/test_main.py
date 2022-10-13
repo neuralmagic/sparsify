@@ -13,8 +13,8 @@
 # limitations under the License.
 
 import os
-import shutil
 from pathlib import Path
+from tempfile import TemporaryDirectory
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -28,8 +28,8 @@ and tracking flow
 """
 
 # Run definition
-
-_SAVE_DIRECTORY = "./test_main"
+_TEMPORARY_DIRECTORY = TemporaryDirectory()
+_SAVE_DIRECTORY = _TEMPORARY_DIRECTORY.name
 _NUM_TRIALS = 10
 _MAXIMUM_SAVES = 3
 _TEST_CONFIG = {
@@ -79,8 +79,8 @@ def _export_side_effect_mock(self, trial_idx):
 @pytest.fixture(autouse=True)
 def _cleanup_directory():
     yield
-    if os.path.exists(_SAVE_DIRECTORY):
-        shutil.rmtree(_SAVE_DIRECTORY)
+    _TEMPORARY_DIRECTORY.cleanup()
+    assert not os.path.exists(_SAVE_DIRECTORY)
 
 
 def _test_trial_artifact_directory(trial_idx: int) -> bool:

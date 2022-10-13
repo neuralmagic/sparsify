@@ -15,5 +15,4 @@
 # flake8: noqa
 # isort: skip_file
 
-from .args import *
-from .main import *
+from .api_models import *

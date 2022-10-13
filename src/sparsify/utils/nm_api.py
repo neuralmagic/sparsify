@@ -15,8 +15,7 @@
 import os
 
 
-__all__ = ["get_backend_url", "get_base_url"]
-_END_POINT = "/v1/sparsify/package/recommend-stub"
+__all__ = ["get_base_url"]
 _DEFAULT_BASE_URL = "https://api.neuralmagic.com"
 
 
@@ -25,10 +24,3 @@ def get_base_url() -> str:
     :return The base url for sparsify.package server
     """
     return os.getenv("SPARSIFY_BACKEND_URL", default=_DEFAULT_BASE_URL)
-
-
-def get_backend_url() -> str:
-    """
-    :return The backend url  for sparsify.package server
-    """
-    return get_base_url() + _END_POINT

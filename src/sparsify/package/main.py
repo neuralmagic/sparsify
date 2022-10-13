@@ -17,7 +17,7 @@ from typing import Any, Iterable, Mapping, Optional, Union
 
 import requests
 
-from sparsify.package.config import get_backend_url
+from sparsify.package.utils import get_backend_url
 
 
 __all__ = [

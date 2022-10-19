@@ -15,10 +15,15 @@
 """
 Generic helpers for sparsify.auto
 """
+from __future__ import annotations
+
 import os
 from datetime import datetime
+from typing import TYPE_CHECKING
 
-from sparsify.auto.api.api_models import APIArgs
+
+if TYPE_CHECKING:
+    from sparsify.auto import APIArgs
 
 
 __all__ = ["SAVE_DIR", "create_save_directory", "get_trial_artifact_directory"]

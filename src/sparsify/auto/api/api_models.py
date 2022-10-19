@@ -16,18 +16,22 @@
 Pydantic model classes defining the standards for user input, communication with
 the Neural Magic API, and output to user
 """
+from __future__ import annotations
 
 import argparse
 import json
 import os
 from functools import total_ordering
-from typing import Any, Dict, List, Optional, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
 
 import yaml
 
 from pydantic import BaseModel, Field, validator
-from sparsify.auto.utils import SampledHyperparameter
 from sparsify.utils import TASK_REGISTRY
+
+
+if TYPE_CHECKING:
+    from sparsify.auto.utils import SampledHyperparameter
 
 
 __all__ = [

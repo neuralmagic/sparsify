@@ -60,7 +60,7 @@ class APIArgs(BaseModel):
     log_directory: Optional[str] = Field(
         title="save_directory",
         description=(
-            "Absolute path to log directory. Defaults to ./logging, relative to save "
+            "Absolute path to log directory. Defaults to ./logs, relative to save "
             "directory"
         ),
         default=None,
@@ -166,9 +166,6 @@ class SparsificationTrainingConfig(BaseModel):
     )
     base_model: str = Field(
         description="path to the model to be sparsified",
-    )
-    save_directory: str = Field(
-        description="Absolute path to save directory",
     )
     distill_teacher: Optional[str] = Field(
         description="optional path to a distillation teacher for training",

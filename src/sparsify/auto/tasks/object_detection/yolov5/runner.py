@@ -81,7 +81,6 @@ class Yolov5Runner(TaskRunner):
         """
         Create sparseml integration args from SparsificationTrainingConfig. Returns
         a tuple of run args in the order (train_args, export_arts)
-
         :param config: training config to generate run for
         :return: tuple of training and export arguments
         """
@@ -112,11 +111,6 @@ class Yolov5Runner(TaskRunner):
             train_args.project, relative_experiment_dir
         )
 
-        # update log directory to maintain same subdirectory structure as runs
-        train_args.log_directory = os.path.join(
-            config.log_directory, relative_experiment_dir
-        )
-
         # Default export args
         export_args = Yolov5ExportArgs(
             weights=os.path.join(
@@ -141,10 +135,11 @@ class Yolov5Runner(TaskRunner):
         Update run directories to save to the temporary run directory
         """
         self.train_args.project = os.path.join(
-            self._run_directory.name, self.train_args.project
+            self.run_directory.name, self.train_args.project
         )
+        self.train_args.log_directory = self.log_directory
         self.export_args.weights = os.path.join(
-            self._run_directory.name, self.export_args.weights
+            self.run_directory.name, self.export_args.weights
         )
 
     def memory_stepdown(self):
@@ -228,7 +223,7 @@ class Yolov5Runner(TaskRunner):
         Retrieve metrics from training output.
         """
         results = pandas.read_csv(
-            os.path.join(Path(self.export_args.weights).parents[1], "results.csv"),
+            os.path.join(self.log_directory, "results.csv"),
             skipinitialspace=True,
         )
         return Metrics(

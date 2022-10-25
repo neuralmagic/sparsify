@@ -17,7 +17,7 @@ Templates for tunable hyperparameters, to be tuned by the Neural Magic API
 """
 from typing import Any, List, NamedTuple, Union
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, validator
 from pydantic.typing import Literal
 
 
@@ -50,7 +50,6 @@ class NumericTunableParameter(BaseTunableParameter):
     Numeric hyperparameter that can be sampled from a range of values
     """
 
-    type: Literal["float", "int"]
     low: Union[float, int] = Field(
         description="Minimum of value range. Not used for categorical parameters",
         default=None,
@@ -71,13 +70,30 @@ class NumericTunableParameter(BaseTunableParameter):
         default=False,
     )
 
+    @validator
+    def valid_type(cls, type):
+        valid_types = ["float", "int"]
+        if type not in valid_types:
+            raise ValueError(
+                f"type for must be one of {valid_types} for class {cls}. Received "
+                f"{type}"
+            )
+
 
 class CategoricalTunableParameter(BaseTunableParameter):
     """
     Categorical hyperparameter that can be sampled from pre-defined, non-ordered values
     """
 
-    type = "categorical"
     choices: List[Union[None, bool, int, float, str]] = Field(
         description="Set of possible value choices to sample from"
     )
+
+    @validator
+    def valid_type(cls, type):
+        valid_types = ["categorical"]
+        if type not in valid_types:
+            raise ValueError(
+                f"type for must be one of {valid_types} for class {cls}. Received "
+                f"{type}"
+            )

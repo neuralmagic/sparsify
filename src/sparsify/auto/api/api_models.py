@@ -58,7 +58,7 @@ class APIArgs(BaseModel):
         default=DEFAULT_OUTPUT_DIRECTORY,
     )
     log_directory: Optional[str] = Field(
-        title="save_directory",
+        title="log_directory",
         description=(
             "Absolute path to log directory. Defaults to ./logs, relative to save "
             "directory"

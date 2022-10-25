@@ -25,7 +25,7 @@ from sparsify.auto.utils import (
     create_save_directory,
     get_trial_artifact_directory,
 )
-from tensorboard import program
+from tensorboard.program import TensorBoard
 
 
 def main():
@@ -49,9 +49,9 @@ def main():
 
     # launch tensorboard server
     base_log_directory = api_args.log_directory or os.path.join(save_directory, "logs")
-    tb = program.TensorBoard()
-    tb.configure(argv=[None, "--logdir", base_log_directory])
-    url = tb.launch()
+    tensorboard_server = TensorBoard()
+    tensorboard_server.configure(argv=[None, "--logdir", base_log_directory])
+    url = tensorboard_server.launch()
     print(f"TensorBoard listening on {url}")
 
     # tune until either (in order of precedence):

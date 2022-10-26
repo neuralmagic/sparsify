@@ -16,22 +16,18 @@
 Pydantic model classes defining the standards for user input, communication with
 the Neural Magic API, and output to user
 """
-from __future__ import annotations
 
 import argparse
 import json
 import os
 from functools import total_ordering
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 import yaml
 
 from pydantic import BaseModel, Field, validator
+from sparsify.auto.utils import SampledHyperparameter
 from sparsify.utils import TASK_REGISTRY
-
-
-if TYPE_CHECKING:
-    from sparsify.auto.utils import SampledHyperparameter
 
 
 __all__ = [
@@ -230,6 +226,7 @@ class SparsificationTrainingConfig(BaseModel):
         return yaml.dump(config_dict)
 
 
+# TODO: rename accuracy
 @total_ordering
 class Metrics(BaseModel):
     """
@@ -240,6 +237,7 @@ class Metrics(BaseModel):
     accuracy: Dict[str, float] = (
         Field(description="Model accuracy on validation set"),
     )
+    # TODO: fix double instance of this
     tracked_accuracy_key: str = Field(
         description="key of the accuracy dict, for the metric used to track run quality"
     )

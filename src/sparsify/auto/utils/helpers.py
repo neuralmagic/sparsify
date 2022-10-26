@@ -15,15 +15,8 @@
 """
 Generic helpers for sparsify.auto
 """
-from __future__ import annotations
-
 import os
 from datetime import datetime
-from typing import TYPE_CHECKING
-
-
-if TYPE_CHECKING:
-    from sparsify.auto import APIArgs
 
 
 __all__ = ["SAVE_DIR", "create_save_directory", "get_trial_artifact_directory"]
@@ -31,7 +24,7 @@ __all__ = ["SAVE_DIR", "create_save_directory", "get_trial_artifact_directory"]
 SAVE_DIR = "auto_{{task}}{:_%Y_%m_%d_%H_%M_%S}".format(datetime.now())
 
 
-def create_save_directory(api_args: APIArgs) -> str:
+def create_save_directory(api_args: "APIArgs") -> str:  # noqa: F821
     """
     Create base save directory structure for a single sparsify.auto run
 
@@ -46,7 +39,9 @@ def create_save_directory(api_args: APIArgs) -> str:
     return save_directory
 
 
-def get_trial_artifact_directory(api_args: APIArgs, trial_idx: int) -> str:
+def get_trial_artifact_directory(
+    api_args: "APIArgs", trial_idx: int  # noqa: F821
+) -> str:
     """
     Return the path to a trial's save directory
     """

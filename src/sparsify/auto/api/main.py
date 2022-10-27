@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
 import shutil
 import time
 from collections import OrderedDict
@@ -24,6 +25,7 @@ from sparsify.auto.utils import (
     create_save_directory,
     get_trial_artifact_directory,
 )
+from tensorboard.program import TensorBoard
 
 
 def main():
@@ -43,7 +45,14 @@ def main():
     training_start_time = time.time()
 
     # set up directory for saving
-    create_save_directory(api_args)
+    save_directory = create_save_directory(api_args)
+
+    # launch tensorboard server
+    base_log_directory = os.path.join(save_directory, "logs")
+    tensorboard_server = TensorBoard()
+    tensorboard_server.configure(argv=[None, "--logdir", base_log_directory])
+    url = tensorboard_server.launch()
+    print(f"TensorBoard listening on {url}")
 
     # tune until either (in order of precedence):
     # 1. number of tuning trials used up
@@ -58,7 +67,8 @@ def main():
         runner = TaskRunner.create(config)
 
         # Execute integration run and return metrics
-        metrics = runner.train()
+        log_directory = os.path.join(base_log_directory, f"trial_{trial_idx}")
+        metrics = runner.train(log_directory)
 
         # Move models from temporary directory to save directory, while only keeping
         # the best n models
@@ -66,7 +76,7 @@ def main():
             metrics > best_metrics for best_metrics in best_n_trial_metrics.values()
         )
         if (len(best_n_trial_metrics) < maximum_trial_saves) or is_better_than_top_n:
-            runner.move_output(trial_idx)
+            runner.move_output(target_directory=save_directory, trial_idx=trial_idx)
             best_n_trial_metrics[trial_idx] = metrics
 
         # If better trial was saved to a total of n+1 saved trials, drop worst one
@@ -90,8 +100,10 @@ def main():
 
     # Export model and create deployment folder
     best_trial_idx = max(best_n_trial_metrics, key=best_n_trial_metrics.get)
-    runner.export(best_trial_idx)
-    runner.create_deployment_directory(best_trial_idx)
+    runner.export(target_directory=save_directory, trial_idx=best_trial_idx)
+    runner.create_deployment_directory(
+        target_directory=save_directory, trial_idx=best_trial_idx
+    )
 
 
 if __name__ == "__main__":

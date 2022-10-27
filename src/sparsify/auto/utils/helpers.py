@@ -26,7 +26,7 @@ __all__ = ["SAVE_DIR", "create_save_directory", "get_trial_artifact_directory"]
 SAVE_DIR = "auto_{{task}}{:_%Y_%m_%d_%H_%M_%S}".format(datetime.now())
 
 
-def create_save_directory(api_args: APIArgs):
+def create_save_directory(api_args: APIArgs) -> str:
     """
     Create base save directory structure for a single sparsify.auto run
 
@@ -37,6 +37,8 @@ def create_save_directory(api_args: APIArgs):
     os.makedirs(save_directory, exist_ok=True)
     os.mkdir(os.path.join(save_directory, "run_artifacts"))
     os.mkdir(os.path.join(save_directory, "logs"))
+
+    return save_directory
 
 
 def get_trial_artifact_directory(api_args: APIArgs, trial_idx: int) -> str:

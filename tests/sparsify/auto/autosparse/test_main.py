@@ -66,7 +66,7 @@ def _train_side_effect_mock(self):
     os.mkdir(os.path.join(train_artifact_path, "artifact_subdirectory"))
 
 
-def _export_side_effect_mock(self, trial_idx):
+def _export_side_effect_mock(self, target_directory, trial_idx):
     _test_trial_artifact_directory(trial_idx)
     deployment_path = os.path.join(
         _TRIAL_PATH.format(trial_idx=trial_idx), "deployment"

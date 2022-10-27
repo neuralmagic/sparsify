@@ -28,7 +28,7 @@ from torch.distributed.run import main as launch_ddp
 
 from pydantic import BaseModel
 from sparsify.auto.api import Metrics, SparsificationTrainingConfig
-from sparsify.auto.utils import SAVE_DIR, ErrorHandler, HardwareSpecs, analyze_hardware
+from sparsify.auto.utils import ErrorHandler, HardwareSpecs, analyze_hardware
 from sparsify.utils import TASK_REGISTRY, TaskName
 
 
@@ -146,14 +146,9 @@ class TaskRunner:
         # distributed training supported for torch>=1.9, as ddp error propagation was
         # introduced in 1.9
         self.use_distributed_training = DDP_ENABLED
-
         self.dashed_cli_kwargs = False  # True if CLI args require "-" as word separator
 
         self.train_args, self.export_args = self.config_to_args(self.config)
-
-        self.save_directory = os.path.join(
-            self.config.save_directory, SAVE_DIR.format(task=str(self.task))
-        )
 
         self.hardware_specs = analyze_hardware()
         self.tune_args_for_hardware(self.hardware_specs)
@@ -210,7 +205,6 @@ class TaskRunner:
         """
         Create sparseml integration args from SparsificationTrainingConfig. Returns
         a tuple of run args in the order (train_args, export_arts)
-
         :param config: training config to generate run for
         :return: tuple of training and export arguments
         """
@@ -245,11 +239,14 @@ class TaskRunner:
         """
         self.train_hook(**self.train_args.dict())
 
-    def train(self) -> Metrics:
+    def train(self, log_directory: str) -> Metrics:
         """
         Training entrypoint
+
+        "param log_directory: directory to save logs to
         """
-        self._run_directory = tempfile.TemporaryDirectory()
+        self.run_directory = tempfile.TemporaryDirectory()
+        self.log_directory = log_directory
         self.update_run_directory_args()
 
         if self.use_distributed_training:
@@ -260,16 +257,19 @@ class TaskRunner:
         return self._get_metrics()
 
     @retry_stage(stage="export")
-    def export(self, trial_idx: int):
+    def export(self, target_directory: str, trial_idx: int):
         """
-        Run export
+        Export model to target directory
+
+        :param target_directory: directory to export to
+        :param trial_idx: trial index
         """
         updated_export_args = self.export_args.copy()
         setattr(
             updated_export_args,
             self.export_model_kwarg,
             os.path.join(
-                self.save_directory,
+                target_directory,
                 "run_artifacts",
                 f"trial_{trial_idx}",
                 self._model_save_name,
@@ -354,9 +354,12 @@ class TaskRunner:
             f"memory_stepdown() missing implementation for task {self.task}"
         )
 
-    def move_output(self, trial_idx: int):
+    def move_output(self, target_directory: str, trial_idx: int):
         """
         Move output into target directory
+
+        :param target_directory: directory to move output to
+        :param trial_idx: trial index
         """
         if not (self.completion_check("train") and self.completion_check("export")):
             warnings.warn(
@@ -364,9 +367,8 @@ class TaskRunner:
                 "a valid run"
             )
 
-        # Determine save subdirectory and create it
         target_directory = os.path.join(
-            self.save_directory,
+            target_directory,
             "run_artifacts",
         )
 
@@ -395,22 +397,23 @@ class TaskRunner:
         )  # rename directory to one indicating the trial number
 
         # Clean up run directory
-        self._run_directory.cleanup()
+        self.run_directory.cleanup()
 
-    def create_deployment_directory(self, trial_idx: int):
+    @staticmethod
+    def create_deployment_directory(target_directory: str, trial_idx: int):
         """
         Creates and/or moves deployment directory to the deployment directory for the
         mode corresponding to the trial_idx
 
+        :param target_directory: directory to create deployment folder in
         :param trial_idx: index of the trial to create a deployment directory from
         """
         origin_directory = os.path.join(
-            self.save_directory,
+            target_directory,
             "run_artifacts",
             f"trial_{trial_idx}",
             "deployment",
         )
-        target_directory = self.save_directory
 
         shutil.move(origin_directory, target_directory)
 

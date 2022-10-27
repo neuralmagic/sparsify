@@ -81,12 +81,13 @@ class Yolov5Runner(TaskRunner):
         """
         Create sparseml integration args from SparsificationTrainingConfig. Returns
         a tuple of run args in the order (train_args, export_arts)
-
         :param config: training config to generate run for
         :return: tuple of training and export arguments
         """
         train_args = Yolov5TrainArgs(
-            weights=config.base_model, data=config.dataset, **config.kwargs
+            weights=config.base_model,
+            data=config.dataset,
+            **config.kwargs,
         )
 
         # Determine the imminent train output directory
@@ -103,16 +104,17 @@ class Yolov5Runner(TaskRunner):
             experiment_number = int(last_experiment.group()) if last_experiment else 2
 
         # construct path to imminent run directory and weights path
-        experiment_dir = (
-            os.path.join(train_args.project, f"exp{experiment_number}")
-            if experiment_number > 1
-            else os.path.join(train_args.project, "exp")
+        relative_experiment_dir = (
+            f"exp{experiment_number}" if experiment_number > 1 else "exp"
+        )
+        absolute_experiment_dir = os.path.join(
+            train_args.project, relative_experiment_dir
         )
 
         # Default export args
         export_args = Yolov5ExportArgs(
             weights=os.path.join(
-                experiment_dir,
+                absolute_experiment_dir,
                 "weights",
                 "checkpoint-one-shot.pt" if train_args.one_shot else "last.pt",
             ),
@@ -133,10 +135,11 @@ class Yolov5Runner(TaskRunner):
         Update run directories to save to the temporary run directory
         """
         self.train_args.project = os.path.join(
-            self._run_directory.name, self.train_args.project
+            self.run_directory.name, self.train_args.project
         )
+        self.train_args.log_directory = self.log_directory
         self.export_args.weights = os.path.join(
-            self._run_directory.name, self.export_args.weights
+            self.run_directory.name, self.export_args.weights
         )
 
     def memory_stepdown(self):
@@ -220,7 +223,7 @@ class Yolov5Runner(TaskRunner):
         Retrieve metrics from training output.
         """
         results = pandas.read_csv(
-            os.path.join(Path(self.export_args.weights).parents[1], "results.csv"),
+            os.path.join(self.log_directory, "results.csv"),
             skipinitialspace=True,
         )
         return Metrics(

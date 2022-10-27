@@ -57,14 +57,6 @@ class APIArgs(BaseModel):
         description="Absolute path to save directory",
         default=DEFAULT_OUTPUT_DIRECTORY,
     )
-    log_directory: Optional[str] = Field(
-        title="log_directory",
-        description=(
-            "Absolute path to log directory. Defaults to ./logs, relative to save "
-            "directory"
-        ),
-        default=None,
-    )
     performance: Union[str, float] = Field(
         title="performance",
         description=(

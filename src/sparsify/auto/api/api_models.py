@@ -122,6 +122,14 @@ class APIArgs(BaseModel):
         ),
         default=None,
     )
+    stopping_condition: bool = Field(
+        title="stopping_condition",
+        description=(
+            "Set to False to turn off tuning stopping condition, which may end tuning "
+            "early if no improvement was made"
+        ),
+        default=True,
+    )
     kwargs: Optional[Dict[str, Any]] = Field(
         title="kwargs",
         description="optional task specific arguments to add to config",
@@ -199,6 +207,14 @@ class SparsificationTrainingConfig(BaseModel):
         ),
         default=["accuracy"],
     )
+    stopping_condition: bool = Field(
+        title="stopping_condition",
+        description=(
+            "Set to False to turn off tuning stopping condition, which may end tuning "
+            "early if no improvement was made"
+        ),
+        default=True,
+    )
 
     @classmethod
     def from_yaml(cls, config_yaml: str):
@@ -226,7 +242,6 @@ class SparsificationTrainingConfig(BaseModel):
         return yaml.dump(config_dict)
 
 
-# TODO: rename accuracy
 @total_ordering
 class Metrics(BaseModel):
     """
@@ -234,16 +249,11 @@ class Metrics(BaseModel):
     determine run quality by the config creator.
     """
 
-    accuracy: Dict[str, float] = (
-        Field(description="Model accuracy on validation set"),
-    )
-    # TODO: fix double instance of this
-    tracked_accuracy_key: str = Field(
-        description="key of the accuracy dict, for the metric used to track run quality"
-    )
-    recovery: Optional[float] = Field(
-        description="model accuracy as a percentage of the dense model's accuracy",
-        default=None,
+    metrics: Dict[str, float] = Field(description="Model accuracy on validation set")
+    objective_key: str = Field(
+        description=(
+            "keys of the accuracy dict, for the metrics used to track run quality"
+        )
     )
     train_time: Optional[float] = Field(
         description="Total train time, including hyperparameter tuning", default=None
@@ -255,26 +265,20 @@ class Metrics(BaseModel):
                 "Comparison not supported between instances of 'Metrics' and "
                 f"{type(other)}"
             )
-        if self.tracked_accuracy_key != other.tracked_accuracy_key:
+        if self.objective_key != other.objective_key:
             raise ValueError(
                 "Comparison not supported between instances of 'Metrics' with "
-                f"differing 'tracked_accuracy_key' of '{self.tracked_accuracy_key}' "
-                f"and '{other.tracked_accuracy_key}'"
+                f"differing 'objective_key' of '{self.objective_key}' "
+                f"and '{other.objective_key}'"
             )
 
     def __eq__(self, other):
         self._check_valid_operand(other)
-        return (
-            self.accuracy[self.tracked_accuracy_key]
-            == other.accuracy[self.tracked_accuracy_key]
-        )
+        return self.metrics[self.objective_key] == other.metrics[self.objective_key]
 
     def __lt__(self, other):
         self._check_valid_operand(other)
-        return (
-            self.accuracy[self.tracked_accuracy_key]
-            < other.accuracy[self.tracked_accuracy_key]
-        )
+        return self.metrics[self.objective_key] < other.metrics[self.objective_key]
 
     @property
     def display_string(self) -> str:
@@ -282,7 +286,7 @@ class Metrics(BaseModel):
         :return: string representation of metrics values
         """
         string_body = "\n".join(
-            [f"{metric}: {value}" for metric, value in self.accuracy.items()]
+            [f"{metric}: {value}" for metric, value in self.metrics.items()]
         )
         return f"Post-training metrics:\n{string_body}\n"
 

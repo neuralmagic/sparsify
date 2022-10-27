@@ -15,35 +15,36 @@
 """
 Templates for tunable hyperparameters, to be tuned by the Neural Magic API
 """
-from typing import Any, Callable, Dict, List, Optional, Union
+from typing import Any, List, Union
 
 from pydantic import BaseModel, Field, validator
 from pydantic.typing import Literal
 
 
 __all__ = [
-    "BaseTunableParameter",
+    "BaseParameterDistribution",
     "SampledHyperparameter",
-    "NumericTunableParameter",
-    "CategoricalTunableParameter",
-    "TunableParameterFactory",
+    "NumberParameterDistribution",
+    "CategoricalParameterDistribution",
 ]
 
 
-class BaseTunableParameter(BaseModel):
+class BaseParameterDistribution(BaseModel):
     """
-    Base class for a single hyperparameter that can be tuned via Neural Magic API calls
+    Base class for a hyperparameter distribution, which can be sampled and tuned via
+    Neural Magic API calls
     """
 
-    name: str = Field()
+    name: str = Field(description="Parameter name")
     value_type: Literal["float", "int", "categorical"] = Field(
         description="Value type, from float, int, or categorical"
     )
 
 
-class NumericTunableParameter(BaseTunableParameter):
+class NumberParameterDistribution(BaseParameterDistribution):
     """
-    Numeric hyperparameter that can be sampled from a range of values
+    Numeric distribution which can represent a float or integer hyperparameter
+    distribution
     """
 
     low: Union[float, int] = Field(
@@ -72,10 +73,9 @@ class NumericTunableParameter(BaseTunableParameter):
         return value_type
 
 
-# TODO: rename to definition
-class CategoricalTunableParameter(BaseTunableParameter):
+class CategoricalParameterDistribution(BaseParameterDistribution):
     """
-    Categorical hyperparameter that can be sampled from pre-defined, non-ordered values
+    Categorical distribution constructed from pre-defined, non-ordered values
     """
 
     choices: List[Union[None, bool, int, float, str]] = Field(
@@ -94,77 +94,13 @@ class CategoricalTunableParameter(BaseTunableParameter):
 
 
 class SampledHyperparameter(BaseModel):
-    definition: Union[
-        CategoricalTunableParameter, NumericTunableParameter, BaseTunableParameter
-    ] = Field()
-    value: Any = Field()
+    """
+    Represents an instance of a sampled hyperparameter, with distribution and value
+    """
 
-
-class TunableParameterFactory:
-    def __init__(
-        self,
-        name: str,
-        value_type: str,
-        parameter_fields_callable: Optional[Callable[[Any], Dict]] = None,
-        **parameter_kwargs,
-    ):
-        valid_types = ["float", "int", "categorical"]
-        if value_type not in valid_types:
-            raise ValueError(
-                f"type for must be one of {valid_types}. Received {value_type}"
-            )
-
-        if not parameter_fields_callable and not parameter_kwargs:
-            raise ValueError(
-                "At least one of parameter_fields_callable or parameter_kwargs must be "
-                "provided"
-            )
-
-        self.name = name
-        self.value_type = value_type
-        self.constructor_class = (
-            CategoricalTunableParameter
-            if self.value_type == "categorical"
-            else NumericTunableParameter
-        )
-        self.parameter_fields_callable = parameter_fields_callable
-        self.parameter_kwargs = parameter_kwargs
-        self.parameter_kwargs["name"] = name
-        self.parameter_kwargs["value_type"] = value_type
-
-        if not self.parameter_fields_callable:
-            required_fields = set(
-                [
-                    key
-                    for key, val in self.constructor_class.__fields__.items()
-                    if val.required
-                ]
-            )
-            provided_fields = set(self.parameter_kwargs)
-
-            if required_fields != provided_fields:
-                missing_fields = list(required_fields - provided_fields)
-                extra_fields = list(provided_fields - required_fields)
-                extra_fields = [
-                    field not in self.constructor_class.__fields__.keys()
-                    for field in extra_fields
-                ]
-
-                if missing_fields or extra_fields:
-                    raise ValueError(
-                        "Provided parameter_kwargs don't match expected fields for "
-                        f"{self.constructor_class}."
-                        f"\nExpected: {sorted(required_fields)}"
-                        f"\nReceived: {sorted(provided_fields)}"
-                    )
-
-    def __call__(
-        self, value: Union[None, bool, int, float, str]
-    ) -> BaseTunableParameter:
-        parameter_fields = (
-            self.parameter_fields_callable(value)
-            if self.parameter_fields_callable
-            else {}
-        )
-        parameter_fields.update(self.parameter_kwargs)
-        return self.constructor_class(**parameter_fields)
+    distribution: Union[
+        CategoricalParameterDistribution,
+        NumberParameterDistribution,
+        BaseParameterDistribution,
+    ] = Field(description="Distribution from which the parameter may be sampled")
+    value: Any = Field(description="Samples parameter value")

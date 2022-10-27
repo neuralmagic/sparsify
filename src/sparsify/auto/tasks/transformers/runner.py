@@ -181,20 +181,20 @@ class _TransformersRunner(TaskRunner):
         """
         if self.train_args.one_shot:
             return Metrics(
-                accuracy=None,
+                metrics=None,
                 recovery=None,
             )
 
         with open(os.path.join(self.export_args.model_path, "eval_results.json")) as f:
             results = json.load(f)
 
-        tracked_accuracy_key = (
+        objective_key = (
             "eval_f1" if not self.task == "text_classification" else "eval_accuracy"
         )
 
         return Metrics(
-            accuracy={tracked_accuracy_key: results[tracked_accuracy_key]},
-            tracked_accuracy_key=tracked_accuracy_key,
+            metrics={objective_key: results[objective_key]},
+            objective_key=objective_key,
             recovery=None,
         )
 

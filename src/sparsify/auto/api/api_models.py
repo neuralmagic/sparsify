@@ -60,8 +60,7 @@ class APIArgs(BaseModel):
     log_directory: Optional[str] = Field(
         title="log_directory",
         description=(
-            "Absolute path to log directory. Defaults to ./logs, relative to save "
-            "directory"
+            "Absolute path to log directory. Defaults to <save directory>/logs"
         ),
         default=None,
     )

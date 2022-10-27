@@ -159,9 +159,6 @@ class SparsificationTrainingConfig(BaseModel):
     base_model: str = Field(
         description="path to the model to be sparsified",
     )
-    save_directory: str = Field(
-        description="Absolute path to save directory",
-    )
     distill_teacher: Optional[str] = Field(
         description="optional path to a distillation teacher for training",
         default=None,

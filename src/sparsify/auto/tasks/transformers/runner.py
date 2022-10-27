@@ -64,7 +64,6 @@ class _TransformersRunner(TaskRunner):
         """
         Create sparseml integration args from SparsificationTrainingConfig. Returns
         a tuple of run args in the order (train_args, export_arts)
-
         :param config: training config to generate run for
         :return: tuple of training and export arguments
         """
@@ -91,8 +90,9 @@ class _TransformersRunner(TaskRunner):
         Update run directories to save to the temporary run directory
         """
         self.train_args.output_dir = os.path.join(
-            self._run_directory.name, self.train_args.output_dir
+            self.run_directory.name, self.train_args.output_dir
         )
+        self.train_args.logging_dir - self.log_directory
         self.export_args.model_path = self.train_args.output_dir
 
     def memory_stepdown(self):
@@ -144,7 +144,7 @@ class _TransformersRunner(TaskRunner):
         Checks if export run completed successfully
         """
 
-        onnx_file = os.path.join(self._run_directory.name, "deployment", "model.onnx")
+        onnx_file = os.path.join(self.run_directory.name, "deployment", "model.onnx")
 
         # Check mode file exists
         if not os.path.isfile(onnx_file):

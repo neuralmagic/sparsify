@@ -24,6 +24,7 @@ from functools import wraps
 from typing import Dict, List, Optional, Tuple
 
 import torch
+import yaml
 from torch.distributed.run import main as launch_ddp
 
 from pydantic import BaseModel
@@ -254,6 +255,8 @@ class TaskRunner:
         else:
             self._train_api()
 
+        self._save_config_file()
+
         return self._get_metrics()
 
     @retry_stage(stage="export")
@@ -419,6 +422,16 @@ class TaskRunner:
 
         with open(os.path.join(target_directory, "deployment", "readme.txt"), "x") as f:
             f.write("deployment instructions will go here")
+
+    def _save_config_file(self):
+        """
+        Save config to the run directory
+        """
+        target_directory = self._get_model_artifact_directory()
+        with open(
+            os.path.join(target_directory, "sparsification_config.yaml"), "w"
+        ) as file:
+            yaml.safe_dump(self.config.dict(), file)
 
     @abstractmethod
     def _train_completion_check(self) -> bool:

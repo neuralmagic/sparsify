@@ -48,7 +48,7 @@ def main():
     save_directory = create_save_directory(api_args)
 
     # launch tensorboard server
-    base_log_directory = api_args.log_directory or os.path.join(save_directory, "logs")
+    base_log_directory = os.path.join(save_directory, "logs")
     tensorboard_server = TensorBoard()
     tensorboard_server.configure(argv=[None, "--logdir", base_log_directory])
     url = tensorboard_server.launch()

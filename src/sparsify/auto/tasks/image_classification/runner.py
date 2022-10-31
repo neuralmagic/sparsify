@@ -218,8 +218,8 @@ class ImageClassificationRunner(TaskRunner):
             recovery=None,
         )
 
-    def _get_copy_origin_directory(self) -> str:
+    def _get_model_artifact_directory(self) -> str:
         """
-        Return the absolute path to the directory to copy the model artifacts from
+        Return the absolute path to the temporary run artifacts directory
         """
         return os.path.join(self.train_args.save_dir, self.train_args.model_tag)

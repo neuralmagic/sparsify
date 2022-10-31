@@ -58,7 +58,7 @@ _TRIAL_PATH = os.path.join(
 
 
 def _train_side_effect_mock(self):
-    train_artifact_path = self._get_copy_origin_directory()
+    train_artifact_path = self._get_model_artifact_directory()
     os.makedirs(train_artifact_path)  # create train output directory
     # add a dummy file and sub_directory
     Path(os.path.join(train_artifact_path, "train_output")).touch()

@@ -228,7 +228,8 @@ class Yolov5Runner(TaskRunner):
         )
         return Metrics(
             accuracy={
-                key.split("/")[1]: results[key].iloc[-1] for key in _ACCURACY_KEYS
+                key.split("/")[1]: float(results[key].iloc[-1])
+                for key in _ACCURACY_KEYS
             },
             tracked_accuracy_key=_ACCURACY_KEYS[0].split("/")[1],
             recovery=None,

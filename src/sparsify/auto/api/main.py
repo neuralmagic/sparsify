@@ -23,10 +23,11 @@ from sparsify.auto.tasks import TaskRunner
 from sparsify.auto.utils import (
     api_request_config,
     api_request_tune,
+    best_n_trials_from_history,
     create_save_directory,
     get_trial_artifact_directory,
     load_raw_config_history,
-    save_config_history,
+    save_trial_history,
 )
 from tensorboard.program import TensorBoard
 
@@ -50,12 +51,7 @@ def main():
             )
             for trial in raw_history.values()
         ]
-        best_n_trial_metrics = OrderedDict(
-            [
-                (idx, (config, metrics))
-                for idx, (config, metrics) in sorted(history, key=lambda x: x[1])
-            ]
-        )
+        best_n_trial_metrics = best_n_trials_from_history(history, max_tune_trials)
         trial_idx = len(history) - 1
 
         # request next config file
@@ -127,8 +123,9 @@ def main():
             shutil.rmtree(get_trial_artifact_directory(api_args, drop_trial_idx))
             del best_n_trial_metrics[drop_trial_idx]
 
-        # save run history as list of pairs of (config, metrics)
+        # save trial history as list of pairs of (config, metrics) and save to file
         history.append((config, metrics))
+        save_trial_history(history=history, target_directory=save_directory)
 
         # request a config with a new set of hyperparameters
         config_dict = api_request_tune(history)
@@ -140,26 +137,43 @@ def main():
 
         trial_idx += 1
 
-    # Get best performing trial number
+    # Post tuning model export flow
+
     best_trial_idx = max(best_n_trial_metrics, key=best_n_trial_metrics.get)
 
     # In the case of a run resumed from a standalone config history file, the best
     # performing trial may not be contained in the save directory
-    trial_artifact_directory = get_trial_artifact_directory(best_trial_idx)
+    trial_artifact_directory = get_trial_artifact_directory(api_args, best_trial_idx)
     if best_trial_idx < start_idx and not os.path.exists(trial_artifact_directory):
+
+        best_local_trials = {
+            idx: trial
+            for idx, trial in best_n_trial_metrics.items()
+            if idx >= start_idx
+        }
+
+        # If none of the local trials are in the top n, grab top n local trials
+        if not best_local_trials:
+            best_local_trials = best_n_trials_from_history(
+                history[start_idx:], max_tune_trials
+            )
+
+        best_local_trial_idx = max(best_local_trials, key=best_n_trial_metrics.get)
+
         warnings.warn(
             f"Best found trial, trail_{best_trial_idx}, originates from the trial "
             "history and the corresponding trial artifact directory "
-            f"{trial_artifact_directory} was not found. Completing run without "
-            "exporting model"
+            f"{trial_artifact_directory} was not found. Instead exporting the best "
+            f"trial found during this run, trial_{best_local_trial_idx}"
         )
+
+        best_trial_idx = best_local_trial_idx
 
     # Export model and create deployment folder
     runner.export(target_directory=save_directory, trial_idx=best_trial_idx)
     runner.create_deployment_directory(
         target_directory=save_directory, trial_idx=best_trial_idx
     )
-    save_config_history(history=history, target_directory=save_directory)
 
 
 if __name__ == "__main__":

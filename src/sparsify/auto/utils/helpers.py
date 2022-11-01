@@ -16,6 +16,7 @@
 Generic helpers for sparsify.auto
 """
 import os
+from collections import OrderedDict
 from datetime import datetime
 from typing import Any, Dict, List, Tuple
 
@@ -26,8 +27,9 @@ __all__ = [
     "SAVE_DIR",
     "create_save_directory",
     "get_trial_artifact_directory",
-    "save_config_history",
+    "save_trial_history",
     "load_raw_config_history",
+    "best_n_trials_from_history",
 ]
 
 SAVE_DIR = "auto_{{task}}{:_%Y_%m_%d_%H_%M_%S}".format(datetime.now())
@@ -61,7 +63,7 @@ def get_trial_artifact_directory(
     )
 
 
-def save_config_history(
+def save_trial_history(
     history: List[Tuple["SparsificationTrainingConfig", "Metrics"]],  # noqa: F821
     target_directory: str,
 ):
@@ -72,7 +74,7 @@ def save_config_history(
         yaml.safe_dump(
             {
                 f"trial_{idx}": {"config": config.dict(), "metrics": metrics.dict()}
-                for idx, (config, metrics) in history
+                for idx, (config, metrics) in enumerate(history)
             },
             file,
         )
@@ -89,3 +91,14 @@ def load_raw_config_history(path: str) -> Dict[str, Any]:
 
     with open(path, "r") as stream:
         return yaml.safe_load(stream)
+
+
+def best_n_trials_from_history(history, n):
+    n = n if n != float("inf") else len(history)
+    ordered_trials = sorted(history, key=lambda x: x[1])
+    return OrderedDict(
+        [
+            (idx, (config, metrics))
+            for idx, (config, metrics) in enumerate(ordered_trials[:n])
+        ]
+    )

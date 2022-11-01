@@ -15,15 +15,18 @@
 import os
 import shutil
 import time
+import warnings
 from collections import OrderedDict
 
-from sparsify.auto.api.api_models import APIArgs, SparsificationTrainingConfig
+from sparsify.auto.api.api_models import APIArgs, Metrics, SparsificationTrainingConfig
 from sparsify.auto.tasks import TaskRunner
 from sparsify.auto.utils import (
     api_request_config,
     api_request_tune,
     create_save_directory,
     get_trial_artifact_directory,
+    load_raw_config_history,
+    save_config_history,
 )
 from tensorboard.program import TensorBoard
 
@@ -35,17 +38,53 @@ def main():
     max_tune_trials = api_args.num_trials or float("inf")
     maximum_trial_saves = api_args.maximum_trial_saves or float("inf")
 
-    # setup run loop variables
-    history = []
-    best_n_trial_metrics = OrderedDict()  # map trail_idx to metrics
-    trial_idx = 0
+    if api_args.resume:
+        # load history from YAML file
+        raw_history = load_raw_config_history(api_args.resume)
 
-    # request initial training config
-    config = SparsificationTrainingConfig(**api_request_config(api_args))
-    training_start_time = time.time()
+        # reconstruct run history
+        history = [
+            (
+                SparsificationTrainingConfig(**trial["config"]),
+                Metrics(**trial["metrics"]),
+            )
+            for trial in raw_history.values()
+        ]
+        best_n_trial_metrics = OrderedDict(
+            [
+                (idx, (config, metrics))
+                for idx, (config, metrics) in sorted(history, key=lambda x: x[1])
+            ]
+        )
+        trial_idx = len(history) - 1
 
-    # set up directory for saving
-    save_directory = create_save_directory(api_args)
+        # request next config file
+        config_dict = api_request_tune(history)
+        if config_dict.get("tuning_complete"):
+            raise ValueError(
+                "Tuning stop condition already satisfied for provided run. To turn off "
+                "stopping condition use the `--no_stopping` flag"
+            )
+        config = SparsificationTrainingConfig(**config_dict)
+
+        # set up directory for saving
+        save_directory = (
+            api_args.resume
+            if os.path.isdir(api_args.resume)
+            else os.path.dirname(api_args.resume)
+        )
+
+    else:
+        # setup run loop variables
+        history = []
+        best_n_trial_metrics = OrderedDict()  # map trail_idx to metrics
+        trial_idx = 0
+
+        # request initial training config
+        config = SparsificationTrainingConfig(**api_request_config(api_args))
+
+        # set up directory for saving
+        save_directory = create_save_directory(api_args)
 
     # launch tensorboard server
     base_log_directory = api_args.log_directory or os.path.join(save_directory, "logs")
@@ -54,12 +93,15 @@ def main():
     url = tensorboard_server.launch()
     print(f"TensorBoard listening on {url}")
 
+    start_idx = trial_idx
+    training_start_time = time.time()
+
     # tune until either (in order of precedence):
     # 1. number of tuning trials used up
     # 2. maximum tuning time exceeded
     # 3. tuning early stopping condition met
     while (
-        len(history) < max_tune_trials
+        trial_idx + 1 < start_idx + max_tune_trials
         and time.time() - training_start_time <= max_train_seconds
     ):
 
@@ -98,12 +140,26 @@ def main():
 
         trial_idx += 1
 
-    # Export model and create deployment folder
+    # Get best performing trial number
     best_trial_idx = max(best_n_trial_metrics, key=best_n_trial_metrics.get)
+
+    # In the case of a run resumed from a standalone config history file, the best
+    # performing trial may not be contained in the save directory
+    trial_artifact_directory = get_trial_artifact_directory(best_trial_idx)
+    if best_trial_idx < start_idx and not os.path.exists(trial_artifact_directory):
+        warnings.warn(
+            f"Best found trial, trail_{best_trial_idx}, originates from the trial "
+            "history and the corresponding trial artifact directory "
+            f"{trial_artifact_directory} was not found. Completing run without "
+            "exporting model"
+        )
+
+    # Export model and create deployment folder
     runner.export(target_directory=save_directory, trial_idx=best_trial_idx)
     runner.create_deployment_directory(
         target_directory=save_directory, trial_idx=best_trial_idx
     )
+    save_config_history(history=history, target_directory=save_directory)
 
 
 if __name__ == "__main__":

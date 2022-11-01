@@ -255,9 +255,11 @@ class TaskRunner:
         else:
             self._train_api()
 
-        self._save_config_file()
+        self.metrics = self._get_metrics()
 
-        return self._get_metrics()
+        self._save_config_metrics_files()
+
+        return self.metrics
 
     @retry_stage(stage="export")
     def export(self, target_directory: str, trial_idx: int):
@@ -423,15 +425,17 @@ class TaskRunner:
         with open(os.path.join(target_directory, "deployment", "readme.txt"), "x") as f:
             f.write("deployment instructions will go here")
 
-    def _save_config_file(self):
+    def _save_config_metrics_files(self):
         """
-        Save config to the run directory
+        Save config and metrics files to the run directory
         """
         target_directory = self._get_model_artifact_directory()
         with open(
             os.path.join(target_directory, "sparsification_config.yaml"), "w"
         ) as file:
             yaml.safe_dump(self.config.dict(), file)
+        with open(os.path.join(target_directory, "metrics.yaml"), "w") as file:
+            yaml.safe_dump(self.metrics.dict(), file)
 
     @abstractmethod
     def _train_completion_check(self) -> bool:

@@ -130,6 +130,15 @@ class APIArgs(BaseModel):
         ),
         default=True,
     )
+    resume: Optional[str] = Field(
+        title="resume",
+        description=(
+            "To continue a tuning run, provide path to trial history YAML file or path "
+            "to run output directory containing the 'trial_history.yaml' file. "
+            "Turned off by default"
+        ),
+        default=None,
+    )
     kwargs: Optional[Dict[str, Any]] = Field(
         title="kwargs",
         description="optional task specific arguments to add to config",

@@ -122,13 +122,13 @@ class APIArgs(BaseModel):
         ),
         default=None,
     )
-    stopping_condition: bool = Field(
-        title="stopping_condition",
+    no_stopping: bool = Field(
+        title="no_stopping",
         description=(
-            "Set to False to turn off tuning stopping condition, which may end tuning "
+            "Set to True to turn off tuning stopping condition, which may end tuning "
             "early if no improvement was made"
         ),
-        default=True,
+        default=False,
     )
     kwargs: Optional[Dict[str, Any]] = Field(
         title="kwargs",
@@ -207,13 +207,13 @@ class SparsificationTrainingConfig(BaseModel):
         ),
         default=["accuracy"],
     )
-    stopping_condition: bool = Field(
-        title="stopping_condition",
+    no_stopping: bool = Field(
+        title="no_stopping",
         description=(
-            "Set to False to turn off tuning stopping condition, which may end tuning "
+            "Set to True to turn off tuning stopping condition, which may end tuning "
             "early if no improvement was made"
         ),
-        default=True,
+        default=False,
     )
 
     @classmethod

@@ -27,7 +27,7 @@ import yaml
 
 from pydantic import BaseModel, Field, validator
 from sparsify.auto.utils import SampledHyperparameter
-from sparsify.utils import TASK_REGISTRY
+from sparsify.utils import DEFAULT_OPTIMIZING_METRIC, METRICS, TASK_REGISTRY
 
 
 __all__ = [
@@ -139,6 +139,14 @@ class APIArgs(BaseModel):
         ),
         default=None,
     )
+    optimizing_metric: str = Field(
+        title="optimizing_metric",
+        description=(
+            "The criterion to search model for, multiple metrics can be specified as"
+            f"comma separated values, supported metrics are {METRICS}"
+        ),
+        default=DEFAULT_OPTIMIZING_METRIC,
+    )
     kwargs: Optional[Dict[str, Any]] = Field(
         title="kwargs",
         description="optional task specific arguments to add to config",
@@ -208,13 +216,13 @@ class SparsificationTrainingConfig(BaseModel):
         ),
         default=[],
     )
-    optimizing_metrics: List[str] = Field(
-        title="optimizing_metrics",
+    optimizing_metric: str = Field(
+        title="optimizing_metric",
         description=(
-            "List of metrics to optimize for during hyperparameter tuning. Each "
-            "element must match name of field in Metrics class"
+            "The criterion to search model for, multiple metrics can be specified as"
+            f"comma separated values, supported metrics are {METRICS}"
         ),
-        default=["accuracy"],
+        default=DEFAULT_OPTIMIZING_METRIC,
     )
     no_stopping: bool = Field(
         title="no_stopping",

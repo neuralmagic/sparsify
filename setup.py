@@ -13,7 +13,8 @@
 # limitations under the License.
 
 import os
-from sys import platform
+import platform
+from sys import platform as sys_platform
 from typing import Dict, List, Tuple
 
 from setuptools import find_packages, setup
@@ -65,7 +66,9 @@ _dev_deps = [
     "wheel>=0.36.2",
 ]
 
-if platform == "linux" or platform == "linux2":
+if platform.processor() == "x86_64" and (
+    sys_platform == "linux" or sys_platform == "linux2"
+):
     _deps.extend(["pysqlite3-binary>=0.4.0"])
 
 

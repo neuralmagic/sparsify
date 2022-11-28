@@ -164,7 +164,7 @@ class APIArgs(BaseModel):
     )
     teacher_only: bool = Field(
         title="teacher_only",
-        description=("set to True to only auto train the teacher"),
+        description=("set to True to only auto tune the teacher"),
         default=False,
     )
 

@@ -95,18 +95,6 @@ class _TransformersTrainArgs(BaseArgs):
         default=None,
         description=("A csv or a json file containing the test data."),
     )
-    text_column_name: Optional[str] = Field(
-        default=None,
-        description=(
-            "The column name of text to input in the file " "(a csv or JSON file)."
-        ),
-    )
-    label_column_name: Optional[str] = Field(
-        default=None,
-        description=(
-            "The column name of label to input in the file " "(a csv or JSON file)."
-        ),
-    )
     overwrite_cache: bool = Field(
         default=False,
         description=("Overwrite the cached training and evaluation sets"),
@@ -520,13 +508,6 @@ class _TransformersTrainArgs(BaseArgs):
         description="Used by the SageMaker launcher to send mp-specific args. "
         "Ignored in Trainer",
     )
-    modifier_log_frequency: float = Field(
-        default=0.1,
-        description=(
-            "How often to log SparseML modifier data, in number of epochs or fraction "
-            "of epochs"
-        ),
-    )
 
 
 class QuestionAnsweringArgs(_TransformersTrainArgs):
@@ -588,6 +569,18 @@ class TextClassificationArgs(_TransformersTrainArgs):
             "The name of the task to train on: " + ", ".join(_TASK_TO_KEYS.keys())
         ),
     )
+    text_column_name: Optional[str] = Field(
+        default=None,
+        description=(
+            "The column name of text to input in the file " "(a csv or JSON file)."
+        ),
+    )
+    label_column_name: Optional[str] = Field(
+        default=None,
+        description=(
+            "The column name of label to input in the file " "(a csv or JSON file)."
+        ),
+    )
 
 
 class TokenClassificationArgs(_TransformersTrainArgs):
@@ -615,6 +608,18 @@ class TokenClassificationArgs(_TransformersTrainArgs):
     )
     task_name: Optional[str] = Field(
         default="ner", description=("The name of the task (ner, pos...).")
+    )
+    text_column_name: Optional[str] = Field(
+        default=None,
+        description=(
+            "The column name of text to input in the file " "(a csv or JSON file)."
+        ),
+    )
+    label_column_name: Optional[str] = Field(
+        default=None,
+        description=(
+            "The column name of label to input in the file " "(a csv or JSON file)."
+        ),
     )
 
 

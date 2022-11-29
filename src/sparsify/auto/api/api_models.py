@@ -122,13 +122,13 @@ class APIArgs(BaseModel):
         ),
         default=None,
     )
-    stopping_condition: bool = Field(
-        title="stopping_condition",
+    no_stopping: bool = Field(
+        title="no_stopping",
         description=(
-            "Set to False to turn off tuning stopping condition, which may end tuning "
+            "Set to True to turn off tuning stopping condition, which may end tuning "
             "early if no improvement was made"
         ),
-        default=True,
+        default=False,
     )
     kwargs: Optional[Dict[str, Any]] = Field(
         title="kwargs",
@@ -207,13 +207,13 @@ class SparsificationTrainingConfig(BaseModel):
         ),
         default=["accuracy"],
     )
-    stopping_condition: bool = Field(
-        title="stopping_condition",
+    no_stopping: bool = Field(
+        title="no_stopping",
         description=(
-            "Set to False to turn off tuning stopping condition, which may end tuning "
+            "Set to True to turn off tuning stopping condition, which may end tuning "
             "early if no improvement was made"
         ),
-        default=True,
+        default=False,
     )
 
     @classmethod
@@ -325,15 +325,18 @@ def _add_schema_to_parser(parser: argparse.ArgumentParser, model: BaseModel):
         is_dict = field.default_factory and isinstance(field.default_factory(), dict)
         is_union = getattr(field.type_, "__origin__", None) is Union
 
-        argument_kwargs["type"] = (
-            str if is_dict else _str_number_union_parser if is_union else field.type_
-        )
+        if is_dict or is_union:
+            argument_kwargs["type"] = str if is_dict else _str_number_union_parser
+
         if field.required:
             argument_kwargs["required"] = True
         else:
             argument_kwargs["default"] = (
                 field.default if not is_dict else str(field.default_factory())
             )
+
+        if field.type_ == bool:
+            argument_kwargs["action"] = "store_false" if field.default else "store_true"
 
         parser.add_argument(
             f"--{name}", dest=name, help=field.field_info.description, **argument_kwargs

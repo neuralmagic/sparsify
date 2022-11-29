@@ -57,7 +57,13 @@ def api_request_tune(history: Tuple[SparsificationTrainingConfig, Metrics]) -> d
     return response.json()
 
 
-def request_student_teacher_configs(api_args: "APIArgs"):
+def request_student_teacher_configs(
+    api_args: APIArgs,
+) -> Tuple[SparsificationTrainingConfig, SparsificationTrainingConfig]:
+    """
+    Request student and/or teacher sparsification configs from the NM API
+    """
+
     student_config, teacher_config = None, None
 
     if api_args.teacher_only:
@@ -65,7 +71,7 @@ def request_student_teacher_configs(api_args: "APIArgs"):
 
     else:
         student_config = SparsificationTrainingConfig(**api_request_config(api_args))
-        if api_args.distill_teacher == "auto":
+        if student_config.distill_teacher == "auto":
             teacher_input_args = api_args.copy(deep=True)
             teacher_input_args.teacher_only = True
             teacher_config = SparsificationTrainingConfig(

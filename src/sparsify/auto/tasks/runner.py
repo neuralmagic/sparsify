@@ -373,7 +373,7 @@ class TaskRunner:
         )
 
         # move model files to save directory
-        origin_directory = self._get_copy_origin_directory()  # directory to move
+        origin_directory = self._get_model_artifact_directory()  # directory to move
         moved_directory = os.path.join(
             target_directory, os.path.basename(os.path.normpath(origin_directory))
         )  # anticipated path to the moved directory, after moving
@@ -472,12 +472,12 @@ class TaskRunner:
         )
 
     @abstractmethod
-    def _get_copy_origin_directory(self) -> str:
+    def _get_model_artifact_directory(self) -> str:
         """
-        Return the absolute path to the directory to copy the model artifacts from
+        Return the absolute path to the temporary run artifacts directory
         """
         raise NotImplementedError(
-            f"_get_copy_origin_directory missing implementation for task {self.task}"
+            f"_get_model_artifact_directory missing implementation for task {self.task}"
         )
 
 

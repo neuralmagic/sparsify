@@ -98,9 +98,7 @@ class SampledHyperparameter(BaseModel):
     Represents an instance of a sampled hyperparameter, with distribution and value
     """
 
-    distribution: Union[
-        CategoricalParameterDistribution,
-        NumberParameterDistribution,
-        BaseParameterDistribution,
-    ] = Field(description="Distribution from which the parameter may be sampled")
+    distribution: BaseParameterDistribution = Field(
+        description="Distribution from which the parameter may be sampled"
+    )
     value: Any = Field(description="Samples parameter value")

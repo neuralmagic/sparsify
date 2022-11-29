@@ -58,8 +58,9 @@ class ImageClassificationRunner(TaskRunner):
 
     def __init__(self, config: SparsificationTrainingConfig):
         super().__init__(config)
-        self._model_save_name = (
-            "model-one-shot.pth" if self.train_args.one_shot else "model.pth"
+        self._model_save_name = os.path.join(
+            "training",
+            ("model-one-shot.pth" if self.train_args.one_shot else "model.pth"),
         )
 
     @classmethod

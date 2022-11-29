@@ -115,7 +115,7 @@ class APIArgs(BaseModel):
     maximum_trial_saves: Optional[int] = Field(
         title="maximum_trial_saves",
         description=(
-            "Number of best trials to save on the drive. Items saved for a tial "
+            "Number of best trials to save on the drive. Items saved for a trial "
             "include the trained model and associated artifacts. If this value is set "
             "to n, then at most n+1 models will be saved at any given time on the "
             "machine. Default value of None allows for unlimited model saving"

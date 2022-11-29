@@ -26,6 +26,7 @@ from typing import Any, Dict, List, Optional, Union
 import yaml
 
 from pydantic import BaseModel, Field, validator
+from sparsify.auto.utils import SampledHyperparameter
 from sparsify.utils import TASK_REGISTRY
 
 
@@ -56,6 +57,14 @@ class APIArgs(BaseModel):
         title="save_directory",
         description="Absolute path to save directory",
         default=DEFAULT_OUTPUT_DIRECTORY,
+    )
+    log_directory: Optional[str] = Field(
+        title="log_directory",
+        description=(
+            "Absolute path to log directory. Defaults to ./logs, relative to save "
+            "directory"
+        ),
+        default=None,
     )
     performance: Union[str, float] = Field(
         title="performance",
@@ -112,6 +121,14 @@ class APIArgs(BaseModel):
             "machine. Default value of None allows for unlimited model saving"
         ),
         default=None,
+    )
+    stopping_condition: bool = Field(
+        title="stopping_condition",
+        description=(
+            "Set to False to turn off tuning stopping condition, which may end tuning "
+            "early if no improvement was made"
+        ),
+        default=True,
     )
     kwargs: Optional[Dict[str, Any]] = Field(
         title="kwargs",
@@ -174,6 +191,30 @@ class SparsificationTrainingConfig(BaseModel):
         description="optional task specific arguments to add to config",
         default_factory=dict,
     )
+    tuning_parameters: List[SampledHyperparameter] = Field(
+        title="tuning_parameters",
+        description=(
+            "List of tuning hyperparameters. Values are used to overwrite respective "
+            "recipe fields"
+        ),
+        default=[],
+    )
+    optimizing_metrics: List[str] = Field(
+        title="optimizing_metrics",
+        description=(
+            "List of metrics to optimize for during hyperparameter tuning. Each "
+            "element must match name of field in Metrics class"
+        ),
+        default=["accuracy"],
+    )
+    stopping_condition: bool = Field(
+        title="stopping_condition",
+        description=(
+            "Set to False to turn off tuning stopping condition, which may end tuning "
+            "early if no improvement was made"
+        ),
+        default=True,
+    )
 
     @classmethod
     def from_yaml(cls, config_yaml: str):
@@ -208,15 +249,11 @@ class Metrics(BaseModel):
     determine run quality by the config creator.
     """
 
-    accuracy: Dict[str, float] = (
-        Field(description="Model accuracy on validation set"),
-    )
-    tracked_accuracy_key: str = Field(
-        description="key of the accuracy dict, for the metric used to track run quality"
-    )
-    recovery: Optional[float] = Field(
-        description="model accuracy as a percentage of the dense model's accuracy",
-        default=None,
+    metrics: Dict[str, float] = Field(description="Model accuracy on validation set")
+    objective_key: str = Field(
+        description=(
+            "keys of the accuracy dict, for the metrics used to track run quality"
+        )
     )
     train_time: Optional[float] = Field(
         description="Total train time, including hyperparameter tuning", default=None
@@ -228,26 +265,20 @@ class Metrics(BaseModel):
                 "Comparison not supported between instances of 'Metrics' and "
                 f"{type(other)}"
             )
-        if self.tracked_accuracy_key != other.tracked_accuracy_key:
+        if self.objective_key != other.objective_key:
             raise ValueError(
                 "Comparison not supported between instances of 'Metrics' with "
-                f"differing 'tracked_accuracy_key' of '{self.tracked_accuracy_key}' "
-                f"and '{other.tracked_accuracy_key}'"
+                f"differing 'objective_key' of '{self.objective_key}' "
+                f"and '{other.objective_key}'"
             )
 
     def __eq__(self, other):
         self._check_valid_operand(other)
-        return (
-            self.accuracy[self.tracked_accuracy_key]
-            == other.accuracy[self.tracked_accuracy_key]
-        )
+        return self.metrics[self.objective_key] == other.metrics[self.objective_key]
 
     def __lt__(self, other):
         self._check_valid_operand(other)
-        return (
-            self.accuracy[self.tracked_accuracy_key]
-            < other.accuracy[self.tracked_accuracy_key]
-        )
+        return self.metrics[self.objective_key] < other.metrics[self.objective_key]
 
     @property
     def display_string(self) -> str:
@@ -255,7 +286,7 @@ class Metrics(BaseModel):
         :return: string representation of metrics values
         """
         string_body = "\n".join(
-            [f"{metric}: {value}" for metric, value in self.accuracy.items()]
+            [f"{metric}: {value}" for metric, value in self.metrics.items()]
         )
         return f"Post-training metrics:\n{string_body}\n"
 

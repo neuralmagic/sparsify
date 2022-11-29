@@ -16,6 +16,7 @@
 # isort: skip_file
 
 from .helpers import *
+from .tunable_hyperparameters import *
 from .error_handler import *
 from .hardware_analyzer import *
 from .nm_api import *

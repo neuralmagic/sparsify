@@ -43,8 +43,7 @@ _TEST_CONFIG = {
 }
 _ACCURACY_LIST = [0.1, 0.9, 0.3, 0.4, 0.5, 0.6, 0.5, 0.8, 0.4, 0.3]
 _METRICS_LIST = [
-    Metrics(accuracy={"map0.5": acc}, tracked_accuracy_key="map0.5")
-    for acc in _ACCURACY_LIST
+    Metrics(metrics={"map0.5": acc}, objective_key="map0.5") for acc in _ACCURACY_LIST
 ]
 _RUNNER_MOCK_PATH = "sparsify.auto.tasks.object_detection.yolov5.runner.Yolov5Runner"
 

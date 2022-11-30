@@ -181,21 +181,21 @@ class APIArgs(BaseModel):
         )
 
     @validator("tuning_parameters")
-    def read_tuning_parameters_from_file(cls, v):
+    def read_tuning_parameters_from_file(cls, tuning_parameters):
         """
         Read in the tuning parameters as a string for passing to NM API
         """
-        if v:
-            with open(v, "r") as file:
+        if tuning_parameters:
+            with open(tuning_parameters, "r") as file:
                 return file.read().replace("\n", "")
 
     @validator("teacher_tuning_parameters")
-    def read_teacher_tuning_parameters_from_file(cls, v):
+    def read_teacher_tuning_parameters_from_file(cls, tuning_parameters):
         """
         Read in the tuning parameters as a string for passing to NM API
         """
-        if v:
-            with open(v, "r") as file:
+        if tuning_parameters:
+            with open(tuning_parameters, "r") as file:
                 return file.read().replace("\n", "")
 
     @classmethod

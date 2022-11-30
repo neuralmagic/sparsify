@@ -227,7 +227,7 @@ class Yolov5Runner(TaskRunner):
             skipinitialspace=True,
         )
         return Metrics(
-            accuracy={
+            metrics={
                 key.split("/")[1]: float(results[key].iloc[-1])
                 for key in _ACCURACY_KEYS
             },

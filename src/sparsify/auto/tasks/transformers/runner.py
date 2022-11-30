@@ -70,6 +70,9 @@ class _TransformersRunner(TaskRunner):
         train_args = cls.train_args_class(
             model_name_or_path=config.base_model,
             dataset_name=config.dataset,
+            distill_teacher=config.distill_teacher
+            if not config.distill_teacher == "off"
+            else None,
             **config.kwargs,
         )
 
@@ -92,7 +95,7 @@ class _TransformersRunner(TaskRunner):
         self.train_args.output_dir = os.path.join(
             self.run_directory.name, self.train_args.output_dir
         )
-        self.train_args.logging_dir - self.log_directory
+        self.train_args.logging_dir = self.log_directory
         self.export_args.model_path = self.train_args.output_dir
 
     def memory_stepdown(self):

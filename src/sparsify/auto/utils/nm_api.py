@@ -23,7 +23,7 @@ from sparsify.auto.api.api_models import APIArgs, Metrics, SparsificationTrainin
 from sparsify.utils import get_base_url
 
 
-__all__ = ["api_request_config", "api_request_tune"]
+__all__ = ["api_request_config", "api_request_tune", "request_student_teacher_configs"]
 
 _CONFIG_REQUEST_END_POINT = "/v1/sparsify/auto/training-config"
 _CONFIG_TUNE_END_POINT = "/v1/sparsify/auto/training-config/tune"
@@ -31,9 +31,9 @@ _CONFIG_TUNE_END_POINT = "/v1/sparsify/auto/training-config/tune"
 
 def api_request_config(api_args: APIArgs) -> dict:
     """
-    Make a server request for the initial training config
+    Make a server request for the initial training configs
 
-    :return: dictionary of SparsificationTrainingConfig object
+    :return: dictionary of SparsificationTrainingConfig objects
     """
     response = requests.post(
         f"{get_base_url()}{_CONFIG_REQUEST_END_POINT}",
@@ -55,3 +55,27 @@ def api_request_tune(history: Tuple[SparsificationTrainingConfig, Metrics]) -> d
     )
 
     return response.json()
+
+
+def request_student_teacher_configs(
+    api_args: APIArgs,
+) -> Tuple[SparsificationTrainingConfig, SparsificationTrainingConfig]:
+    """
+    Request student and/or teacher sparsification configs from the NM API
+    """
+
+    student_config, teacher_config = None, None
+
+    if api_args.teacher_only:
+        teacher_config = SparsificationTrainingConfig(**api_request_config(api_args))
+
+    else:
+        student_config = SparsificationTrainingConfig(**api_request_config(api_args))
+        if student_config.distill_teacher == "auto":
+            teacher_input_args = api_args.copy(deep=True)
+            teacher_input_args.teacher_only = True
+            teacher_config = SparsificationTrainingConfig(
+                **api_request_config(teacher_input_args)
+            )
+
+    return student_config, teacher_config

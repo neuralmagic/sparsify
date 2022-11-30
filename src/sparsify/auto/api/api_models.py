@@ -180,6 +180,24 @@ class APIArgs(BaseModel):
             f"{nl.join([task.pretty_print() for task in TASK_REGISTRY.values()])}"
         )
 
+    @validator("tuning_parameters")
+    def read_tuning_parameters_from_file(cls, v):
+        """
+        Read in the tuning parameters as a string for passing to NM API
+        """
+        if v:
+            with open(v, "r") as file:
+                return file.read().replace("\n", "")
+
+    @validator("teacher_tuning_parameters")
+    def read_teacher_tuning_parameters_from_file(cls, v):
+        """
+        Read in the tuning parameters as a string for passing to NM API
+        """
+        if v:
+            with open(v, "r") as file:
+                return file.read().replace("\n", "")
+
     @classmethod
     def from_cli(cls, args: Optional[List[str]] = None):
         """

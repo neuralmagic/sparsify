@@ -226,14 +226,33 @@ class TaskRunner:
     def _apply_tuning_params(self):
         """
         Apply sampled values for the tuned hyperparameters by updating recipe args
-        with their values
+        and cli kwargs with their values
         """
         if len(self.config.tuning_parameters) > 0:
+
+            # Update recipe args
             new_recipe_args = {
-                param.name: param.value for param in self.config.tuning_parameters
+                param.name: param.value
+                for param in self.config.tuning_parameters
+                if param.source == "recipe"
             }
             self.train_args.recipe_args = self.train_args.recipe_args or {}
             self.train_args.recipe_args.update(new_recipe_args)
+
+            # Update cli params. This should only happen on the initial config, as the
+            # first value to sample is derived from the value in the training args
+            cli_params = [
+                param
+                for param in self.config.tuning_parameters
+                if param.source == "cli"
+            ]
+            for param in cli_params:
+                if param.value is None:
+                    param.value = getattr(self.train_args, param.name)
+
+            # Update kwargs
+            for param in cli_params:
+                setattr(self.train_args, param.name, param.value)
 
     @retry_stage(stage="train")
     def _train_distributed(self):
@@ -422,8 +441,13 @@ class TaskRunner:
             "deployment",
         )
 
-        shutil.move(origin_directory, target_directory)
+        # Remove existing deployment directory in the case of a resume run. Note
+        # deployment directory can always be recreated from the run artifacts
+        new_deployment_directory = os.path.join(target_directory, "deployment")
+        if os.path.exists(new_deployment_directory):
+            shutil.rmtree(new_deployment_directory)
 
+        shutil.move(origin_directory, target_directory)
         with open(os.path.join(target_directory, "deployment", "readme.txt"), "x") as f:
             f.write("deployment instructions will go here")
 

@@ -19,7 +19,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from sparsify.auto import SAVE_DIR, APIArgs, Metrics, main
+from sparsify.auto import SAVE_DIR, APIArgs, Metrics, SparsificationTrainingConfig, main
 
 
 """
@@ -41,35 +41,27 @@ _TEST_CONFIG = {
     "num_trials": _NUM_TRIALS,
     "maximum_trial_saves": _MAXIMUM_SAVES,
 }
+_TEST_TEACHER_CONFIG = None
 _ACCURACY_LIST = [0.1, 0.9, 0.3, 0.4, 0.5, 0.6, 0.5, 0.8, 0.4, 0.3]
 _METRICS_LIST = [
     Metrics(metrics={"map0.5": acc}, objective_key="map0.5") for acc in _ACCURACY_LIST
 ]
 _RUNNER_MOCK_PATH = "sparsify.auto.tasks.object_detection.yolov5.runner.Yolov5Runner"
 
-_TRIAL_PATH = os.path.join(
-    _SAVE_DIRECTORY,
-    SAVE_DIR.format(task=_TEST_CONFIG["task"]),
-    "run_artifacts",
-    "trial_{trial_idx}",
-)
-
 # Testing helper function
 
 
 def _train_side_effect_mock(self):
-    train_artifact_path = self._get_model_artifact_directory()
-    os.makedirs(train_artifact_path)  # create train output directory
     # add a dummy file and sub_directory
-    Path(os.path.join(train_artifact_path, "train_output")).touch()
-    os.mkdir(os.path.join(train_artifact_path, "artifact_subdirectory"))
+    output_directory = self._get_model_artifact_directory()
+    os.makedirs(output_directory)
+    Path(os.path.join(output_directory, "output.txt")).touch()
+    os.mkdir(os.path.join(output_directory, "artifact_subdirectory"))
 
 
-def _export_side_effect_mock(self, target_directory, trial_idx):
-    _test_trial_artifact_directory(trial_idx)
-    deployment_path = os.path.join(
-        _TRIAL_PATH.format(trial_idx=trial_idx), "deployment"
-    )
+def _export_side_effect_mock(self, model_directory):
+    _test_trial_artifact_directory(model_directory)
+    deployment_path = os.path.join(model_directory, "deployment")
     os.makedirs(deployment_path)  # create deployment dir
     # add dummy onnx file
     Path(os.path.join(deployment_path, "export_output.onnx")).touch()
@@ -82,8 +74,7 @@ def _cleanup_directory():
     assert not os.path.exists(_SAVE_DIRECTORY)
 
 
-def _test_trial_artifact_directory(trial_idx: int) -> bool:
-    directory_path = _TRIAL_PATH.format(trial_idx=trial_idx)
+def _test_trial_artifact_directory(directory_path: str) -> bool:
     assert os.path.exists(directory_path), f"Directory not found: {directory_path}"
     assert os.listdir(directory_path), f"Directory empty:  {directory_path}"
 
@@ -115,7 +106,13 @@ def _test_trial_artifact_directory(trial_idx: int) -> bool:
     MagicMock(return_value=APIArgs(**_TEST_CONFIG)),
 )
 @patch(
-    "sparsify.auto.api.main.api_request_config", MagicMock(return_value=_TEST_CONFIG)
+    "sparsify.auto.api.main.request_student_teacher_configs",
+    MagicMock(
+        return_value=(
+            SparsificationTrainingConfig(**_TEST_CONFIG),
+            _TEST_TEACHER_CONFIG,
+        )
+    ),
 )
 @patch("sparsify.auto.api.main.api_request_tune", MagicMock(return_value=_TEST_CONFIG))
 def test_main(*args):
@@ -130,8 +127,16 @@ def test_main(*args):
     output_path = os.path.join(
         _SAVE_DIRECTORY, SAVE_DIR.format(task=_TEST_CONFIG["task"])
     )
-    assert sorted(os.listdir(output_path)) == ["deployment", "logs", "run_artifacts"]
-    assert len(os.listdir(os.path.join(output_path, "run_artifacts"))) == _MAXIMUM_SAVES
+    student_artifact_path = os.path.join(
+        output_path, "training", "run_artifacts", "student"
+    )
+    assert sorted(os.listdir(output_path)) == ["deployment", "training"]
+    trails_created = [
+        file for file in os.listdir(student_artifact_path) if "trial_" in file
+    ]
+    assert len(trails_created) == _MAXIMUM_SAVES
 
     for idx in top_n_trial_idx:
-        _test_trial_artifact_directory(idx)
+        _test_trial_artifact_directory(
+            os.path.join(student_artifact_path, f"trial_{idx}")
+        )

@@ -27,7 +27,7 @@ import yaml
 
 from pydantic import BaseModel, Field, validator
 from sparsify.auto.utils import SampledHyperparameter
-from sparsify.utils import TASK_REGISTRY
+from sparsify.utils import DEFAULT_OPTIMIZING_METRIC, METRICS, TASK_REGISTRY
 
 
 __all__ = [
@@ -58,14 +58,6 @@ class APIArgs(BaseModel):
         description="Absolute path to save directory",
         default=DEFAULT_OUTPUT_DIRECTORY,
     )
-    log_directory: Optional[str] = Field(
-        title="log_directory",
-        description=(
-            "Absolute path to log directory. Defaults to ./logs, relative to save "
-            "directory"
-        ),
-        default=None,
-    )
     performance: Union[str, float] = Field(
         title="performance",
         description=(
@@ -91,10 +83,12 @@ class APIArgs(BaseModel):
         description="keyword args to override recipe variables with",
         default_factory=dict,
     )
-    distill_teacher: Optional[str] = Field(
+    distill_teacher: str = Field(
         title="distil_teacher",
-        description="optional path to a distillation teacher model for training",
-        default=None,
+        description="teacher to use for distillation. Can be a path to a model file or "
+        "zoo stub, 'off' for no distillation, and default value of 'auto' to auto-tune "
+        "base model as teacher",
+        default="auto",
     )
     num_trials: Optional[int] = Field(
         title="num_trials",
@@ -130,10 +124,48 @@ class APIArgs(BaseModel):
         ),
         default=False,
     )
+    resume: Optional[str] = Field(
+        title="resume",
+        description=(
+            "To continue a tuning run, provide path to the high level directory of run "
+            "you wish to resume"
+        ),
+        default=None,
+    )
+    optimizing_metric: str = Field(
+        title="optimizing_metric",
+        description=(
+            "The criterion to search model for, multiple metrics can be specified as"
+            f"comma separated values, supported metrics are {METRICS}"
+        ),
+        default=DEFAULT_OPTIMIZING_METRIC,
+    )
     kwargs: Optional[Dict[str, Any]] = Field(
         title="kwargs",
         description="optional task specific arguments to add to config",
         default_factory=dict,
+    )
+    teacher_kwargs: Optional[Dict[str, Any]] = Field(
+        title="teacher_kwargs",
+        description="optional task specific arguments to add to teacher config",
+        default_factory=dict,
+    )
+    tuning_parameters: Optional[str] = Field(
+        title="tuning_parameters",
+        description="path to config file containing custom parameter tuning settings. "
+        "See example tuning config output for expected format",
+        default=None,
+    )
+    teacher_tuning_parameters: Optional[str] = Field(
+        title="teacher_tuning_parameters",
+        description="path to config file containing custom teacher parameter tuning "
+        "settings. See example tuning config output for expected format",
+        default=None,
+    )
+    teacher_only: bool = Field(
+        title="teacher_only",
+        description=("set to True to only auto tune the teacher"),
+        default=False,
     )
 
     @validator("task")
@@ -176,9 +208,9 @@ class SparsificationTrainingConfig(BaseModel):
     base_model: str = Field(
         description="path to the model to be sparsified",
     )
-    distill_teacher: Optional[str] = Field(
+    distill_teacher: str = Field(
         description="optional path to a distillation teacher for training",
-        default=None,
+        default="auto",
     )
     recipe: str = Field(
         description="file path to or zoo stub of sparsification recipe to be applied",
@@ -199,13 +231,13 @@ class SparsificationTrainingConfig(BaseModel):
         ),
         default=[],
     )
-    optimizing_metrics: List[str] = Field(
-        title="optimizing_metrics",
+    optimizing_metric: str = Field(
+        title="optimizing_metric",
         description=(
-            "List of metrics to optimize for during hyperparameter tuning. Each "
-            "element must match name of field in Metrics class"
+            "The criterion to search model for, multiple metrics can be specified as"
+            f"comma separated values, supported metrics are {METRICS}"
         ),
-        default=["accuracy"],
+        default=DEFAULT_OPTIMIZING_METRIC,
     )
     no_stopping: bool = Field(
         title="no_stopping",

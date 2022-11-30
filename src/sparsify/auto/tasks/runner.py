@@ -79,6 +79,7 @@ def retry_stage(stage: str):
 
             # attempt run and catch errors until success or maximum number of attempts
             # exceeded
+            return func(self, *args, **kwargs)
             while not error_handler.max_attempts_exceeded():
                 try:
                     out = func(self, *args, **kwargs)
@@ -216,6 +217,10 @@ class TaskRunner:
     def config(self):
         return self._config
 
+    @property
+    def model_save_name(self):
+        return self._model_save_name
+
     @retry_stage(stage="train")
     def _train_distributed(self):
         """
@@ -257,23 +262,17 @@ class TaskRunner:
         return self._get_metrics()
 
     @retry_stage(stage="export")
-    def export(self, target_directory: str, trial_idx: int):
+    def export(self, model_directory: str):
         """
         Export model to target directory
 
-        :param target_directory: directory to export to
-        :param trial_idx: trial index
+        :param model_directory: directory of model to export
         """
         updated_export_args = self.export_args.copy()
         setattr(
             updated_export_args,
             self.export_model_kwarg,
-            os.path.join(
-                target_directory,
-                "run_artifacts",
-                f"trial_{trial_idx}",
-                self._model_save_name,
-            ),
+            os.path.join(model_directory, self.model_save_name),
         )
 
         self.export_hook(**updated_export_args.dict())
@@ -367,29 +366,21 @@ class TaskRunner:
                 "a valid run"
             )
 
-        target_directory = os.path.join(
-            target_directory,
-            "run_artifacts",
-        )
-
         # move model files to save directory
         origin_directory = self._get_model_artifact_directory()  # directory to move
         moved_directory = os.path.join(
             target_directory, os.path.basename(os.path.normpath(origin_directory))
         )  # anticipated path to the moved directory, after moving
 
-        # this should only arise as a result of dev error and not user error
-        if os.path.exists(moved_directory):
-            raise OSError(f"Directory {moved_directory} already exists")
-
-        shutil.move(origin_directory, target_directory)
-
-        # rename directory to one indicating the trial number
+        # name we want to rename the moved directory to
         new_directory_name = os.path.join(target_directory, f"trial_{trial_idx}")
 
         # this should only arise as a result of dev error and not user error
         if os.path.exists(new_directory_name):
             raise OSError(f"Directory {new_directory_name} already exists")
+
+        os.makedirs(target_directory, exist_ok=True)
+        shutil.move(origin_directory, target_directory)
 
         os.rename(
             moved_directory,
@@ -410,7 +401,9 @@ class TaskRunner:
         """
         origin_directory = os.path.join(
             target_directory,
+            "training",
             "run_artifacts",
+            "student",
             f"trial_{trial_idx}",
             "deployment",
         )

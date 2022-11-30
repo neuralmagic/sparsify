@@ -132,13 +132,14 @@ class APIArgs(BaseModel):
         ),
         default=None,
     )
-    optimizing_metric: str = Field(
+    optimizing_metric: List[str] = Field(
         title="optimizing_metric",
         description=(
-            "The criterion to search model for, multiple metrics can be specified as"
-            f"comma separated values, supported metrics are {METRICS}"
+            "The criterion to search model for, multiple metrics can be specified, "
+            "e.g. --optimizing_metric f1 --optimizing_metric latency. Supported  "
+            f"metrics are {METRICS}"
         ),
-        default=DEFAULT_OPTIMIZING_METRIC,
+        default=None,
     )
     kwargs: Optional[Dict[str, Any]] = Field(
         title="kwargs",
@@ -188,6 +189,8 @@ class APIArgs(BaseModel):
         if tuning_parameters and not tuning_parameters.startswith("-"):
             with open(tuning_parameters, "r") as file:
                 return file.read()
+        else:
+            return tuning_parameters
 
     @validator("teacher_tuning_parameters")
     def read_teacher_tuning_parameters_from_file(cls, tuning_parameters: str) -> str:
@@ -197,6 +200,12 @@ class APIArgs(BaseModel):
         if tuning_parameters and not tuning_parameters.startswith("-"):
             with open(tuning_parameters, "r") as file:
                 return file.read()
+        else:
+            return tuning_parameters
+
+    @validator("optimizing_metric")
+    def default_optimizing_metric(cls, optimizing_metric):
+        return optimizing_metric or [DEFAULT_OPTIMIZING_METRIC]
 
     @classmethod
     def from_cli(cls, args: Optional[List[str]] = None):
@@ -249,13 +258,14 @@ class SparsificationTrainingConfig(BaseModel):
         ),
         default=[],
     )
-    optimizing_metric: str = Field(
+    optimizing_metric: List[str] = Field(
         title="optimizing_metric",
         description=(
-            "The criterion to search model for, multiple metrics can be specified as"
-            f"comma separated values, supported metrics are {METRICS}"
+            "The criterion to search model for, multiple metrics can be specified, "
+            "e.g. --optimizing_metric f1 --optimizing_metric latency. Supported  "
+            f"metrics are {METRICS}"
         ),
-        default=DEFAULT_OPTIMIZING_METRIC,
+        default=[DEFAULT_OPTIMIZING_METRIC],
     )
     no_stopping: bool = Field(
         title="no_stopping",
@@ -374,6 +384,8 @@ def _add_schema_to_parser(parser: argparse.ArgumentParser, model: BaseModel):
 
         is_dict = field.default_factory and isinstance(field.default_factory(), dict)
         is_union = getattr(field.type_, "__origin__", None) is Union
+        # Support for CLI args that can be repeated
+        is_list = getattr(field.outer_type_, "_name", None) == "List"
 
         if is_dict or is_union:
             argument_kwargs["type"] = str if is_dict else _str_number_union_parser
@@ -385,7 +397,9 @@ def _add_schema_to_parser(parser: argparse.ArgumentParser, model: BaseModel):
                 field.default if not is_dict else str(field.default_factory())
             )
 
-        if field.type_ == bool:
+        if is_list:
+            argument_kwargs["action"] = "append"
+        elif field.type_ == bool:
             argument_kwargs["action"] = "store_false" if field.default else "store_true"
 
         parser.add_argument(

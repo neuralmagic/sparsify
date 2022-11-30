@@ -81,7 +81,6 @@ def main():
         best_n_trial_metrics["student"] = best_n_trials_from_history(
             history["student"], api_args.maximum_trial_saves
         )
-        start_idx = len(history)
 
         # Only teacher and student stages supported at this time
         resume_stage = (
@@ -92,6 +91,7 @@ def main():
             )
             else "teacher"
         )
+        start_idx = len(history[resume_stage])
 
         # Check whether the run can continue to be tuned
         config_dict = api_request_tune(history[resume_stage])
@@ -243,7 +243,7 @@ def _train(
     # 2. maximum tuning time exceeded
     # 3. tuning early stopping condition met
     while (
-        trial_idx < start_idx + max_tune_trials
+        trial_idx < max_tune_trials
         and time.time() - tuning_start_time <= api_args.max_train_time * 60 * 60
     ):
 

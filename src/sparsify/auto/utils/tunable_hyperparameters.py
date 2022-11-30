@@ -24,7 +24,7 @@ from pydantic.typing import Literal
 __all__ = [
     "BaseParameterDistribution",
     "SampledHyperparameter",
-    "NumberParameterDistribution",
+    "NumericParameterDistribution",
     "CategoricalParameterDistribution",
 ]
 
@@ -35,13 +35,12 @@ class BaseParameterDistribution(BaseModel):
     Neural Magic API calls
     """
 
-    name: str = Field(description="Parameter name")
     value_type: Literal["float", "int", "categorical"] = Field(
         description="Value type, from float, int, or categorical"
     )
 
 
-class NumberParameterDistribution(BaseParameterDistribution):
+class NumericParameterDistribution(BaseParameterDistribution):
     """
     Numeric distribution which can represent a float or integer hyperparameter
     distribution
@@ -98,7 +97,22 @@ class SampledHyperparameter(BaseModel):
     Represents an instance of a sampled hyperparameter, with distribution and value
     """
 
-    distribution: BaseParameterDistribution = Field(
-        description="Distribution from which the parameter may be sampled"
+    name: str = Field(description="Parameter name")
+    source: str = Field(
+        description=(
+            "Source of where the parameter is controlled. Either 'recipe' or 'CLI', "
+            "case insensitive."
+        )
     )
+    distribution: Union[
+        NumericParameterDistribution, CategoricalParameterDistribution
+    ] = Field(description="Distribution from which the parameter may be sampled")
     value: Any = Field(description="Samples parameter value")
+
+    @validator("source")
+    def lowercase_source(cls, source):
+        if source.lower() not in ["recipe", "cli"]:
+            raise ValueError(
+                f"Source must be 'recipe' or 'cli', case-insensitive. Got {source}"
+            )
+        return source.lower()

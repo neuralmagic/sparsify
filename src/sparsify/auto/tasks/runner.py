@@ -154,6 +154,8 @@ class TaskRunner:
         self.hardware_specs = analyze_hardware()
         self.tune_args_for_hardware(self.hardware_specs)
 
+        self._apply_tuning_params()
+
     @staticmethod
     def create(config: SparsificationTrainingConfig) -> "TaskRunner":
         """
@@ -220,6 +222,18 @@ class TaskRunner:
     @property
     def model_save_name(self):
         return self._model_save_name
+
+    def _apply_tuning_params(self):
+        """
+        Apply sampled values for the tuned hyperparameters by updating recipe args
+        with their values
+        """
+        if len(self.config.tuning_parameters) > 0:
+            new_recipe_args = {
+                param.name: param.value for param in self.config.tuning_parameters
+            }
+            self.train_args.recipe_args = self.train_args.recipe_args or {}
+            self.train_args.recipe_args.update(new_recipe_args)
 
     @retry_stage(stage="train")
     def _train_distributed(self):

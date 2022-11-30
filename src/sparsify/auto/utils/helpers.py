@@ -15,6 +15,7 @@
 """
 Generic helpers for sparsify.auto
 """
+import logging
 import os
 from collections import OrderedDict
 from datetime import datetime
@@ -30,9 +31,20 @@ __all__ = [
     "save_history",
     "load_raw_config_history",
     "best_n_trials_from_history",
+    "initialize_banner_logger",
 ]
 
 SAVE_DIR = "auto_{{task}}{:_%Y_%m_%d_%H_%M_%S}".format(datetime.now())
+
+
+def initialize_banner_logger():
+    logger = logging.getLogger("auto_banner")
+    level = logging.INFO if int(os.getenv("RANK", -1)) in {-1, 0} else logging.ERROR
+    logger.setLevel(level)
+    handler = logging.StreamHandler()
+    handler.setLevel(level)
+    handler.setFormatter(_BannerFormatter())
+    logger.addHandler(handler)
 
 
 def create_save_directory(api_args: "APIArgs") -> Tuple[str]:  # noqa: F821
@@ -130,3 +142,22 @@ def get_trial_artifact_directory(artifact_directory: str, trial_idx: int) -> str
     Return the path to the trial from the artifact directory
     """
     return os.path.join(artifact_directory, f"trial_{trial_idx}")
+
+
+class _BannerFormatter(logging.Formatter):
+
+    blue = "\x1b[94m"
+    grey = "\x1b[38;20m"
+    yellow = "\x1b[33;20m"
+    red = "\x1b[31;20m"
+    bold_red = "\x1b[31;1m"
+    reset = "\x1b[0m"
+    banner_format = (
+        f"\n{blue}*************************SPARSIFY AUTO**********************{reset}"
+        "\n%(message)s"
+        f"\n{blue}************************************************************\n{reset}"
+    )
+
+    def format(self, record):
+        formatter = logging.Formatter(self.banner_format)
+        return formatter.format(record)

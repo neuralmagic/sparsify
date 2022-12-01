@@ -203,10 +203,6 @@ class APIArgs(BaseModel):
         else:
             return tuning_parameters
 
-    @validator("optimizing_metric")
-    def default_optimizing_metric(cls, optimizing_metric):
-        return optimizing_metric or [DEFAULT_OPTIMIZING_METRIC]
-
     @classmethod
     def from_cli(cls, args: Optional[List[str]] = None):
         """
@@ -275,6 +271,10 @@ class SparsificationTrainingConfig(BaseModel):
         ),
         default=False,
     )
+
+    @validator("optimizing_metric")
+    def default_optimizing_metric(cls, optimizing_metric):
+        return optimizing_metric or [DEFAULT_OPTIMIZING_METRIC]
 
     @classmethod
     def from_yaml(cls, config_yaml: str):

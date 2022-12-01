@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import logging
 import os
 import shutil
 import time
@@ -27,6 +28,7 @@ from sparsify.auto.utils import (
     best_n_trials_from_history,
     create_save_directory,
     get_trial_artifact_directory,
+    initialize_banner_logger,
     load_raw_config_history,
     request_student_teacher_configs,
     save_history,
@@ -34,7 +36,12 @@ from sparsify.auto.utils import (
 from tensorboard.program import TensorBoard
 
 
+_LOGGER = logging.getLogger("auto_banner")
+
+
 def main():
+    initialize_banner_logger()
+
     # Tuning tracking variables
     history = {"teacher": [], "student": []}
     best_n_trial_metrics = {
@@ -49,6 +56,9 @@ def main():
 
     # Load state from previous run
     if api_args.resume:
+
+        _LOGGER.info(f"Resuming run from {api_args.resume}")
+
         # Load history from YAML file
         raw_history = load_raw_config_history(api_args.resume)
 
@@ -144,6 +154,9 @@ def main():
 
     # Train teacher
     if teacher_config:
+
+        _LOGGER.info("Starting hyperparameter tuning on teacher model")
+
         teacher_artifact_directory = os.path.join(base_artifact_directory, "teacher")
         teacher_log_directory = os.path.join(base_log_directory, "teacher")
 
@@ -176,6 +189,9 @@ def main():
 
     # Train student
     if student_config:
+
+        _LOGGER.info("Starting hyperparameter tuning on student model")
+
         student_artifact_directory = os.path.join(base_artifact_directory, "student")
         student_log_directory = os.path.join(base_log_directory, "student")
 
@@ -201,6 +217,12 @@ def main():
         trial_artifact_directory = get_trial_artifact_directory(
             student_artifact_directory, best_trial_idx
         )
+
+        _LOGGER.info(
+            "Tuning complete. Exporting model from the best trial, "
+            f"#{best_trial_idx}"
+        )
+
         student_runner.export(model_directory=trial_artifact_directory)
         student_runner.create_deployment_directory(
             target_directory=save_directory, trial_idx=best_trial_idx
@@ -247,6 +269,8 @@ def _train(
         and time.time() - tuning_start_time <= api_args.max_train_time * 60 * 60
     ):
 
+        _LOGGER.info(f"Starting tuning trial #{trial_idx}")
+
         # Create a runner from the config, based on the task specified by config.task
         runner = TaskRunner.create(config)
 
@@ -263,6 +287,11 @@ def _train(
             runner.move_output(target_directory=artifact_directory, trial_idx=trial_idx)
             best_n_trial_metrics[trial_idx] = metrics
 
+            _LOGGER.info(
+                f"Trial #{trial_idx} in top {maximum_trial_saves} seen so far. Saving "
+                "to run artifacts directory"
+            )
+
         # If better trial was saved to a total of n+1 saved trials, drop worst one
         if len(best_n_trial_metrics) > maximum_trial_saves:
             drop_trial_idx = min(best_n_trial_metrics, key=best_n_trial_metrics.get)
@@ -270,6 +299,11 @@ def _train(
                 get_trial_artifact_directory(artifact_directory, drop_trial_idx)
             )
             del best_n_trial_metrics[drop_trial_idx]
+
+            _LOGGER.info(
+                f"Dropping trial #{drop_trial_idx} from top {maximum_trial_saves} "
+                "saved trials"
+            )
 
         # save run history as list of pairs of (config, metrics)
         history.append((config, metrics))

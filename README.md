@@ -1,3 +1,4 @@
+
 <!--
 Copyright (c) 2021 - present / Neuralmagic, Inc. All Rights Reserved.
 
@@ -14,9 +15,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-<h1><img alt="tool icon" src="https://raw.githubusercontent.com/neuralmagic/sparsify/main/docs/source/icon-sparsify.png" />&nbsp;&nbsp;Sparsify</h1>
+<h1><img alt="tool icon" src="https://raw.githubusercontent.com/neuralmagic/sparsify/main/docs/source/icon-sparsify.png" />&nbsp;&nbsp;Sparsify APIs</h1>
 
-<h3>Easy-to-use UI for automatically sparsifying neural networks and creating sparsification recipes for better inference performance and a smaller footprint</h3>
+<h3>Sparsify APIs provide simple pathways to build sparse models, all with a one-line API call. </h3>
 
 <p>
     <a href="https://docs.neuralmagic.com/sparsify/">
@@ -53,14 +54,140 @@ limitations under the License.
 
 ## Overview
 
-Sparsify is an easy-to-use UI tool that simplifies the deep learning model [sparsification](https://docs.neuralmagic.com/main/source/getstarted.html#sparsification) process to rapidly achieve the best combination of size, speed, and accuracy. 
-It sparsifies and benchmarks models informed by industry research insights for ML practitioners, including ML engineers and operators, who need to deploy performant deep learning models fast and at scale. 
-Sparsify shows visual performance potential for your model, including a sliding scale between performance and recovery, ultimately speeding up the model sparsification process from weeks to minutes.
+Use the Sparsify APIs to easily create sparse, performant models. Bring a dense model, a dataset, or just a task; Sparsify APIs will help deliver you a sparse model that is ready and packaged for deployment on your target hardware.
 
-The [GitHub repository](https://github.com/neuralmagic/sparsify) contains the package to locally launch Sparsify where you can create projects to load and sparsify your deep learning models. 
-At the end, you can export sparsification recipes to integrate with your training workflow.
+Sparsify APIs make applying state-of-the-art [sparsification](https://docs.neuralmagic.com/main/source/getstarted.html#sparsification) algorithms such as pruning and quantization to any neural network easy with one-command API calls that return packaged, ready-to-deploy sparse models. 
+## Available APIs
 
-<img alt="Sparsify Flow" src="https://docs.neuralmagic.com/docs/source/infographics/sparsify.png" width="960px" />
+As of today, Sparsify has 2 available APIs: 
+```bash
+- sparsify.package 
+- sparsify.auto
+```
+- **sparsify.package** takes in a task *or* research dataset as parameters and returns a packaged ONNX model with configs; ready to plug in directly into DeepSparse or any inference engine for inferencing. 
+- **sparsify.auto** takes a task *or* research dataset *and* your dataset that they wish to Sparse Transfer Learn the model onto as parameters and starts training locally on your training hardware. The Sparsify Auto API returns a packaged ONNX model with configs, ready to plug in directly into DeepSparse or any inference engine for inferencing. 
+
+## Sparsify Package Usage and Parameters 
+
+
+#### Task/Dataset Selection:
+To use the Sparsify Package API, you must choose a task or a dataset that you wish to get a deployable, packaged sparse model for.  You are required to select at least one of a task or a dataset, but not required to select both. 
+    
+   
+   **Tasks**
+   You can select from the following lists of supported list of tasks (--task) to create a performant model for: 
+-   CV classification: [*ic, image-classification, image_classification, classification*]
+-   CV detection: [*od, object-detection, object_detection, detection*]
+-   CV segmentation: [*segmentation*]
+-   NLP question answering: [*qa, question-answering, question_answering*]
+-   NLP text classification: [*text-classification, text_classification, glue*]
+-   Sentiment analysis: [*sentiment, sentiment_analysis, sentiment-analysis*]
+-   NLP token classification: [*token-classification, token_classification*]
+-   Named entity recognition: [*ner, named-entity-recognition, named_entity_recognition*]
+    
+   **Datasets**
+You can also select a supported public dataset (--dataset) that they want their pre-packaged model trained on, including:
+- TBD
+
+#### Model Optimization Metrics:
+You can select optimization metrics that the selected model is optimized on. We will always return an optimized model. A dense baseline is not a possible option for the model returned, even if slightly more accurate, since we want to return the most balanced performant and accurate model for whichever optimization metric you select for your task. 
+    
+
+-   The Optimizing metric (--optimizing-metric) is the metric to optimize above everything else and has the following options:
+	- Accuracy Style metrics: *accuracy (default), f1, recall, map*
+	- Performance Style metrics: *latency (default), throughput* 
+	- Model Size metrics: *file_size, memory_usage* 
+
+Multiple optimization metrics can be passed in as a comma separated value. In this event, Sparsify Package will return a model that meets a balance between the designated optimization metrics. 
+
+#### Outputs:
+The output of a Sparsify Package API call is a deployment folder, dockerfile, and documentation at the root of current directory. Final performance numbers are displayed in the STD output. 
+
+### Sparsify Package Examples:
+**CV** 
+To get a model that was trained for object detection and that is optimized for latency, you can call the Sparsify Package API as follows:
+```bash
+- sparsify.package --task['object detection'] --optimizing-metric['latency']
+```
+**NLP** 
+To get a model that was trained for question answering on the SQuAD Dataset and that is optimized for model size, you can call the Sparsify Package API as follows:
+```bash
+- sparsify.package --task['qa'] --dataset=['SQuAD'] --optimizing-metric['file_size']
+```
+
+## Sparsify Auto Usage and Parameters 
+
+#### Training Information: 
+Sparsify Auto will kick off the creation of an initial model based on the optimizing and satisficing metrics on the your datasets and then will begin automatic hyperparameter tuning to optimize the given metric to its highest value.  
+
+The Sparsify Auto Sparse Transfer Learning process will run locally on your training hardware and automatically adjust training commands to fit the available training hardware (adjusting gradient accumulation for that setup).  You are able to override the model selection, teacher and model creation, and hyperparameter tuning processes by providing their own configurations via a config file, if you wish. 
+
+You also have the ability to control aspects of the model training like the number of trials (--num-trials) that auto will run through for hyperparameter tuning. 
+
+To learn about the full available list of training parameters, use 
+```bash
+sparsify.auto -h
+```
+
+#### Task/Dataset Selection:
+To use the Sparsify Auto API, you must choose a task and supply a dataset that you wish to get sparse transfer learn onto to create a deployable, packaged sparse model. You are required to designate a task and provide a dataset. 
+    
+   **Tasks**
+   You can select from the following lists of supported list of tasks (--task) to create a performant model for: 
+-   CV classification: [*ic, image-classification, image_classification, classification*]
+-   CV detection: [*od, object-detection, object_detection, detection*]
+-   CV segmentation: [*segmentation*]
+-   NLP question answering: [*qa, question-answering, question_answering*]
+-   NLP text classification: [*text-classification, text_classification, glue*]
+-   Sentiment analysis: [*sentiment, sentiment_analysis, sentiment-analysis*]
+-   NLP token classification: [*token-classification, token_classification*]
+-   Named entity recognition: [*ner, named-entity-recognition, named_entity_recognition*]
+    
+   **Datasets**
+   You must provide a path to a dataset that you wish to transfer learn a model onto for your designated task.  The dataset must conform to standard documentation around dataset creation that is detailed [here] link to our dataset format docs. 
+    
+
+#### Model Optimization Metrics:
+You can select optimization metrics that the selected model is optimized on. We will always return an optimized model. A dense baseline is not a possible option for the model returned, even if slightly more accurate, since we want to return the most balanced performant and accurate model for whichever optimization metric you select for your task. 
+    
+
+-   The Optimizing metric (--optimizing-metric) is the metric to optimize above everything else and has the following options:
+	- Accuracy Style metrics: *accuracy (default), f1, recall, map*
+	- Performance Style metrics: *latency (default), throughput* 
+	- Model Size metrics: *file_size, memory_usage* 
+
+Multiple optimization metrics can be passed in as a comma separated value. In this event, Sparsify Package will return a model that meets a balance between the designated optimization metrics. 
+
+#### Outputs:
+The outputs of a Sparsify Auto API call are stored in a working directory, with each sub folder equivalent to a configuration file run. 
+
+All progress is tracked through TensorBoard logs and is reported in the high-level command to reflect on overall auto progress as well as individual stage progress.
+    
+The final output is a deployment folder and docker file with instructions for deployment and orchestration integrations.
+
+
+#### Hyperparameter Tuning and Config File Requirements 
+*Advanced Usage* 
+
+The Sparsify Auto API is mainly used to create a sparse model for your dataset from scratch. However, for advanced users, you can also create your own config files and run hyperparameter tuning for your model. 
+
+A custom config file can be easily created from weights or taken from a SparseZoo stub to target hyperparameters and then be able to be fed in for tuning for a supplied model. 
+  
+To learn about the usage of a config file to use Sparsify Auto for hyperparameter tuning, see our tutorial [here] TBD. 
+
+
+
+### Sparsify Auto Examples: TBD
+**CV** 
+To get a model that was trained for object detection, is optimized for latency and transfer learn it to your dataset, you can call the Sparsify Auto  API as follows:
+```bash
+- sparsify.auto --task['object detection'] --optimizing-metric['latency'] 
+```
+**NLP** 
+To get a model that was trained for question answering, is optimized for model size, and transfer learn it to your dataset,  you can call the Sparsify Auto API as follows:
+```bash
+- sparsify.package --task['qa'] --dataset=['SQuAD'] --optimizing-metric['file_size']
+
 
 ## Highlights
 
@@ -81,106 +208,8 @@ Install with pip using:
 pip install sparsify
 ```
 
-Depending on your flow, PyTorch, Keras, or TensorFlow must be installed in the local environment along with Sparsify to export recipes through the UI.
+Depending on your flow, PyTorch, Keras, or TensorFlow must be installed in the local environment along with Sparsify. 
 
-## Quick Tour
-
-A console script entry point is installed with the package: `sparsify`.
-This enables easy interaction through your console/terminal.
-
-Note, for some environments the console scripts cannot install properly.
-If this happens for your system and the `sparsify` command is not available,
-`scripts/main.py` may be used in its place.  Documentation is provided in the
-script file.
-
-To launch Sparsify locally, open up a console or terminal window and enter the following:
-
-```bash
-sparsify
-```
-
-The Sparsify server will begin running locally on the machine and can be accessed through a web browser.
-The default host:port Sparsify starts on is `0.0.0.0:5543`.
-Therefore, after starting Sparsify with the default commands, you may enter the following into a web browser to begin using Sparsify: `http://0.0.0.0:5543`.
-
-If you are running Sparsify on a separate server from where the web browser is located,
-then you will need to substitute in the proper IP address for that server in place of `0.0.0.0`.
-Additionally, confirm that the networking rules on your server allow for access to port 5543.
-
-After visiting `http://0.0.0.0:5543` in a web browser, the home page for Sparsify will load if configured correctly:
-
-<img src="https://raw.githubusercontent.com/neuralmagic/sparsify/main/docs/source/userguide/images/image_1.jpg" width="960px" style="border: 2px solid #000000;" /><br>
-
-A quick start flow is given below. For a more in-depth read, check out [Sparsify documentation](https://docs.neuralmagic.com/sparsify/).
-
-### New Project
-
-To begin sparsifying a model, a new project must be created.
-The New Project button is located in the lower right of Sparsify's home screen.
-After clicking, the create project popup will be displayed:
-
-<img src="https://raw.githubusercontent.com/neuralmagic/sparsify/main/docs/source/userguide/images/image_7.jpg" width="512px" style="border: 2px solid #000000;" /><br>
-
-Sparsify only accepts [ONNX](https://onnx.ai/) model formats currently.
-To easily convert to ONNX from common ML frameworks, see the [SparseML repository.](https://github.com/neuralmagic/sparseml)
-
-**Compatibility/Support Notes**
-- ONNX version 1.5-1.7
-- ONNX opset version 11+
-- ONNX IR version has not been tested at this time
-
-To begin creating a project use one of the following flows:
-
-- Upload your model file through the browser by clicking on `Click to browse`.
-- Download your model file through a public URL by filling in the field `Remote Path or URL`.
-- Move your model file from an accessible file location on the server by filling in the field `Remote Path or URL`.
-
-Continue through the popup and fill in information as specified to finish creating the project.
-
-### Analyzing a Model
-
-After model creation, sensitivity analysis for the model are shown under the `Performance Profiles` and `Loss Profiles` in the left navigation.
-
-The profiles will show the effects that different types of algorithms and degrees of those algorithms have on both the models inference speed and the baseline loss.
-
-Performance Profiles:
-
-<img src="https://raw.githubusercontent.com/neuralmagic/sparsify/main/docs/source/userguide/images/image_14.jpg" width="960px" style="border: 2px solid #000000;" /><br>
-
-Loss Profiles:
-
-<img src="https://raw.githubusercontent.com/neuralmagic/sparsify/main/docs/source/userguide/images/image_20.jpg" width="960px" style="border: 2px solid #000000;" /><br>
-
-### Optimizing a Model
-
-Click on the `Optimization` in the left navigation or the `Start Optimizing` button on the analyzing pages to begin sparsifying your model.
-After clicking, the sparsification creation popup will be displayed:
-
-<img src="https://raw.githubusercontent.com/neuralmagic/sparsify/main/docs/source/userguide/images/image_26.jpg" width="512px" style="border: 2px solid #000000;" /><br>
-
-Fill in the information as required in the modal.
-Once completed, Sparsify's autoML algorithms will choose the best settings it can find for optimizing your model.
-The resulting recipe will be displayed along with estimated metrics for the optimized model.
-The recipe can then be further edited if desired:
-
-<img src="https://raw.githubusercontent.com/neuralmagic/sparsify/main/docs/source/userguide/images/image_28.jpg" width="960px" style="border: 2px solid #000000;" /><br>
-
-### Exporting a Recipe
-
-Currently Sparsify is focused on training-aware methods; these allow much better loss recovery for a given target performance.
-A future release will enable the option of one-shot sparsification with limited to no retraining.
-
-Given that the recipe is created with training-aware algorithms, it must be exported for inclusion in your original training pipeline using [SparseML](https://github.com/neuralmagic/sparseml).
-SparseML enables this inclusion with only a few lines of code for most training workflows.
-
-On the optimization page, click the `Export` button in the bottom right.
-This will open up the export popup:
-
-<img src="https://raw.githubusercontent.com/neuralmagic/sparsify/main/docs/source/userguide/images/image_60.jpg" width="512px" style="border: 2px solid #000000;" /><br>
-
-Select the framework the model was originally trained in on the upper right of the popup.
-Once selected, either copy or download the recipe for use with SparseML.
-In addition, some sample code using SparseML is given to integrate the exported sparsification recipe.
 
 ## Resources
 

@@ -124,13 +124,17 @@ def _get_template(results: Mapping[str, Any]):
     )
     deployment_path = _download_deployment_directory(stub)
     download_instructions = f"""
-        Kindly use the dockerfile in sparsify/docker/Dockerfile to build deepsparse
-        image and run the container. Run the following command inside `sparsify/Docker`
-        directory:
-                
-        docker build -t deepsparse_docker . && docker run -it deepsparse_docker \\
-         deepsparse.server --task <TASK-NAME> --model_path {deployment_path}
+        Use the dockerfile in sparsify/docker/Dockerfile to build deepsparse
+        image and run the `deepsparse.server` container. 
         
+        Run the following command inside `sparsify/Docker`
+        directory (Note: replace <TASK-NAME> with appropriate task):
+        
+        ```bash        
+        docker build -t deepsparse_docker . && docker run -it \\
+        -v {deployment_path}:/home/deployment  deepsparse_docker \\
+         deepsparse.server --task <TASK-NAME> --model_path /home/deployment
+        ```
     """
     return "".join((stub_info, metrics_info, download_instructions))
 

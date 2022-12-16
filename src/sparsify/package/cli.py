@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# flake8:noqa
 """
 Usage: sparsify.package [OPTIONS] [DIRECTORY]
 
@@ -65,9 +66,10 @@ Examples:
             --optimizing_metric accuracy
 """
 import logging
-from typing import Any, Iterable, Mapping
+from typing import Any, Mapping
 
 import click
+from sparsezoo import Model
 from sparsify import package
 from sparsify.utils import (
     DATASETS,
@@ -97,7 +99,13 @@ def _csv_callback(ctx, self, value):
     return current_metrics
 
 
-def _get_template(results: Mapping[str, Any], metrics: Iterable[str]):
+def _download_deployment_directory(stub: str) -> str:
+    model = Model(stub)
+    model.deployment.download()
+    return model.deployment.path
+
+
+def _get_template(results: Mapping[str, Any]):
     stub = results.get("stub")
 
     if not stub:
@@ -106,23 +114,23 @@ def _get_template(results: Mapping[str, Any], metrics: Iterable[str]):
     stub_info = f"""
         Relevant Stub: {stub}
     """
-    model_metrics = results.get("metrics") or []
+    metrics = results.get("metrics")
     metrics_info = (
         f"""
-        Model Metrics: {list(zip(metrics, model_metrics))}
+        Model Metrics: {metrics}
         """
         if metrics
         else ""
     )
+    deployment_path = _download_deployment_directory(stub)
     download_instructions = f"""
-        Use sparsezoo to download the deployment directory as follows:
-        ```python
-        from sparsezoo import Model
-        stub = "{stub}"
-        model = Model(stub)
-        model.deployment.download()
-        print(model.deployment.path)
-        ```
+        Kindly use the dockerfile in sparsify/docker/Dockerfile to build deepsparse
+        image and run the container. Run the following command inside `sparsify/Docker`
+        directory:
+                
+        docker build -t deepsparse_docker . && docker run -it deepsparse_docker \\
+         deepsparse.server --task <TASK-NAME> --model_path {deployment_path}
+        
     """
     return "".join((stub_info, metrics_info, download_instructions))
 
@@ -179,7 +187,7 @@ def main(**kwargs):
     _LOGGER.debug(f"{kwargs}")
     results = package(**kwargs)
 
-    print(_get_template(results=results, metrics=kwargs.get("optimizing_metric")))
+    print(_get_template(results=results))
 
 
 if __name__ == "__main__":

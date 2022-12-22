@@ -63,22 +63,25 @@ def test_value_error_when_dataset_and_task_not_provided(package_function, cli_ar
     ],
 )
 @patch("sparsify.package_module.cli.package")
-def test_valid_invocation(package_function, cli_args):
+@patch("sparsify.package_module.cli._download_deployment_directory")
+def test_valid_invocation(mocked_download_func, package_function, cli_args):
+    mocked_download_func.return_value = "."
     result = _run_with_cli_runner(cli_args.split())
     assert result.exit_code == 0
 
 
 @pytest.mark.parametrize(
-    "results, metrics",
+    "results",
     [
-        ({"stub": "zoo://", "metrics": (99, -234567)}, ["accuracy", "compression"]),
+        {"stub": "zoo://", "metrics": {"accuracy": 99, "compression": 234567}},
     ],
 )
-def test_get_template_has_model_metrics(results, metrics):
-    output = _get_template(results=results, metrics=metrics)
+@patch("sparsify.package_module.cli._download_deployment_directory")
+def test_get_template_has_model_metrics(mocked_function, results):
+    mocked_function.return_value = "."
+    output = _get_template(results=results)
     assert isinstance(output, str)
-    for metric in results.get("metrics"):
-        assert str(abs(metric)) in output
+    assert str(results.get("metrics")) in output
 
 
 @pytest.mark.parametrize(

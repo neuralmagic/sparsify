@@ -28,7 +28,7 @@ from torch.distributed.run import main as launch_ddp
 
 from pydantic import BaseModel
 from sparsify.auto.utils import ErrorHandler, HardwareSpecs, analyze_hardware
-from sparsify.interface import Metrics, SparsificationTrainingConfig
+from sparsify.schemas import Metrics, SparsificationTrainingConfig
 from sparsify.utils import TASK_REGISTRY, TaskName
 
 

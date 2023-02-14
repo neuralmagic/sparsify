@@ -32,7 +32,7 @@ from sparsify.auto.utils import (
     request_student_teacher_configs,
     save_history,
 )
-from sparsify.interface import APIArgs, Metrics, SparsificationTrainingConfig
+from sparsify.schemas import APIArgs, Metrics, SparsificationTrainingConfig
 from tensorboard.program import TensorBoard
 
 

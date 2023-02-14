@@ -29,7 +29,7 @@ from sparseml.yolov5.scripts import train as train_hook
 from sparsify.auto.tasks.object_detection.yolov5 import Yolov5ExportArgs
 from sparsify.auto.tasks.runner import DDP_ENABLED, TaskRunner
 from sparsify.auto.utils import HardwareSpecs
-from sparsify.interface import Metrics, SparsificationTrainingConfig
+from sparsify.schemas import Metrics, SparsificationTrainingConfig
 from sparsify.utils import TASK_REGISTRY
 from yolov5.export import load_checkpoint
 

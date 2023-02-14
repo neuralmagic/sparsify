@@ -26,7 +26,7 @@ from typing import Any, Dict, List, Optional, Union
 import yaml
 
 from pydantic import BaseModel, Field, validator
-from sparsify.interface import SampledHyperparameter
+from sparsify.schemas import SampledHyperparameter
 from sparsify.utils import DEFAULT_OPTIMIZING_METRIC, METRICS, TASK_REGISTRY
 
 

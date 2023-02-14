@@ -34,7 +34,7 @@ from sparsify.auto.tasks.transformers import (
     TransformersExportArgs,
 )
 from sparsify.auto.utils import HardwareSpecs
-from sparsify.interface import Metrics, SparsificationTrainingConfig
+from sparsify.schemas import Metrics, SparsificationTrainingConfig
 from sparsify.utils import TASK_REGISTRY
 
 

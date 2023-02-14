@@ -26,7 +26,7 @@ from sparseml.pytorch.image_classification.train import main as train_hook
 from sparsify.auto.tasks.image_classification.args import ImageClassificationExportArgs
 from sparsify.auto.tasks.runner import DDP_ENABLED, TaskRunner
 from sparsify.auto.utils import HardwareSpecs
-from sparsify.interface import Metrics, SparsificationTrainingConfig
+from sparsify.schemas import Metrics, SparsificationTrainingConfig
 from sparsify.utils import TASK_REGISTRY
 
 

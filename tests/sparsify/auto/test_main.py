@@ -21,7 +21,7 @@ import pytest
 
 from sparsify.auto import main
 from sparsify.auto.utils import SAVE_DIR
-from sparsify.interface import APIArgs, Metrics, SparsificationTrainingConfig
+from sparsify.schemas import APIArgs, Metrics, SparsificationTrainingConfig
 
 
 """

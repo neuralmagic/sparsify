@@ -102,7 +102,7 @@ def _copy_docs_data(src: str, dest: str, folders: List[str]):
 
     # loop through version folders to add data to, None represents root folder
     for ver_folder in [None, *folders]:
-        for (map_from, map_to) in map_dirs:
+        for map_from, map_to in map_dirs:
             path_from = os.path.join(src, *map_from)
             path_to = (
                 os.path.join(dest, ver_folder, *map_to)

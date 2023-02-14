@@ -19,7 +19,9 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from sparsify.auto import SAVE_DIR, APIArgs, Metrics, SparsificationTrainingConfig, main
+from sparsify.auto import main
+from sparsify.auto.utils import SAVE_DIR
+from sparsify.interface import APIArgs, Metrics, SparsificationTrainingConfig
 
 
 """
@@ -83,17 +85,17 @@ def _test_trial_artifact_directory(directory_path: str) -> bool:
 
 
 @patch(
-    "sparsify.auto.api.main.TaskRunner._train_distributed",
+    "sparsify.auto.scripts.main.TaskRunner._train_distributed",
     side_effect=_train_side_effect_mock,
     autospec=True,
 )
 @patch(
-    "sparsify.auto.api.main.TaskRunner._train_api",
+    "sparsify.auto.scripts.main.TaskRunner._train_api",
     side_effect=_train_side_effect_mock,
     autospec=True,
 )
 @patch(
-    "sparsify.auto.api.main.TaskRunner.export",
+    "sparsify.auto.scripts.main.TaskRunner.export",
     side_effect=_export_side_effect_mock,
     autospec=True,
 )
@@ -102,11 +104,11 @@ def _test_trial_artifact_directory(directory_path: str) -> bool:
     MagicMock(side_effect=_METRICS_LIST),
 )
 @patch(
-    "sparsify.auto.api.main.APIArgs.from_cli",
+    "sparsify.auto.scripts.main.APIArgs.from_cli",
     MagicMock(return_value=APIArgs(**_TEST_CONFIG)),
 )
 @patch(
-    "sparsify.auto.api.main.request_student_teacher_configs",
+    "sparsify.auto.scripts.main.request_student_teacher_configs",
     MagicMock(
         return_value=(
             SparsificationTrainingConfig(**_TEST_CONFIG),
@@ -114,7 +116,9 @@ def _test_trial_artifact_directory(directory_path: str) -> bool:
         )
     ),
 )
-@patch("sparsify.auto.api.main.api_request_tune", MagicMock(return_value=_TEST_CONFIG))
+@patch(
+    "sparsify.auto.scripts.main.api_request_tune", MagicMock(return_value=_TEST_CONFIG)
+)
 def test_main(*args):
     main()
 

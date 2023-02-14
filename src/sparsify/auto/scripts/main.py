@@ -20,7 +20,6 @@ import warnings
 from collections import OrderedDict
 from typing import Dict, List, Tuple
 
-from sparsify.auto.api.api_models import APIArgs, Metrics, SparsificationTrainingConfig
 from sparsify.auto.tasks import TaskRunner
 from sparsify.auto.utils import (
     api_request_config,
@@ -33,6 +32,7 @@ from sparsify.auto.utils import (
     request_student_teacher_configs,
     save_history,
 )
+from sparsify.interface import APIArgs, Metrics, SparsificationTrainingConfig
 from tensorboard.program import TensorBoard
 
 
@@ -56,7 +56,6 @@ def main():
 
     # Load state from previous run
     if api_args.resume:
-
         _LOGGER.info(f"Resuming run from {api_args.resume}")
 
         # Load history from YAML file
@@ -154,7 +153,6 @@ def main():
 
     # Train teacher
     if teacher_config:
-
         _LOGGER.info("Starting hyperparameter tuning on teacher model")
 
         teacher_artifact_directory = os.path.join(base_artifact_directory, "teacher")
@@ -189,7 +187,6 @@ def main():
 
     # Train student
     if student_config:
-
         _LOGGER.info("Starting hyperparameter tuning on student model")
 
         student_artifact_directory = os.path.join(base_artifact_directory, "student")
@@ -268,7 +265,6 @@ def _train(
         trial_idx < max_tune_trials
         and time.time() - tuning_start_time <= api_args.max_train_time * 60 * 60
     ):
-
         _LOGGER.info(f"Starting tuning trial #{trial_idx}")
 
         # Create a runner from the config, based on the task specified by config.task

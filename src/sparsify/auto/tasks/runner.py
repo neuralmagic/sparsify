@@ -27,8 +27,8 @@ import torch
 from torch.distributed.run import main as launch_ddp
 
 from pydantic import BaseModel
-from sparsify.auto.api import Metrics, SparsificationTrainingConfig
 from sparsify.auto.utils import ErrorHandler, HardwareSpecs, analyze_hardware
+from sparsify.schemas import Metrics, SparsificationTrainingConfig
 from sparsify.utils import TASK_REGISTRY, TaskName
 
 
@@ -68,7 +68,6 @@ def retry_stage(stage: str):
         wraps(func)
 
         def _wrapper(self, *args, **kwargs):
-
             if not isinstance(self, TaskRunner):
                 raise RuntimeError(
                     f"retry_stage only supported for TaskRunner, found {type(self)}"
@@ -79,7 +78,6 @@ def retry_stage(stage: str):
 
             # attempt run and catch errors until success or maximum number of attempts
             # exceeded
-            return func(self, *args, **kwargs)
             while not error_handler.max_attempts_exceeded():
                 try:
                     out = func(self, *args, **kwargs)
@@ -229,7 +227,6 @@ class TaskRunner:
         and cli kwargs with their values
         """
         if len(self.config.tuning_parameters) > 0:
-
             # Update recipe args
             new_recipe_args = {
                 param.name: param.value

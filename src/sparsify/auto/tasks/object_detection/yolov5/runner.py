@@ -26,10 +26,10 @@ import pandas
 from pydantic import BaseModel
 from sparseml.yolov5.scripts import export as export_hook
 from sparseml.yolov5.scripts import train as train_hook
-from sparsify.auto.api import Metrics, SparsificationTrainingConfig
 from sparsify.auto.tasks.object_detection.yolov5 import Yolov5ExportArgs
 from sparsify.auto.tasks.runner import DDP_ENABLED, TaskRunner
 from sparsify.auto.utils import HardwareSpecs
+from sparsify.schemas import Metrics, SparsificationTrainingConfig
 from sparsify.utils import TASK_REGISTRY
 from yolov5.export import load_checkpoint
 

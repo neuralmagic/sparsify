@@ -145,7 +145,6 @@ def get_trial_artifact_directory(artifact_directory: str, trial_idx: int) -> str
 
 
 class _BannerFormatter(logging.Formatter):
-
     blue = "\x1b[94m"
     grey = "\x1b[38;20m"
     yellow = "\x1b[33;20m"

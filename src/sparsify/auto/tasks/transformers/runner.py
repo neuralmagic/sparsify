@@ -26,7 +26,6 @@ from sparseml.transformers.question_answering import main as question_answering_
 from sparseml.transformers.text_classification import main as text_classification_hook
 from sparseml.transformers.token_classification import main as token_classification_hook
 from sparseml.transformers.utils import SparseAutoModel
-from sparsify.auto.api import Metrics, SparsificationTrainingConfig
 from sparsify.auto.tasks.runner import TaskRunner
 from sparsify.auto.tasks.transformers import (
     QuestionAnsweringArgs,
@@ -35,6 +34,7 @@ from sparsify.auto.tasks.transformers import (
     TransformersExportArgs,
 )
 from sparsify.auto.utils import HardwareSpecs
+from sparsify.schemas import Metrics, SparsificationTrainingConfig
 from sparsify.utils import TASK_REGISTRY
 
 

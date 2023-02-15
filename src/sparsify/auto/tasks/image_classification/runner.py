@@ -23,10 +23,10 @@ import torch
 from pydantic import BaseModel
 from sparseml.pytorch.image_classification.export import main as export_hook
 from sparseml.pytorch.image_classification.train import main as train_hook
-from sparsify.auto.api import Metrics, SparsificationTrainingConfig
 from sparsify.auto.tasks.image_classification.args import ImageClassificationExportArgs
 from sparsify.auto.tasks.runner import DDP_ENABLED, TaskRunner
 from sparsify.auto.utils import HardwareSpecs
+from sparsify.schemas import Metrics, SparsificationTrainingConfig
 from sparsify.utils import TASK_REGISTRY
 
 

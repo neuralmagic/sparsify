@@ -19,7 +19,7 @@ from typing import Tuple
 
 import requests
 
-from sparsify.auto.api.api_models import APIArgs, Metrics, SparsificationTrainingConfig
+from sparsify.schemas import APIArgs, Metrics, SparsificationTrainingConfig
 from sparsify.utils import get_base_url
 
 

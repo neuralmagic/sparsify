@@ -14,7 +14,7 @@
 
 import pytest
 
-from sparsify.auto import APIArgs
+from sparsify.schemas import APIArgs
 
 
 @pytest.mark.parametrize(

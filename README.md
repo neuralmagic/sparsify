@@ -52,7 +52,7 @@ limitations under the License.
 </p>
 
 ## 🚨 FEBRUARY 2023 MAJOR ANNOUNCEMENT 🚨
-We've been working on a major overhaul for Sparsify to help you build sparse models to target optimal general performance at scale with even more simplicity.
+Sparsify is getting a major overhaul with more features and simplicity to help you build sparse models to target optimal general performance at scale.
 
 Leverage powerful APIs through the Sparsify Platform that can help you optimize models from scratch or sparse transfer learn onto your own data, to target best-in-class inference performance on your deployment hardware.
 

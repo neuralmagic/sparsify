@@ -70,7 +70,6 @@ def _setup_entry_points() -> Dict:
     return {
         "console_scripts": [
             "sparsify.auto=sparsify.auto:main",
-            "sparsify.package=sparsify.package.cli:main",
         ]
     }
 

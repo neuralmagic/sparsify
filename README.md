@@ -56,7 +56,7 @@ Sparsify is getting a major overhaul with more features and simplicity to help y
 
 Leverage powerful APIs through the Sparsify Platform that can help you optimize models from scratch or sparse transfer learn onto your own data, to target best-in-class inference performance on your deployment hardware.
 
-We'll be able to share more in the coming weeks, but sign up for our [Early Access Waitlist](https://docs.neuralmagic.com/main/source/getstarted.html#sparsification) to be the first to try out our new sparsification offering.
+We will share more in the coming weeks. In the meantime, sign up for our [Early Access Waitlist](https://docs.neuralmagic.com/main/source/getstarted.html#sparsification) to be the first to try out our new sparsification offering.
 
 ## Overview
 

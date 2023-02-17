@@ -52,15 +52,13 @@ limitations under the License.
 </p>
 
 ## 🚨 FEBRUARY 2023 MAJOR ANNOUNCEMENT 🚨
-Sparsify is getting a major overhaul with more features and simplicity to help you build sparse models to target optimal general performance at scale.
+We are excited to mention the next generation of Sparsify is underway. You can expect more features and simplicity to build sparse models to target optimal general performance at scale.
 
-Sparsify can help you optimize models from scratch or sparse transfer learn onto your own data to target best-in-class inference performance on your deployment hardware.
-
-We will share more in the coming weeks. In the meantime, sign up for our [Waitlist](https://docs.neuralmagic.com/main/source/getstarted.html#sparsification) for early access to the Sparsify Alpha. 
+We will share more in the coming weeks. In the meantime, sign up for our [Waitlist](https://neuralmagic.com/request-early-access-to-sparsify/) for early access to try the Sparsify Alpha. 
 
 ## Overview
 
-Sparsify is an easy-to-use UI tool that simplifies the deep learning model [sparsification](https://docs.neuralmagic.com/main/source/getstarted.html#sparsification) process to rapidly achieve the best combination of size, speed, and accuracy. 
+Sparsify is an easy-to-use UI tool that simplifies the deep learning model [sparsification](https://docs.neuralmagic.com/user-guides/sparsification) process to rapidly achieve the best combination of size, speed, and accuracy. 
 It sparsifies and benchmarks models informed by industry research insights for ML practitioners, including ML engineers and operators, who need to deploy performant deep learning models fast and at scale. 
 Sparsify shows visual performance potential for your model, including a sliding scale between performance and recovery, ultimately speeding up the model sparsification process from weeks to minutes.
 

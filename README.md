@@ -54,7 +54,7 @@ limitations under the License.
 ## 🚨 FEBRUARY 2023 MAJOR ANNOUNCEMENT 🚨
 We are excited to mention the next generation of Sparsify is underway. You can expect more features and simplicity to build sparse models to target optimal general performance at scale.
 
-We will share more in the coming weeks. In the meantime, sign up for our [Early Access Waitlist](https://neuralmagic.com/request-early-access-to-sparsify/) and be the first try the Sparsify Alpha. 
+We will share more in the coming weeks. In the meantime, sign up for our [Early Access Waitlist](https://neuralmagic.com/request-early-access-to-sparsify/) and be the first to try the Sparsify Alpha. 
 
 ## Overview
 

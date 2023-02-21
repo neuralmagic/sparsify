@@ -21,23 +21,41 @@ import requests
 
 from sparsify.schemas import APIArgs, Metrics, SparsificationTrainingConfig
 from sparsify.utils import get_base_url
+import os
 
+try:
+    import sparsifyml
+    from sparsifyml.auto import (
+        auto_training_config_initial,
+        auto_training_config_tune,
+        auto_training_config_registered_list,
+    )
+except:
+    sparsifyml = None
 
 __all__ = ["api_request_config", "api_request_tune", "request_student_teacher_configs"]
 
 _CONFIG_REQUEST_END_POINT = "/v1/sparsify/auto/training-config"
 _CONFIG_TUNE_END_POINT = "/v1/sparsify/auto/training-config/tune"
 
+SPARSIFY_MAKE_NETWORK_CALL = os.getenv(
+    key="SPARSIFY_MAKE_NETWORK_CALL", default=False
+)
+
 
 def api_request_config(api_args: APIArgs) -> dict:
     """
-    Make a server request for the initial training configs
+    Make a request for the initial training configs
 
     :return: dictionary of SparsificationTrainingConfig objects
     """
-    response = requests.post(
-        f"{get_base_url()}{_CONFIG_REQUEST_END_POINT}",
-        json=api_args.dict(),
+    response = (
+        requests.post(
+            f"{get_base_url()}{_CONFIG_REQUEST_END_POINT}",
+            json=api_args.dict()
+        )
+        if SPARSIFY_MAKE_NETWORK_CALL
+        else auto_training_config_initial(user_args=api_args)
     )
     return response.json()
 
@@ -49,11 +67,21 @@ def api_request_tune(history: Tuple[SparsificationTrainingConfig, Metrics]) -> d
     :return: dictionary of SparsificationTrainingConfig object
     """
 
-    response = requests.post(
-        f"{get_base_url()}{_CONFIG_TUNE_END_POINT}",
-        json=[(config.dict(), metrics.dict()) for config, metrics in history],
+    response = (
+        requests.post(
+            f"{get_base_url()}{_CONFIG_TUNE_END_POINT}",
+            json=[
+                (config.dict(), metrics.dict())
+                for config, metrics in history
+            ]
+        )
+        if SPARSIFY_MAKE_NETWORK_CALL
+        else auto_training_config_tune(
+            trial_history=[
+                (config, metrics)
+                for config, metrics in history
+            ])
     )
-
     return response.json()
 
 

@@ -233,7 +233,8 @@ class TaskRunner:
                 for param in self.config.tuning_parameters
                 if param.source == "recipe"
             }
-            self.train_args.recipe_args = self.train_args.recipe_args or {}
+            if not self.train_args.recipe_args or self.train_args.recipe_args == "{}":
+                self.train_args.recipe_args = {}
             self.train_args.recipe_args.update(new_recipe_args)
 
             # Update cli params. This should only happen on the initial config, as the

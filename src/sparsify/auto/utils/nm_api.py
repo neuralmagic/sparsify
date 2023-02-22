@@ -16,6 +16,7 @@
 Helper functions for communicating with the Neural Magic API
 """
 import os
+from distutils.util import strtobool
 from typing import Tuple
 
 import requests
@@ -30,11 +31,7 @@ __all__ = ["api_request_config", "api_request_tune", "request_student_teacher_co
 _CONFIG_REQUEST_END_POINT = "/v1/sparsify/auto/training-config"
 _CONFIG_TUNE_END_POINT = "/v1/sparsify/auto/training-config/tune"
 
-SPARSIFY_SERVER = os.getenv(key="SPARSIFY_SERVER", default="False").lower() in (
-    "true",
-    "1",
-    "t",
-)
+SPARSIFY_SERVER: bool = strtobool(os.getenv(key="SPARSIFY_SERVER", default="False"))
 
 
 def api_request_config(api_args: APIArgs) -> dict:

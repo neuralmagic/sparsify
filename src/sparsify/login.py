@@ -13,7 +13,10 @@
 # limitations under the License.
 
 import argparse
+import json
 import os
+import subprocess
+import sys
 
 import requests
 
@@ -27,6 +30,9 @@ _ERROR_MESSAGE = (
     "If you believe this is a mistake, contact support@neuralmagic.com "
     "to help remedy this issue."
 )
+
+_SPARSIFYML_URL_TEMPLATE = "https://nm:${}@pypi.griffin.external.neuralmagic.com"
+_SPARSIFYML_VERSION = "x.x.x"
 
 
 def login(api_key: str) -> None:
@@ -55,10 +61,24 @@ def login(api_key: str) -> None:
     if response.status_code != 200:
         raise ValueError(f"Unknown response code {response.status_code}")
 
-    with open(os.path.expanduser(_CREDENTIALS_PATH), "w") as fp:
-        fp.write(str(response.content))
+    credentials = response.json()
 
-    print("Logged in successfully.")
+    with open(os.path.expanduser(_CREDENTIALS_PATH), "w") as fp:
+        fp.write(json.dumps(credentials))
+
+    print("Logged in successfully, installing sparsifyml...")
+
+    subprocess.check_call(
+        [
+            sys.executable,
+            "-m",
+            "pip",
+            "install",
+            "--index",
+            _SPARSIFYML_URL_TEMPLATE.format(credentials["access_token"]),
+            "sparsifyml=={}".format(_SPARSIFYML_VERSION),
+        ]
+    )
 
 
 class InvalidApiKey(Exception):

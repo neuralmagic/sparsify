@@ -14,6 +14,7 @@
 
 
 import gc
+import json
 import os
 import shutil
 import socket
@@ -233,9 +234,12 @@ class TaskRunner:
                 for param in self.config.tuning_parameters
                 if param.source == "recipe"
             }
-            if not self.train_args.recipe_args or self.train_args.recipe_args == "{}":
-                self.train_args.recipe_args = {}
-            self.train_args.recipe_args.update(new_recipe_args)
+            if self.train_args.recipe_args:
+                old_args = json.loads(self.train_args.recipe_args)
+                old_args.update(new_recipe_args)
+                new_recipe_args = old_args
+
+            self.train_args.recipe_args = json.dumps(new_recipe_args)
 
             # Update cli params. This should only happen on the initial config, as the
             # first value to sample is derived from the value in the training args

@@ -24,14 +24,16 @@ from sparsify.schemas import APIArgs, Metrics, SparsificationTrainingConfig
 from sparsify.utils import get_base_url
 from sparsifyml.auto import auto_training_config_initial, auto_training_config_tune
 
+
 __all__ = ["api_request_config", "api_request_tune", "request_student_teacher_configs"]
 
 _CONFIG_REQUEST_END_POINT = "/v1/sparsify/auto/training-config"
 _CONFIG_TUNE_END_POINT = "/v1/sparsify/auto/training-config/tune"
 
-SPARSIFY_SERVER = (
-    os.getenv(key="SPARSIFY_SERVER", default="False").lower()
-    in ("true", "1", "t")
+SPARSIFY_SERVER = os.getenv(key="SPARSIFY_SERVER", default="False").lower() in (
+    "true",
+    "1",
+    "t",
 )
 
 

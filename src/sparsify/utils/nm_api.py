@@ -21,6 +21,6 @@ _DEFAULT_BASE_URL = "https://api.neuralmagic.com"
 
 def get_base_url() -> str:
     """
-    :return The base url for sparsify.package server
+    :return The base url for sparsify backend server
     """
     return os.getenv("SPARSIFY_BACKEND_URL", default=_DEFAULT_BASE_URL)

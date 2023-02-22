@@ -15,31 +15,23 @@
 """
 Helper functions for communicating with the Neural Magic API
 """
+import os
 from typing import Tuple
 
 import requests
 
 from sparsify.schemas import APIArgs, Metrics, SparsificationTrainingConfig
 from sparsify.utils import get_base_url
-import os
-
-try:
-    import sparsifyml
-    from sparsifyml.auto import (
-        auto_training_config_initial,
-        auto_training_config_tune,
-        auto_training_config_registered_list,
-    )
-except:
-    sparsifyml = None
+from sparsifyml.auto import auto_training_config_initial, auto_training_config_tune
 
 __all__ = ["api_request_config", "api_request_tune", "request_student_teacher_configs"]
 
 _CONFIG_REQUEST_END_POINT = "/v1/sparsify/auto/training-config"
 _CONFIG_TUNE_END_POINT = "/v1/sparsify/auto/training-config/tune"
 
-SPARSIFY_MAKE_NETWORK_CALL = os.getenv(
-    key="SPARSIFY_MAKE_NETWORK_CALL", default=False
+SPARSIFY_SERVER = (
+    os.getenv(key="SPARSIFY_SERVER", default="False").lower()
+    in ("true", "1", "t")
 )
 
 
@@ -51,13 +43,12 @@ def api_request_config(api_args: APIArgs) -> dict:
     """
     response = (
         requests.post(
-            f"{get_base_url()}{_CONFIG_REQUEST_END_POINT}",
-            json=api_args.dict()
-        )
-        if SPARSIFY_MAKE_NETWORK_CALL
-        else auto_training_config_initial(user_args=api_args)
+            f"{get_base_url()}{_CONFIG_REQUEST_END_POINT}", json=api_args.dict()
+        ).json()
+        if SPARSIFY_SERVER
+        else auto_training_config_initial(user_args=api_args).dict()
     )
-    return response.json()
+    return response
 
 
 def api_request_tune(history: Tuple[SparsificationTrainingConfig, Metrics]) -> dict:
@@ -70,19 +61,14 @@ def api_request_tune(history: Tuple[SparsificationTrainingConfig, Metrics]) -> d
     response = (
         requests.post(
             f"{get_base_url()}{_CONFIG_TUNE_END_POINT}",
-            json=[
-                (config.dict(), metrics.dict())
-                for config, metrics in history
-            ]
-        )
-        if SPARSIFY_MAKE_NETWORK_CALL
+            json=[(config.dict(), metrics.dict()) for config, metrics in history],
+        ).json()
+        if SPARSIFY_SERVER
         else auto_training_config_tune(
-            trial_history=[
-                (config, metrics)
-                for config, metrics in history
-            ])
+            trial_history=[(config, metrics) for config, metrics in history]
+        ).dict()
     )
-    return response.json()
+    return response
 
 
 def request_student_teacher_configs(

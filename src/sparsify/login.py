@@ -62,7 +62,7 @@ def login(api_key: str) -> None:
 
 
 class InvalidApiKey(Exception):
-    ...
+    """The API key was invalid"""
 
 
 def main():

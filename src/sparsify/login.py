@@ -12,6 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+usage: Log into sparsify locally. [-h] api_key
+
+positional arguments:
+  api_key     API key copied from your account.
+
+optional arguments:
+  -h, --help  show this help message and exit
+"""
+
 import argparse
 import json
 import subprocess

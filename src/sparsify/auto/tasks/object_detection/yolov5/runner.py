@@ -26,12 +26,14 @@ import pandas
 from pydantic import BaseModel
 from sparseml.yolov5.scripts import export as export_hook
 from sparseml.yolov5.scripts import train as train_hook
+from yolov5.models.experimental import attempt_load
+from yolov5.utils.neuralmagic import sparsezoo_download
+
 from sparsify.auto.tasks.object_detection.yolov5 import Yolov5ExportArgs
 from sparsify.auto.tasks.runner import DDP_ENABLED, TaskRunner
 from sparsify.auto.utils import HardwareSpecs
 from sparsify.schemas import Metrics, SparsificationTrainingConfig
 from sparsify.utils import TASK_REGISTRY
-from yolov5.export import load_checkpoint
 
 
 if DDP_ENABLED:
@@ -68,11 +70,7 @@ class Yolov5Runner(TaskRunner):
     def __init__(self, config: SparsificationTrainingConfig):
         super().__init__(config)
         self.dashed_cli_kwargs = True
-        self._model_save_name = (
-            "weights/checkpoint-one-shot.pt"
-            if self.train_args.one_shot
-            else f"{self.export_model_kwarg}/last.pt"
-        )
+        self._model_save_name = f"{self.export_model_kwarg}/last.pt"
 
     @classmethod
     def config_to_args(
@@ -116,7 +114,7 @@ class Yolov5Runner(TaskRunner):
             weights=os.path.join(
                 absolute_experiment_dir,
                 "weights",
-                "checkpoint-one-shot.pt" if train_args.one_shot else "last.pt",
+                "last.pt",
             ),
             dynamic=True,
         )
@@ -137,7 +135,6 @@ class Yolov5Runner(TaskRunner):
         self.train_args.project = os.path.join(
             self.run_directory.name, self.train_args.project
         )
-        self.train_args.log_directory = self.log_directory
         self.export_args.weights = os.path.join(
             self.run_directory.name, self.export_args.weights
         )
@@ -162,14 +159,19 @@ class Yolov5Runner(TaskRunner):
 
         # Check model file is loadable
         try:
-            _, extras = load_checkpoint(
-                type_="val", weights=model_file, device=torch.device("cpu")
-            )
+            ckpt = torch.load(
+                (
+                    attempt_load(model_file)
+                    if not str(model_file).startswith("zoo:")
+                    else sparsezoo_download(model_file)
+                ),
+                map_location='cpu')  # load
+
         except Exception:
             return False
 
         # Test training ran to completion
-        if not extras["ckpt"]["epoch"] == -1:
+        if not ckpt.epochs == -1:
             return False
 
         return True

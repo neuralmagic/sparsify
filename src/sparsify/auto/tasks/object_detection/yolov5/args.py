@@ -35,17 +35,6 @@ class _Yolov5BaseTrainArgs(BaseArgs):
         description="hyperparameters path",
     )
     epochs: int = Field(default=300)
-    max_train_steps: int = Field(
-        default=-1,
-        description="Set the maximum number of training steps per epoch. if negative,"
-        "the entire training set will be used, default=-1",
-    )
-    max_eval_steps: int = Field(
-        default=-1,
-        description="Set the maximum number of eval steps per epoch. if negative,"
-        "the entire validation set will be used, default=-1",
-    )
-    one_shot: bool = Field(default=False, description="Apply recipe in one shot manner")
     batch_size: int = Field(
         default=16, description="total batch size for all GPUs, -1 for autobatch"
     )
@@ -75,7 +64,7 @@ class _Yolov5BaseTrainArgs(BaseArgs):
         default=8, description="max dataloader workers (per RANK in DDP mode)"
     )
     project: Union[str, Path] = Field(
-        default=ROOT / "train", description="save to project/name"
+        default="train", description="save to project/name"
     )
     name: str = Field(default="exp", description="save to project/name")
     exist_ok: bool = Field(
@@ -100,9 +89,6 @@ class _Yolov5BaseTrainArgs(BaseArgs):
     )
     disable_ema: bool = Field(
         default=False, description="Disable EMA model updates (enabled by default)"
-    )
-    log_directory: Optional[str] = Field(
-        default=None, description="Directory to log to. Defaults to save directory"
     )
 
     def __init__(self, **data):
@@ -142,7 +128,7 @@ class Yolov5TrainArgsAPI(_Yolov5BaseTrainArgs):
 
 class Yolov5ExportArgs(BaseArgs):
     weights: Union[str, Path] = Field(
-        default=ROOT / "yolov5s.pt", description="initial weights path"
+        default="yolov5s.pt", description="initial weights path"
     )
     imgsz: List[int] = Field(default=[640, 640], description="image (h, w)")
     batch_size: int = Field(default=16, description="batch size")

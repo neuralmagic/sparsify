@@ -234,12 +234,13 @@ class TaskRunner:
                 for param in self.config.tuning_parameters
                 if param.source == "recipe"
             }
-            if self.train_args.recipe_args:
-                old_args = json.loads(self.train_args.recipe_args)
-                old_args.update(new_recipe_args)
-                new_recipe_args = old_args
+            if hasattr(self.train_args, "recipe_args"):
+                if self.train_args.recipe_args:
+                    old_args = json.loads(self.train_args.recipe_args)
+                    old_args.update(new_recipe_args)
+                    new_recipe_args = old_args
 
-            self.train_args.recipe_args = json.dumps(new_recipe_args)
+                self.train_args.recipe_args = json.dumps(new_recipe_args)
 
             # Update cli params. This should only happen on the initial config, as the
             # first value to sample is derived from the value in the training args

@@ -14,17 +14,21 @@
 
 import argparse
 import json
-import os
 import subprocess
 import sys
+from pathlib import Path
 
 import requests
 
+from .version import __version__
 
-__ALL__ = ["login"]
+
+__all__ = ["login"]
 
 _URL = "https://authentication.griffin.external.neuralmagic.com/v1/connect/token"
-_CREDENTIALS_PATH = "~/.cache/sparsify/credentials.json"
+
+_CREDENTIALS_PATH = Path.home().joinpath(".confg", "neuralmagic", "credentials.json")
+
 _ERROR_MESSAGE = (
     "Sorry, we were unable to authenticate your Neural Magic Account API key. "
     "If you believe this is a mistake, contact support@neuralmagic.com "
@@ -32,7 +36,6 @@ _ERROR_MESSAGE = (
 )
 
 _SPARSIFYML_URL_TEMPLATE = "https://nm:${}@pypi.griffin.external.neuralmagic.com"
-_SPARSIFYML_VERSION = "x.x.x"
 
 
 def login(api_key: str) -> None:
@@ -42,6 +45,16 @@ def login(api_key: str) -> None:
     :param api_key: The API key copied from your account.
     :raises InvalidApiKey: if the API key is invalid
     """
+    access_token = _refresh_access_token_for_api_key(api_key)
+
+    print("Logged in successfully, installing sparsifyml...")
+
+    _maybe_install_sparsifyml(access_token)
+
+    print("sparsify setup complete.")
+
+
+def _refresh_access_token_for_api_key(api_key: str) -> str:
     response = requests.post(
         _URL,
         headers={"Content-Type": "application/x-www-form-urlecoded"},
@@ -63,22 +76,34 @@ def login(api_key: str) -> None:
 
     credentials = response.json()
 
-    with open(os.path.expanduser(_CREDENTIALS_PATH), "w") as fp:
+    _CREDENTIALS_PATH.parent.mkdir(existok=True)
+    with open(_CREDENTIALS_PATH, "w") as fp:
         fp.write(json.dumps(credentials))
 
-    print("Logged in successfully, installing sparsifyml...")
+    return credentials["access_token"]
 
-    subprocess.check_call(
-        [
-            sys.executable,
-            "-m",
-            "pip",
-            "install",
-            "--index",
-            _SPARSIFYML_URL_TEMPLATE.format(credentials["access_token"]),
-            "sparsifyml=={}".format(_SPARSIFYML_VERSION),
-        ]
-    )
+
+def _maybe_install_sparsifyml(access_token: str):
+    try:
+        import sparsifyml
+
+        do_pip_install = sparsifyml.__version__ != __version__
+
+    except ImportError:
+        do_pip_install = True
+
+    if do_pip_install:
+        subprocess.check_call(
+            [
+                sys.executable,
+                "-m",
+                "pip",
+                "install",
+                "--index",
+                _SPARSIFYML_URL_TEMPLATE.format(access_token),
+                f"sparsifyml=={__version__}",
+            ]
+        )
 
 
 class InvalidApiKey(Exception):

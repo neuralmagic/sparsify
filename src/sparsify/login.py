@@ -57,7 +57,7 @@ def login(api_key: str) -> None:
     """
     access_token = _refresh_access_token_for_api_key(api_key)
 
-    print("Logged in successfully, installing sparsifyml...")
+    print("Logged in successfully.")
 
     _maybe_install_sparsifyml(access_token)
 

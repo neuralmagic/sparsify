@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+import importlib
 import os
 import shutil
 import subprocess
@@ -24,6 +24,7 @@ from sparsify.utils import TASK_REGISTRY
 
 _OUTPUT_DIRECTORY = "pytest_output"
 _RUN_DIRECTORY = "pytest_run"
+_SPARSIFYML_INSTALLED: bool = importlib.util.find_spec("sparsifyml") is not None
 
 
 def _find_file_recursively(directory: str, file_name_or_extension: str) -> bool:
@@ -162,7 +163,11 @@ class TestAbridgedCLIRun:
         if os.path.exists(_RUN_DIRECTORY):
             shutil.rmtree(_RUN_DIRECTORY)
 
+    @pytest.mark.skipif(
+        not _SPARSIFYML_INSTALLED, reason="`sparsifyml` needed to run local tests"
+    )
     def test_output(self, setup, expected_files):
+        print(f"{_SPARSIFYML_INSTALLED:}")
         assert not os.path.exists(_RUN_DIRECTORY)
         assert os.path.exists(_OUTPUT_DIRECTORY)
         assert _find_file_recursively(_OUTPUT_DIRECTORY, "results.txt")

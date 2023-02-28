@@ -25,6 +25,8 @@ from sparsify.utils import TASK_REGISTRY
 _OUTPUT_DIRECTORY = "pytest_output"
 _RUN_DIRECTORY = "pytest_run"
 _SPARSIFYML_INSTALLED: bool = importlib.util.find_spec("sparsifyml") is not None
+_MAX_STEPS = 1
+_NUM_TRIALS = "1"
 
 
 def _find_file_recursively(directory: str, file_name_or_extension: str) -> bool:
@@ -47,6 +49,8 @@ def _find_file_recursively(directory: str, file_name_or_extension: str) -> bool:
                 "coco128.yaml",
                 "--save_directory",
                 f"{_OUTPUT_DIRECTORY}",
+                "--num_trials",
+                _NUM_TRIALS,
                 "--kwargs",
                 (str({"epochs": 1, "batch_size": 64, "project": _RUN_DIRECTORY})),
             ],
@@ -59,14 +63,16 @@ def _find_file_recursively(directory: str, file_name_or_extension: str) -> bool:
                 "image_classification",
                 "--dataset",
                 "~/data/imagenette-160",
+                "--num_trials",
+                _NUM_TRIALS,
                 "--save_directory",
                 f"{_OUTPUT_DIRECTORY}",
                 "--kwargs",
                 (
                     str(
                         {
-                            "max_train_steps": 2,
-                            "train_batch_size": 64,
+                            "max_train_steps": _MAX_STEPS,
+                            "max_eval_steps": _MAX_STEPS,
                             "save_dir": _RUN_DIRECTORY,
                         }
                     )
@@ -83,12 +89,26 @@ def _find_file_recursively(directory: str, file_name_or_extension: str) -> bool:
                 "squad",
                 "--save_directory",
                 f"{_OUTPUT_DIRECTORY}",
+                "--num_trials",
+                _NUM_TRIALS,
                 "--kwargs",
                 (
                     str(
                         {
-                            "max_steps": 20,
-                            "per_device_train_batch_size": 64,
+                            "max_steps": _MAX_STEPS,
+                            "max_eval_samples": _MAX_STEPS,
+                            "max_predict_samples": _MAX_STEPS,
+                            "output_dir": _RUN_DIRECTORY,
+                        }
+                    )
+                ),
+                "--teacher_kwargs",
+                (
+                    str(
+                        {
+                            "max_steps": _MAX_STEPS,
+                            "max_eval_samples": _MAX_STEPS,
+                            "max_predict_samples": _MAX_STEPS,
                             "output_dir": _RUN_DIRECTORY,
                         }
                     )
@@ -105,15 +125,29 @@ def _find_file_recursively(directory: str, file_name_or_extension: str) -> bool:
                 "glue",
                 "--save_directory",
                 f"{_OUTPUT_DIRECTORY}",
+                "--num_trials",
+                _NUM_TRIALS,
                 "--kwargs",
                 (
                     str(
                         {
                             "task_name": "mnli",
-                            "max_steps": 20,
-                            "per_device_train_batch_size": 64,
+                            "max_steps": _MAX_STEPS,
+                            "max_eval_samples": _MAX_STEPS,
+                            "max_predict_samples": _MAX_STEPS,
                             "output_dir": _RUN_DIRECTORY,
                             "label_column_name": "label",
+                        }
+                    )
+                ),
+                "--teacher_kwargs",
+                (
+                    str(
+                        {
+                            "max_steps": _MAX_STEPS,
+                            "max_eval_samples": _MAX_STEPS,
+                            "max_predict_samples": _MAX_STEPS,
+                            "output_dir": _RUN_DIRECTORY,
                         }
                     )
                 ),
@@ -129,12 +163,26 @@ def _find_file_recursively(directory: str, file_name_or_extension: str) -> bool:
                 "conll2003",
                 "--save_directory",
                 f"{_OUTPUT_DIRECTORY}",
+                "--num_trials",
+                _NUM_TRIALS,
                 "--kwargs",
                 (
                     str(
                         {
-                            "max_steps": 20,
-                            "per_device_train_batch_size": 64,
+                            "max_steps": _MAX_STEPS,
+                            "max_eval_samples": _MAX_STEPS,
+                            "max_predict_samples": _MAX_STEPS,
+                            "output_dir": _RUN_DIRECTORY,
+                        }
+                    )
+                ),
+                "--teacher_kwargs",
+                (
+                    str(
+                        {
+                            "max_steps": _MAX_STEPS,
+                            "max_eval_samples": _MAX_STEPS,
+                            "max_predict_samples": _MAX_STEPS,
                             "output_dir": _RUN_DIRECTORY,
                         }
                     )

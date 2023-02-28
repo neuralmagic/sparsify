@@ -87,15 +87,6 @@ def request_student_teacher_configs(
         if student_config.distill_teacher == "auto":
             teacher_input_args = api_args.copy(deep=True)
             teacher_input_args.teacher_only = True
-            teacher_kwargs = teacher_input_args.teacher_kwargs or {}
-            student_kwargs = teacher_input_args.kwargs or {}
-
-            # propagate student args to teacher
-            for key, value in student_kwargs.items():
-                if key not in teacher_kwargs:
-                    teacher_kwargs[key] = value
-
-            teacher_input_args.teacher_kwargs = teacher_kwargs
             teacher_config = SparsificationTrainingConfig(
                 **api_request_config(teacher_input_args)
             )

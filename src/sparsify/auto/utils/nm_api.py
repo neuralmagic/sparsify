@@ -91,9 +91,11 @@ def request_student_teacher_configs(
             student_kwargs = teacher_input_args.kwargs or {}
 
             # propagate student args to teacher
-            teacher_kwargs.update(student_kwargs)
-            teacher_input_args.teacher_kwargs = teacher_kwargs
+            for key, value in student_kwargs.items():
+                if key not in teacher_kwargs:
+                    teacher_kwargs[key] = value
 
+            teacher_input_args.teacher_kwargs = teacher_kwargs
             teacher_config = SparsificationTrainingConfig(
                 **api_request_config(teacher_input_args)
             )

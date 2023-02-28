@@ -26,14 +26,13 @@ import pandas
 from pydantic import BaseModel
 from sparseml.yolov5.scripts import export as export_hook
 from sparseml.yolov5.scripts import train as train_hook
-from yolov5.models.experimental import attempt_load
-from yolov5.utils.neuralmagic import sparsezoo_download
-
 from sparsify.auto.tasks.object_detection.yolov5 import Yolov5ExportArgs
 from sparsify.auto.tasks.runner import DDP_ENABLED, TaskRunner
 from sparsify.auto.utils import HardwareSpecs
 from sparsify.schemas import Metrics, SparsificationTrainingConfig
 from sparsify.utils import TASK_REGISTRY
+from yolov5.models.experimental import attempt_load
+from yolov5.utils.neuralmagic import sparsezoo_download
 
 
 if DDP_ENABLED:
@@ -165,7 +164,8 @@ class Yolov5Runner(TaskRunner):
                     if not str(model_file).startswith("zoo:")
                     else sparsezoo_download(model_file)
                 ),
-                map_location='cpu')  # load
+                map_location="cpu",
+            )  # load
 
         except Exception:
             return False

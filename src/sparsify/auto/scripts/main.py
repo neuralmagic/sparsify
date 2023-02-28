@@ -173,7 +173,7 @@ def main():
 
         # Determine the best teacher trained and assign to student
         best_trial_idx = max(
-            best_n_trial_metrics["teacher"], key=best_n_trial_metrics.get
+            best_n_trial_metrics["teacher"], key=best_n_trial_metrics["teacher"].get
         )
         best_trial_path = get_trial_artifact_directory(
             teacher_artifact_directory, best_trial_idx

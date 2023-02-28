@@ -26,7 +26,7 @@ _OUTPUT_DIRECTORY = "pytest_output"
 _RUN_DIRECTORY = "pytest_run"
 _SPARSIFYML_INSTALLED: bool = importlib.util.find_spec("sparsifyml") is not None
 _MAX_STEPS = 1
-_NUM_TRIALS = "1"
+_NUM_TRIALS = "2"
 
 
 def _find_file_recursively(directory: str, file_name_or_extension: str) -> bool:

@@ -16,15 +16,19 @@
 Helper functions for communicating with the Neural Magic API
 """
 import os
-from distutils.util import strtobool
+import warnings
 from typing import Tuple
 
 import requests
 
 from sparsify.schemas import APIArgs, Metrics, SparsificationTrainingConfig
-from sparsify.utils import get_base_url
-from sparsifyml.auto import auto_training_config_initial, auto_training_config_tune
+from sparsify.utils import get_base_url, strtobool
 
+
+try:
+    from sparsifyml.auto import auto_training_config_initial, auto_training_config_tune
+except (ImportError, ModuleNotFoundError):
+    warnings.warn("failed to import sparsifyml", ImportWarning)
 
 __all__ = ["api_request_config", "api_request_tune", "request_student_teacher_configs"]
 

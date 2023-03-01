@@ -215,7 +215,6 @@ class TestAbridgedCLIRun:
         not _SPARSIFYML_INSTALLED, reason="`sparsifyml` needed to run local tests"
     )
     def test_output(self, setup, expected_files):
-        print(f"{_SPARSIFYML_INSTALLED:}")
         assert not os.path.exists(_RUN_DIRECTORY)
         assert os.path.exists(_OUTPUT_DIRECTORY)
         assert _find_file_recursively(_OUTPUT_DIRECTORY, "results.txt")

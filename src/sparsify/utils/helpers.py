@@ -12,15 +12,34 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from sparsify.utils import get_base_url
+__all__ = [
+    "strtobool",
+]
+_MAP = {
+    "y": True,
+    "yes": True,
+    "t": True,
+    "true": True,
+    "on": True,
+    "1": True,
+    "n": False,
+    "no": False,
+    "f": False,
+    "false": False,
+    "off": False,
+    "0": False,
+}
 
 
-__all__ = ["get_backend_url"]
-_END_POINT = "/v1/sparsify/package/recommend-stub"
-
-
-def get_backend_url() -> str:
+def strtobool(value):
     """
-    :return The backend url  for sparsify.package server
+    Emulation of distutils.strtobool since it is deprecated and will be removed
+    by Python3.12
+
+    :param value: a str convertible value to be converted to bool
+    :returns: a bool representation of the value
     """
-    return get_base_url() + _END_POINT
+    try:
+        return _MAP[str(value).lower()]
+    except KeyError:
+        raise ValueError('"{}" is not a valid bool value'.format(value))

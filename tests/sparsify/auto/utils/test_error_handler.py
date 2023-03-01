@@ -11,15 +11,18 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-
+import importlib
 import os
+from contextlib import suppress
 from itertools import cycle, islice
 from typing import Any, List
 
 import pytest
 
-from sparsify.auto.utils import MEMORY_ERROR_SUBSTRINGS, ErrorHandler
+
+with suppress(ModuleNotFoundError):
+    from sparsify.auto.utils import MEMORY_ERROR_SUBSTRINGS, ErrorHandler
+_SPARSIFYML_INSTALLED: bool = importlib.util.find_spec("sparsifyml") is not None
 
 
 try:
@@ -96,6 +99,9 @@ def _modify_list_length(lists: List[List[Any]], length: int):
             [True] * len(MEMORY_ERROR_SUBSTRINGS),
         ),
     ],
+)
+@pytest.mark.skipif(
+    not _SPARSIFYML_INSTALLED, reason="`sparsifyml` needed to run local tests"
 )
 def test_error_handler(expected_outcome, errors, is_oom_error):
     # Test the test

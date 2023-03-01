@@ -14,6 +14,3 @@
 
 # flake8: noqa
 # isort: skip_file
-
-from . import package as package_module
-from .package import *

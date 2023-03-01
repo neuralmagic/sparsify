@@ -15,31 +15,43 @@
 """
 Helper functions for communicating with the Neural Magic API
 """
+import os
+import warnings
 from typing import Tuple
 
 import requests
 
 from sparsify.schemas import APIArgs, Metrics, SparsificationTrainingConfig
-from sparsify.utils import get_base_url
+from sparsify.utils import get_base_url, strtobool
 
+
+try:
+    from sparsifyml.auto import auto_training_config_initial, auto_training_config_tune
+except (ImportError, ModuleNotFoundError):
+    warnings.warn("failed to import sparsifyml", ImportWarning)
 
 __all__ = ["api_request_config", "api_request_tune", "request_student_teacher_configs"]
 
 _CONFIG_REQUEST_END_POINT = "/v1/sparsify/auto/training-config"
 _CONFIG_TUNE_END_POINT = "/v1/sparsify/auto/training-config/tune"
 
+SPARSIFY_SERVER: bool = strtobool(os.getenv(key="SPARSIFY_SERVER", default="False"))
+
 
 def api_request_config(api_args: APIArgs) -> dict:
     """
-    Make a server request for the initial training configs
+    Make a request for the initial training configs
 
     :return: dictionary of SparsificationTrainingConfig objects
     """
-    response = requests.post(
-        f"{get_base_url()}{_CONFIG_REQUEST_END_POINT}",
-        json=api_args.dict(),
+    response = (
+        requests.post(
+            f"{get_base_url()}{_CONFIG_REQUEST_END_POINT}", json=api_args.dict()
+        ).json()
+        if SPARSIFY_SERVER
+        else auto_training_config_initial(user_args=api_args).dict()
     )
-    return response.json()
+    return response
 
 
 def api_request_tune(history: Tuple[SparsificationTrainingConfig, Metrics]) -> dict:
@@ -49,12 +61,17 @@ def api_request_tune(history: Tuple[SparsificationTrainingConfig, Metrics]) -> d
     :return: dictionary of SparsificationTrainingConfig object
     """
 
-    response = requests.post(
-        f"{get_base_url()}{_CONFIG_TUNE_END_POINT}",
-        json=[(config.dict(), metrics.dict()) for config, metrics in history],
+    response = (
+        requests.post(
+            f"{get_base_url()}{_CONFIG_TUNE_END_POINT}",
+            json=[(config.dict(), metrics.dict()) for config, metrics in history],
+        ).json()
+        if SPARSIFY_SERVER
+        else auto_training_config_tune(
+            trial_history=[(config, metrics) for config, metrics in history]
+        ).dict()
     )
-
-    return response.json()
+    return response
 
 
 def request_student_teacher_configs(

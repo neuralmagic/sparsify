@@ -53,7 +53,7 @@ class ImageClassificationRunner(TaskRunner):
 
     train_hook = staticmethod(train_hook.callback)
     export_hook = staticmethod(export_hook.callback)
-    sparseml_train_entrypoint = "sparseml.image_classification.train"
+    sparseml_train_entrypoint = "sparseml.pytorch.image_classification.train"
     export_model_kwarg = "checkpoint_path"
 
     def __init__(self, config: SparsificationTrainingConfig):

@@ -11,18 +11,22 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+import importlib
 import os
+from contextlib import suppress
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest.mock import MagicMock, patch
 
 import pytest
 
-from sparsify.auto import main
-from sparsify.auto.utils import SAVE_DIR
-from sparsify.schemas import APIArgs, Metrics, SparsificationTrainingConfig
 
+with suppress(ModuleNotFoundError):
+    from sparsify.auto import main
+    from sparsify.auto.utils import SAVE_DIR
+    from sparsify.schemas import APIArgs, Metrics, SparsificationTrainingConfig
+
+_SPARSIFYML_INSTALLED: bool = importlib.util.find_spec("sparsifyml") is not None
 
 """
 Tests for sparsify.auto main process logic, with emphasis on on file creation, saving,
@@ -118,6 +122,9 @@ def _test_trial_artifact_directory(directory_path: str) -> bool:
 )
 @patch(
     "sparsify.auto.scripts.main.api_request_tune", MagicMock(return_value=_TEST_CONFIG)
+)
+@pytest.mark.skipif(
+    not _SPARSIFYML_INSTALLED, reason="`sparsifyml` needed to run local tests"
 )
 def test_main(*args):
     main()

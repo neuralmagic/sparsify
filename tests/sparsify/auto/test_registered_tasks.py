@@ -12,13 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import ast
+from contextlib import suppress
 
 import pytest
 import requests
 from requests.exceptions import ConnectionError
 
-from sparsify.auto.tasks import TaskRunner
-from sparsify.utils import TASK_REGISTRY, get_base_url
+
+with suppress(ModuleNotFoundError):
+    from sparsify.auto.tasks import TaskRunner
+    from sparsify.utils import TASK_REGISTRY, get_base_url
 
 
 def _is_service_online():

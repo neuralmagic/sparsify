@@ -69,7 +69,7 @@ SCALER = ...
 
 # initialize sparsify.create and override the SCALER
 sparsification_manager, SCALER = sparsify.create.initialize(
-    MODEL, OPTIMIZER, STEPS_PER_EPOCH
+    MODEL, OPTIMIZER, STEPS_PER_EPOCH, scaler=SCALER
 )
 ```
 
@@ -102,7 +102,7 @@ Example of distillation with a custom teacher:
 DISTILLATION_TEACHER = ...
 
 # initialize sparsify.create and override the SCALER
-sparsification_manager, SCALER = sparsify.create.initialize(
+sparsification_manager, OPTIMIZER = sparsify.create.initialize(
     MODEL,
     OPTIMIZER,
     STEPS_PER_EPOCH,
@@ -116,7 +116,7 @@ sparsification_manager, SCALER = sparsify.create.initialize(
 Sparse transfer learning may be enabled by setting pruning to `transfer` in `initialize`:
 ```python
 # extending the original example
-sparsification_manager, SCALER = sparsify.create.initialize(
+sparsification_manager, OPTIMIZER = sparsify.create.initialize(
     MODEL, OPTIMIZER, STEPS_PER_EPOCH, pruning="constant"
 )
 ```

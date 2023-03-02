@@ -70,6 +70,7 @@ def _setup_entry_points() -> Dict:
     return {
         "console_scripts": [
             "sparsify.auto=sparsify.auto:main",
+            "sparsify.one-shot=sparsify.one_shot:main",
         ]
     }
 

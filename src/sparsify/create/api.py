@@ -37,8 +37,7 @@ def initialize(
     pruning: Union[str, bool, None] = True,
     quantization: Union[bool, str] = True,
     lr: str = "linear",
-    distillation: bool = False,
-    distillation_teacher: Optional[Module] = None,
+    distillation_teacher: Optional[Union[str, Module]] = None,
     scaler: Optional[torch.cuda.amp.GradScaler] = None,
     recipe_variables: Union[RecipeVariables, Dict[str, Any], None] = None,
 ):

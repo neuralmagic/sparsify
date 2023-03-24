@@ -56,9 +56,13 @@ def one_shot(**kwargs):
 @opts.add_optim_opts
 def sparse_transfer(**kwargs):
     """
-    TODO
+    Run sparse transfer learning for a use case against a supported task and model
     """
-    ...
+    from sparsify import auto
+
+    # recipe arg should be a sparse transfer recipe
+    args = _parse_run_args_to_auto(**kwargs)
+    auto.main(args)
 
 
 @main.command()
@@ -69,10 +73,37 @@ def sparse_transfer(**kwargs):
 @opts.add_optim_opts
 def training_aware(**kwargs):
     """
-    TODO
+    Run training aware sparsification for a use case against a supported task and model
     """
-    ...
+    from sparsify import auto
 
+    # recipe arg should be a training aware recipe
+    args = _parse_run_args_to_auto(**kwargs)
+    auto.main(args)
+
+
+def _parse_run_args_to_auto(**kwargs) -> "APIArgs":
+    from sparsify.schemas import APIArgs
+
+    return APIArgs(
+        task=kwargs["use_case"],
+        dataset=kwargs["data"],
+        save_directory=kwargs["working_dir"],
+        performance=kwargs["optim_level"],
+        base_model=kwargs["model"],
+        recipe=kwargs["recipe"],
+        recipe_args=kwargs["recipe_args"],
+        distill_teacher=kwargs["teacher"],
+        num_trials=1,  # for now, only running 1 trial
+        max_train_time=100000,  # 1 trial, so setting max time arbitrarily high
+        maximum_trial_saves=1,  # 1 trial
+        optimizing_metric=kwargs["eval_metric"],
+        kwargs={},  # not yet supported
+        teacher_kwargs={},
+        tuning_parameters=None,
+        teacher_tuning_parameters=None,
+        teacher_only=False,
+    )
 
 if __name__ == "__main__":
     main()

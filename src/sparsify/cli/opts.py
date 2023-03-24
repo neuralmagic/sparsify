@@ -147,7 +147,7 @@ MAX_MEMORY = click.option("--max-memory", default=None, type=int)
 
 
 def add_info_opts(f):
-    for fn in [WORKING_DIR, EXPERIMENT_ID, PROJECT_ID]:
+    for fn in [USE_CASE, WORKING_DIR, EXPERIMENT_ID, PROJECT_ID]:
         f = fn(f)
     return f
 

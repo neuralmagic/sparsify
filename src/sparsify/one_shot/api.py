@@ -22,6 +22,7 @@ from sparsify.utils import constants
 try:
     from sparsifyml import one_shot
 except ImportError as e:
+
     class SparsifyLoginRequired(Exception):
         """Exception when sparsifyml has not been installed by sparsify.login"""
 

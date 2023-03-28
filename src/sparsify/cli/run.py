@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from pathlib import Path
+
 import click
 from sparsify.cli import opts
 
@@ -34,13 +36,14 @@ def one_shot(**kwargs):
     """
     One shot sparsification of ONNX models
     """
-    from sparsify.one_shot import one_shot  # raises exception if sparsifyml not installed
+    # raises exception if sparsifyml not installed
+    from sparsify.one_shot import one_shot
 
     one_shot.one_shot(
         task=kwargs["use_case"],
         model_file=Path(kwargs["model"]),
         dataset_dir=Path(kwargs["data"]),
-        num_samples=kwargs["train_samples"],
+        num_samples=kwargs["train_samples"] or -1,
         deploy_dir=Path(kwargs["working_dir"]),
         eval_metric=kwargs["eval_metric"],
         opt_level=kwargs["optim_level"],
@@ -104,6 +107,7 @@ def _parse_run_args_to_auto(**kwargs) -> "APIArgs":
         teacher_tuning_parameters=None,
         teacher_only=False,
     )
+
 
 if __name__ == "__main__":
     main()

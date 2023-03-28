@@ -21,7 +21,10 @@ from sparsify.cli import opts
 @click.group()
 def main():
     """
-    TODO
+    Run one of the following commands:
+    1. `sparsify.run one-shot`
+    2. `sparsify.run sparse-transfer`
+    3. `sparsify.run training-aware`
     """
     ...
 

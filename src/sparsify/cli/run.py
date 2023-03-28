@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from pathlib import Path
+
 import click
 from sparsify.cli import opts
 
@@ -32,9 +34,21 @@ def main():
 @opts.add_optim_opts
 def one_shot(**kwargs):
     """
-    TODO
+    One shot sparsification of ONNX models
     """
-    ...
+    # raises exception if sparsifyml not installed
+    from sparsify.one_shot import one_shot
+
+    one_shot.one_shot(
+        task=kwargs["use_case"],
+        model_file=Path(kwargs["model"]),
+        dataset_dir=Path(kwargs["data"]),
+        num_samples=kwargs["train_samples"] or -1,
+        deploy_dir=Path(kwargs["working_dir"]),
+        eval_metric=kwargs["eval_metric"],
+        opt_level=kwargs["optim_level"],
+        recipe_file=Path(kwargs["recipe"]) if kwargs["recipe"] is not None else None,
+    )
 
 
 @main.command()

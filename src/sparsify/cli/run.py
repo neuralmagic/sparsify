@@ -64,8 +64,7 @@ def sparse_transfer(**kwargs):
     from sparsify import auto
 
     # recipe arg should be a sparse transfer recipe
-    args = _parse_run_args_to_auto(**kwargs)
-    auto.main(args)
+    auto.main(_parse_run_args_to_auto(**kwargs))
 
 
 @main.command()
@@ -81,12 +80,14 @@ def training_aware(**kwargs):
     from sparsify import auto
 
     # recipe arg should be a training aware recipe
-    args = _parse_run_args_to_auto(**kwargs)
-    auto.main(args)
+    auto.main(_parse_run_args_to_auto(**kwargs))
 
 
-def _parse_run_args_to_auto(**kwargs) -> "APIArgs":
+def _parse_run_args_to_auto(**kwargs):
     from sparsify.schemas import APIArgs
+
+    if kwargs["eval_metric"] == "kl":
+        raise ValueError("--eval-metric kl is not supported currently.")
 
     return APIArgs(
         task=kwargs["use_case"],
@@ -95,12 +96,12 @@ def _parse_run_args_to_auto(**kwargs) -> "APIArgs":
         performance=kwargs["optim_level"],
         base_model=kwargs["model"],
         recipe=kwargs["recipe"],
-        recipe_args=kwargs["recipe_args"],
-        distill_teacher=kwargs["teacher"],
+        recipe_args=kwargs["recipe_args"] or {},
+        distill_teacher=kwargs["teacher"] or "off",
         num_trials=1,  # for now, only running 1 trial
         max_train_time=100000,  # 1 trial, so setting max time arbitrarily high
         maximum_trial_saves=1,  # 1 trial
-        optimizing_metric=kwargs["eval_metric"],
+        optimizing_metric=[kwargs["eval_metric"]],
         kwargs={},  # not yet supported
         teacher_kwargs={},
         tuning_parameters=None,

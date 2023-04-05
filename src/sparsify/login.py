@@ -30,7 +30,7 @@ from pathlib import Path
 
 import requests
 
-from .version import __version__
+from .version import version_major_minor
 
 
 __all__ = ["login"]
@@ -76,7 +76,7 @@ def authenticate():
     try:
         import sparsifyml
 
-        if sparsifyml.__version__ != __version__:
+        if sparsifyml.version_major_minor != version_major_minor:
             do_login = True
 
     except ModuleNotFoundError:

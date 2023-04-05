@@ -18,7 +18,7 @@ import shutil
 import time
 import warnings
 from collections import OrderedDict
-from typing import Dict, List, Tuple
+from typing import Dict, List, Optional, Tuple
 
 from sparsify.auto.tasks import TaskRunner
 from sparsify.auto.utils import (
@@ -39,7 +39,7 @@ from tensorboard.program import TensorBoard
 _LOGGER = logging.getLogger("auto_banner")
 
 
-def main():
+def main(api_args: Optional[APIArgs] = None):
     initialize_banner_logger()
 
     # Tuning tracking variables
@@ -52,7 +52,7 @@ def main():
     resume_stage = None
 
     # Parse CLI args
-    api_args = APIArgs.from_cli()
+    api_args = api_args or APIArgs.from_cli()
 
     # Load state from previous run
     if api_args.resume:

@@ -35,7 +35,7 @@ from .version import __version__
 
 __all__ = ["login"]
 
-_URL = "https://authentication.griffin.external.neuralmagic.com/v1/connect/token"
+_URL = "https://accounts.neuralmagic.com/v1/connect/token"
 
 _CREDENTIALS_PATH = Path.home().joinpath(".confg", "neuralmagic", "credentials.json")
 
@@ -108,9 +108,9 @@ def _refresh_access_token_for_api_key(api_key: str) -> str:
         headers={"Content-Type": "application/x-www-form-urlecoded"},
         data={
             "grant_type": "password",
-            "username": "api_key",
+            "username": "api-key",
             "password": api_key,
-            "score": "pypi:read",
+            "scope": "pypi:read",
         },
     )
 

@@ -22,11 +22,16 @@ from sparsify.utils import constants
 try:
     from sparsifyml import one_shot
 except ImportError as e:
-    # cheeky lazy define the exception only if we need it rofl
+
     class SparsifyLoginRequired(Exception):
-        """You need to run `sparsify.login`"""
+        """Exception when sparsifyml has not been installed by sparsify.login"""
 
     raise SparsifyLoginRequired("Use `sparsify.login` to enable this command.") from e
+
+
+__all__ = [
+    "one_shot",
+]
 
 _SUPPORTED_MODEL_FORMATS = [".onnx"]
 

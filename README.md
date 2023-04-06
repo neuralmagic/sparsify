@@ -87,7 +87,7 @@ Sparsify has three experiment types which contain their own set of required argu
 - sparsify.run sparse-transfer ...
 - sparsify.run training-aware ...
 ```
-- **sparsify. run one-shot** enables you to provide a dense model + calibration dataset and run the Neural Magic One-Shot API on it to generate a sparse model, transfer learned on your calibration dataset all without a full retraining of the model; reducing your time to deploy. The Sparsify One-Shot API creates a sparse ONNX model in the working directory. 
+- **sparsify. run one-shot** enables you to provide a dense model and calibration dataset and run the Neural Magic One-Shot API on it to generate a sparse model, transfer learned on your calibration dataset all without full retraining of the model; reducing your time to deploy. The Sparsify One-Shot API creates a sparse ONNX model in the working directory. 
 
 - **sparsify. run training-aware** enables you to provide a use case + training dataset (and optional dense model) and generate a sparse model on your data.  You can customize a recipe further (simple with handful of hyperparameters, advanced entire algorithms), and run training through your pipeline, package it, and deploy it. The Sparsify Training-Aware API creates a sparse ONNX model in the working directory. 
 

@@ -71,7 +71,7 @@ Sparsify is tested on Python 3.7-3.10, ONNX 1.5.0-1.12.0, ONNX opset version 11+
 
 ## Available Sparsify APIs
 
-To run the Sparsify APIs locally, all you need to do is create an account, install and login to Sparsify via your CLI, and provide the required arguments for the experment type you wish to run outlined below. All Sparsify API calls start with the `sparsify.run `command amnd have the following arguments in aggregate: 
+To run the Sparsify APIs locally, all you need to do is create an account, install and log in to Sparsify via your CLI, and provide the required arguments for the experiment type you wish to run outlined below. All Sparsify API calls start with the `sparsify.run` command and have the following arguments in aggregate: 
 
 ```bash
 sparsify.run experiment-type \  

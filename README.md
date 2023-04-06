@@ -91,7 +91,7 @@ Sparsify has three experiment types which contain their own set of required argu
 
 - **sparsify. run training-aware** enables you to provide a use case and training dataset (and optional dense model) and generate a sparse model on your data.  You can customize a recipe further (simply with a handful of hyperparameters, advanced entire algorithms), and run training through your pipeline, package it, and deploy it. The Sparsify Training-Aware API creates a sparse ONNX model in the working directory. 
 
-- **sparsify. run sparse-transfer** enables you to provide a use case + training dataset and generate a sparse model via sparse transfer learning on top of an already sparse model provided by Neural Magic.  The Sparsify Sparse-Transfer API takes care of the transfer learning process and fits your data to a model optimized on your metric of choice; making generating performant models for your specific use case easy. The Sparsify Sparse-Transfer API creates a sparse ONNX model in the working directory. 
+- **sparsify. run sparse-transfer** enables you to provide a use case and training dataset and generate a sparse model via sparse transfer learning on top of an already sparse model provided by Neural Magic.  The Sparsify Sparse-Transfer API takes care of the transfer learning process and fits your data to a model optimized on your metric of choice; making generating performant models for your specific use case easy. The Sparsify Sparse-Transfer API creates a sparse ONNX model in the working directory. 
 
 ## Sparsify APIs Usage and Parameters 
 #### Training Information: 

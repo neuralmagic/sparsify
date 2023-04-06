@@ -63,7 +63,7 @@ Sparsify makes applying state-of-the-art [sparsification](https://docs.neuralmag
 
  ## Recommended Hardware Support and System Requirements
 
-Sparsify requires the same hardware that is required to train standard Neural Networks such as a GPU, TPU, or other specialized hardware for training. We recommend you use a Linux environment with a GPU that has a minimum of X RAM, X GPU Memory, X number of cores and is CUDA-enabled. If you encounter issues setting up your training environment, please file a GitHub issue [here]( 
+Sparsify requires the same hardware that is required to train standard neural networks such as a GPU, TPU, or other specialized hardware for training. We recommend you use a Linux environment with a GPU that has a minimum of X RAM, X GPU Memory, X number of cores, and is CUDA-enabled. If you encounter issues setting up your training environment, file a GitHub issue [here]( https://github.com/neuralmagic/sparsify/issues).
 https://github.com/neuralmagic/sparsify/issues). 
 
 Sparsify is tested on Python 3.7-3.10, ONNX 1.5.0-1.12.0, ONNX opset version 11+, and manylinux compliant systems. Using a  [virtual environment](https://docs.python.org/3/library/venv.html)  is highly recommended.

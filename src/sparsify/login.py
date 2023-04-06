@@ -30,14 +30,14 @@ from pathlib import Path
 
 import requests
 
-from .version import version_major_minor
+from sparsify.version import version_major_minor
 
 
 __all__ = ["login"]
 
 _URL = "https://accounts.neuralmagic.com/v1/connect/token"
 
-_CREDENTIALS_PATH = Path.home().joinpath(".confg", "neuralmagic", "credentials.json")
+_CREDENTIALS_PATH = Path.home().joinpath(".config", "neuralmagic", "credentials.json")
 
 _ERROR_MESSAGE = (
     "Sorry, we were unable to authenticate your Neural Magic Account API key. "
@@ -90,25 +90,26 @@ def login(api_key: str) -> None:
     """
     Logs into sparsify.
 
-    :param api_key: The API key copied from your account.
+    :param api_key: The API key copied from your account
     :raises InvalidApiKey: if the API key is invalid
     """
-    access_token = _refresh_access_token_for_api_key(api_key)
+    access_token = _refresh_access_token(api_key)
 
-    _CREDENTIALS_PATH.parent.mkdir(existok=True)
-    with open(_CREDENTIALS_PATH, "w") as fp:
-        fp.write({"api_key": api_key})
+    _CREDENTIALS_PATH.parent.mkdir(exist_ok=True)
+    with open(_CREDENTIALS_PATH, "w") as creds_file:
+        json.dump({"api_key": api_key}, creds_file)
 
     _maybe_install_sparsifyml(access_token)
 
 
-def _refresh_access_token_for_api_key(api_key: str) -> str:
+def _refresh_access_token(api_key: str) -> str:
     response = requests.post(
         _URL,
-        headers={"Content-Type": "application/x-www-form-urlecoded"},
+        # headers={"Content-Type": "application/x-www-form-urlecoded"},
         data={
             "grant_type": "password",
             "username": "api-key",
+            "client_id": "ee910196-cd8a-11ed-b74d-bb563cd16e9d",
             "password": api_key,
             "scope": "pypi:read",
         },
@@ -129,7 +130,7 @@ def _maybe_install_sparsifyml(access_token: str):
     try:
         import sparsifyml
 
-        do_pip_install = sparsifyml.__version__ != __version__
+        do_pip_install = sparsifyml.version_major_minor != version_major_minor
 
     except ModuleNotFoundError:
         do_pip_install = True
@@ -143,7 +144,7 @@ def _maybe_install_sparsifyml(access_token: str):
                 "install",
                 "--index",
                 _SPARSIFYML_URL_TEMPLATE.format(access_token),
-                f"sparsifyml=={__version__}",
+                f"sparsifyml!={version_major_minor}",
             ]
         )
 
@@ -159,9 +160,10 @@ class SparsifyLoginRequired(Exception):
 def main():
     parser = argparse.ArgumentParser("Log into sparsify locally.")
     parser.add_argument(
-        "api_key",
+        "--api_key",
         type=str,
         help="API key copied from your account.",
+        required=True,
     )
 
     login(**vars(parser.parse_args()))

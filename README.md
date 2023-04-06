@@ -58,7 +58,7 @@ Use Sparsify to easily create sparse, performant models. Sparsify can help you o
 
 Sparsify makes applying state-of-the-art [sparsification](https://docs.neuralmagic.com/user-guides/sparsification) algorithms using techniques such as pruning and quantization to any neural network easy with a simple UI and one-command API calls that removes the complexity of hyperparameter tuning and sparsification targets. 
 
-🚨**Note**🚨: Sparsify is currently in an alpha state meaning that many of the pathways and underlying functionaliity may not be fully stable. Please provide your feedback on your experience, what you do not like about the Sparsify Local APIs and what you'd like to see next. Your feedback will be integral in driving the future of Sparsify forward and we thank you in advance. Provide feedback (bug reports, UI issues, CLI errors, or just say hello to our team) [here](https://neuralmagic.com/support/). 
+🚨**Note**🚨: Sparsify is currently in an alpha state meaning that many of the pathways and underlying functionaliity may not be fully stable. Please provide your feedback on your experience, what you do not like about the Sparsify Local APIs and what you'd like to see next. Your feedback will be integral in driving the future of Sparsify forward and we thank you in advance. Provide feedback (bug reports, UI issues, CLI errors, or just say hello to our team) [here](https://github.com/neuralmagic/sparsify/issues). 
 
 
  ## Recommended Hardware Support and System Requirements

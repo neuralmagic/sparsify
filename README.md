@@ -106,7 +106,7 @@ For the One-Shot and Training-Aware APIs, you will need to provide a dense model
 #### Data Selection
 For all Sparsify APIs, you will need to provide a training dataset to fit to your sparse model you wish to create. You will need to make sure that your data is properly formatted to work with the Sparsify APIs. Depending on your use case, your data may need to take a specific form.  
 
-To view how to properly format your data for use with Sparsify, view [Neural Magic's Data Format Guide](www.asdfas/com).  Once your data is properly formatted, run the `sparsify.run` command andbe sure to supply the argument `--data PATH_TO_DATA` with the path to your data in your local working directory. 
+To view how to properly format your data for use with Sparsify, view [Neural Magic's Data Format Guide](www.asdfas/com).  Once your data is properly formatted, run the `sparsify.run` command and be sure to supply the argument `--data PATH_TO_DATA` with the path to your data in your local working directory. 
 
 #### Use Case Selection:
 To use the Sparsify APIs, you must choose a use case and provide a dataset that you wish to get a sparse ONNX model for. You are required to designate both the use-case as well as provide a training dataset that will be applied for the Sparse-Transfer and Training-Aware Experiment APIs. For the One-Shot Experiment API, you'll additionally need to provide a dense model you wish to optimize for inference.

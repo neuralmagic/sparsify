@@ -56,7 +56,7 @@ limitations under the License.
 
 Use Sparsify to easily create sparse, performant models. Sparsify can help you optimize models from scratch or sparse transfer learn onto your own data to target best-in-class inference performance on your target deployment hardware. To get started with the Sparsify Cloud UI, create an account [here](https://app.neuralmagic.com) and check out the [Sparsify Quickstart Guide](https://docs.neuralmagic.com/sparsify/quickstart).
 
-Sparsify makes applying state-of-the-art [sparsification](https://docs.neuralmagic.com/main/source/getstarted.html#sparsification) algorithms using techniques such as pruning and quantization to any neural network easy with a simple UI and one-command API calls that removes the complexity of hyperparameter tuning and sparsification targets. 
+Sparsify makes applying state-of-the-art [sparsification](https://docs.neuralmagic.com/user-guides/sparsification) algorithms using techniques such as pruning and quantization to any neural network easy with a simple UI and one-command API calls that removes the complexity of hyperparameter tuning and sparsification targets. 
 
 🚨**Note**🚨: Sparsify is currently in an alpha state meaning that many of the pathways and underlying functionaliity may not be fully stable. Please provide your feedback on your experience, what you do not like about the Sparsify Local APIs and what you'd like to see next. Your feedback will be integral in driving the future of Sparsify forward and we thank you in advance. Provide feedback (bug reports, UI issues, CLI errors, or just say hello to our team) [here](https://neuralmagic.com/support/). 
 

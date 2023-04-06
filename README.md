@@ -81,7 +81,7 @@ sparsify.run experiment-type \
 --optim-level optim-level
 ```
 
-Sparsify has 3 experiment types which contain their own set of required arguments: 
+Sparsify has three experiment types which contain their own set of required arguments: 
 ```bash
 - sparsify.run one-shot ...
 - sparsify.run sparse-transfer ...

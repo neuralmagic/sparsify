@@ -19,7 +19,6 @@ from sparsify.cli import opts
 
 @click.command(context_settings=CONTEXT_SETTINGS)
 @opts.EXPERIMENT_TYPE
-@opts.USE_CASE
 @opts.add_info_opts
 @click.option("--model", required=True, help="Path to model")
 @opts.add_data_opts

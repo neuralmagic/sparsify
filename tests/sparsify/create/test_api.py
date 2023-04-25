@@ -42,7 +42,6 @@ def _module_sparsity(module: Module):
 
 
 def test_create_initialize_and_recipe_apply_mobilenet():
-
     model = mobilenet(pretrained=True)
     optim = torch.optim.SGD(model.parameters(), lr=0.1)
 

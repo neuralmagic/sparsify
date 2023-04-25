@@ -37,6 +37,7 @@ def initialize(
     pruning: Union[str, bool, None] = True,
     quantization: Union[bool, str] = True,
     lr: str = "linear",
+    distillation: bool = False,
     distillation_teacher: Optional[Union[str, Module]] = None,
     scaler: Optional[torch.cuda.amp.GradScaler] = None,
     recipe_variables: Union[RecipeVariables, Dict[str, Any], None] = None,
@@ -95,7 +96,9 @@ def initialize(
     manager.initialize(
         module=model,
         epoch=0.0,
-        distillation_teacher=distillation_teacher or "self",
+        distillation_teacher=(
+            distillation_teacher or "self" if distillation else "disable"
+        ),
     )
 
     wrapped_optim = manager.modify(

@@ -144,7 +144,7 @@ def _maybe_install_sparsifyml(access_token: str):
                 "install",
                 "--index-url",
                 _SPARSIFYML_URL_TEMPLATE.format(access_token),
-                f"sparsifyml!={version_major_minor}",
+                f"sparsifyml_nightly>={version_major_minor}",
             ]
         )
 

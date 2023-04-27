@@ -60,7 +60,6 @@ EXPERIMENT_TYPE = click.option(
 )
 USE_CASE = click.option(
     "--use-case",
-    required=True,
     type=click.Choice(sorted(constants.TASK_REGISTRY.keys())),
     help="The task this model is for",
 )
@@ -87,7 +86,6 @@ TEACHER = click.option("--teacher", default=None, type=str)
 
 DATA = click.option(
     "--data",
-    required=True,
     type=str,
     help=(
         "Path to dataset folder containing training data"

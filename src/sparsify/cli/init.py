@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from typing import Optional
+
 import click
 from sparsezoo.analyze.cli import CONTEXT_SETTINGS
 from sparsify.cli import opts
@@ -22,22 +24,26 @@ from sparsify.cli import opts
 @opts.add_info_opts
 @click.option("--model", required=True, help="Path to model")
 @opts.add_data_opts
-def main(**kwargs):
+def main(
+    experiment_id: Optional[str],
+    experiment_type: Optional[str],
+    use_case: Optional[str],
+    **kwargs,
+):
     """
     Sparsify.init CLI utility to initialize an experiment such that it will
     provision all local and cloud resources necessary, additionally also allows
     users to update hyper-param(s) before applying
     """
-    if kwargs["experiment_id"] is None:
-        if kwargs["experiment_type"] is None:
+    if experiment_id is None:
+        if experiment_type is None:
             raise ValueError(
                 "--experiment-type required when --experiment-id is not specified."
             )
-        if kwargs["use_case"] is None:
+        if use_case is None:
             raise ValueError(
                 "--use-case required when --experiment-id is not specified."
             )
-    print(kwargs)
 
 
 if __name__ == "__main__":

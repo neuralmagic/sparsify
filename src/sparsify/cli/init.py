@@ -15,6 +15,8 @@
 import logging
 from typing import Optional
 
+import requests
+
 import click
 from sparsezoo.analyze.cli import CONTEXT_SETTINGS
 from sparsify.cli import opts
@@ -28,11 +30,7 @@ _LOGGER = logging.getLogger(__name__)
 @opts.add_info_opts
 @click.option("--model", required=True, help="Path to model")
 @opts.add_data_opts
-@click.option(
-    "--debug/--no-debug",
-    default=False,
-    hidden=True,
-)
+@click.option("--debug/--no-debug", default=False, hidden=True)
 def main(
     model: str,
     experiment_id: Optional[str],
@@ -54,6 +52,11 @@ def main(
     if debug:
         logging.basicConfig(level=logging.DEBUG)
 
+    session = create_session()
+
+    if project_id is None:
+        project_id = create_project(session=session)
+
     if experiment_id is None:
         if experiment_type is None:
             raise ValueError(
@@ -65,6 +68,21 @@ def main(
             )
 
     _LOGGER.debug(f"Local args: {locals()}")
+
+
+def create_session() -> requests.Session:
+    session = requests.Session()
+    # TODO: fetch api-key from ~/.config/neuralmagic/credentials.json
+    #  request access token using api-key from
+    #  https://accounts.neuralmagic.com/v1/connect/token
+    access_token = ""
+    session.headers.update({"Authorization": f"Bearer {access_token}"})
+    return session
+
+
+def create_project(session: requests.Session) -> str:
+    project_id = session.get(...)
+    return project_id
 
 
 if __name__ == "__main__":

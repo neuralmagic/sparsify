@@ -12,7 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# flake8: noqa
-# isort: skip_file
 
-from .login import *
+class InvalidAPIKey(Exception):
+    """The API key was invalid"""
+
+
+class SparsifyLoginRequired(Exception):
+    """Run `sparsify.login`"""

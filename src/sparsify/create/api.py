@@ -96,7 +96,9 @@ def initialize(
     manager.initialize(
         module=model,
         epoch=0.0,
-        distillation_teacher=distillation_teacher or "self",
+        distillation_teacher=(
+            distillation_teacher or "self" if distillation else "disable"
+        ),
     )
 
     wrapped_optim = manager.modify(

@@ -19,7 +19,7 @@ from pathlib import Path
 
 import requests
 
-from sparsify.utils.exceptions import InvalidApiKey
+from sparsify.utils.exceptions import InvalidAPIKey
 
 
 __all__ = [
@@ -128,7 +128,7 @@ def get_access_token(api_key: str) -> str:
             "If you believe this is a mistake, contact support@neuralmagic.com "
             "to help remedy this issue."
         )
-        raise InvalidApiKey(error_message) from http_error
+        raise InvalidAPIKey(error_message) from http_error
 
     if response.status_code != 200:
         raise ValueError(f"Unknown response code {response.status_code}")

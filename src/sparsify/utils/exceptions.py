@@ -13,7 +13,7 @@
 # limitations under the License.
 
 
-class InvalidApiKey(Exception):
+class InvalidAPIKey(Exception):
     """The API key was invalid"""
 
 

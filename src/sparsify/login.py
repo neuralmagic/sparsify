@@ -13,77 +13,65 @@
 # limitations under the License.
 
 """
-usage: Log into sparsify locally. [-h] api_key
+Usage: sparsify.login [OPTIONS]
 
-positional arguments:
-  api_key     API key copied from your account.
+  sparsify.login utility to log into sparsify locally.
 
-optional arguments:
-  -h, --help  show this help message and exit
+Options:
+  --api-key TEXT  API key copied from your account.  [required]
+  --version       Show the version and exit.  [default: False]
+  --help          Show this message and exit.  [default: False]
 """
 
-import argparse
+import importlib
 import json
+import logging
 import subprocess
 import sys
-from pathlib import Path
+from types import ModuleType
+from typing import Optional
 
-import requests
-
+import click
+from sparsezoo.analyze.cli import CONTEXT_SETTINGS
+from sparsify.utils import (
+    credentials_exists,
+    get_access_token,
+    get_authenticated_pypi_url,
+    get_sparsify_credentials_path,
+    overwrite_credentials,
+    set_log_level,
+)
+from sparsify.utils.exceptions import SparsifyLoginRequired
 from sparsify.version import version_major_minor
 
 
-__all__ = ["login"]
+__all__ = [
+    "login",
+    "import_sparsifyml_authenticated",
+    "authenticate",
+]
 
-_URL = "https://accounts.neuralmagic.com/v1/connect/token"
 
-_CREDENTIALS_PATH = Path.home().joinpath(".config", "neuralmagic", "credentials.json")
+_LOGGER = logging.getLogger(__name__)
 
-_ERROR_MESSAGE = (
-    "Sorry, we were unable to authenticate your Neural Magic Account API key. "
-    "If you believe this is a mistake, contact support@neuralmagic.com "
-    "to help remedy this issue."
+
+@click.command(context_settings=CONTEXT_SETTINGS)
+@click.option(
+    "--api-key", type=str, help="API key copied from your account.", required=True
 )
+@click.version_option(version=version_major_minor)
+@click.option("--debug/--no-debug", default=False, hidden=True)
+def main(api_key: str, debug: bool = False):
+    """
+    sparsify.login utility to log into sparsify locally.
+    """
+    set_log_level(logger=_LOGGER, level=logging.DEBUG if debug else logging.INFO)
+    _LOGGER.info("Logging into sparsify...")
 
-_SPARSIFYML_URL_TEMPLATE = "https://nm:${}@pypi.griffin.external.neuralmagic.com"
+    login(api_key=api_key)
 
-
-def import_sparsifyml_authenticated():
-    """Does `import sparsifyml` ensuring that sparsifyml is the latest version and is installed."""
-    authenticate()
-
-    import sparsifyml
-
-    return sparsifyml
-
-
-def authenticate():
-    if not _CREDENTIALS_PATH.exists():
-        raise SparsifyLoginRequired(
-            "No valid sparsify credentials found. Please run `sparsify.login`"
-        )
-
-    with _CREDENTIALS_PATH.open() as fp:
-        creds = json.load(fp)
-
-    if "api_key" not in creds:
-        raise SparsifyLoginRequired(
-            "No valid sparsify credentials found. Please run `sparsify.login`"
-        )
-
-    do_login = False
-
-    try:
-        import sparsifyml
-
-        if sparsifyml.version_major_minor != version_major_minor:
-            do_login = True
-
-    except ModuleNotFoundError:
-        do_login = True
-
-    if do_login:
-        login(creds["api_key"])
+    _LOGGER.debug(f"locals: {locals()}")
+    _LOGGER.info("Logged in successfully, sparsify setup is complete.")
 
 
 def login(api_key: str) -> None:
@@ -93,49 +81,31 @@ def login(api_key: str) -> None:
     :param api_key: The API key copied from your account
     :raises InvalidApiKey: if the API key is invalid
     """
-    access_token = _refresh_access_token(api_key)
-
-    _CREDENTIALS_PATH.parent.mkdir(exist_ok=True)
-    with open(_CREDENTIALS_PATH, "w") as creds_file:
-        json.dump({"api_key": api_key}, creds_file)
-
-    _maybe_install_sparsifyml(access_token)
+    access_token = get_access_token(api_key)
+    overwrite_credentials(api_key=api_key)
+    install_sparsifyml(access_token)
 
 
-def _refresh_access_token(api_key: str) -> str:
-    response = requests.post(
-        _URL,
-        # headers={"Content-Type": "application/x-www-form-urlecoded"},
-        data={
-            "grant_type": "password",
-            "username": "api-key",
-            "client_id": "ee910196-cd8a-11ed-b74d-bb563cd16e9d",
-            "password": api_key,
-            "scope": "pypi:read",
-        },
+def install_sparsifyml(access_token: str) -> None:
+    """
+    Installs `sparsifyml` from the authenticated pypi server, if not already
+    installed or if the version is not the same as the current version.
+
+    :param access_token: The access token to use for authentication
+    """
+    sparsifyml_spec = importlib.util.find_spec("sparsifyml")
+    sparsifyml = importlib.import_module("sparsifyml") if sparsifyml_spec else None
+
+    sparsifyml_installed = (
+        sparsifyml_spec is not None
+        and sparsifyml.version_major_minor == version_major_minor
     )
 
-    try:
-        response.raise_for_status()
-    except requests.HTTPError as e:
-        raise InvalidApiKey(_ERROR_MESSAGE) from e
-
-    if response.status_code != 200:
-        raise ValueError(f"Unknown response code {response.status_code}")
-
-    return response.json()["access_token"]
-
-
-def _maybe_install_sparsifyml(access_token: str):
-    try:
-        import sparsifyml
-
-        do_pip_install = sparsifyml.version_major_minor != version_major_minor
-
-    except ModuleNotFoundError:
-        do_pip_install = True
-
-    if do_pip_install:
+    if not sparsifyml_installed:
+        _LOGGER.info(
+            f"Installing sparsifyml version {version_major_minor} "
+            "from neuralmagic pypi server"
+        )
         subprocess.check_call(
             [
                 sys.executable,
@@ -143,32 +113,47 @@ def _maybe_install_sparsifyml(access_token: str):
                 "pip",
                 "install",
                 "--index-url",
-                _SPARSIFYML_URL_TEMPLATE.format(access_token),
+                get_authenticated_pypi_url(access_token=access_token),
                 f"sparsifyml_nightly>={version_major_minor}",
             ]
         )
+    else:
+        _LOGGER.info(
+            f"sparsifyml version {version_major_minor} is already installed, "
+            "skipping installation from neuralmagic pypi server"
+        )
 
 
-class InvalidApiKey(Exception):
-    """The API key was invalid"""
+def import_sparsifyml_authenticated() -> Optional[ModuleType]:
+    """
+    Authenticates and imports sparsifyml.
+    """
+    authenticate()
+    import sparsifyml
+
+    return sparsifyml
 
 
-class SparsifyLoginRequired(Exception):
-    """Run `sparsify.login`"""
+def authenticate() -> None:
+    """
+    Authenticates with sparsify server using the credentials stored on disk.
 
+    :raises SparsifyLoginRequired: if no valid credentials are found
+    """
+    if not credentials_exists():
+        raise SparsifyLoginRequired(
+            "No valid sparsify credentials found. Please run `sparsify.login`"
+        )
 
-def main():
-    parser = argparse.ArgumentParser("Log into sparsify locally.")
-    parser.add_argument(
-        "--api_key",
-        type=str,
-        help="API key copied from your account.",
-        required=True,
-    )
+    with get_sparsify_credentials_path.open() as fp:
+        credentials = json.load(fp)
 
-    login(**vars(parser.parse_args()))
+    if "api_key" not in credentials:
+        raise SparsifyLoginRequired(
+            "No valid sparsify credentials found. Please run `sparsify.login`"
+        )
 
-    print("Logged in successfully, sparsify setup is complete.")
+    login(api_key=credentials["api_key"])
 
 
 if __name__ == "__main__":

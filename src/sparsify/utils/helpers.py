@@ -113,8 +113,6 @@ def get_access_token(api_key: str) -> str:
             "grant_type": "password",
             "username": "api-key",
             "client_id": "ee910196-cd8a-11ed-b74d-bb563cd16e9d",
-            # TODO: Use this value instead of the above once the API is updated
-            # "client_id": "sparsify-python",
             "password": api_key,
             "scope": "pypi:read",
         },

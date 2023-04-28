@@ -21,7 +21,7 @@ from typing import Tuple
 import requests
 
 from sparsify.login import import_sparsifyml_authenticated
-from sparsify.schemas import APIArgs, Metrics, SparsificationTrainingConfig
+from sparsify.schemas import APIArgs, Metrics, RunMode, SparsificationTrainingConfig
 from sparsify.utils import get_base_url, strtobool
 
 
@@ -86,14 +86,14 @@ def request_student_teacher_configs(
 
     student_config, teacher_config = None, None
 
-    if api_args.teacher_only:
+    if RunMode(api_args.run_mode) == RunMode.teacher_only:
         teacher_config = SparsificationTrainingConfig(**api_request_config(api_args))
 
     else:
         student_config = SparsificationTrainingConfig(**api_request_config(api_args))
         if student_config.distill_teacher == "auto":
             teacher_input_args = api_args.copy(deep=True)
-            teacher_input_args.teacher_only = True
+            teacher_input_args.run_mode = RunMode.teacher_only
             teacher_config = SparsificationTrainingConfig(
                 **api_request_config(teacher_input_args)
             )

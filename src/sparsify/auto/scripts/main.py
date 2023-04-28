@@ -32,7 +32,7 @@ from sparsify.auto.utils import (
     request_student_teacher_configs,
     save_history,
 )
-from sparsify.schemas import APIArgs, Metrics, SparsificationTrainingConfig
+from sparsify.schemas import APIArgs, Metrics, RunMode, SparsificationTrainingConfig
 from tensorboard.program import TensorBoard
 
 
@@ -122,7 +122,7 @@ def main(api_args: Optional[APIArgs] = None):
             student_config = SparsificationTrainingConfig(**config_dict)
         else:
             teacher_config = SparsificationTrainingConfig(**config_dict)
-            if not api_args.teacher_only:
+            if RunMode(api_args.run_mode) != RunMode.teacher_only:
                 student_config = api_request_config(api_args)
 
         save_directory = api_args.resume

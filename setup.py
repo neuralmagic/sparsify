@@ -70,6 +70,7 @@ def _setup_entry_points() -> Dict:
     return {
         "console_scripts": [
             "sparsify.run=sparsify.cli.run:main",
+            "sparsify.login=sparsify.login:main",
         ]
     }
 

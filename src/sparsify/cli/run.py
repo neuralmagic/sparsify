@@ -67,7 +67,7 @@ def sparse_transfer(**kwargs):
     from sparsify import auto
 
     # recipe arg should be a sparse transfer recipe
-    auto.main(_parse_run_args_to_auto(**kwargs))
+    auto.main(_parse_run_args_to_auto(sparse_transfer=True, **kwargs))
 
 
 @main.command()
@@ -83,10 +83,10 @@ def training_aware(**kwargs):
     from sparsify import auto
 
     # recipe arg should be a training aware recipe
-    auto.main(_parse_run_args_to_auto(**kwargs))
+    auto.main(_parse_run_args_to_auto(sparse_transfer=False, **kwargs))
 
 
-def _parse_run_args_to_auto(**kwargs):
+def _parse_run_args_to_auto(sparse_transfer: bool, **kwargs):
     from sparsify.schemas import APIArgs
 
     if kwargs["eval_metric"] == "kl":
@@ -109,7 +109,7 @@ def _parse_run_args_to_auto(**kwargs):
         teacher_kwargs={},
         tuning_parameters=None,
         teacher_tuning_parameters=None,
-        teacher_only=False,
+        run_mode="sparse_transfer" if sparse_transfer else "training_aware",
     )
 
 

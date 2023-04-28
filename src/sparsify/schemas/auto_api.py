@@ -20,6 +20,7 @@ the Neural Magic API, and output to user
 import argparse
 import json
 import os
+from enum import Enum
 from functools import total_ordering
 from typing import Any, Dict, List, Optional, Union
 
@@ -32,12 +33,23 @@ from sparsify.utils import DEFAULT_OPTIMIZING_METRIC, METRICS, TASK_REGISTRY
 
 __all__ = [
     "APIArgs",
+    "RunMode",
     "SparsificationTrainingConfig",
     "Metrics",
     "DEFAULT_OUTPUT_DIRECTORY",
 ]
 
 DEFAULT_OUTPUT_DIRECTORY = "./output"
+
+
+class RunMode(Enum):
+    """
+    Class defining options for auto runner modes
+    """
+
+    training_aware = "training_aware"  # full sparsification run from dense baseline
+    sparse_transfer = "sparse_transfer"
+    teacher_only = "teacher_only"  # only train dense upstream teacher
 
 
 class APIArgs(BaseModel):
@@ -163,10 +175,13 @@ class APIArgs(BaseModel):
         "settings. See example tuning config output for expected format",
         default=None,
     )
-    teacher_only: bool = Field(
-        title="teacher_only",
-        description=("set to True to only auto tune the teacher"),
-        default=False,
+    run_mode: RunMode = Field(
+        title="run_mode",
+        description=(
+            "training run mode objective - 'sparse_transfer', 'training_aware', or "
+            "'teacher_only'. Default is 'sparse_transfer'"
+        ),
+        default=RunMode.sparse_transfer,
     )
 
     @validator("task")

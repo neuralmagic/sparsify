@@ -20,15 +20,8 @@ from sparsify.login import import_sparsifyml_authenticated
 from sparsify.utils import constants
 
 
-try:
-    from sparsifyml import one_shot
-except ImportError as e:
-
-    class SparsifyLoginRequired(Exception):
-        """Exception when sparsifyml has not been installed by sparsify.login"""
 sparsifyml = import_sparsifyml_authenticated()
-from sparsifyml import one_shot
-
+from sparsifyml import one_shot  # noqa: E402
 
 
 __all__ = [

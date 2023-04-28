@@ -16,7 +16,6 @@
 Helper functions for communicating with the Neural Magic API
 """
 import os
-import warnings
 from typing import Tuple
 
 import requests
@@ -28,7 +27,10 @@ from sparsify.utils import get_base_url, strtobool
 
 sparsifyml = import_sparsifyml_authenticated()
 
-from sparsifyml.auto import auto_training_config_initial, auto_training_config_tune
+from sparsifyml.auto import (  # noqa: E402
+    auto_training_config_initial,
+    auto_training_config_tune,
+)
 
 
 __all__ = ["api_request_config", "api_request_tune", "request_student_teacher_configs"]

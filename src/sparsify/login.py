@@ -79,7 +79,7 @@ def login(api_key: str) -> None:
     Logs into sparsify.
 
     :param api_key: The API key copied from your account
-    :raises InvalidApiKey: if the API key is invalid
+    :raises InvalidAPIKey: if the API key is invalid
     """
     access_token = get_access_token(api_key)
     overwrite_credentials(api_key=api_key)

@@ -133,7 +133,8 @@ def import_sparsifyml_authenticated() -> Optional[ModuleType]:
 
 def authenticate(api_key: Optional[str] = None) -> None:
     """
-    Authenticates with sparsify server using the credentials stored on disk.
+    Authenticates with sparsify server using the provided API key or the API key
+    stored on disk.
 
     :param api_key: The API key copied from your account, if not provided
         will attempt to use the credentials stored on disk

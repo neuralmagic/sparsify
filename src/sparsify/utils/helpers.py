@@ -14,10 +14,12 @@
 
 
 import base64
+import inspect
 import json
 import logging
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 import requests
 
@@ -37,6 +39,7 @@ __all__ = [
     "request_user_info",
     "set_log_level",
     "strtobool",
+    "UserInfo",
 ]
 _MAP = {
     "y": True,
@@ -200,6 +203,7 @@ def request_user_info(api_key: Optional[str] = None) -> Dict[Any, Any]:
     :param api_key: The api key to use for authentication
     :return: The requested user info
     """
+    _LOGGER.info("Requesting user info")
     id_token = get_token_response(api_key=api_key)["id_token"]
     user_info_segment = id_token.split(".")[1] + "=="
     user_info = json.loads(base64.urlsafe_b64decode(user_info_segment))
@@ -227,3 +231,24 @@ def set_log_level(logger: logging.Logger, level: int) -> None:
     logging.basicConfig(level=level)
     for handler in logger.handlers:
         handler.setLevel(level=level)
+
+
+@dataclass
+class UserInfo:
+    name: str
+    user_id: str
+    email: str
+    email_verified: bool
+    account_id: str
+    client_id: str
+    aud: List[str]
+
+    @classmethod
+    def from_dict(cls, kwargs):
+        return cls(
+            **{
+                key: value
+                for key, value in kwargs.items()
+                if key in inspect.signature(cls).parameters
+            }
+        )

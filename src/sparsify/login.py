@@ -24,7 +24,6 @@ Options:
 """
 
 import importlib
-import json
 import logging
 import subprocess
 import sys
@@ -34,14 +33,12 @@ from typing import Optional
 import click
 from sparsezoo.analyze.cli import CONTEXT_SETTINGS
 from sparsify.utils import (
-    credentials_exists,
-    get_access_token,
+    get_api_key_from_credentials,
     get_authenticated_pypi_url,
-    get_sparsify_credentials_path,
     overwrite_credentials,
+    request_access_token,
     set_log_level,
 )
-from sparsify.utils.exceptions import SparsifyLoginRequired
 from sparsify.version import version_major_minor
 
 
@@ -81,9 +78,9 @@ def login(api_key: str) -> None:
     :param api_key: The API key copied from your account
     :raises InvalidAPIKey: if the API key is invalid
     """
-    access_token = get_access_token(api_key)
+    access_token = request_access_token(api_key=api_key)
     overwrite_credentials(api_key=api_key)
-    install_sparsifyml(access_token)
+    install_sparsifyml(access_token=access_token)
 
 
 def install_sparsifyml(access_token: str) -> None:
@@ -134,26 +131,19 @@ def import_sparsifyml_authenticated() -> Optional[ModuleType]:
     return sparsifyml
 
 
-def authenticate() -> None:
+def authenticate(api_key: Optional[str] = None) -> None:
     """
     Authenticates with sparsify server using the credentials stored on disk.
 
+    :param api_key: The API key copied from your account, if not provided
+        will attempt to use the credentials stored on disk
     :raises SparsifyLoginRequired: if no valid credentials are found
     """
-    if not credentials_exists():
-        raise SparsifyLoginRequired(
-            "No valid sparsify credentials found. Please run `sparsify.login`"
-        )
 
-    with get_sparsify_credentials_path.open() as fp:
-        credentials = json.load(fp)
+    if not api_key:
+        api_key = get_api_key_from_credentials()
 
-    if "api_key" not in credentials:
-        raise SparsifyLoginRequired(
-            "No valid sparsify credentials found. Please run `sparsify.login`"
-        )
-
-    login(api_key=credentials["api_key"])
+    login(api_key=api_key)
 
 
 if __name__ == "__main__":

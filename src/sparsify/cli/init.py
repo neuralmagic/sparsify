@@ -12,6 +12,41 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+Usage: sparsify.init [OPTIONS]
+
+  sparsify.init CLI utility to initialize an experiment such that it will
+  provision all local and cloud resources necessary, additionally also allows
+  users to update hyper-param(s) before applying
+
+Options:
+  --experiment-type [sparse-transfer|one-shot|training-aware]
+                                  The type of the experiment to run
+  --use-case [image_classification|object_detection|question_answering|
+  segmentation|sentiment_analysis|text_classification|token_classification]
+                                  The task this model is for
+  --project-id TEXT               Id of the project this run belongs to.
+  --experiment-id TEXT            Id of the experiment this run belongs to.
+  --working-dir TEXT              Path to save the deployment ready model to
+                                  [default:
+                                  /home/rahul/github_projects/sparsify]
+  --model TEXT                    Path to model  [required]
+  --data TEXT                     Path to dataset folder containing training
+                                  data and optionally validation data
+  --eval-metric [kl|accuracy|mAP|recall|f1]
+                                  Metric that the model is evaluated against
+                                  on the task. None means it is based on
+                                  --use-case.  [default: kl]
+  --train-samples INTEGER         Number of samples to use from the dataset
+                                  for processing. None means the entire
+                                  dataset.
+  --val-samples INTEGER           Number of samples to use from the dataset
+                                  for processing. None means the entire
+                                  dataset.
+  --help                          Show this message and exit.  [default:
+                                  False]
+"""
+
 import logging
 from typing import Optional
 
@@ -20,6 +55,13 @@ import requests
 import click
 from sparsezoo.analyze.cli import CONTEXT_SETTINGS
 from sparsify.cli import opts
+from sparsify.login import authenticate
+from sparsify.utils.helpers import (
+    base_url,
+    request_access_token,
+    request_user_info,
+    set_log_level,
+)
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -45,17 +87,18 @@ def main(
     debug: bool = False,  # hidden arg for debug logs
 ):
     """
-    Sparsify.init CLI utility to initialize an experiment such that it will
+    sparsify.init CLI utility to initialize an experiment such that it will
     provision all local and cloud resources necessary, additionally also allows
     users to update hyper-param(s) before applying
     """
-    if debug:
-        logging.basicConfig(level=logging.DEBUG)
-
+    set_log_level(logger=_LOGGER, level=logging.DEBUG if debug else logging.INFO)
     session = create_session()
 
-    if project_id is None:
-        project_id = create_project(session=session)
+    _LOGGER.info("Running health check")
+    if not health_check(session=session):
+        raise RuntimeError("Health check failed")
+
+    user_info = request_user_info()
 
     if experiment_id is None:
         if experiment_type is None:
@@ -71,18 +114,33 @@ def main(
 
 
 def create_session() -> requests.Session:
+    """
+    Create a session with the Sparsify API, authenticated with the user's API key.
+    Additionally, set the session's headers to include the access token.
+
+    :return: A session with the Sparsify API
+    """
     session = requests.Session()
-    # TODO: fetch api-key from ~/.config/neuralmagic/credentials.json
-    #  request access token using api-key from
-    #  https://accounts.neuralmagic.com/v1/connect/token
-    access_token = ""
+    authenticate()
+    access_token = request_access_token()
     session.headers.update({"Authorization": f"Bearer {access_token}"})
     return session
 
 
-def create_project(session: requests.Session) -> str:
-    project_id = session.get(...)
-    return project_id
+def health_check(session: requests.Session) -> bool:
+    """
+    Check if the Sparsify API is up.
+
+    :return: True if the API is up, False otherwise
+    """
+    endpoint = base_url() + "/health/livez"
+    response = session.get(endpoint)
+    result = response.status_code == 200
+    if result:
+        _LOGGER.info("Health check passed")
+    else:
+        _LOGGER.error("Health check failed")
+    return result
 
 
 if __name__ == "__main__":

@@ -13,22 +13,28 @@
 # limitations under the License.
 
 
+import base64
 import json
 import logging
 from pathlib import Path
+from typing import Any, Dict, Optional
 
 import requests
 
-from sparsify.utils.exceptions import InvalidAPIKey
+from sparsify.utils.exceptions import InvalidAPIKey, SparsifyLoginRequired
 
 
 __all__ = [
+    "base_url",
     "credentials_exists",
-    "get_access_token",
+    "get_api_key_from_credentials",
     "get_authenticated_pypi_url",
     "get_sparsify_credentials_path",
     "get_token_url",
+    "get_token_response",
     "overwrite_credentials",
+    "request_access_token",
+    "request_user_info",
     "set_log_level",
     "strtobool",
 ]
@@ -71,6 +77,13 @@ def get_token_url():
     return "https://accounts.neuralmagic.com/v1/connect/token"
 
 
+def base_url():
+    """
+    :return: The base url to use for the sparsify api
+    """
+    return "https://sparsify.griffin.internal.neuralmagic.com"
+
+
 def get_sparsify_credentials_path() -> Path:
     """
     :return: The path to the neuralmagic credentials file
@@ -99,14 +112,49 @@ def overwrite_credentials(api_key: str) -> None:
     with credentials_path.open("w") as fp:
         json.dump(credentials, fp)
 
+    _LOGGER.info(f"Successfully over-wrote credentials to {credentials_path}")
 
-def get_access_token(api_key: str) -> str:
-    """
-    Get the access token for the given api key
 
-    :param api_key: The api key to use for authentication
-    :return: The requested access token
+def get_api_key_from_credentials() -> str:
     """
+    Get the api key from the credentials file
+
+    :precondition: The credentials file exists
+    :raises SparsifyLoginRequired: If the credentials file does not exist
+        or does not contain an api key
+    :return: The api key
+    """
+    _LOGGER.info("Checking for credentials file")
+    credentials_path = get_sparsify_credentials_path()
+    if not credentials_path.exists():
+        raise SparsifyLoginRequired(
+            "Please run `sparsify login --api-key <your-api-key>` to login"
+        )
+
+    _LOGGER.info(f"Found credentials file at {credentials_path}")
+    with credentials_path.open("r") as fp:
+        credentials = json.load(fp)
+
+    if "api_key" not in credentials:
+        raise SparsifyLoginRequired(
+            "No valid sparsify credentials found. Please run `sparsify.login`"
+        )
+    return credentials["api_key"]
+
+
+def get_token_response(api_key: Optional[str] = None) -> Dict[Any, Any]:
+    """
+    Get the token response for the given api key
+
+    :param api_key: The api key to use for authentication, if None, will use the
+        api key from the credentials file
+    :raises InvalidAPIKey: If the api key is invalid
+    :raises ValueError: If the response code is not 200
+    :return: The requested token response
+    """
+    if api_key is None:
+        api_key = get_api_key_from_credentials()
+
     response = requests.post(
         get_token_url(),
         data={
@@ -132,7 +180,31 @@ def get_access_token(api_key: str) -> str:
         raise ValueError(f"Unknown response code {response.status_code}")
 
     _LOGGER.info("Successfully authenticated with Neural Magic Account API key")
-    return response.json()["access_token"]
+    return response.json()
+
+
+def request_access_token(api_key: Optional[str] = None) -> str:
+    """
+    Get the access token for the given api key
+
+    :param api_key: The api key to use for authentication
+    :return: The requested access token
+    """
+    return get_token_response(api_key=api_key)["access_token"]
+
+
+def request_user_info(api_key: Optional[str] = None) -> Dict[Any, Any]:
+    """
+    Get the user info for the given api key
+
+    :param api_key: The api key to use for authentication
+    :return: The requested user info
+    """
+    id_token = get_token_response(api_key=api_key)["id_token"]
+    user_info_segment = id_token.split(".")[1] + "=="
+    user_info = json.loads(base64.urlsafe_b64decode(user_info_segment))
+    _LOGGER.debug(f"User info: {user_info}")
+    return user_info
 
 
 def get_authenticated_pypi_url(access_token: str) -> str:

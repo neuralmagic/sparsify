@@ -27,10 +27,9 @@ Options:
                                   The task this model is for
   --project-id TEXT               Id of the project this run belongs to.
   --experiment-id TEXT            Id of the experiment this run belongs to.
-  --working-dir TEXT              Path to save the deployment ready model to
-                                  [default:
-                                  /home/rahul/github_projects/sparsify]
-  --model TEXT                    Path to model  [required]
+  --working-dir TEXT              Path to save the deployment ready model to.
+  --model TEXT                    Path to model
+  --model-id TEXT                 sparsify model id
   --data TEXT                     Path to dataset folder containing training
                                   data and optionally validation data
   --eval-metric [kl|accuracy|mAP|recall|f1]
@@ -59,7 +58,7 @@ from sparsezoo.analyze import ModelAnalysis
 from sparsezoo.analyze.cli import CONTEXT_SETTINGS
 from sparsify.cli import opts
 from sparsify.login import authenticate
-from sparsify.utils.helpers import (
+from sparsify.utils import (
     UserInfo,
     base_url,
     request_access_token,
@@ -108,9 +107,7 @@ def main(
     user_info = UserInfo.from_dict(request_user_info())
     _LOGGER.info(f"Logged in as {user_info.email}")
 
-    session.headers.update(
-        {"Content-Type": "application/json", "accept": "application/json"}
-    )
+    session.headers.update({"Content-Type": "application/json", "accept": "application/json"})
     if project_id is None:
         project_id = create_new_project(session=session, user_info=user_info)
 

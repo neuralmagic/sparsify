@@ -145,12 +145,15 @@ def get_api_key_from_credentials() -> str:
     return credentials["api_key"]
 
 
-def get_token_response(api_key: Optional[str] = None) -> Dict[Any, Any]:
+def get_token_response(
+    api_key: Optional[str] = None, scope: str = "pypi:read"
+) -> Dict[Any, Any]:
     """
     Get the token response for the given api key
 
     :param api_key: The api key to use for authentication, if None, will use the
         api key from the credentials file
+    :param scope: The scope to request for the token
     :raises InvalidAPIKey: If the api key is invalid
     :raises ValueError: If the response code is not 200
     :return: The requested token response
@@ -165,7 +168,7 @@ def get_token_response(api_key: Optional[str] = None) -> Dict[Any, Any]:
             "username": "api-key",
             "client_id": "ee910196-cd8a-11ed-b74d-bb563cd16e9d",
             "password": api_key,
-            "scope": "pypi:read",
+            "scope": scope,
         },
     )
 
@@ -186,25 +189,31 @@ def get_token_response(api_key: Optional[str] = None) -> Dict[Any, Any]:
     return response.json()
 
 
-def request_access_token(api_key: Optional[str] = None) -> str:
+def request_access_token(
+    api_key: Optional[str] = None, scope: str = "pypi:read"
+) -> str:
     """
     Get the access token for the given api key
 
     :param api_key: The api key to use for authentication
+    :param scope: The scope to request for the token
     :return: The requested access token
     """
-    return get_token_response(api_key=api_key)["access_token"]
+    return get_token_response(api_key=api_key, scope=scope)["access_token"]
 
 
-def request_user_info(api_key: Optional[str] = None) -> Dict[Any, Any]:
+def request_user_info(
+    api_key: Optional[str] = None, scope: str = "pypi:read"
+) -> Dict[Any, Any]:
     """
     Get the user info for the given api key
 
     :param api_key: The api key to use for authentication
+    :param scope: The scope to request for the token
     :return: The requested user info
     """
     _LOGGER.info("Requesting user info")
-    id_token = get_token_response(api_key=api_key)["id_token"]
+    id_token = get_token_response(api_key=api_key, scope=scope)["id_token"]
     user_info_segment = id_token.split(".")[1] + "=="
     user_info = json.loads(base64.urlsafe_b64decode(user_info_segment))
     _LOGGER.debug(f"User info: {user_info}")

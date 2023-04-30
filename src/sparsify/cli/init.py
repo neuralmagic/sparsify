@@ -46,6 +46,7 @@ Options:
                                   False]
 """
 
+import json
 import logging
 import tempfile
 import uuid
@@ -104,10 +105,12 @@ def main(
     session = create_session()
     health_check(session=session)
 
-    user_info = UserInfo.from_dict(request_user_info())
+    user_info = UserInfo.from_dict(request_user_info(scope="sparsify:write"))
     _LOGGER.info(f"Logged in as {user_info.email}")
 
-    session.headers.update({"Content-Type": "application/json", "accept": "application/json"})
+    session.headers.update(
+        {"Content-Type": "application/json", "accept": "application/json"}
+    )
     if project_id is None:
         project_id = create_new_project(session=session, user_info=user_info)
 
@@ -162,7 +165,7 @@ def create_session() -> requests.Session:
     """
     session = requests.Session()
     authenticate()
-    access_token = request_access_token()
+    access_token = request_access_token(scope="sparsify:write")
     session.headers.update({"Authorization": f"Bearer {access_token}"})
     return session
 
@@ -200,11 +203,12 @@ def create_new_project(session: requests.Session, user_info: UserInfo):
     )
 
     _LOGGER.info("Creating a new project")
-    response = session.post(url=endpoint, data=payload)
+    response = session.post(url=endpoint, data=json.dumps(payload))
 
     response.raise_for_status()
-    _LOGGER.info("Project created")
-    return response.json()["project_id"]
+    project_id = response.json()["project_id"]
+    _LOGGER.info(f"Project created with id: {project_id}")
+    return
 
 
 def create_new_experiment(
@@ -237,7 +241,7 @@ def create_new_experiment(
         project_id=project_id,
     )
     _LOGGER.info("Creating a new experiment")
-    response = session.post(url=endpoint, data=payload)
+    response = session.post(url=endpoint, data=json.dumps(payload))
     response.raise_for_status()
     experiment_id = response.json()["experiment_id"]
     _LOGGER.info(f"Experiment created with id: {experiment_id}")
@@ -267,7 +271,7 @@ def create_model_id(
     payload = dict()  # noqa: F841
 
     _LOGGER.info("Creating a new model")
-    # response = session.post(url=endpoint, data=payload)
+    # response = session.post(url=endpoint, data=json.dumps(payload))
     # response.raise_for_status()
     # response_data = response.json()
 
@@ -314,7 +318,7 @@ def create_analysis(
     )
 
     _LOGGER.info("Creating a new analysis")
-    # response = session.post(url=endpoint, data=payload, files=files)
+    # response = session.post(url=endpoint, data=json.dumps(payload), files=files)
     # response.raise_for_status()
     # response_data = response.json()
 

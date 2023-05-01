@@ -31,10 +31,19 @@ version_nm_deps = f"{version_major_minor}.0"
 _PACKAGE_NAME = "sparsify" if is_release else "sparsify-nightly"
 
 
-_deps = ["pydantic>=1.8.2", "pyyaml>=5.0.0", "click~=8.0.0", "tensorboard>=2.0.0"]
+_deps = [
+    "pydantic>=1.8.2",
+    "pyyaml>=5.0.0",
+    "click~=8.0.0",
+    "tensorboard>=2.0.0",
+    "setuptools>=56.0.0",
+    "optuna>=3.0.2",
+    "onnxruntime-gpu",
+]
 _nm_deps = [
     f"{'sparsezoo' if is_release else 'sparsezoo-nightly'}~={version_nm_deps}",
     f"{'sparseml' if is_release else 'sparseml-nightly'}[torchvision]~={version_nm_deps}",  # noqa E501
+    f"{'deepsparse' if is_release else 'deepsparse-nightly'}~={version_nm_deps}",
 ]
 
 

@@ -21,35 +21,34 @@ Usage: sparsify.init [OPTIONS]
 
 Options:
   --experiment-type [sparse-transfer|one-shot|training-aware]
-                                  The type of the experiment to run
+                                  The type of the experiment to run.
   --use-case [image_classification|object_detection|question_answering|
   segmentation|sentiment_analysis|text_classification|token_classification]
-                                  The task this model is for
+                                  The task this model is for.
   --project-id TEXT               Id of the project this run belongs to.
   --experiment-id TEXT            Id of the experiment this run belongs to.
   --working-dir TEXT              Path to save the deployment ready model to.
-  --model TEXT                    Path to model
-  --model-id TEXT                 sparsify model id
+  --model TEXT                    Path to model.
+  --model-id TEXT                 sparsify model id.
   --data TEXT                     Path to dataset folder containing training
-                                  data and optionally validation data
+                                  data and optionally validation data.
   --eval-metric [kl|accuracy|mAP|recall|f1]
                                   Metric that the model is evaluated against
-                                  on the task. None means it is based on
-                                  --use-case.  [default: kl]
-  --train-samples INTEGER         Number of samples to use from the dataset
-                                  for processing. None means the entire
-                                  dataset.
-  --val-samples INTEGER           Number of samples to use from the dataset
-                                  for processing. None means the entire
-                                  dataset.
+                                  on the task.  [default: kl]
+  --train-samples INTEGER         Number of train samples to use from the
+                                  dataset for processing. Will use all train
+                                  samples if not specified.
+  --val-samples INTEGER           Number of validation samples to use from the
+                                  dataset for processing. Will use all eval
+                                  samples if not specified.
   --help                          Show this message and exit.  [default:
                                   False]
 """
 
 import json
 import logging
-import tempfile
 import uuid
+from pathlib import Path
 from typing import Optional, TextIO
 
 import requests
@@ -62,6 +61,7 @@ from sparsify.login import authenticate
 from sparsify.utils import (
     UserInfo,
     base_url,
+    get_non_existent_filename,
     request_access_token,
     request_user_info,
     set_log_level,
@@ -74,8 +74,8 @@ _LOGGER = logging.getLogger(__name__)
 @click.command(context_settings=CONTEXT_SETTINGS)
 @opts.EXPERIMENT_TYPE
 @opts.add_info_opts
-@click.option("--model", help="Path to model")
-@click.option("--model-id", help="sparsify model id")
+@click.option("--model", help="Path to model.")
+@click.option("--model-id", help="sparsify model id.")
 @opts.add_data_opts
 @click.option("--debug/--no-debug", default=False, hidden=True)
 def main(
@@ -88,8 +88,8 @@ def main(
     working_dir: Optional[str],
     data: Optional[str],
     eval_metric: Optional[str],
-    train_samples: Optional[str],
-    val_samples: Optional[str],
+    train_samples: Optional[int],
+    val_samples: Optional[int],
     debug: bool = False,  # hidden arg for debug logs
 ):
     """
@@ -140,18 +140,21 @@ def main(
             experiment_id=experiment_id,
         )
 
-    with tempfile.NamedTemporaryFile() as temp_analysis:
-        analysis = ModelAnalysis.create(model)
-        analysis.yaml(temp_analysis.name)
-        analysis_id = create_analysis(
-            session=session,
-            user_info=user_info,
-            model_id=model_id,
-            project_id=project_id,
-            experiment_id=experiment_id,
-            analysis_type="model_analysis",
-            analysis_file=temp_analysis,
-        )
+    working_dir = Path(working_dir).mkdir(parents=True, exist_ok=True)
+    analysis_file_path = str(
+        get_non_existent_filename(workng_dir=working_dir, filename="analysis.yaml")
+    )
+    analysis = ModelAnalysis.create(model)
+    analysis.yaml(file_path=analysis_file_path)
+    analysis_id = create_analysis(
+        session=session,
+        user_info=user_info,
+        model_id=model_id,
+        project_id=project_id,
+        experiment_id=experiment_id,
+        analysis_type="model_analysis",
+        analysis_file=analysis_file_path,
+    )
 
     _LOGGER.debug(f"Local args: {locals()}")
 
@@ -170,7 +173,7 @@ def create_session() -> requests.Session:
     return session
 
 
-def health_check(session: requests.Session) -> bool:
+def health_check(session: requests.Session) -> None:
     """
     Check if the Sparsify API is up.
 
@@ -178,21 +181,26 @@ def health_check(session: requests.Session) -> bool:
     :return: True if the API is up, else raises a RuntimeError
     """
     endpoint = base_url() + "/health/livez"
-    _LOGGER.info("Running health check")
+    _LOGGER.debug("Running health check")
     response = session.get(endpoint)
-    if response.status_code != 200:
-        raise RuntimeError("Health check failed")
 
-    _LOGGER.info("Health check passed")
-    return True
+    try:
+        response.raise_for_status()
+    except requests.HTTPError as http_error:
+        raise RuntimeError(
+            "Unable to access sparsify API, "
+            f"Error Code: {http_error.response.status_code}"
+        ) from http_error
 
 
-def create_new_project(session: requests.Session, user_info: UserInfo):
+def create_new_project(session: requests.Session, user_info: UserInfo) -> str:
     """
     Create a project for the user if one does not exist.
 
+    :raises HTTPError: If the API returns an error
     :param session: A session with the Sparsify API
     :param user_info: The user's info
+    :return: The project id
     """
     endpoint = base_url() + "/v1/projects"
     payload = dict(
@@ -208,7 +216,7 @@ def create_new_project(session: requests.Session, user_info: UserInfo):
     response.raise_for_status()
     project_id = response.json()["project_id"]
     _LOGGER.info(f"Project created with id: {project_id}")
-    return
+    return project_id
 
 
 def create_new_experiment(
@@ -221,6 +229,7 @@ def create_new_experiment(
     """
     Create a new experiment for the user
 
+    :raises HTTPError: If the API returns an error
     :param session: A session with the Sparsify API
     :param user_info: The user's info
     :param project_id: The project id
@@ -260,6 +269,7 @@ def create_model_id(
     Note: As of now this function always returns a dummy model id,
     this will be updated when the backend is ready
 
+    :raises HTTPError: If the API returns an error
     :param session: A session with the Sparsify API
     :param user_info: The user's info
     :param model: The path to the model
@@ -297,6 +307,7 @@ def create_analysis(
     Note: As of now this function always returns a dummy analysis id,
     this will be updated when the backend is ready
 
+    :raises HTTPError: If the API returns an error
     :param session: A session with the Sparsify API
     :param user_info: The user's info
     :param model_id: The model id

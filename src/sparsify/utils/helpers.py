@@ -34,6 +34,7 @@ __all__ = [
     "get_sparsify_credentials_path",
     "get_token_url",
     "get_token_response",
+    "get_non_existent_filename",
     "overwrite_credentials",
     "request_access_token",
     "request_user_info",
@@ -240,6 +241,25 @@ def set_log_level(logger: logging.Logger, level: int) -> None:
     logging.basicConfig(level=level)
     for handler in logger.handlers:
         handler.setLevel(level=level)
+
+
+def get_non_existent_filename(workng_dir: Path, filename: str) -> Path:
+    """
+    Get a filename that does not exist in the given directory
+
+    :param workng_dir: The directory to check for the filename
+    :param filename: The filename to check for
+    :return: The filename that does not exist in the given directory
+    """
+    if not workng_dir.exists():
+        return workng_dir.joinpath(filename)
+
+    i = 1
+    while workng_dir.joinpath(filename).exists():
+        filename = f"{i}_{filename}"
+        i += 1
+
+    return workng_dir.joinpath(filename)
 
 
 @dataclass

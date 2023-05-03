@@ -32,20 +32,15 @@ from typing import Optional
 
 import click
 from sparsezoo.analyze.cli import CONTEXT_SETTINGS
-from sparsify.utils import (
-    get_api_key_from_credentials,
-    get_authenticated_pypi_url,
-    overwrite_credentials,
-    request_access_token,
-    set_log_level,
-)
+from sparsify.utils import SparsifyCredentials, set_log_level
+from sparsify.utils.exceptions import InvalidAPIKey, SparsifyLoginRequired
 from sparsify.version import version_major_minor
 
 
 __all__ = [
     "login",
     "import_sparsifyml_authenticated",
-    "authenticate",
+    "is_authenticated",
 ]
 
 
@@ -54,7 +49,10 @@ _LOGGER = logging.getLogger(__name__)
 
 @click.command(context_settings=CONTEXT_SETTINGS)
 @click.option(
-    "--api-key", type=str, help="API key copied from your account.", required=True
+    "--api-key",
+    type=str,
+    help="API key copied from your account. If not provided, "
+    "will attempt to use the credentials stored on disk.",
 )
 @click.version_option(version=version_major_minor)
 @click.option("--debug/--no-debug", default=False, hidden=True)
@@ -71,16 +69,20 @@ def main(api_key: str, debug: bool = False):
     _LOGGER.info("Logged in successfully, sparsify setup is complete.")
 
 
-def login(api_key: str) -> None:
+def login(api_key: Optional[str] = None) -> None:
     """
     Logs into sparsify.
 
     :param api_key: The API key copied from your account
-    :raises InvalidAPIKey: if the API key is invalid
     """
-    access_token = request_access_token(api_key=api_key)
-    overwrite_credentials(api_key=api_key)
-    install_sparsifyml(access_token=access_token)
+    if api_key:
+        credentials = SparsifyCredentials.from_api_key(api_key=api_key)
+    else:
+        _LOGGER.info(
+            "No API key provided, attempting to use credentials stored on disk"
+        )
+        credentials = SparsifyCredentials()
+    install_sparsifyml(access_token=credentials.get_access_token())
 
 
 def install_sparsifyml(access_token: str) -> None:
@@ -103,6 +105,7 @@ def install_sparsifyml(access_token: str) -> None:
             f"Installing sparsifyml version {version_major_minor} "
             "from neuralmagic pypi server"
         )
+        pypi_url_template = "https://nm:{}@pypi.neuralmagic.com"
         subprocess.check_call(
             [
                 sys.executable,
@@ -110,7 +113,7 @@ def install_sparsifyml(access_token: str) -> None:
                 "pip",
                 "install",
                 "--index-url",
-                get_authenticated_pypi_url(access_token=access_token),
+                pypi_url_template.format(access_token),
                 f"sparsifyml_nightly>={version_major_minor}",
             ]
         )
@@ -125,26 +128,26 @@ def import_sparsifyml_authenticated() -> Optional[ModuleType]:
     """
     Authenticates and imports sparsifyml.
     """
-    authenticate()
+    is_authenticated()
     import sparsifyml
 
     return sparsifyml
 
 
-def authenticate(api_key: Optional[str] = None) -> None:
+def is_authenticated(api_key: Optional[str] = None) -> bool:
     """
     Authenticates with sparsify server using the provided API key or the API key
     stored on disk.
 
     :param api_key: The API key copied from your account, if not provided
         will attempt to use the credentials stored on disk
-    :raises SparsifyLoginRequired: if no valid credentials are found
+    :return: True if authenticated, False otherwise
     """
-
-    if not api_key:
-        api_key = get_api_key_from_credentials()
-
-    login(api_key=api_key)
+    try:
+        login(api_key=api_key)
+    except (InvalidAPIKey, SparsifyLoginRequired):
+        return False
+    return True
 
 
 if __name__ == "__main__":

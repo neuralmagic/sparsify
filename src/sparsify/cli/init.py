@@ -57,14 +57,12 @@ import click
 from sparsezoo.analyze import ModelAnalysis
 from sparsezoo.analyze.cli import CONTEXT_SETTINGS
 from sparsify.cli import opts
-from sparsify.login import authenticate
 from sparsify.utils import (
     UserInfo,
-    base_url,
     get_non_existent_filename,
-    request_access_token,
-    request_user_info,
     set_log_level,
+    sparsify_base_url,
+    SparsifyCredentials,
 )
 
 
@@ -102,10 +100,12 @@ def main(
     if model is None and model_id is None:
         raise ValueError("--model or --model-id must be specified.")
 
-    session = create_session()
+    credentials = SparsifyCredentials()
+    access_token = credentials.get_access_token(scope="sparsify:write")
+    session = create_session(access_token=access_token)
     health_check(session=session)
 
-    user_info = UserInfo.from_dict(request_user_info(scope="sparsify:write"))
+    user_info = UserInfo.from_dict(credentials.get_user_info())
     _LOGGER.info(f"Logged in as {user_info.email}")
 
     session.headers.update(
@@ -159,7 +159,7 @@ def main(
     _LOGGER.debug(f"Local args: {locals()}")
 
 
-def create_session() -> requests.Session:
+def create_session(access_token: str) -> requests.Session:
     """
     Create a session with the Sparsify API, authenticated with the user's API key.
     Additionally, set the session's headers to include the access token.
@@ -167,8 +167,6 @@ def create_session() -> requests.Session:
     :return: A session with the Sparsify API
     """
     session = requests.Session()
-    authenticate()
-    access_token = request_access_token(scope="sparsify:write")
     session.headers.update({"Authorization": f"Bearer {access_token}"})
     return session
 
@@ -180,7 +178,7 @@ def health_check(session: requests.Session) -> None:
     :raises RuntimeError: If the API is not up
     :return: True if the API is up, else raises a RuntimeError
     """
-    endpoint = base_url() + "/health/livez"
+    endpoint = sparsify_base_url() + "/health/livez"
     _LOGGER.debug("Running health check")
     response = session.get(endpoint)
 
@@ -202,7 +200,7 @@ def create_new_project(session: requests.Session, user_info: UserInfo) -> str:
     :param user_info: The user's info
     :return: The project id
     """
-    endpoint = base_url() + "/v1/projects"
+    endpoint = sparsify_base_url() + "/v1/projects"
     payload = dict(
         name=f"{user_info.name}_sparsify_project_{uuid.uuid4()}",
         description="sparsify_project created by sparsify.init for {user_info.email}}",
@@ -237,7 +235,7 @@ def create_new_experiment(
     :param use_case: The use case
     :return: The experiment id
     """
-    endpoint = base_url() + "/v1/experiments"
+    endpoint = sparsify_base_url() + "/v1/experiments"
     experiment_name = (
         f"{user_info.name}_sparsify_experiment_"
         f"{experiment_type}_{use_case}_{uuid.uuid4()}"
@@ -277,7 +275,7 @@ def create_model_id(
     :param experiment_id: The experiment id
     :return: The model id
     """
-    endpoint = base_url() + "/v1/models"  # noqa: F841
+    endpoint = sparsify_base_url() + "/v1/models"  # noqa: F841
     payload = dict()  # noqa: F841
 
     _LOGGER.info("Creating a new model")
@@ -317,7 +315,7 @@ def create_analysis(
     :param analysis_file: The analysis file
     :return: The analysis id
     """
-    endpoint = base_url() + "/v1/analyses"  # noqa: F841
+    endpoint = sparsify_base_url() + "/v1/analyses"  # noqa: F841
     files = dict(analysis_file=analysis_file)  # noqa: F841
     payload = dict(  # noqa: F841
         analysis_type=analysis_type,

@@ -18,8 +18,9 @@ import inspect
 import json
 import logging
 from dataclasses import dataclass
+from json import JSONDecodeError
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 import requests
 
@@ -27,20 +28,12 @@ from sparsify.utils.exceptions import InvalidAPIKey, SparsifyLoginRequired
 
 
 __all__ = [
-    "base_url",
-    "credentials_exists",
-    "get_api_key_from_credentials",
-    "get_authenticated_pypi_url",
-    "get_sparsify_credentials_path",
-    "get_token_url",
-    "get_token_response",
+    "sparsify_base_url",
     "get_non_existent_filename",
-    "overwrite_credentials",
-    "request_access_token",
-    "request_user_info",
     "set_log_level",
     "strtobool",
     "UserInfo",
+    "SparsifyCredentials",
 ]
 _MAP = {
     "y": True,
@@ -74,161 +67,11 @@ def strtobool(value):
         raise ValueError('"{}" is not a valid bool value'.format(value))
 
 
-def get_token_url():
-    """
-    :return: The url to use for getting an access token
-    """
-    return "https://accounts.neuralmagic.com/v1/connect/token"
-
-
-def base_url():
+def sparsify_base_url():
     """
     :return: The base url to use for the sparsify api
     """
     return "https://sparsify.griffin.internal.neuralmagic.com"
-
-
-def get_sparsify_credentials_path() -> Path:
-    """
-    :return: The path to the neuralmagic credentials file
-    """
-    return Path.home().joinpath(".config", "neuralmagic", "credentials.json")
-
-
-def credentials_exists() -> bool:
-    """
-    :return: True if the credentials file exists, False otherwise
-    """
-    return get_sparsify_credentials_path().exists()
-
-
-def overwrite_credentials(api_key: str) -> None:
-    """
-    Overwrite the credentials file with the given api key
-    or create a new file if it does not exist
-
-    :param api_key: The api key to write to the credentials file
-    """
-    credentials_path = get_sparsify_credentials_path()
-    credentials_path.parent.mkdir(parents=True, exist_ok=True)
-    credentials = {"api_key": api_key}
-
-    with credentials_path.open("w") as fp:
-        json.dump(credentials, fp)
-
-    _LOGGER.info(f"Successfully over-wrote credentials to {credentials_path}")
-
-
-def get_api_key_from_credentials() -> str:
-    """
-    Get the api key from the credentials file
-
-    :precondition: The credentials file exists
-    :raises SparsifyLoginRequired: If the credentials file does not exist
-        or does not contain an api key
-    :return: The api key
-    """
-    _LOGGER.info("Checking for credentials file")
-    credentials_path = get_sparsify_credentials_path()
-    if not credentials_path.exists():
-        raise SparsifyLoginRequired(
-            "Please run `sparsify login --api-key <your-api-key>` to login"
-        )
-
-    _LOGGER.info(f"Found credentials file at {credentials_path}")
-    with credentials_path.open("r") as fp:
-        credentials = json.load(fp)
-
-    if "api_key" not in credentials:
-        raise SparsifyLoginRequired(
-            "No valid sparsify credentials found. Please run `sparsify.login`"
-        )
-    return credentials["api_key"]
-
-
-def get_token_response(
-    api_key: Optional[str] = None, scope: str = "pypi:read"
-) -> Dict[Any, Any]:
-    """
-    Get the token response for the given api key
-
-    :param api_key: The api key to use for authentication, if None, will use the
-        api key from the credentials file
-    :param scope: The scope to request for the token
-    :raises InvalidAPIKey: If the api key is invalid
-    :raises ValueError: If the response code is not 200
-    :return: The requested token response
-    """
-    if api_key is None:
-        api_key = get_api_key_from_credentials()
-
-    response = requests.post(
-        get_token_url(),
-        data={
-            "grant_type": "password",
-            "username": "api-key",
-            "client_id": "ee910196-cd8a-11ed-b74d-bb563cd16e9d",
-            "password": api_key,
-            "scope": scope,
-        },
-    )
-
-    try:
-        response.raise_for_status()
-    except requests.HTTPError as http_error:
-        error_message = (
-            "Sorry, we were unable to authenticate your Neural Magic Account API key. "
-            "If you believe this is a mistake, contact support@neuralmagic.com "
-            "to help remedy this issue."
-        )
-        raise InvalidAPIKey(error_message) from http_error
-
-    if response.status_code != 200:
-        raise ValueError(f"Unknown response code {response.status_code}")
-
-    _LOGGER.info("Successfully authenticated with Neural Magic Account API key")
-    return response.json()
-
-
-def request_access_token(
-    api_key: Optional[str] = None, scope: str = "pypi:read"
-) -> str:
-    """
-    Get the access token for the given api key
-
-    :param api_key: The api key to use for authentication
-    :param scope: The scope to request for the token
-    :return: The requested access token
-    """
-    return get_token_response(api_key=api_key, scope=scope)["access_token"]
-
-
-def request_user_info(
-    api_key: Optional[str] = None, scope: str = "pypi:read"
-) -> Dict[Any, Any]:
-    """
-    Get the user info for the given api key
-
-    :param api_key: The api key to use for authentication
-    :param scope: The scope to request for the token
-    :return: The requested user info
-    """
-    _LOGGER.info("Requesting user info")
-    id_token = get_token_response(api_key=api_key, scope=scope)["id_token"]
-    user_info_segment = id_token.split(".")[1] + "=="
-    user_info = json.loads(base64.urlsafe_b64decode(user_info_segment))
-    _LOGGER.debug(f"User info: {user_info}")
-    return user_info
-
-
-def get_authenticated_pypi_url(access_token: str) -> str:
-    """
-    Get the authenticated pypi url for the given access token
-
-    :return: The authenticated pypi url
-    """
-    pypi_url_template = "https://nm:{}@pypi.neuralmagic.com"
-    return pypi_url_template.format(access_token)
 
 
 def set_log_level(logger: logging.Logger, level: int) -> None:
@@ -281,3 +124,133 @@ class UserInfo:
                 if key in inspect.signature(cls).parameters
             }
         )
+
+
+class SparsifyCredentials:
+    _credentials_path: Path = Path.home().joinpath(
+        ".config", "neuralmagic", "credentials.json"
+    )
+    _token_url: str = "https://accounts.neuralmagic.com/v1/connect/token"
+
+    def __init__(self):
+        if not self._credentials_path.exists():
+            raise SparsifyLoginRequired(
+                "Please run `sparsify login --api-key <your-api-key>` to login"
+            )
+
+        try:
+            with self._credentials_path.open("r") as fp:
+                credentials = json.load(fp)
+        except JSONDecodeError as json_error:
+            raise SparsifyLoginRequired(
+                "The credentials file is not valid JSON. "
+                "Please run `sparsify login --api-key <your-api-key>` to login"
+            ) from json_error
+
+        if "api_key" not in credentials:
+            raise SparsifyLoginRequired(
+                "No valid sparsify credentials found. Please run `sparsify.login`"
+            )
+        self._api_key = credentials["api_key"]
+        self.authenticate()
+
+    @property
+    def credentials_path(self):
+        """
+        :return: The path to the sparsify credentials file
+        """
+        return self._credentials_path
+
+    @property
+    def api_key(self):
+        """
+        :return: The api key
+        """
+        return self._api_key
+
+    @classmethod
+    def from_api_key(cls, api_key: str) -> "SparsifyCredentials":
+        """
+        Overwrite the credentials file with the given api key
+        or create a new file if it does not exist
+
+        :postcondition: The credentials file exists
+        :param api_key: The api key to write to the credentials file
+        :return: The SparsifyCredentials object
+        """
+        cls._credentials_path.parent.mkdir(parents=True, exist_ok=True)
+        if cls._credentials_path.exists():
+            _LOGGER.debug("Overwriting existing credentials file")
+
+        with open(cls._credentials_path, "w") as fp:
+            json.dump({"api_key": api_key}, fp)
+        return cls()
+
+    def _get_token_response(self, scope: str = "pypi:read") -> Dict[Any, Any]:
+        """
+        Get the token response using credentials, with the given scope
+
+
+        :param scope: The scope to request for the token
+        :raises InvalidAPIKey: If the api key is invalid
+        :raises ValueError: If the response code is not 200
+        :return: The requested token response
+        """
+
+        response = requests.post(
+            self._token_url,
+            data={
+                "grant_type": "password",
+                "username": "api-key",
+                "client_id": "ee910196-cd8a-11ed-b74d-bb563cd16e9d",
+                "password": self.api_key,
+                "scope": scope,
+            },
+        )
+
+        try:
+            response.raise_for_status()
+        except requests.HTTPError as http_error:
+            error_message = (
+                "Sorry, we were unable to authenticate your "
+                "Neural Magic Account API key. If you believe "
+                "this is a mistake, contact support@neuralmagic.com "
+                "to help remedy this issue."
+            )
+            raise InvalidAPIKey(error_message) from http_error
+
+        if response.status_code != 200:
+            raise ValueError(f"Unknown response code {response.status_code}")
+        return response.json()
+
+    def authenticate(self):
+        """
+        Authenticate credentials with sparsify api
+
+        :param scope: The scope to request for the token
+        :return: The requested access token
+        """
+
+        self._get_token_response()
+        _LOGGER.info("Successfully authenticated with Neural Magic Account API key. ")
+
+    def get_access_token(self, scope: str = "pypi:read") -> str:
+        """
+        Get the access token for the specified scope
+
+        :param scope: The scope to request for the token
+        :return: The requested access token
+        """
+        return self._get_token_response(scope=scope)["access_token"]
+
+    def get_user_info(self) -> UserInfo:
+        """
+        Get the user info for current credentials
+
+        :precodition: The credentials are authenticated
+        :return: The requested UserInfo object
+        """
+        id_token = self._get_token_response(scope="sparsify:write")["id_token"]
+        user_info_segment = id_token.split(".")[1] + "=="
+        user_info = json.loads(base64.urlsafe_b64decode(user_info_segment))
+        return UserInfo.from_dict(user_info)

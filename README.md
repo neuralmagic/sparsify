@@ -54,7 +54,7 @@ limitations under the License.
 ## 🚨 FEBRUARY 2023 MAJOR ANNOUNCEMENT 🚨
 We are excited to mention the next generation of Sparsify is underway. You can expect more features and simplicity to build sparse models to target optimal general performance at scale.
 
-We will share more in the coming weeks. In the meantime, sign up for our [Early Access Waitlist](https://neuralmagic.com/request-early-access-to-sparsify/) and be the first to try the Sparsify Alpha. 
+We will share more in the coming months. In the meantime, sign up for our [Early Access Waitlist](https://neuralmagic.com/request-early-access-to-sparsify/) and be the first to try the Sparsify Alpha. 
 
 ## Overview
 
@@ -77,7 +77,7 @@ Coming soon!
 
 ## Installation
 
-This repository is tested on Python 3.7-3.9, Linux/Debian systems, and Chrome 87+.
+This repository is tested on Python 3.7-3.10, Linux/Debian systems, and Chrome 87+.
 It is recommended to install in a [virtual environment](https://docs.python.org/3/library/venv.html) to keep your system in order.
 
 Install with pip using:
@@ -215,7 +215,7 @@ We appreciate contributions to the code, examples, integrations, and documentati
 
 ### Join
 
-For user help or questions about Sparsify, sign up or log in to our [**Deep Sparse Community Slack**](https://join.slack.com/t/discuss-neuralmagic/shared_invite/zt-q1a1cnvo-YBoICSIw3L1dmQpjBeDurQ). We are growing the community member by member and happy to see you there. Bugs, feature requests, or additional questions can also be posted to our [GitHub Issue Queue.](https://github.com/neuralmagic/sparsify/issues)
+For user help or questions about Sparsify, sign up or log in to our [**Neural Magic Community Slack**](https://join.slack.com/t/discuss-neuralmagic/shared_invite/zt-q1a1cnvo-YBoICSIw3L1dmQpjBeDurQ). We are growing the community member by member and happy to see you there. Bugs, feature requests, or additional questions can also be posted to our [GitHub Issue Queue.](https://github.com/neuralmagic/sparsify/issues)
 
 You can get the latest news, webinar and event invites, research papers, and other ML Performance tidbits by [subscribing](https://neuralmagic.com/subscribe/) to the Neural Magic community.
 

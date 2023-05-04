@@ -84,14 +84,6 @@ def main():
         help="Metric that the model is evaluated against on the task.",
     )
 
-    optim = parser.add_argument_group("Optimization")
-    optim.add_argument(
-        "--opt-level",
-        default="balanced",
-        choices=["balanced", "throughput", "latency", "size", "memory"],
-        help="What to optimize the model for.",
-    )
-
     args = parser.parse_args()
 
     one_shot.one_shot(
@@ -101,7 +93,6 @@ def main():
         num_samples=args.num_samples,
         deploy_dir=Path(args.deploy_dir),
         eval_metric=args.eval_metric,
-        opt_level=args.opt_level,
         recipe_file=Path(args.recipe) if args.recipe is not None else None,
     )
 

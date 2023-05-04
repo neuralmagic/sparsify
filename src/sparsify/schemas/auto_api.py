@@ -70,15 +70,13 @@ class APIArgs(BaseModel):
         description="Absolute path to save directory",
         default=DEFAULT_OUTPUT_DIRECTORY,
     )
-    performance: Union[str, float] = Field(
-        title="performance",
+    optim_level: float = Field(
+        title="optim_level",
         description=(
-            "Preferred tradeoff between accuracy and performance. Can be a string or a "
-            "float value in the range [0, 1]. Currently supported strings (and their "
-            "respective float values are `accuracy` (0), `balanced` (0.5), and "
-            "`performant` (1.0)"
+            "Preferred tradeoff between accuracy and performance. "
+            "Float value in the range [0, 1]. Default 0.5"
         ),
-        default="balanced",
+        default=0.5,
     )
     base_model: Optional[str] = Field(
         title="base_model",

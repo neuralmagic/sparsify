@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from typing import List, Union
+from typing import List, Optional, Union
 
 
 class TaskName:
@@ -34,8 +34,13 @@ class TaskName:
     __slots__ = ("name", "aliases", "domain", "sub_domain")
 
     def __init__(
-        self, name: str, domain: str, sub_domain: str, aliases: List[str] = []
+        self,
+        name: str,
+        domain: str,
+        sub_domain: str,
+        aliases: Optional[List[str]] = None,
     ):
+        aliases = aliases or []
         for field in [name, domain, sub_domain]:
             if not isinstance(field, str):
                 raise ValueError(f"'{field}' must be a string")
@@ -70,9 +75,9 @@ class TaskName:
 
     def __eq__(self, other: Union[str, "TaskName"]):
         if isinstance(other, TaskName):
-            return other.name == self.name
+            return _task_name_eq(self.name, other.name)
         elif isinstance(other, str):
-            return other.lower() in self.aliases
+            return any(_task_name_eq(other, alias) for alias in self.aliases)
         else:
             return False
 
@@ -88,3 +93,11 @@ class TaskName:
         if "_" in task:
             aliases.append(task.replace("_", "-"))
         return aliases
+
+
+def _task_name_eq(str_1: str, str_2: str) -> bool:
+    # ignore case, ignore separators (-, _, ' ')
+    def _strip_separators(string):
+        return string.lower().replace(" ", "").replace("-", "").replace("_", "")
+
+    return _strip_separators(str_1) == _strip_separators(str_2)

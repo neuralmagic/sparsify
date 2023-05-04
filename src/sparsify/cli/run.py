@@ -96,7 +96,7 @@ def _parse_run_args_to_auto(sparse_transfer: bool, **kwargs):
         task=kwargs["use_case"],
         dataset=kwargs["data"],
         save_directory=kwargs["working_dir"],
-        performance=kwargs["optim_level"],
+        optim_level=kwargs["optim_level"],
         base_model=kwargs["model"],
         recipe=kwargs["recipe"],
         recipe_args=kwargs["recipe_args"] or {},

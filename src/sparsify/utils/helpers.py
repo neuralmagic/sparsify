@@ -14,13 +14,16 @@
 
 
 import base64
+import functools
 import inspect
 import json
 import logging
+import uuid
 from dataclasses import dataclass
 from json import JSONDecodeError
 from pathlib import Path
 from typing import Any, Dict, List
+from urllib.parse import urljoin
 
 import requests
 
@@ -28,12 +31,13 @@ from sparsify.utils.exceptions import InvalidAPIKey, SparsifyLoginRequired
 
 
 __all__ = [
-    "sparsify_base_url",
     "get_non_existent_filename",
     "set_log_level",
     "strtobool",
     "UserInfo",
     "SparsifyCredentials",
+    "SparsifyClient",
+    "SparsifySession",
 ]
 _MAP = {
     "y": True,
@@ -67,13 +71,6 @@ def strtobool(value):
         raise ValueError('"{}" is not a valid bool value'.format(value))
 
 
-def sparsify_base_url():
-    """
-    :return: The base url to use for the sparsify api
-    """
-    return "https://sparsify.griffin.internal.neuralmagic.com"
-
-
 def set_log_level(logger: logging.Logger, level: int) -> None:
     """
     Set the log level for the given logger and all of its handlers
@@ -103,6 +100,25 @@ def get_non_existent_filename(workng_dir: Path, filename: str) -> Path:
         i += 1
 
     return workng_dir.joinpath(filename)
+
+
+def debug_logging(function):
+    """
+    A decorator to log the function name, args, and kwargs before call,
+    and the function name and return value after call
+    """
+
+    @functools.wraps(function)
+    def wrapper(*args, **kwargs):
+        _LOGGER.debug(
+            f"Calling function {function.__qualname__} with "
+            f"args {args} and kwargs {kwargs}"
+        )
+        result = function(*args, **kwargs)
+        _LOGGER.debug(f"Function {function.__name__} returned {result}")
+        return result
+
+    return wrapper
 
 
 @dataclass
@@ -254,3 +270,248 @@ class SparsifyCredentials:
         user_info_segment = id_token.split(".")[1] + "=="
         user_info = json.loads(base64.urlsafe_b64decode(user_info_segment))
         return UserInfo.from_dict(user_info)
+
+
+class SparsifySession(requests.Session):
+    """
+    A requests session that uses the sparsify base url
+    """
+
+    def __init__(self):
+        super().__init__()
+        self.base_url = "https://sparsify.griffin.internal.neuralmagic.com"
+
+    def request(self, method, url, *args, **kwargs):
+        joined_url = urljoin(self.base_url, url)
+
+        response = super().request(method, joined_url, *args, **kwargs)
+        try:
+            response.raise_for_status()
+        except requests.HTTPError as http_error:
+            raise RuntimeError(
+                "Unable to access sparsify API, "
+                f"Error Code: {http_error.response.status_code}"
+            ) from http_error
+        return response
+
+
+class SparsifyClient(object):
+    """
+    A client for the sparsify API
+
+    :param access_token: The access token to use for the client
+    """
+
+    def __init__(self, access_token: str):
+        self._session: SparsifySession = SparsifySession()
+        self._session.headers.update(
+            {
+                "Authorization": f"Bearer {access_token}",
+                "Content-Type": "application/json",
+                "accept": "application/json",
+            }
+        )
+
+    def get(self, url: str, *args, **kwargs):
+        """
+        Make a get request to the sparsify API
+
+        :param url: The endpoint to make the request to
+        """
+        return self._session.get(url, *args, **kwargs)
+
+    def post(self, url: str, *args, **kwargs):
+        """
+        Make a post request to the sparsify API
+
+        :param url: The endpoint to make the request to
+        """
+        return self._session.post(url, *args, **kwargs)
+
+    def put(self, url: str, *args, **kwargs):
+        """
+        Make a put request to the sparsify API
+
+        :param url: The endpoint to make the request to
+        """
+        return self._session.put(url, *args, **kwargs)
+
+    def delete(self, url: str, *args, **kwargs):
+        """
+        Make a delete request to the sparsify API
+
+        :param url: The endpoint to make the request to
+        """
+        return self._session.delete(url, *args, **kwargs)
+
+    @debug_logging
+    def health_check(self):
+        """
+        Checks if the sparsify API is up and running
+        """
+        return self.get("/health/livez")
+
+    @debug_logging
+    def create_new_project(self, user_info: UserInfo):
+        """
+        Create a project for the user.
+
+        :param user_info: The user's info
+        :return: The project id
+        """
+        endpoint = "/v1/projects"
+        payload = dict(
+            name=f"{user_info.name}_sparsify_project_{uuid.uuid4()}",
+            description="sparsify_project created by sparsify.init for "
+            f"{user_info.email}",
+            owner_user_id=user_info.user_id,
+            account_id=user_info.account_id,
+        )
+
+        _LOGGER.info("Creating a new project")
+        response = self.post(url=endpoint, data=json.dumps(payload))
+        project_id = response.json()["project_id"]
+        _LOGGER.info(f"Project created with id: {project_id}")
+        return project_id
+
+    @debug_logging
+    def create_new_experiment(
+        self,
+        user_info: UserInfo,
+        project_id: str,
+        experiment_type: str,
+        use_case: str,
+    ) -> str:
+        """
+        Create a new experiment for the user
+
+        :param user_info: The user's info
+        :param project_id: The project id
+        :param experiment_type: The type of experiment
+        :param use_case: The use case
+        :return: The experiment id
+        """
+        endpoint = "/v1/experiments"
+        experiment_name = (
+            f"{user_info.name}_sparsify_experiment_"
+            f"{experiment_type}_{use_case}_{uuid.uuid4()}"
+        )
+        payload = dict(
+            name=experiment_name,
+            experiment_type=experiment_type,
+            owner_user_id=user_info.user_id,
+            account_id=user_info.account_id,
+            project_id=project_id,
+        )
+        _LOGGER.info("Creating a new experiment")
+        response = self.post(url=endpoint, data=json.dumps(payload))
+        experiment_id = response.json()["experiment_id"]
+        _LOGGER.info(f"Experiment created with id: {experiment_id}")
+        return experiment_id
+
+    @debug_logging
+    def create_model_id(
+        user_info: UserInfo,
+        model: str,
+        project_id: str,
+        experiment_id: str,
+    ) -> str:
+        """
+        Create a new model id for the user
+        Note: As of now this function always returns a dummy model id,
+        this will be updated when the backend is ready
+
+        :param user_info: The user's info
+        :param model: The path to the model
+        :param project_id: The project id
+        :param experiment_id: The experiment id
+        :return: The model id
+        """
+        endpoint = "/v1/models"  # noqa: F841
+        # update needed payload
+        payload = dict()  # noqa: F841
+
+        _LOGGER.info("Creating a new model")
+        # response = self.post(url=endpoint, data=json.dumps(payload))
+        # response_data = response.json()
+
+        # TODO: uncomment above and remove below when backend is ready
+        response_data = dict(model_id="test_model_id")
+        model_id = response_data["model_id"]
+
+        _LOGGER.info(f"Created model id: {model_id}")
+        return model_id
+
+    @debug_logging
+    def create_analysis(
+        user_info: UserInfo,
+        model_id: str,
+        project_id: str,
+        experiment_id: str,
+        analysis_type: str,
+        analysis_file: str,
+    ) -> str:
+        """
+        Create a new analysis for the user
+        Note: As of now this function always returns a dummy analysis id,
+        this will be updated when the backend is ready
+
+        :param user_info: The user's info
+        :param model_id: The model id
+        :param project_id: The project id
+        :param experiment_id: The experiment id
+        :param analysis_type: The type of analysis
+        :param analysis_file: The analysis file
+        :return: The analysis id
+        """
+        endpoint = "/v1/analyses"  # noqa: F841
+        files = dict(analysis_file=open(analysis_file))  # noqa: F841
+        payload = dict(  # noqa: F841
+            analysis_type=analysis_type,
+            owner_user_id=user_info.user_id,
+            account_id=user_info.account_id,
+            project_id=project_id,
+            experiment_id=experiment_id,
+            model_id=model_id,
+        )
+
+        _LOGGER.info("Creating a new analysis")
+        # response = self.put(url=endpoint, data=json.dumps(payload), files=files)
+        # response_data = response.json()
+
+        # TODO: uncomment above and remove below when backend is ready
+        response_data = dict(analysis_id="test_analysis_id")
+        analysis_id = response_data["analysis_id"]
+
+        _LOGGER.info(f"Created analysis id: {analysis_id}")
+        return analysis_id
+
+    @debug_logging
+    def update_experiment_status(self, experiment_id: str, status: str):
+        """
+        Update the experiment status
+
+        :param experiment_id: The experiment id
+        :param status: The status to update to
+        """
+        endpoint = f"/v1/experiments/{experiment_id}"
+        payload = dict(status=status)
+
+        _LOGGER.info(f"Updating experiment status to {status}")
+        self.put(url=endpoint, data=json.dumps(payload))
+        _LOGGER.info(f"Experiment status updated to {status}")
+
+    @debug_logging
+    def update_experiment_eval_metric(self, experiment_id: str, eval_metric: str):
+        """
+        Update the experiment eval metric
+
+        :param experiment_id: The experiment id
+        :param eval_metric: The eval metric to update to
+        """
+        endpoint = f"/v1/experiments/{experiment_id}"
+        payload = dict(eval_metric=eval_metric)
+
+        _LOGGER.info(f"Updating experiment status to {eval_metric}")
+        self.put(url=endpoint, data=json.dumps(payload))
+        _LOGGER.info(f"Experiment status updated to {eval_metric}")

@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import json
 from pathlib import Path
 
 import click
@@ -42,6 +43,10 @@ def one_shot(**kwargs):
     # raises exception if sparsifyml not installed
     from sparsify.one_shot import one_shot
 
+    recipe_args = kwargs.get("recipe_args")
+    if isinstance(recipe_args, str):
+        recipe_args = json.loads(recipe_args)
+
     one_shot.one_shot(
         task=kwargs["use_case"],
         model_file=Path(kwargs["model"]),
@@ -51,6 +56,7 @@ def one_shot(**kwargs):
         eval_metric=kwargs["eval_metric"],
         opt_level=kwargs["optim_level"],
         recipe_file=Path(kwargs["recipe"]) if kwargs["recipe"] is not None else None,
+        recipe_args=recipe_args,
     )
 
 

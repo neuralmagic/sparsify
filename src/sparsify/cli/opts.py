@@ -34,6 +34,7 @@ __all__ = [
     "DEPLOY_SCENARIO",
     "RECIPE",
     "RECIPE_ARGS",
+    "OPTIM_LEVEL",
     "add_data_opts",
     "add_deploy_opts",
     "add_info_opts",

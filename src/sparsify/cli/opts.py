@@ -35,11 +35,6 @@ __all__ = [
     "RECIPE",
     "RECIPE_ARGS",
     "OPTIM_LEVEL",
-    "OPTIM_FOR_HARDWARE",
-    "MAX_LATENCY",
-    "MIN_THROUGHPUT",
-    "MAX_SIZE",
-    "MAX_MEMORY",
     "add_data_opts",
     "add_deploy_opts",
     "add_info_opts",
@@ -49,7 +44,6 @@ __all__ = [
 
 _EXPERIMENT_TYPES = ["sparse-transfer", "one-shot", "training-aware"]
 _EVAL_METRICS = ["kl", "accuracy", "mAP", "recall", "f1"]
-_OPTIM_LEVELS = ["balanced", "throughput", "latency", "size", "memory"]
 _DEPLOY_ENGINES = ["deepsparse", "onnxruntime"]
 
 EXPERIMENT_TYPE = click.option(
@@ -134,16 +128,13 @@ RECIPE = click.option(
 RECIPE_ARGS = click.option("--recipe-args", default=None, type=str)
 OPTIM_LEVEL = click.option(
     "--optim-level",
-    default=_OPTIM_LEVELS[0],
-    type=click.Choice(_OPTIM_LEVELS),
-    help="What to optimize the model for.",
+    default=0.5,
+    type=float,
+    help=(
+        "Preferred tradeoff between accuracy and performance. Float value in the range "
+        "[0, 1]. Default 0.5"
+    ),
 )
-OPTIM_FOR_HARDWARE = click.option("--optim-for-hardware", default=False, is_flag=True)
-
-MAX_LATENCY = click.option("--max-latency", default=None, type=int)
-MIN_THROUGHPUT = click.option("--min-throughput", default=None, type=int)
-MAX_SIZE = click.option("--max-size", default=None, type=int)
-MAX_MEMORY = click.option("--max-memory", default=None, type=int)
 
 
 def add_info_opts(f):
@@ -183,12 +174,6 @@ def add_deploy_opts(f):
 
 def add_optim_opts(f):
     for fn in [
-        MAX_MEMORY,
-        MAX_SIZE,
-        MIN_THROUGHPUT,
-        MAX_LATENCY,
-        OPTIM_FOR_HARDWARE,
-        OPTIM_LEVEL,
         RECIPE_ARGS,
         RECIPE,
     ]:

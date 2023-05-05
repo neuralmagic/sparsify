@@ -54,6 +54,7 @@ def one_shot(**kwargs):
         num_samples=kwargs["train_samples"] or -1,
         deploy_dir=Path(kwargs["working_dir"]),
         eval_metric=kwargs["eval_metric"],
+        opt_level=kwargs["optim_level"],
         recipe_file=Path(kwargs["recipe"]) if kwargs["recipe"] is not None else None,
         recipe_args=recipe_args,
     )

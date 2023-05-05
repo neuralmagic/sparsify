@@ -84,6 +84,17 @@ def main():
         help="Metric that the model is evaluated against on the task.",
     )
 
+    optim = parser.add_argument_group("Optimization")
+    optim.add_argument(
+        "--optim-level",
+        default=0.5,
+        type=int,
+        help=(
+            "Preferred tradeoff between accuracy and performance. Float value in the "
+            "range [0, 1]. Default 0.5"
+        ),
+    )
+
     args = parser.parse_args()
 
     one_shot.one_shot(
@@ -93,6 +104,7 @@ def main():
         num_samples=args.num_samples,
         deploy_dir=Path(args.deploy_dir),
         eval_metric=args.eval_metric,
+        optim_level=args.optim_level,
         recipe_file=Path(args.recipe) if args.recipe is not None else None,
     )
 

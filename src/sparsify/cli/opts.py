@@ -125,6 +125,15 @@ RECIPE = click.option(
     "--recipe", default=None, type=str, help="Recipe to override automatic recipe."
 )
 RECIPE_ARGS = click.option("--recipe-args", default=None, type=str)
+OPTIM_LEVEL = click.option(
+    "--optim-level",
+    default=0.5,
+    type=float,
+    help=(
+        "Preferred tradeoff between accuracy and performance. Float value in the range "
+        "[0, 1]. Default 0.5"
+    ),
+)
 
 
 def add_info_opts(f):

@@ -18,13 +18,16 @@ Usage: sparsify.login [OPTIONS]
   sparsify.login utility to log into sparsify locally.
 
 Options:
-  --api-key TEXT  API key copied from your account.  [required]
+  --api-key TEXT  API key copied from your account. If not provided, will
+                  attempt to read it from `SPARSIFY_API_KEY` env variable or
+                  use the credentials stored on disk.
   --version       Show the version and exit.  [default: False]
   --help          Show this message and exit.  [default: False]
 """
 
 import importlib
 import logging
+import os
 import subprocess
 import sys
 from types import ModuleType
@@ -52,7 +55,8 @@ _LOGGER = logging.getLogger(__name__)
     "--api-key",
     type=str,
     help="API key copied from your account. If not provided, "
-    "will attempt to use the credentials stored on disk.",
+    "will attempt to read it from `SPARSIFY_API_KEY` env variaable or "
+    "use the credentials stored on disk.",
 )
 @click.version_option(version=version_major_minor)
 @click.option("--debug/--no-debug", default=False, hidden=True)
@@ -77,6 +81,11 @@ def login(api_key: Optional[str] = None) -> None:
     """
     if api_key:
         credentials = SparsifyCredentials.from_api_key(api_key=api_key)
+    elif os.getenv("SPARSIFY_API_KEY"):
+        _LOGGER.info("Using API key from `SPARSIFY_API_KEY` env variable")
+        credentials = SparsifyCredentials.from_api_key(
+            api_key=os.getenv("SPARSIFY_API_KEY")
+        )
     else:
         _LOGGER.info(
             "No API key provided, attempting to use credentials stored on disk"

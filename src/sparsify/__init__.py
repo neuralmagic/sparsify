@@ -16,3 +16,4 @@
 # isort: skip_file
 
 from .login import *
+from .init import *

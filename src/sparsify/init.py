@@ -63,6 +63,7 @@ from sparsify.utils import (
 )
 
 
+__all__ = ["init"]
 _LOGGER = logging.getLogger(__name__)
 
 
@@ -93,7 +94,40 @@ def main(
     users to update hyper-param(s) before applying
     """
     set_log_level(logger=_LOGGER, level=logging.DEBUG if debug else logging.INFO)
+    init(
+        model=model,
+        model_id=model_id,
+        experiment_id=experiment_id,
+        experiment_type=experiment_type,
+        use_case=use_case,
+        working_dir=working_dir,
+        eval_metric=eval_metric,
+    )
+    _LOGGER.debug(f"Local args: {locals()}")
 
+
+def init(
+    model: Optional[str] = None,
+    model_id: Optional[str] = None,
+    experiment_id: Optional[str] = None,
+    experiment_type: Optional[str] = None,
+    use_case: Optional[str] = None,
+    working_dir: Optional[str] = None,
+    eval_metric: Optional[str] = None,
+) -> None:
+    """
+    Initialize an experiment and provision all local and cloud resources necessary
+
+    :param model: Path to model.
+    :param model_id: sparsify model id. Must be specified if model is not specified.
+    :param experiment_id: Id of the experiment this run belongs to.
+    :param experiment_type: The type of the experiment to run, required
+        if experiment_id is not specified.
+    :param use_case: The task this model is for, required if experiment_id
+        is not specified.
+    :param working_dir: dir Path to save the model analysis yaml file.
+    :param eval_metric: Metric that the model is evaluated against on the task.
+    """
     if model is None and model_id is None:
         raise ValueError("--model or --model-id must be specified.")
 
@@ -148,7 +182,7 @@ def main(
     client.update_experiment_status(
         experiment_id=experiment_id, status=ExperimentStatus.INITIALIZED.value
     )
-    _LOGGER.debug(f"Local args: {locals()}")
+    _LOGGER.info(f"Experiment {experiment_id} initialized. Analysis id: {analysis_id}")
 
 
 if __name__ == "__main__":

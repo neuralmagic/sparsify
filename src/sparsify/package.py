@@ -75,16 +75,16 @@ def package_instructions(deployment_path: str, task: str):
     dockerfile_directory = Path(__file__).parent.parent / "docker"
     dockerfile_path = dockerfile_directory / "Dockerfile"
     deployment_instructions = f"""
-        Use the dockerfile in {dockerfile_path} to build deepsparse
-        image and run the `deepsparse.server` container.
+        Use the dockerfile in {dockerfile_path} to build sparsify
+        image and run the `deepsparse.server`
 
         Run the following command inside `{dockerfile_directory}`
         directory:
 
         ```bash
-        docker build -t deepsparse_docker . && docker run -it \\
-        -v {deployment_path}:/home/deployment  deepsparse_docker \\
-         deepsparse.server --task {task} --model_path /home/deployment
+        docker build -t sparsify_docker . && docker run -it \\
+        -v {deployment_path}:/home/deployment  sparsify_docker \\
+         sparsify.server --task {task} --model_path /home/deployment
         ```
     """
     return deployment_instructions

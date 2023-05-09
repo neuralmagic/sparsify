@@ -79,12 +79,13 @@ def package_instructions(deployment_path: str, task: str):
         image and run the `deepsparse.server`
 
         Run the following command inside `{dockerfile_directory}`
-        directory:
+        directory (Note: replace <API_KEY> with appropriate sparsify api key):
 
         ```bash
-        docker build -t sparsify_docker . && docker run -it \\
-        -v {deployment_path}:/home/deployment  sparsify_docker \\
-         sparsify.server --task {task} --model_path /home/deployment
+        docker build --build-arg SPARSIFY_API_KEY=<API_KEY> -t sparsify_docker . \\
+            && docker run -it -v {deployment_path}:/home/deployment  \\
+                sparsify_docker sparsify.server \\
+                    --task {task} --model_path /home/deployment
         ```
     """
     return deployment_instructions

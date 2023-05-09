@@ -47,7 +47,7 @@ Options:
 
 import logging
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Tuple
 
 import click
 from sparsezoo.analyze import ModelAnalysis
@@ -114,7 +114,8 @@ def init(
     use_case: Optional[str] = None,
     working_dir: Optional[str] = None,
     eval_metric: Optional[str] = None,
-) -> None:
+    **kwargs,
+) -> Tuple[str, str]:
     """
     Initialize an experiment and provision all local and cloud resources necessary
 
@@ -127,6 +128,7 @@ def init(
         is not specified.
     :param working_dir: dir Path to save the model analysis yaml file.
     :param eval_metric: Metric that the model is evaluated against on the task.
+    :return: Tuple of experiment_id and project_id
     """
     if model is None and model_id is None:
         raise ValueError("--model or --model-id must be specified.")
@@ -183,6 +185,7 @@ def init(
         experiment_id=experiment_id, status=ExperimentStatus.INITIALIZED.value
     )
     _LOGGER.info(f"Experiment {experiment_id} initialized. Analysis id: {analysis_id}")
+    return experiment_id, project_id
 
 
 if __name__ == "__main__":

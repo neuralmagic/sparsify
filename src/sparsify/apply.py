@@ -15,30 +15,29 @@
 """
 Usage: sparsify.apply [OPTIONS]
 
+  sparsify.apply CLI utility to apply sparsify to a given experiment, or
+  initialize and run an experiment if not created yet.
+
 Options:
   --experiment-type [sparse-transfer|one-shot|training-aware]
                                   The type of the experiment to run.
-  --use-case [image_classification|object_detection|question_answering|
-  segmentation|sentiment_analysis|text_classification|token_classification]
+  --use-case [document_classification|image_classification|
+  information_retrieval|masked_language_modeling|
+  multilabel_text_classification|object_detection|question_answering|
+  segmentation|sentiment_analysis|text_classification|
+  token_classification]
                                   The task this model is for.
   --project-id TEXT               Id of the project this run belongs to.
   --experiment-id TEXT            Id of the experiment this run belongs to.
   --working-dir TEXT              Path to save the deployment ready model to.
+                                  [default: cwd]
   --model TEXT                    Path to model.
   --teacher TEXT
-  --optimizer [Adadelta|Adagrad|Adam|AdamW|SparseAdam|Adamax|ASGD|SGD|
-  RAdam|Rprop|RMSprop|NAdam|LBFGS]
+  --optimizer [Adadelta|Adagrad|Adam|AdamW|SparseAdam|Adamax|
+  ASGD|SGD|RAdam|Rprop|RMSprop|NAdam|LBFGS]
                                   The optimizer to use
   --recipe TEXT                   Recipe to override automatic recipe.
   --recipe-args TEXT
-  --optim-level [balanced|throughput|latency|size|memory]
-                                  What to optimize the model for.  
-                                  [default: balanced]
-  --optim-for-hardware            [default: False]
-  --max-latency INTEGER
-  --min-throughput INTEGER
-  --max-size INTEGER
-  --max-memory INTEGER
   --data TEXT                     Path to dataset folder containing training
                                   data and optionally validation data.
   --eval-metric [kl|accuracy|mAP|recall|f1]
@@ -54,21 +53,33 @@ Options:
   --deploy-engine [deepsparse|onnxruntime]
                                   [default: deepsparse]
   --deploy-scenario TEXT
+  --optim-level FLOAT             Preferred tradeoff between accuracy and
+                                  performance. Float value in the range [0,
+                                  1]. Default 0.5  [default: 0.5]
+  --model-id TEXT                 sparsify model id.
   --version                       Show the version and exit.  [default: False]
+  --max-latency FLOAT             Maximum latency in ms.
+  --min-throughput FLOAT          Minimum throughput in images per second.
+  --max-size FLOAT                Maximum model size in MB.
+  --max-memory FLOAT              Maximum memory usage in MB.
   --help                          Show this message and exit.  [default:
                                   False]
 """
 
 import logging
-from typing import Optional
+import subprocess
 
 import click
+from sparsezoo.analyze import ModelAnalysis
 from sparsezoo.analyze.cli import CONTEXT_SETTINGS
+from sparsify import init, login
 from sparsify.cli import opts
-from sparsify.utils import SparsifyCredentials, set_log_level
-from sparsify.utils.helpers import SparsifyClient, UserInfo
+from sparsify.utils import SparsifyClient, SparsifyCredentials, UserInfo, set_log_level
+from sparsify.utils.helpers import ExperimentStatus, get_non_existent_filename
 from sparsify.version import version_major_minor
 
+
+__all__ = ["apply"]
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -80,21 +91,34 @@ _LOGGER = logging.getLogger(__name__)
 @opts.add_optim_opts
 @opts.add_data_opts
 @opts.add_deploy_opts
+@opts.OPTIM_LEVEL
 @click.option("--model-id", help="sparsify model id.")
-@click.option("--debug/--no-debug", default=False, hidden=True)
 @click.version_option(version=version_major_minor)
+@click.option("--max-latency", type=float, help="Maximum latency in ms.")
+@click.option(
+    "--min-throughput", type=float, help="Minimum throughput in images per second."
+)
+@click.option("--max-size", type=float, help="Maximum model size in MB.")
+@click.option("--max-memory", type=float, help="Maximum memory usage in MB.")
+@click.option("--debug/--no-debug", default=False, hidden=True)
 def main(
-    model: Optional[str],
-    model_id: Optional[str],
-    experiment_id: Optional[str],
-    experiment_type: Optional[str],
-    use_case: Optional[str],
-    project_id: Optional[str],
-    working_dir: Optional[str],
-    debug: bool = False,
+    debug: bool = False,  # hidden arg for debug logs
     **kwargs,
 ):
+    """
+    sparsify.apply CLI utility to apply sparsify to a given experiment, or initialize
+    and run an experiment if not created yet.
+    """
     set_log_level(logger=_LOGGER, level=logging.DEBUG if debug else logging.INFO)
+    apply(**kwargs)
+    _LOGGER.debug(f"locals: {locals()}")
+
+
+def apply(**kwargs):
+    login()
+    experiment_id = kwargs.get("experiment_id")
+    if experiment_id is None:
+        experiment_id, project_id = init(**kwargs)
     credentials = SparsifyCredentials()
     access_token = credentials.get_access_token(scope="sparsify:write")
     client = SparsifyClient(access_token=access_token)
@@ -102,47 +126,88 @@ def main(
     user_info: UserInfo = credentials.get_user_info()
     _LOGGER.info(f"Logged in as {user_info.email}")
 
-    if model is None and model_id is None:
-        raise ValueError("--model or --model-id must be specified.")
-
-    if project_id is None:
-        project_id = client.create_new_project(user_info=user_info)
-
-    if experiment_id is None:
-        if experiment_type is None:
-            raise ValueError(
-                "--experiment-type required when --experiment-id is not specified."
-            )
-        if use_case is None:
-            raise ValueError(
-                "--use-case required when --experiment-id is not specified."
-            )
-        experiment_id = client.create_new_experiment(
-            user_info=user_info,
-            project_id=project_id,
-            experiment_type=experiment_type,
-            use_case=use_case,
+    experiment_type = kwargs.get("experiment_type")
+    if experiment_type is None:
+        experiment_type = client.get(
+            url=f"/experiments/{experiment_id}/experiment_type"
         )
+        kwargs.update({"experiment_type": experiment_type})
 
-    if model_id is None:
-        model_id = client.create_model_id(
-            user_info=user_info,
-            model=model,
-            project_id=project_id,
-            experiment_id=experiment_id,
-        )
+    if kwargs["project_id"] is None:
+        project_id = client.get(url=f"/experiments/{experiment_id}/project_id")
+        kwargs.update({"project_id": project_id})
 
+    command_args = []
     if experiment_type == "sparse-transfer":
-        # TODO: sparsify.run sparse-transfer
-        ...
+        command_args = [
+            experiment_type,
+            "--use-case",
+            kwargs["use_case"],
+            "--model",
+            kwargs["model"],
+            "--data",
+            kwargs["data"],
+            "--train-samples",
+            kwargs["train_samples"],
+            "--val-samples",
+            kwargs["val_samples"],
+            "--eval-metric",
+            kwargs["eval_metric"],
+            "--optim-level",
+            kwargs["optim_level"],
+            "--recipe",
+            kwargs["recipe"],
+            "--recipe-args",
+            kwargs["recipe_args"],
+        ]
     elif experiment_type == "one-shot":
-        # TODO: sparsify.run one-shot
-        ...
+        for key, value in kwargs.items():
+            if value is not None:
+                command_args.extend([f"--{key}", value])
+
     elif experiment_type == "training-aware":
-        # TODO: sparsify.run training-aware
-        ...
+        for key, value in kwargs.items():
+            if value is not None:
+                command_args.extend([f"--{key}", value])
     else:
         raise ValueError(f"Invalid experiment type {experiment_type}")
+
+    command_str = ["sparsify", "run", experiment_type].extend(command_args)
+
+    try:
+        client.update_experiment_status(
+            experiment_id=experiment_id, status=ExperimentStatus.IN_PROGRESS.value
+        )
+        subprocess.run(command_str)
+        analysis_file_path = str(
+            get_non_existent_filename(
+                workng_dir=kwargs["working_dir"], filename="analysis.yaml"
+            )
+        )
+        analysis = ModelAnalysis.create(kwargs["working_dir"])
+        analysis.yaml(file_path=analysis_file_path)
+        analysis_id = client.create_analysis(
+            user_info=user_info,
+            model_id=kwargs["model_id"],
+            project_id=project_id,
+            experiment_id=experiment_id,
+            analysis_type="model_analysis",
+            analysis_file=analysis_file_path,
+        )
+
+        client.update_experiment_status(
+            experiment_id=experiment_id, status=ExperimentStatus.COMPLETE.value
+        )
+    except Exception as exception:
+        client.update_experiment_status(
+            experiment_id=experiment_id, status=ExperimentStatus.ERROR.value
+        )
+        raise exception
+
+    _LOGGER.info(
+        f"Experiment {experiment_id} complete, analysis id: {analysis_id}, "
+        f"artifacts saved to {kwargs['working_dir']}"
+    )
 
 
 if __name__ == "__main__":

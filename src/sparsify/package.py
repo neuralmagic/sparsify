@@ -12,10 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# flake8: noqa
-# isort: skip_file
+import logging
 
-from .login import *
-from .init import *
-from .apply import *
-from .package import *
+import click
+from sparsezoo.analyze.cli import CONTEXT_SETTINGS
+from sparsify.utils import set_log_level
+from sparsify.version import version_major_minor
+
+
+_LOGGER = logging.getLogger(__name__)
+
+
+@click.command(context_settings=CONTEXT_SETTINGS)
+@click.version_option(version=version_major_minor)
+@click.option("--debug/--no-debug", default=False, hidden=True)
+def main(debug: bool = False, **kwargs):
+    set_log_level(logger=_LOGGER, level=logging.DEBUG if debug else logging.INFO)
+    _LOGGER.debug(f"locals: {locals()}")

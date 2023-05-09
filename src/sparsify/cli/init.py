@@ -54,6 +54,7 @@ from sparsezoo.analyze import ModelAnalysis
 from sparsezoo.analyze.cli import CONTEXT_SETTINGS
 from sparsify.cli import opts
 from sparsify.utils import (
+    ExperimentStatus,
     SparsifyClient,
     SparsifyCredentials,
     UserInfo,
@@ -103,32 +104,29 @@ def main(
     user_info: UserInfo = credentials.get_user_info()
     _LOGGER.info(f"Logged in as {user_info.email}")
 
-    if project_id is None:
-        project_id = client.create_new_project(user_info=user_info)
+    project_id = client.create_project_if_does_not_exist(user_info=user_info)
 
-    if experiment_id is None:
-        if experiment_type is None:
-            raise ValueError(
-                "--experiment-type required when --experiment-id is not specified."
-            )
-        if use_case is None:
-            raise ValueError(
-                "--use-case required when --experiment-id is not specified."
-            )
-        experiment_id = client.create_new_experiment(
-            user_info=user_info,
-            project_id=project_id,
-            experiment_type=experiment_type,
-            use_case=use_case,
-        )
+    experiment_id = client.create_experiment_if_does_not_exist(
+        user_info=user_info,
+        project_id=project_id,
+        experiment_type=experiment_type,
+        use_case=use_case,
+        experiment_id=experiment_id,
+    )
 
-    if model_id is None:
-        model_id = client.create_model_id(
-            user_info=user_info,
-            model=model,
-            project_id=project_id,
-            experiment_id=experiment_id,
-        )
+    model_id = client.create_model_id_if_does_not_exist(
+        user_info=user_info,
+        model=model,
+        project_id=project_id,
+        experiment_id=experiment_id,
+        model_id=model_id,
+    )
+
+    # check if experiment already initialized or errored out
+    experiment_status = client.get(url=f"/experiments/{experiment_id}/status")
+    if not ExperimentStatus.initialization_pending(status=experiment_status):
+        _LOGGER.info(f"Experiment {experiment_id} already initialized.")
+        return
 
     working_dir = Path(working_dir).mkdir(parents=True, exist_ok=True)
     analysis_file_path = str(
@@ -147,7 +145,9 @@ def main(
     client.update_experiment_eval_metric(
         experiment_id=experiment_id, eval_metric=eval_metric
     )
-    client.update_experiment_status(experiment_id=experiment_id, status="initialized")
+    client.update_experiment_status(
+        experiment_id=experiment_id, status=ExperimentStatus.INITIALIZED.value
+    )
     _LOGGER.debug(f"Local args: {locals()}")
 
 

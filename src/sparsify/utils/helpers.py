@@ -23,7 +23,7 @@ from dataclasses import dataclass
 from enum import Enum, unique
 from json import JSONDecodeError
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 from urllib.parse import urljoin
 
 import requests
@@ -134,6 +134,15 @@ class ExperimentStatus(Enum):
     IN_PROGRESS = "in_progress"
     COMPLETE = "complete"
     ERROR = "error"
+
+    @classmethod
+    def initialization_pending(cls, status: str) -> bool:
+        """
+        :return: True if the experiment is pending initialization,
+            or errored out (In which case it could be
+            initialized again)
+        """
+        return status in [cls.PENDING.value, cls.ERROR.value]
 
 
 @dataclass
@@ -367,14 +376,27 @@ class SparsifyClient(object):
         return self.get("/health/livez")
 
     @debug_logging
-    def create_new_project(self, user_info: UserInfo):
+    def create_project_if_does_not_exist(
+        self, user_info: UserInfo, project_id: Optional[str] = None
+    ):
         """
-        Create a project for the user.
+        Create a project for the user if it does not exist.
+        Additionally, if the project_id is provided, verify it exists
 
         :param user_info: The user's info
+        :param project_id: Optional project id to verify
         :return: The project id
         """
-        endpoint = "/v1/projects"
+        endpoint = "/projects"
+        if project_id:
+            try:
+                self.get(url=f"{endpoint}/{project_id}")
+            except requests.HTTPError as http_error:
+                raise ValueError(
+                    f"Could not verify if project: {project_id} exists."
+                ) from http_error
+            return project_id
+
         payload = dict(
             name=f"{user_info.name}_sparsify_project_{uuid.uuid4()}",
             description="sparsify_project created by sparsify.init for "
@@ -390,23 +412,47 @@ class SparsifyClient(object):
         return project_id
 
     @debug_logging
-    def create_new_experiment(
+    def create_experiment_if_does_not_exist(
         self,
         user_info: UserInfo,
         project_id: str,
-        experiment_type: str,
-        use_case: str,
+        experiment_type: Optional[str] = None,
+        use_case: Optional[str] = None,
+        experiment_id: Optional[str] = None,
     ) -> str:
         """
-        Create a new experiment for the user
+        If the experiment_id is provided, check if it exists and return it.
+        Otherwise, create a new experiment.
 
         :param user_info: The user's info
         :param project_id: The project id
-        :param experiment_type: The type of experiment
-        :param use_case: The use case
+        :param experiment_type: The type of experiment, needed to create
+            a new experiment if experiment_id is not provided
+        :param use_case: The use case, needed to create a new experiment
+            if experiment_id is not provided
+        :param experiment_id: Optional experiment id to verify
         :return: The experiment id
         """
-        endpoint = "/v1/experiments"
+        endpoint = "/experiments"
+
+        if experiment_id:
+            try:
+                self.get(url=f"{endpoint}/{experiment_id}")
+            except requests.HTTPError as http_error:
+                raise ValueError(
+                    f"Could not verify if experiment: {experiment_id} exists."
+                ) from http_error
+            return experiment_id
+
+        if experiment_type is None:
+            raise ValueError(
+                "--experiment-type required when --experiment-id is not specified."
+            )
+        if use_case is None:
+            raise ValueError(
+                "--use-case required when --experiment-id is not specified."
+            )
+
         experiment_name = (
             f"{user_info.name}_sparsify_experiment_"
             f"{experiment_type}_{use_case}_{uuid.uuid4()}"
@@ -422,27 +468,41 @@ class SparsifyClient(object):
         response = self.post(url=endpoint, data=json.dumps(payload))
         experiment_id = response.json()["experiment_id"]
         _LOGGER.info(f"Experiment created with id: {experiment_id}")
+
+        self.update_experiment_status(
+            experiment_id=experiment_id, status=ExperimentStatus.PENDING.value
+        )
         return experiment_id
 
     @debug_logging
-    def create_model_id(
+    def create_model_id_if_does_not_exist(
+        self,
         user_info: UserInfo,
         model: str,
         project_id: str,
         experiment_id: str,
+        model_id: Optional[str] = None,
     ) -> str:
         """
-        Create a new model id for the user
-        Note: As of now this function always returns a dummy model id,
-        this will be updated when the backend is ready
+        Create a new model id for the user, if it does not exists.
+        Additionally, if the model_id is provided, verify it exists
 
         :param user_info: The user's info
         :param model: The path to the model
         :param project_id: The project id
         :param experiment_id: The experiment id
+        :param model_id: Optional model id to verify
         :return: The model id
         """
-        endpoint = "/v1/models"  # noqa: F841
+        endpoint = "/models"  # noqa: F841
+
+        if model_id:
+            try:
+                self.get(url=f"{endpoint}/{model_id}")
+            except requests.HTTPError as http_error:
+                raise ValueError(
+                    f"Could not verify if model: {model_id} exists."
+                ) from http_error
         # update needed payload
         payload = dict()  # noqa: F841
 

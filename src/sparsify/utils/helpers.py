@@ -20,6 +20,7 @@ import json
 import logging
 import uuid
 from dataclasses import dataclass
+from enum import Enum, unique
 from json import JSONDecodeError
 from pathlib import Path
 from typing import Any, Dict, List
@@ -31,6 +32,7 @@ from sparsify.utils.exceptions import InvalidAPIKey, SparsifyLoginRequired
 
 
 __all__ = [
+    "ExperimentStatus",
     "get_non_existent_filename",
     "set_log_level",
     "strtobool",
@@ -119,6 +121,19 @@ def debug_logging(function):
         return result
 
     return wrapper
+
+
+@unique
+class ExperimentStatus(Enum):
+    """
+    A class to represent the status of a Sparsify experiment
+    """
+
+    PENDING = "pending"
+    INITIALIZED = "initialized"
+    IN_PROGRESS = "in_progress"
+    COMPLETE = "complete"
+    ERROR = "error"
 
 
 @dataclass

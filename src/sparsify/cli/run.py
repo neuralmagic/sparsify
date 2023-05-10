@@ -48,13 +48,13 @@ def one_shot(**kwargs):
         recipe_args = json.loads(recipe_args)
 
     one_shot.one_shot(
-        task=kwargs["use_case"],
-        model_file=Path(kwargs["model"]),
+        model=Path(kwargs["model"]),
         dataset_dir=Path(kwargs["data"]),
         num_samples=kwargs["train_samples"] or -1,
         deploy_dir=Path(kwargs["working_dir"]),
         eval_metric=kwargs["eval_metric"],
-        opt_level=kwargs["optim_level"],
+        optim_level=kwargs["optim_level"],
+        use_case=kwargs["use_case"],
         recipe_file=Path(kwargs["recipe"]) if kwargs["recipe"] is not None else None,
         recipe_args=recipe_args,
     )

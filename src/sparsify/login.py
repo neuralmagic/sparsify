@@ -143,11 +143,20 @@ def authenticate(api_key: Optional[str] = None) -> bool:
         will attempt to use the credentials stored on disk
     :return: True if authenticated, False otherwise
     """
-    try:
-        login(api_key=api_key)
-    except (InvalidAPIKey, SparsifyLoginRequired):
-        return False
-    return True
+    if not credentials_exists():
+        raise SparsifyLoginRequired(
+            "No valid sparsify credentials found. Please run `sparsify.login`"
+        )
+
+    with get_sparsify_credentials_path().open() as fp:
+        credentials = json.load(fp)
+
+    if "api_key" not in credentials:
+        raise SparsifyLoginRequired(
+            "No valid sparsify credentials found. Please run `sparsify.login`"
+        )
+
+    login(api_key=credentials["api_key"])
 
 
 if __name__ == "__main__":

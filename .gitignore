@@ -1,3 +1,9 @@
+# sparsify specific
+experiments
+
+venv
+venv*
+
 npm-debug.log
 yarn-error.log
 package-lock.json

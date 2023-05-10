@@ -176,6 +176,7 @@ def add_optim_opts(f):
     for fn in [
         RECIPE_ARGS,
         RECIPE,
+        OPTIM_LEVEL,
     ]:
         f = fn(f)
     return f

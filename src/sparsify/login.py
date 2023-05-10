@@ -145,7 +145,7 @@ def authenticate() -> None:
             "No valid sparsify credentials found. Please run `sparsify.login`"
         )
 
-    with get_sparsify_credentials_path.open() as fp:
+    with get_sparsify_credentials_path().open() as fp:
         credentials = json.load(fp)
 
     if "api_key" not in credentials:

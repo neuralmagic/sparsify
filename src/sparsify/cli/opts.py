@@ -15,7 +15,7 @@
 import os
 
 import click
-from sparsify.utils import constants
+from sparsify.utils.constants import TASK_REGISTRY
 
 
 __all__ = [
@@ -43,8 +43,21 @@ __all__ = [
 ]
 
 _EXPERIMENT_TYPES = ["sparse-transfer", "one-shot", "training-aware"]
-_EVAL_METRICS = ["kl", "accuracy", "mAP", "recall", "f1"]
+_EVAL_METRICS = ["accuracy", "mAP", "recall", "f1"]  # TODO: add back kl
 _DEPLOY_ENGINES = ["deepsparse", "onnxruntime"]
+
+
+def validate_use_case(ctx, param, value):
+    # click validator for --use-case
+
+    # task_name: TaskName
+    for task_name in TASK_REGISTRY.values():
+        # TaskName __eq__ matches against aliases and str standardization
+        if value == task_name:
+            return value
+    raise ValueError(
+        f"Unknown use-case {value}, supported use cases: {list(TASK_REGISTRY.keys())}"
+    )
 
 EXPERIMENT_TYPE = click.option(
     "--experiment-type",
@@ -55,7 +68,8 @@ EXPERIMENT_TYPE = click.option(
 USE_CASE = click.option(
     "--use-case",
     required=True,
-    type=click.Choice(sorted(constants.TASK_REGISTRY.keys())),
+    type=str,
+    callback=validate_use_case,
     help="The task this model is for",
 )
 PROJECT_ID = click.option(
@@ -143,16 +157,17 @@ def add_info_opts(f):
     return f
 
 
-def add_model_opts(*, require_model: bool, require_optimizer: bool):
+def add_model_opts(*, require_model: bool, include_optimizer: bool = False):
     model = click.option(
         "--model", required=require_model, type=str, help="Path to model."
     )
     optimizer = click.option(
-        "--optimizer", required=require_optimizer, type=str, help="Path to optimizer."
+        "--optimizer", required=False, type=str, help="Path to optimizer."
     )
 
     def wrapped(f):
-        f = optimizer(f)
+        if include_optimizer:
+            f = optimizer(f)
         f = TEACHER(f)
         f = model(f)
         return f

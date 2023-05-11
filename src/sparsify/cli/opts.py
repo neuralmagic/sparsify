@@ -59,6 +59,7 @@ def validate_use_case(ctx, param, value):
         f"Unknown use-case {value}, supported use cases: {list(TASK_REGISTRY.keys())}"
     )
 
+
 EXPERIMENT_TYPE = click.option(
     "--experiment-type",
     default=None,

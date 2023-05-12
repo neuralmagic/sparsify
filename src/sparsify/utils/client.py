@@ -174,6 +174,9 @@ class SparsifyCredentials:
     def __init__(self):
         if os.getenv("SPARSIFY_API_KEY") is not None:
             # read api key from environment variable
+            _LOGGER.debug(
+                "Reading api key from environment variable `SPARSIFY_API_KEY`"
+            )
             self._api_key: str = os.getenv("SPARSIFY_API_KEY")
 
         elif not self._credentials_path.exists():

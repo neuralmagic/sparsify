@@ -40,7 +40,7 @@ from sparsify.version import version_major_minor
 __all__ = [
     "login",
     "import_sparsifyml_authenticated",
-    "is_authenticated",
+    "authenticate",
 ]
 
 
@@ -65,7 +65,7 @@ def main(api_key: str, debug: bool = False):
 
     login(api_key=api_key)
 
-    _LOGGER.debug(f"locals: {locals()}")
+    _LOGGER.debug("locals: %s", locals())
     _LOGGER.info("Logged in successfully, sparsify setup is complete.")
 
 
@@ -76,7 +76,7 @@ def login(api_key: Optional[str] = None) -> None:
     :param api_key: The API key copied from your account
     """
     if api_key:
-        credentials = SparsifyCredentials.from_api_key(api_key=api_key)
+        credentials = SparsifyCredentials.login(api_key=api_key)
     else:
         _LOGGER.info(
             "No API key provided, attempting to use credentials stored on disk"
@@ -102,8 +102,8 @@ def install_sparsifyml(access_token: str) -> None:
 
     if not sparsifyml_installed:
         _LOGGER.info(
-            f"Installing sparsifyml version {version_major_minor} "
-            "from neuralmagic pypi server"
+            "Installing sparsifyml version %s from neuralmagic pypi server",
+            version_major_minor,
         )
         pypi_url_template = "https://nm:{}@pypi.neuralmagic.com"
         subprocess.check_call(
@@ -128,13 +128,13 @@ def import_sparsifyml_authenticated() -> Optional[ModuleType]:
     """
     Authenticates and imports sparsifyml.
     """
-    is_authenticated()
+    authenticate()
     import sparsifyml
 
     return sparsifyml
 
 
-def is_authenticated(api_key: Optional[str] = None) -> bool:
+def authenticate(api_key: Optional[str] = None) -> bool:
     """
     Authenticates with sparsify server using the provided API key or the API key
     stored on disk.

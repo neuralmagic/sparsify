@@ -46,19 +46,17 @@ Options:
 """
 
 import logging
-from pathlib import Path
 from typing import Optional
 
 import click
-from sparsezoo.analyze import ModelAnalysis
 from sparsezoo.analyze.cli import CONTEXT_SETTINGS
 from sparsify.cli import opts
 from sparsify.utils import (
     ExperimentStatus,
     SparsifyClient,
-    SparsifyCredentials,
     UserInfo,
-    get_non_existent_filename,
+    create_analysis_file,
+    experiment_initialized,
     set_log_level,
 )
 
@@ -100,10 +98,11 @@ def main(
         experiment_id=experiment_id,
         experiment_type=experiment_type,
         use_case=use_case,
+        project_id=project_id,
         working_dir=working_dir,
         eval_metric=eval_metric,
     )
-    _LOGGER.debug(f"Local args: {locals()}")
+    _LOGGER.debug("Local args: %s", locals())
 
 
 def init(
@@ -111,6 +110,7 @@ def init(
     model_id: Optional[str] = None,
     experiment_id: Optional[str] = None,
     experiment_type: Optional[str] = None,
+    project_id: Optional[str] = None,
     use_case: Optional[str] = None,
     working_dir: Optional[str] = None,
     eval_metric: Optional[str] = None,
@@ -125,20 +125,22 @@ def init(
         if experiment_id is not specified.
     :param use_case: The task this model is for, required if experiment_id
         is not specified.
+    :param project_id: Id of the project this run belongs to.
     :param working_dir: dir Path to save the model analysis yaml file.
     :param eval_metric: Metric that the model is evaluated against on the task.
     """
     if model is None and model_id is None:
         raise ValueError("--model or --model-id must be specified.")
 
-    credentials = SparsifyCredentials()
-    access_token = credentials.get_access_token(scope="sparsify:write")
-    client = SparsifyClient(access_token=access_token)
+    client = SparsifyClient(scope="sparsify:write")
     client.health_check()
-    user_info: UserInfo = credentials.get_user_info()
-    _LOGGER.info(f"Logged in as {user_info.email}")
+    user_info: UserInfo = client.user_info
+    _LOGGER.info("Logged in as %s", user_info.email)
 
-    project_id = client.create_project_if_does_not_exist(user_info=user_info)
+    # setup project and experiment and model
+    project_id = client.create_project_if_does_not_exist(
+        user_info=user_info, project_id=project_id
+    )
 
     experiment_id = client.create_experiment_if_does_not_exist(
         user_info=user_info,
@@ -156,25 +158,19 @@ def init(
         model_id=model_id,
     )
 
-    # check if experiment already initialized or errored out
-    experiment_status = client.get(url=f"/experiments/{experiment_id}/status")
-    if not ExperimentStatus.initialization_pending(status=experiment_status):
-        _LOGGER.info(f"Experiment {experiment_id} already initialized.")
+    if experiment_initialized(client=client, experiment_id=experiment_id):
+        _LOGGER.info("Experiment %s already initialized.", experiment_id)
         return
 
-    working_dir = Path(working_dir).mkdir(parents=True, exist_ok=True)
-    analysis_file_path = str(
-        get_non_existent_filename(workng_dir=working_dir, filename="analysis.yaml")
-    )
-    analysis = ModelAnalysis.create(model)
-    analysis.yaml(file_path=analysis_file_path)
-    analysis_id = client.create_analysis(
+    analysis_file: str = create_analysis_file(working_dir=working_dir, model=model)
+
+    analysis_id = client.upload_analysis(
         user_info=user_info,
         model_id=model_id,
         project_id=project_id,
         experiment_id=experiment_id,
         analysis_type="model_analysis",
-        analysis_file=analysis_file_path,
+        analysis_file=analysis_file,
     )
     client.update_experiment_eval_metric(
         experiment_id=experiment_id, eval_metric=eval_metric
@@ -182,7 +178,9 @@ def init(
     client.update_experiment_status(
         experiment_id=experiment_id, status=ExperimentStatus.INITIALIZED.value
     )
-    _LOGGER.info(f"Experiment {experiment_id} initialized. Analysis id: {analysis_id}")
+    _LOGGER.info(
+        "Experiment %s initialized. Analysis id: %s", (experiment_id, analysis_id)
+    )
 
 
 if __name__ == "__main__":

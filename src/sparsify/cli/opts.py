@@ -15,6 +15,7 @@
 import os
 
 import click
+from sparseml.pytorch.image_classification.utils import OPTIMIZERS
 from sparsify.utils import constants
 
 
@@ -50,13 +51,12 @@ EXPERIMENT_TYPE = click.option(
     "--experiment-type",
     default=None,
     type=click.Choice(_EXPERIMENT_TYPES, case_sensitive=False),
-    help="The type of the experiment to run",
+    help="The type of the experiment to run.",
 )
 USE_CASE = click.option(
     "--use-case",
-    required=True,
     type=click.Choice(sorted(constants.TASK_REGISTRY.keys())),
-    help="The task this model is for",
+    help="The task this model is for.",
 )
 PROJECT_ID = click.option(
     "--project-id",
@@ -74,36 +74,33 @@ WORKING_DIR = click.option(
     "--working-dir",
     default=os.path.abspath(os.getcwd()),
     type=str,
-    help="Path to save the deployment ready model to",
+    help="Path to save the deployment ready model to.",
 )
 
 TEACHER = click.option("--teacher", default=None, type=str)
 
 DATA = click.option(
     "--data",
-    required=True,
     type=str,
     help=(
         "Path to dataset folder containing training data"
-        " and optionally validation data"
+        " and optionally validation data."
     ),
 )
 EVAL_METRIC = click.option(
     "--eval-metric",
     default=_EVAL_METRICS[0],
     type=click.Choice(_EVAL_METRICS),
-    help=(
-        "Metric that the model is evaluated against on the task. "
-        "None means it is based on --use-case."
-    ),
+    help=("Metric that the model is evaluated against on the task."),
 )
 TRAIN_SAMPLES = click.option(
     "--train-samples",
     default=None,
     type=int,
     help=(
-        "Number of samples to use from the dataset for processing. "
-        "None means the entire dataset."
+        "Number of train samples to use from the dataset for "
+        "processing. Will use all train samples if not "
+        "specified."
     ),
 )
 VAL_SAMPLES = click.option(
@@ -111,8 +108,9 @@ VAL_SAMPLES = click.option(
     default=None,
     type=int,
     help=(
-        "Number of samples to use from the dataset for processing. "
-        "None means the entire dataset."
+        "Number of validation samples to use from the dataset for "
+        "processing. Will use all eval samples if not "
+        "specified."
     ),
 )
 
@@ -148,7 +146,10 @@ def add_model_opts(*, require_model: bool, require_optimizer: bool):
         "--model", required=require_model, type=str, help="Path to model."
     )
     optimizer = click.option(
-        "--optimizer", required=require_optimizer, type=str, help="Path to optimizer."
+        "--optimizer",
+        required=require_optimizer,
+        type=click.Choice(OPTIMIZERS, case_sensitive=False),
+        help="The optimizer to use",
     )
 
     def wrapped(f):

@@ -19,3 +19,4 @@ from .task_name import *
 from .constants import *
 from .nm_api import *
 from .helpers import *
+from .client import *

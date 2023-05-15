@@ -14,63 +14,49 @@
 
 import logging
 import os
-import shutil
-import time
-import warnings
-from collections import OrderedDict
-from typing import Dict, List, Tuple
+
+import yaml
 
 from sparsify.auto.tasks import TaskRunner
 from sparsify.auto.utils import (
     api_request_config,
-    api_request_tune,
-    best_n_trials_from_history,
     create_save_directory,
-    get_trial_artifact_directory,
     initialize_banner_logger,
-    load_raw_config_history,
-    request_student_teacher_configs,
     save_history,
 )
-from sparsify.schemas import APIArgs, Metrics, SparsificationTrainingConfig
+from sparsify.schemas import APIArgs
 from tensorboard.program import TensorBoard
 
 
 _LOGGER = logging.getLogger("auto_banner")
 
 
-# General TODO list
-# TODO: replace optimizing_metric with eval metric
 # TODO: add support for kwargs
 
-# Unresolved questions
-# How are additional trials prompted? How is the info getting passed to the API?
 
-def main(api_args: APIArgs): # TODO: get rid of pydnatic based args?
+def main(api_args: APIArgs):  # TODO: get rid of pydnatic based args?
     initialize_banner_logger()
-   
+
     # Set up directory for saving
     (
-        save_directory,
-        base_artifact_directory,
+        train_directory,
         log_directory,
-    ) = create_save_directory(api_args) # TODO: Update save structure
-    
+        deploy_directory,
+    ) = create_save_directory(api_args)
+
     # Launch tensorboard server
     tensorboard_server = TensorBoard()
     tensorboard_server.configure(argv=[None, "--logdir", log_directory])
     url = tensorboard_server.launch()
-    print(f"TensorBoard listening on {url}")
-    
+    _LOGGER.info(f"TensorBoard listening on {url}")
+
     # Request config from api and instantiate runner
     config = api_request_config(api_args)
     runner = TaskRunner.create(config)
-    
+
     # Execute integration run and return metrics
-    metrics = runner.train(log_directory)
-    runner.move_output(target_directory=artifact_directory, trial_idx=trial_idx) #TODO: save to correct directory immediately?
-    
-    runner.export(model_directory=trial_artifact_directory)
-    runner.create_deployment_directory(
-        target_directory=save_directory, trial_idx=best_trial_idx
-    )
+    metrics = runner.train(train_directory=train_directory, log_directory=log_directory)
+    yaml.safe_dump(metrics, open(os.path.join(save_history, "metrics.yaml"), "w"))
+
+    runner.export(model_directory=train_directory)
+    runner.create_deployment_directory(target_directory=deploy_directory)

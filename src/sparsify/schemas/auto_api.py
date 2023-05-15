@@ -108,8 +108,8 @@ class APIArgs(BaseModel):
     run_mode: RunMode = Field(
         title="run_mode",
         description=(
-            "training run mode objective - 'sparse_transfer', 'training_aware', or "
-            "'teacher_only'. Default is 'sparse_transfer'"
+            "training run mode objective - 'sparse_transfer' or 'training_aware'. "
+            "Default is 'sparse_transfer'"
         ),
         default=RunMode.sparse_transfer,
     )

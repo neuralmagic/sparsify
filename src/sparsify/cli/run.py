@@ -66,6 +66,7 @@ def one_shot(**kwargs):
 @opts.add_data_opts
 @opts.add_deploy_opts
 @opts.add_optim_opts
+@opts.add_kwarg_opts
 def sparse_transfer(**kwargs):
     """
     Run sparse transfer learning for a use case against a supported task and model
@@ -82,6 +83,7 @@ def sparse_transfer(**kwargs):
 @opts.add_data_opts
 @opts.add_deploy_opts
 @opts.add_optim_opts
+@opts.add_kwarg_opts
 def training_aware(**kwargs):
     """
     Run training aware sparsification for a use case against a supported task and model
@@ -107,7 +109,7 @@ def _parse_run_args_to_auto(sparse_transfer: bool, **kwargs):
         recipe=kwargs["recipe"],
         recipe_args=kwargs["recipe_args"] or {},
         distill_teacher=kwargs["teacher"] or "off",
-        kwargs={},  # not yet supported
+        kwargs={kwargs["train_kwargs"]} or {},
         run_mode="sparse_transfer" if sparse_transfer else "training_aware",
     )
 

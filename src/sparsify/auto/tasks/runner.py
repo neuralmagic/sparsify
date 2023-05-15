@@ -18,7 +18,6 @@ import json
 import os
 import shutil
 import socket
-import tempfile
 import warnings
 from abc import abstractmethod
 from functools import wraps
@@ -280,13 +279,13 @@ class TaskRunner:
         """
         self.train_hook(**self.train_args.dict())
 
-    def train(self, log_directory: str) -> Metrics:
+    def train(self, train_directory: str, log_directory: str) -> Metrics:
         """
         Training entrypoint
 
         "param log_directory: directory to save logs to
         """
-        self.run_directory = tempfile.TemporaryDirectory()
+        self.run_directory = train_directory
         self.log_directory = log_directory
         self.update_run_directory_args()
 
@@ -389,69 +388,22 @@ class TaskRunner:
             f"memory_stepdown() missing implementation for task {self.task}"
         )
 
-    def move_output(self, target_directory: str, trial_idx: int):
-        """
-        Move output into target directory
-
-        :param target_directory: directory to move output to
-        :param trial_idx: trial index
-        """
-        if not (self.completion_check("train") and self.completion_check("export")):
-            warnings.warn(
-                "Run did not complete successfully. Output generated may not reflect "
-                "a valid run"
-            )
-
-        # move model files to save directory
-        origin_directory = self._get_model_artifact_directory()  # directory to move
-        moved_directory = os.path.join(
-            target_directory, os.path.basename(os.path.normpath(origin_directory))
-        )  # anticipated path to the moved directory, after moving
-
-        # name we want to rename the moved directory to
-        new_directory_name = os.path.join(target_directory, f"trial_{trial_idx}")
-
-        # this should only arise as a result of dev error and not user error
-        if os.path.exists(new_directory_name):
-            raise OSError(f"Directory {new_directory_name} already exists")
-
-        os.makedirs(target_directory, exist_ok=True)
-        shutil.move(origin_directory, target_directory)
-
-        os.rename(
-            moved_directory,
-            new_directory_name,
-        )  # rename directory to one indicating the trial number
-
-        # Clean up run directory
-        self.run_directory.cleanup()
-
     @staticmethod
-    def create_deployment_directory(target_directory: str, trial_idx: int):
+    def create_deployment_directory(train_directory: str, deploy_directory: str):
         """
         Creates and/or moves deployment directory to the deployment directory for the
         mode corresponding to the trial_idx
 
-        :param target_directory: directory to create deployment folder in
-        :param trial_idx: index of the trial to create a deployment directory from
+        :param train_directory: directory to grab the exported files from
+        :param deploy_directory: directory to save the deployment files to
         """
         origin_directory = os.path.join(
-            target_directory,
-            "training",
-            "run_artifacts",
-            "student",
-            f"trial_{trial_idx}",
+            train_directory,
             "deployment",
         )
 
-        # Remove existing deployment directory in the case of a resume run. Note
-        # deployment directory can always be recreated from the run artifacts
-        new_deployment_directory = os.path.join(target_directory, "deployment")
-        if os.path.exists(new_deployment_directory):
-            shutil.rmtree(new_deployment_directory)
-
-        shutil.move(origin_directory, target_directory)
-        with open(os.path.join(target_directory, "deployment", "readme.txt"), "x") as f:
+        shutil.move(origin_directory, deploy_directory)
+        with open(os.path.join(deploy_directory, "deployment", "readme.txt"), "x") as f:
             f.write("deployment instructions will go here")
 
     @abstractmethod

@@ -28,7 +28,7 @@ import yaml
 
 from pydantic import BaseModel, Field, validator
 from sparsify.schemas import SampledHyperparameter
-from sparsify.utils import DEFAULT_OPTIMIZING_METRIC, METRICS, TASK_REGISTRY
+from sparsify.utils import TASK_REGISTRY
 
 
 __all__ = [
@@ -100,78 +100,10 @@ class APIArgs(BaseModel):
         "base model as teacher",
         default="auto",
     )
-    num_trials: Optional[int] = Field(
-        title="num_trials",
-        description=(
-            "Number of tuning trials to be run before returning best found "
-            "model. Set to None to not impose a trial limit. max_train_time may limit "
-            "the actual num_trials ran"
-        ),
-        default=None,
-    )
-    max_train_time: float = Field(
-        title="max_train_time",
-        description=(
-            "Maximum number of hours to train before returning best trained model."
-        ),
-        default=12.0,
-    )
-    maximum_trial_saves: Optional[int] = Field(
-        title="maximum_trial_saves",
-        description=(
-            "Number of best trials to save on the drive. Items saved for a trial "
-            "include the trained model and associated artifacts. If this value is set "
-            "to n, then at most n+1 models will be saved at any given time on the "
-            "machine. Default value of None allows for unlimited model saving"
-        ),
-        default=None,
-    )
-    no_stopping: bool = Field(
-        title="no_stopping",
-        description=(
-            "Set to True to turn off tuning stopping condition, which may end tuning "
-            "early if no improvement was made"
-        ),
-        default=False,
-    )
-    resume: Optional[str] = Field(
-        title="resume",
-        description=(
-            "To continue a tuning run, provide path to the high level directory of run "
-            "you wish to resume"
-        ),
-        default=None,
-    )
-    optimizing_metric: List[str] = Field(
-        title="optimizing_metric",
-        description=(
-            "The criterion to search model for, multiple metrics can be specified, "
-            "e.g. --optimizing_metric f1 --optimizing_metric latency. Supported  "
-            f"metrics are {METRICS}"
-        ),
-        default=None,
-    )
     kwargs: Optional[Dict[str, Any]] = Field(
         title="kwargs",
         description="optional task specific arguments to add to config",
         default_factory=dict,
-    )
-    teacher_kwargs: Optional[Dict[str, Any]] = Field(
-        title="teacher_kwargs",
-        description="optional task specific arguments to add to teacher config",
-        default_factory=dict,
-    )
-    tuning_parameters: Optional[str] = Field(
-        title="tuning_parameters",
-        description="path to config file containing custom parameter tuning settings. "
-        "See example tuning config output for expected format",
-        default=None,
-    )
-    teacher_tuning_parameters: Optional[str] = Field(
-        title="teacher_tuning_parameters",
-        description="path to config file containing custom teacher parameter tuning "
-        "settings. See example tuning config output for expected format",
-        default=None,
     )
     run_mode: RunMode = Field(
         title="run_mode",
@@ -193,28 +125,6 @@ class APIArgs(BaseModel):
             "their accepted task name aliases:"
             f"{nl.join([task.pretty_print() for task in TASK_REGISTRY.values()])}"
         )
-
-    @validator("tuning_parameters")
-    def read_tuning_parameters_from_file(cls, tuning_parameters: str) -> str:
-        """
-        Read in the tuning parameters as a string for passing to NM API
-        """
-        if tuning_parameters and not tuning_parameters.startswith("-"):
-            with open(tuning_parameters, "r") as file:
-                return file.read()
-        else:
-            return tuning_parameters
-
-    @validator("teacher_tuning_parameters")
-    def read_teacher_tuning_parameters_from_file(cls, tuning_parameters: str) -> str:
-        """
-        Read in the tuning parameters as a string for passing to NM API
-        """
-        if tuning_parameters and not tuning_parameters.startswith("-"):
-            with open(tuning_parameters, "r") as file:
-                return file.read()
-        else:
-            return tuning_parameters
 
     @classmethod
     def from_cli(cls, args: Optional[List[str]] = None):
@@ -267,27 +177,6 @@ class SparsificationTrainingConfig(BaseModel):
         ),
         default=[],
     )
-    optimizing_metric: List[str] = Field(
-        title="optimizing_metric",
-        description=(
-            "The criterion to search model for, multiple metrics can be specified, "
-            "e.g. --optimizing_metric f1 --optimizing_metric latency. Supported  "
-            f"metrics are {METRICS}"
-        ),
-        default=[DEFAULT_OPTIMIZING_METRIC],
-    )
-    no_stopping: bool = Field(
-        title="no_stopping",
-        description=(
-            "Set to True to turn off tuning stopping condition, which may end tuning "
-            "early if no improvement was made"
-        ),
-        default=False,
-    )
-
-    @validator("optimizing_metric")
-    def default_optimizing_metric(cls, optimizing_metric):
-        return optimizing_metric or [DEFAULT_OPTIMIZING_METRIC]
 
     @classmethod
     def from_yaml(cls, config_yaml: str):

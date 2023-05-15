@@ -107,14 +107,7 @@ def _parse_run_args_to_auto(sparse_transfer: bool, **kwargs):
         recipe=kwargs["recipe"],
         recipe_args=kwargs["recipe_args"] or {},
         distill_teacher=kwargs["teacher"] or "off",
-        num_trials=1,  # for now, only running 1 trial
-        max_train_time=100000,  # 1 trial, so setting max time arbitrarily high
-        maximum_trial_saves=1,  # 1 trial
-        optimizing_metric=[kwargs["eval_metric"]],
         kwargs={},  # not yet supported
-        teacher_kwargs={},
-        tuning_parameters=None,
-        teacher_tuning_parameters=None,
         run_mode="sparse_transfer" if sparse_transfer else "training_aware",
     )
 

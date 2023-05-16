@@ -24,17 +24,17 @@ Options:
   --use-case [document_classification|image_classification|
   information_retrieval|masked_language_modeling|
   multilabel_text_classification|object_detection|question_answering|
-  segmentation|sentiment_analysis|text_classification|
-  token_classification]
+  segmentation|sentiment_analysis|text_classification|token_classification]
                                   The task this model is for.
   --project-id TEXT               Id of the project this run belongs to.
   --experiment-id TEXT            Id of the experiment this run belongs to.
   --working-dir TEXT              Path to save the deployment ready model to.
-                                  [default: cwd]
+                                  [default:
+                                  /home/rahul/github_projects/sparsify]
   --model TEXT                    Path to model.
   --teacher TEXT
-  --optimizer [Adadelta|Adagrad|Adam|AdamW|SparseAdam|Adamax|
-  ASGD|SGD|RAdam|Rprop|RMSprop|NAdam|LBFGS]
+  --optimizer [Adadelta|Adagrad|Adam|AdamW|SparseAdam|Adamax|ASGD|SGD|
+  RAdam|Rprop|RMSprop|NAdam|LBFGS]
                                   The optimizer to use
   --recipe TEXT                   Recipe to override automatic recipe.
   --recipe-args TEXT
@@ -58,10 +58,6 @@ Options:
                                   1]. Default 0.5  [default: 0.5]
   --model-id TEXT                 sparsify model id.
   --version                       Show the version and exit.  [default: False]
-  --max-latency FLOAT             Maximum latency in ms.
-  --min-throughput FLOAT          Minimum throughput in images per second.
-  --max-size FLOAT                Maximum model size in MB.
-  --max-memory FLOAT              Maximum memory usage in MB.
   --help                          Show this message and exit.  [default:
                                   False]
 """
@@ -94,12 +90,6 @@ _LOGGER = logging.getLogger(__name__)
 @opts.OPTIM_LEVEL
 @click.option("--model-id", help="sparsify model id.")
 @click.version_option(version=version_major_minor)
-@click.option("--max-latency", type=float, help="Maximum latency in ms.")
-@click.option(
-    "--min-throughput", type=float, help="Minimum throughput in images per second."
-)
-@click.option("--max-size", type=float, help="Maximum model size in MB.")
-@click.option("--max-memory", type=float, help="Maximum memory usage in MB.")
 @click.option("--debug/--no-debug", default=False, hidden=True)
 def main(
     debug: bool = False,  # hidden arg for debug logs

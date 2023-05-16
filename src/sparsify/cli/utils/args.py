@@ -40,7 +40,37 @@ class Optimizers(Enum):
     lbfgs: str = "LBFGS"
 
 
+class Engines(Enum):
+    deepsparse: str = "deepsparse"
+    onnxruntime: str = "onnxruntime"
+
+
 class ModelArgs(BaseModel):
     model: Optional[str] = Field(description="Path to model")
     optimizer: Optional[Optimizers] = Field(description="The optimizer to use")
     teacher: Optional[str] = Field(description="Path to teacher model")
+
+
+class DataArgs(BaseModel):
+    data: Optional[str] = Field(
+        description="Path to dataset folder containing training/validation data or both"
+    )
+    eval_metric: Optional[str] = Field(description="The metric to use for evaluation")
+    train_samples: Optional[int] = Field(
+        description="Number of training samples, "
+        "will represent all samples if not provided"
+    )
+    val_samples: Optional[int] = Field(
+        description="Number of validation samples, "
+        "will represent all samples if not provided"
+    )
+
+
+class DeployArgs(BaseModel):
+    deploy_hardware: Optional[str] = Field(description="The hardware to deploy for")
+    deploy_engine: Optional[Engines] = Field(
+        default=Engines.deepsparse.value, description="The engine to use for deployment"
+    )
+    deploy_scenario: Optional[str] = Field(
+        description="The scenario to use for deployment"
+    )

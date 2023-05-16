@@ -48,28 +48,72 @@ _LOGGER = logging.getLogger(__name__)
     required=True,
 )
 @click.option(
-    "--deployment-dir",
+    "--experiment",
     type=click.Path(exists=True, file_okay=False, dir_okay=True, readable=True),
-    help="The directory containing the deployment files to package",
+    help="The directory containing the deployment files to package, "
+    "or sparsify experiment-id (Not yet supported)",
     required=True,
+)
+@click.option(
+    "--log-level",
+    type=click.Choice(
+        ["debug", "info", "warn", "critical", "error"], case_sensitive=False
+    ),
+    help="Sets the logging level",
+    default="info",
+    required=True,
+)
+@click.option(
+    "--deploy-type",
+    type=click.Choice(["server"], case_sensitive=False),
+    help="Sets the deployment type, only supports `server`",
+    default="server",
+    required=True,
+)
+@click.option(
+    "--preprocessing",
+    type=str,
+    help="Sets the pre-processing function to use",
+)
+@click.option(
+    "--postprocessing",
+    type=str,
+    help="Sets the post-processing function to use",
 )
 @click.option("--debug/--no-debug", default=False, hidden=True)
 def main(
-    deployment_dir: str,
+    experiment: str,
     task: str,
+    log_level: str,
+    deploy_type: str,
+    preprocessing: str,
+    postprocessing: str,
     debug: bool = False,
 ):
-    set_log_level(logger=_LOGGER, level=logging.DEBUG if debug else logging.INFO)
-    print(package_instructions(deployment_path=deployment_dir, task=task))
+    set_log_level(logger=_LOGGER, level=log_level)
+    if deploy_type != "server":
+        raise NotImplementedError(f"Deployment type {deploy_type} is not yet supported")
+    if preprocessing is not None:
+        raise NotImplementedError(
+            f"Pre-processing function {preprocessing} is not yet supported"
+        )
+    if postprocessing is not None:
+        raise NotImplementedError(
+            f"Post-processing function {postprocessing} is not yet supported"
+        )
+    print(
+        package_instructions(experiment=experiment, task=task, log_level=log_level)
+    )
     _LOGGER.debug(f"locals: {locals()}")
 
 
-def package_instructions(deployment_path: str, task: str):
+def package_instructions(experiment: str, task: str, log_level: str = "info"):
     """
     Returns instructions for packaging a deployment directory for a given task.
 
-    :param deployment_path: The path to the deployment directory
+    :param experiment: The path to the deployment directory
     :param task: The task to package depoyment directory for
+    :param log_level: Sets the logging level for deepsparse.server command
     :return: The instructions for packaging a deployment directory for a given task
     """
     dockerfile_directory = Path(__file__).parent.parent / "docker"
@@ -83,9 +127,10 @@ def package_instructions(deployment_path: str, task: str):
 
         ```bash
         docker build --build-arg SPARSIFY_API_KEY=<API_KEY> -t sparsify_docker . \\
-            && docker run -it -v {deployment_path}:/home/deployment  \\
-                sparsify_docker sparsify.server \\
-                    --task {task} --model_path /home/deployment
+            && docker run -it -v {experiment}:/home/deployment  \\
+                sparsify_docker deepsparse.server \\
+                    --task {task} --model_path /home/deployment \\
+                    --log-level {log_level}
         ```
     """
     return deployment_instructions

@@ -23,7 +23,7 @@ from dataclasses import dataclass
 from enum import Enum, unique
 from json import JSONDecodeError
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Union
 from urllib.parse import urljoin
 
 import requests
@@ -73,13 +73,22 @@ def strtobool(value):
         raise ValueError('"{}" is not a valid bool value'.format(value))
 
 
-def set_log_level(logger: logging.Logger, level: int) -> None:
+def set_log_level(logger: logging.Logger, level: Union[str, int]) -> None:
     """
     Set the log level for the given logger and all of its handlers
 
     :param logger: The logger to set the level for
     :param level: The level to set the logger to
     """
+    if isinstance(level, str):
+        level = {
+            "debug": logging.DEBUG,
+            "info": logging.INFO,
+            "warn": logging.WARN,
+            "critical": logging.CRITICAL,
+            "error": logging.ERROR,
+        }[level.lower()]
+
     logging.basicConfig(level=level)
     for handler in logger.handlers:
         handler.setLevel(level=level)

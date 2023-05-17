@@ -28,7 +28,7 @@ import yaml
 
 from pydantic import BaseModel, Field, validator
 from sparsify.schemas import SampledHyperparameter
-from sparsify.utils import TASK_REGISTRY
+from sparsify.utils import METRICS, TASK_REGISTRY
 
 
 __all__ = [
@@ -99,6 +99,15 @@ class APIArgs(BaseModel):
         "zoo stub, 'off' for no distillation, and default value of 'auto' to auto-tune "
         "base model as teacher",
         default="auto",
+    )
+    optimizing_metric: List[str] = Field(
+        title="optimizing_metric",
+        description=(
+            "The criterion to search model for, multiple metrics can be specified, "
+            "e.g. --optimizing_metric f1 --optimizing_metric latency. Supported  "
+            f"metrics are {METRICS}"
+        ),
+        default=None,
     )
     kwargs: Optional[Dict[str, Any]] = Field(
         title="kwargs",

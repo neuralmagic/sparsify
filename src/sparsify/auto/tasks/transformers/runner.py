@@ -69,10 +69,12 @@ class _TransformersRunner(TaskRunner):
         """
         train_args = cls.train_args_class(
             model_name_or_path=config.base_model,
+            recipe=config.recipe,
+            recipe_args=config.recipe_args,
             dataset_name=config.dataset,
             distill_teacher=config.distill_teacher
             if not config.distill_teacher == "off"
-            else None,
+            else "disable",
             **config.kwargs,
         )
 
@@ -92,11 +94,9 @@ class _TransformersRunner(TaskRunner):
         """
         Update run directories to save to the temporary run directory
         """
-        self.train_args.output_dir = os.path.join(
-            self.run_directory.name, self.train_args.output_dir
-        )
+        self.train_args.output_dir = self.run_directory
         self.train_args.logging_dir = self.log_directory
-        self.export_args.model_path = self.train_args.output_dir
+        self.export_args.model_path = self.run_directory
 
     def memory_stepdown(self):
         """
@@ -147,7 +147,7 @@ class _TransformersRunner(TaskRunner):
         Checks if export run completed successfully
         """
 
-        onnx_file = os.path.join(self.run_directory.name, "deployment", "model.onnx")
+        onnx_file = os.path.join(self.run_directory, "deployment", "model.onnx")
 
         # Check mode file exists
         if not os.path.isfile(onnx_file):
@@ -201,11 +201,14 @@ class _TransformersRunner(TaskRunner):
             recovery=None,
         )
 
-    def _get_model_artifact_directory(self) -> str:
+    def _get_default_deployment_directory(self, train_directory: str) -> str:
         """
-        Return the absolute path to the temporary run artifacts directory
+        Return the path to where the deployment directory is created by export
+
+        :param train_directory: train directory from which the export directory was
+            created. Used for relative pathing
         """
-        return self.export_args.model_path
+        return os.path.join(train_directory, "deployment")
 
 
 @TaskRunner.register_task(task=TASK_REGISTRY["text_classification"])

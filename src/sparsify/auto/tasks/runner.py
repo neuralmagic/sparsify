@@ -79,6 +79,8 @@ def retry_stage(stage: str):
             # attempt run and catch errors until success or maximum number of attempts
             # exceeded
             while not error_handler.max_attempts_exceeded():
+                out = func(self, *args, **kwargs)
+                break
                 try:
                     out = func(self, *args, **kwargs)
                     exception = None
@@ -388,8 +390,7 @@ class TaskRunner:
             f"memory_stepdown() missing implementation for task {self.task}"
         )
 
-    @staticmethod
-    def create_deployment_directory(train_directory: str, deploy_directory: str):
+    def create_deployment_directory(self, train_directory: str, deploy_directory: str):
         """
         Creates and/or moves deployment directory to the deployment directory for the
         mode corresponding to the trial_idx
@@ -397,13 +398,15 @@ class TaskRunner:
         :param train_directory: directory to grab the exported files from
         :param deploy_directory: directory to save the deployment files to
         """
-        origin_directory = os.path.join(
-            train_directory,
-            "deployment",
-        )
+        origin_directory = self._get_default_deployment_directory(train_directory)
 
-        shutil.move(origin_directory, deploy_directory)
-        with open(os.path.join(deploy_directory, "deployment", "readme.txt"), "x") as f:
+        for filename in os.listdir(origin_directory):
+            source_file = os.path.join(origin_directory, filename)
+            target_file = os.path.join(deploy_directory, filename)
+            shutil.move(source_file, target_file)
+        shutil.rmtree(origin_directory)
+
+        with open(os.path.join(deploy_directory, "readme.txt"), "x") as f:
             f.write("deployment instructions will go here")
 
     @abstractmethod
@@ -458,12 +461,16 @@ class TaskRunner:
         )
 
     @abstractmethod
-    def _get_model_artifact_directory(self) -> str:
+    def _get_default_deployment_directory(self, train_directory: str) -> str:
         """
-        Return the absolute path to the temporary run artifacts directory
+        Return the path to where the deployment directory is created by export
+
+        :param train_directory: train directory from which the export directory was
+            created. Used for relative pathing
         """
         raise NotImplementedError(
-            f"_get_model_artifact_directory missing implementation for task {self.task}"
+            "_get_default_deployment_directory missing implementation for task "
+            f"{self.task}"
         )
 
 

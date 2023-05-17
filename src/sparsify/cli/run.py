@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import ast
 import json
 from pathlib import Path
 
@@ -100,6 +101,13 @@ def _parse_run_args_to_auto(sparse_transfer: bool, **kwargs):
     if kwargs["eval_metric"] == "kl":
         raise ValueError("--eval-metric kl is not supported currently.")
 
+    recipe_args = (
+        ast.literal_eval(kwargs["recipe_args"]) if kwargs["recipe_args"] else {}
+    )
+    train_kwargs = (
+        ast.literal_eval(kwargs["train_kwargs"]) if kwargs["train_kwargs"] else {}
+    )
+
     return APIArgs(
         task=kwargs["use_case"],
         dataset=kwargs["data"],
@@ -107,9 +115,10 @@ def _parse_run_args_to_auto(sparse_transfer: bool, **kwargs):
         optim_level=kwargs["optim_level"],
         base_model=kwargs["model"],
         recipe=kwargs["recipe"],
-        recipe_args=kwargs["recipe_args"] or {},
+        recipe_args=recipe_args,
         distill_teacher=kwargs["teacher"] or "off",
-        kwargs={kwargs["train_kwargs"]} or {},
+        optimizing_metric=[kwargs["eval_metric"]],
+        kwargs=train_kwargs,
         run_mode="sparse_transfer" if sparse_transfer else "training_aware",
     )
 

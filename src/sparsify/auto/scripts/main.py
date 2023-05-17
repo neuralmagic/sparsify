@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import logging
-import os
+from pathlib import Path
 
 import yaml
 
@@ -22,16 +22,13 @@ from sparsify.auto.utils import (
     api_request_config,
     create_save_directory,
     initialize_banner_logger,
-    save_history,
 )
 from sparsify.schemas import APIArgs
+from sparsify.schemas.auto_api import SparsificationTrainingConfig
 from tensorboard.program import TensorBoard
 
 
 _LOGGER = logging.getLogger("auto_banner")
-
-
-# TODO: add support for kwargs
 
 
 def main(api_args: APIArgs):  # TODO: get rid of pydnatic based args?
@@ -51,12 +48,17 @@ def main(api_args: APIArgs):  # TODO: get rid of pydnatic based args?
     _LOGGER.info(f"TensorBoard listening on {url}")
 
     # Request config from api and instantiate runner
-    config = api_request_config(api_args)
+    raw_config = api_request_config(api_args)
+    config = SparsificationTrainingConfig(**raw_config)
     runner = TaskRunner.create(config)
 
     # Execute integration run and return metrics
     metrics = runner.train(train_directory=train_directory, log_directory=log_directory)
-    yaml.safe_dump(metrics, open(os.path.join(save_history, "metrics.yaml"), "w"))
+    yaml.safe_dump(
+        metrics.dict(), (Path(train_directory).parent / "metrics.yaml").open("w")
+    )
 
     runner.export(model_directory=train_directory)
-    runner.create_deployment_directory(target_directory=deploy_directory)
+    runner.create_deployment_directory(
+        train_directory=train_directory, deploy_directory=deploy_directory
+    )

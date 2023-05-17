@@ -16,7 +16,6 @@ import glob
 import os
 import re
 import shutil
-from pathlib import Path
 from typing import Tuple
 
 import onnx
@@ -69,7 +68,7 @@ class Yolov5Runner(TaskRunner):
     def __init__(self, config: SparsificationTrainingConfig):
         super().__init__(config)
         self.dashed_cli_kwargs = True
-        self._model_save_name = f"{self.export_model_kwarg}/last.pt"
+        self._model_save_name = os.path.join("exp", "weights", "last.pt")
 
     @classmethod
     def config_to_args(
@@ -83,6 +82,8 @@ class Yolov5Runner(TaskRunner):
         """
         train_args = Yolov5TrainArgs(
             weights=config.base_model,
+            recipe=config.recipe,
+            recipe_args=config.recipe_args,
             data=config.dataset,
             **config.kwargs,
         )
@@ -131,11 +132,10 @@ class Yolov5Runner(TaskRunner):
         """
         Update run directories to save to the temporary run directory
         """
-        self.train_args.project = os.path.join(
-            self.run_directory.name, self.train_args.project
-        )
+        self.train_args.project = self.run_directory
+        self.train_args.log_dir = self.log_directory
         self.export_args.weights = os.path.join(
-            self.run_directory.name, self.export_args.weights
+            self.run_directory, self.export_args.weights
         )
 
     def memory_stepdown(self):
@@ -237,8 +237,11 @@ class Yolov5Runner(TaskRunner):
             recovery=None,
         )
 
-    def _get_model_artifact_directory(self) -> str:
+    def _get_default_deployment_directory(self, train_directory: str) -> str:
         """
-        Return the absolute path to the temporary run artifacts directory
+        Return the path to where the deployment directory is created by export
+
+        :param train_directory: train directory from which the export directory was
+            created. Used for relative pathing
         """
-        return str(Path(self.export_args.weights).parents[1])
+        return os.path.join(train_directory, "exp", "DeepSparse_Deployment")

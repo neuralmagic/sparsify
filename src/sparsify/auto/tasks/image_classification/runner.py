@@ -59,8 +59,7 @@ class ImageClassificationRunner(TaskRunner):
     def __init__(self, config: SparsificationTrainingConfig):
         super().__init__(config)
         self._model_save_name = os.path.join(
-            "training",
-            ("model-one-shot.pth" if self.train_args.one_shot else "model.pth"),
+            *self.export_args.checkpoint_path.split(os.sep)[-3:]
         )
 
     @classmethod
@@ -123,10 +122,10 @@ class ImageClassificationRunner(TaskRunner):
         """
         Update run directories to save to the temporary run directory
         """
-        self.train_args.save_dir = self.run_directory.name
+        self.train_args.save_dir = self.run_directory
         self.train_args.logs_dir = self.log_directory
         self.export_args.checkpoint_path = os.path.join(
-            self.run_directory.name, self.export_args.checkpoint_path
+            self.run_directory, self.export_args.checkpoint_path
         )
         self.export_args.save_dir = self.train_args.save_dir
 

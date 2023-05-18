@@ -80,7 +80,7 @@ def sparse_transfer(**kwargs):
 
 @main.command()
 @opts.add_info_opts
-@opts.add_model_opts(require_model=False)
+@opts.add_model_opts(require_model=True)
 @opts.add_data_opts
 @opts.add_deploy_opts
 @opts.add_optim_opts

@@ -75,26 +75,3 @@ class DeployArgs(BaseModel):
     deploy_scenario: Optional[str] = Field(
         description="The scenario to use for deployment"
     )
-
-
-def get_click_options_from_base_model(base_model: BaseModel):
-    """
-    A decorator that takes a pydantic BaseModel and converts it into a click options
-    """
-
-    def wrapper(func):
-        options = [
-            click.option(
-                "--{}".format(field.name),
-                type=field.outer_type_,
-                default=field.default,
-                help=field.field_info.description,
-            )
-            for field in base_model.__fields__.values()
-        ]
-
-        for option in options:
-            func = option(func)
-        return func
-
-    return wrapper

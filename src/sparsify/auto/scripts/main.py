@@ -31,7 +31,7 @@ from tensorboard.program import TensorBoard
 _LOGGER = logging.getLogger("auto_banner")
 
 
-def main(api_args: APIArgs):  # TODO: get rid of pydnatic based args?
+def main(api_args: APIArgs):
     initialize_banner_logger()
 
     # Set up directory for saving

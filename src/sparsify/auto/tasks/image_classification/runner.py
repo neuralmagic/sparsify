@@ -223,4 +223,4 @@ class ImageClassificationRunner(TaskRunner):
         :param train_directory: train directory from which the export directory was
             created. Used for relative pathing
         """
-        return os.path.join(train_directory, "deployment")
+        return os.path.join(train_directory, self.train_args.model_tag, "deployment")

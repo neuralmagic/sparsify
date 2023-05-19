@@ -17,7 +17,7 @@ limitations under the License.
 
 <h1><img alt="tool icon" src="https://neuralmagic.com/wp-content/uploads/2023/03/Sparsify.svg" />&nbsp;&nbsp;Sparsify [Alpha]</h1>
 
-<h3>Sparsify is a ML-as-a-service platform offering pathways for ML engineers to build sparse models to target optimal general performance at scale. </h3>
+<h3>ML model optimization platform to accelerate inferencing at scale. </h3>
 
 <p>
     <a href="https://docs.neuralmagic.com/sparsify/">
@@ -56,22 +56,9 @@ limitations under the License.
 
 Use Sparsify to easily create sparse, performant models. Sparsify can help you optimize models from scratch or sparse transfer learn onto your own data to target best-in-class inference performance on your target deployment hardware. To get started with the Sparsify Cloud UI, create an account [here](https://app.neuralmagic.com) and check out the [Sparsify Quickstart Guide](https://docs.neuralmagic.com/sparsify/quickstart).
 
-Sparsify makes applying state-of-the-art [sparsification](https://docs.neuralmagic.com/user-guides/sparsification) algorithms using techniques such as pruning and quantization to any neural network easy with a simple UI and one-command API calls that removes the complexity of hyperparameter tuning and sparsification targets. 
+Sparsify makes applying state-of-the-art [sparsification](https://docs.neuralmagic.com/user-guides/sparsification) algorithms using techniques such as pruning and quantization to any neural network easy with a simple UI and one-command API calls that removes the complexity of hyperparameter tuning and sparsification targets which can accelerate inference speeds.
 
-🚨**Note**🚨: Sparsify is currently in an alpha state meaning that many of the pathways and underlying functionaliity may not be fully stable. Please provide your feedback on your experience, what you do not like about the Sparsify Local APIs and what you'd like to see next. Your feedback will be integral in driving the future of Sparsify forward and we thank you in advance. Provide feedback (bug reports, UI issues, CLI errors, or just say hello to our team) [here](https://github.com/neuralmagic/sparsify/issues). 
-
-
- ## Recommended Hardware Support and System Requirements
-
-Sparsify requires the same hardware that is required to train standard neural networks such as a GPU, TPU, or other specialized hardware for training. We recommend you use a Linux environment with a GPU that has a minimum of X RAM, X GPU Memory, X number of cores, and is CUDA-enabled. If you encounter issues setting up your training environment, file a GitHub issue [here]( https://github.com/neuralmagic/sparsify/issues).
-https://github.com/neuralmagic/sparsify/issues). 
-
-Sparsify is tested on Python 3.7-3.10, ONNX 1.5.0-1.12.0, ONNX opset version 11+, and manylinux compliant systems. Using a  [virtual environment](https://docs.python.org/3/library/venv.html)  is highly recommended.
-
-
-## Available Sparsify APIs
-
-To run the Sparsify APIs locally, all you need to do is create an account, install and log in to Sparsify via your CLI, and provide the required arguments for the experiment type you wish to run outlined below. All Sparsify API calls start with the `sparsify.run` command and have the following arguments in aggregate: 
+To run the Sparsify locally, all you need to do is create an account, install and log in to Sparsify via your CLI, and provide the required arguments for the experiment type you wish to run outlined below. The Sparsify training process will run locally on your training hardware and automatically adjust training commands to fit the available training hardware (adjusting gradient accumulation for that setup). To run a Sparsify Experiment, all Experiment API calls start with the `sparsify.run` command and have the following arguments in aggregate: 
 
 ```bash
 sparsify.run experiment-type \  
@@ -81,125 +68,65 @@ sparsify.run experiment-type \
 --optim-level optim-level
 ```
 
-Sparsify has three experiment types which contain their own set of required arguments: 
+Sparsify has three experiment types each with different attributes across sparsity, sparsification speed, and accuracy: 
 ```bash
-- sparsify.run one-shot ...
-- sparsify.run sparse-transfer ...
-- sparsify.run training-aware ...
-```
-- **sparsify. run one-shot** enables you to provide a dense model and calibration dataset and run the Neural Magic One-Shot API on it to generate a sparse model, transfer learned on your calibration dataset all without full retraining of the model; reducing your time to deploy. The Sparsify One-Shot API creates a sparse ONNX model in the working directory. 
-
-- **sparsify. run training-aware** enables you to provide a use case and training dataset (and optional dense model) and generate a sparse model on your data.  You can customize a recipe further (simply with a handful of hyperparameters, advanced entire algorithms), and run training through your pipeline, package it, and deploy it. The Sparsify Training-Aware API creates a sparse ONNX model in the working directory. 
-
-- **sparsify. run sparse-transfer** enables you to provide a use case and training dataset and generate a sparse model via sparse transfer learning on top of an already sparse model provided by Neural Magic.  The Sparsify Sparse-Transfer API takes care of the transfer learning process and fits your data to a model optimized on your metric of choice; making generating performant models for your specific use case easy. The Sparsify Sparse-Transfer API creates a sparse ONNX model in the working directory. 
-
-## Sparsify APIs Usage and Parameters 
-#### Training Information: 
-The Sparsify APIs will kick off the creation of an initial model based on the optimizing and satisficing metrics defaulted or selected; followed by automatic hyperparameter tuning to optimize the given metric to its highest value.  
-
-The Sparsify training process will run locally on your training hardware and automatically adjust training commands to fit the available training hardware (adjusting gradient accumulation for that setup).  
-
-
-#### Model Selection
-For the One-Shot and Training-Aware APIs, you will need to provide a dense model you wish to optimize for inference. When running the `sparsify.run` command for either of these APIs you'll need to supply the argument `--model PATH_TO_DENSE_ONNX_MODEL` with the path to your model in your local working directory. The maximum model size is 2GB.
-  
-#### Data Selection
-For all Sparsify APIs, you will need to provide a training dataset to fit to your sparse model you wish to create. You will need to make sure that your data is properly formatted to work with the Sparsify APIs. Depending on your use case, your data may need to take a specific form.  
-
-To view how to properly format your data for use with Sparsify, view [Neural Magic's Data Format Guide](www.asdfas/com).  Once your data is properly formatted, run the `sparsify.run` command and be sure to supply the argument `--data PATH_TO_DATA` with the path to your data in your local working directory. 
-
-#### Use Case Selection:
-To use the Sparsify APIs, you must choose a use case and provide a dataset that you wish to get a sparse ONNX model for. You are required to designate both the use-case as well as provide a training dataset that will be applied for the Sparse-Transfer and Training-Aware Experiment APIs. For the One-Shot Experiment API, you will additionally need to provide a dense model you wish to optimize for inference.
-   
-   **Use Cases**
-   You can select from the following lists of supported list of use-cases (--use-case) to create a performant model for: 
--   CV classification: [*ic, image-classification, image_classification, classification*]
--   CV detection: [*od, object-detection, object_detection, detection*]
--   CV segmentation: [*segmentation*]
--   NLP question answering: [*qa, question-answering, question_answering*]
--   NLP text classification: [*text-classification, text_classification, glue*]
--   Sentiment analysis: [*sentiment, sentiment_analysis, sentiment-analysis*]
--   NLP token classification: [*token-classification, token_classification*]
--   Named entity recognition: [*ner, named-entity-recognition, named_entity_recognition*]
-
-
-#### Optimization Level:
-When using the Sparsify APIs, you will have the ability to set a model optimization level. This optimization level is a value between 0.0 and 1.0 where 0.0 is fully optimized for accuracy and 1.0 is fully optimized for performance. Note that if you fully optimize for one extreme that does not mean that there will be no sparsity present or accuracy will be completely ignored. It just means that Sparsify will optimize your model to that metric as much as possible, while maintaining a reasonable accuracy or performance value. 
-
-
-### Sparsify Sparse-Transfer API Examples:
-**CV** 
-To get a model that was trained for object detection and that is optimized 80% for performance, you can call the Sparsify Sparse-Transfer Experiment API as follows:
-```bash
-(sparsify) ~ sparsify.run sparse-transfer
---data ./training_dataset \  
---use-case object-detection \  
---optim-level 0.80
-```
-**NLP** 
-To get a model that was trained for sentiment analysis on your own dataset and that is balanced for performance and accuracy during inference, you can call the Sparsify Sparse-Transfer Experiment API as follows:
-```bash
-(sparsify) ~ sparsify.run sparse-transfer
---data ./training_dataset \  
---use-case sentiment-analysis \  
---optim-level 0.50
+- sparsify.run one-shot...
+- sparsify.run sparse-transfer...
+- sparsify.run training-aware...
 ```
 
+🔎 **Featured One-Shot Experiment Example:**
 
-### Sparsify One-Shot API Examples:
-**CV** 
-To get a model that was trained for image classification and that is balanced for performance and accuracy during inference, you can call the Sparsify One-Shot Experiment API as follows:
-```bash
-(sparsify) ~ sparsify.run one-shot
---model ./model/resnet-50.onnx \
---data ./calibration_dataset \  
---use-case image-classification \  
---optim-level 0.50
-```
-**NLP** 
-To get a model that was trained for question answering on your dataset and that is optimized for max performance, you can call the Sparsify One-Shot Experiment API as follows:
-```bash
-(sparsify) ~ sparsify.run one-shot
---model ./model/bert-large.onnx \
---data ./calibration_dataset \  
---use-case qa \  
---optim-level 1.0
-```
+`sparsify.run one-shot --use-case image_classification --model MODEL_PATH --data DATA_PATH --working-dir sparsify`
 
-### Sparsify Training-Aware API Examples:REVIEW
-**CV** 
-To get a model that was trained for image classification and that is balanced for performance and accuracy during inference, you can call the Sparsify Training-Aware Experiment API as follows:
-```bash
-(sparsify) ~ sparsify.run training-aware
---model ./model/resnet-50.onnx \
---data ./calibration_dataset \  
---use-case image-classification \  
---optim-level 0.50
-```
-**NLP** 
-To get a model that was trained for question answering on your dataset and that is optimized for max performance, you can call the Sparsify Training-Aware Experiment API as follows:
-```bash
-(sparsify) ~ sparsify.run training-aware
---model ./model/bert-large.onnx \
---data ./calibration_dataset \  
---use-case qa \  
---optim-level 1.0
-```
+🚨**Note**🚨: Sparsify is currently in an alpha state. Please provide your feedback on your experience, what you do not like about Sparsify and what you'd like to see next. Your feedback will be integral in driving the future of Sparsify forward and we thank you in advance. Provide feedback (bug reports, UI issues, CLI errors, or just say hello to our team) [here](https://github.com/neuralmagic/sparsify/issues). 
 
 
-## Highlights
+### One-Shot 
 
-- [Neural Magic Data Formatting Guide](https://docs.neuralmagic.com/sparsify/source/userguide/01-intro.html)
+An **One-Shot** Experiment enables you to generate a sparse model from your dense model, tuned on your calibration dataset all without a full retraining of the model; reducing your time to deploy.
 
-## Tutorials
+**Attributes**  
+Sparsity: **+++**  
+Sparsification Speed:**+++++**  
+Accuracy:**+++**  
 
-- [Sparsify Quickstart Guide](https://docs.neuralmagic.com/sparsify/source/userguide/01-intro.html)
-- More coming soon!
+### Sparse-Transfer
 
-## Installation
+A **Sparse-Transfer** Experiment takes care of the transfer learning process and fits your data to a model optimized on your metric of choice; making generating performant models for your specific use case quick & easy.
 
-This repository is tested on Python 3.7-3.9, Linux/Debian systems, and Chrome 87+.
-It is recommended to install in a [virtual environment](https://docs.python.org/3/library/venv.html) to keep your system in order.
+**Attributes**  
+Sparsity: **+++++**  
+Sparsification Speed:**++++**  
+Accuracy:**++++**  
+
+### Training-Aware
+
+A **Training-Aware** Experiment enables you to reference a dense model and a training set to create a sparsification recipe and apply it to your dense model; allowing you to sparsify any model.
+
+**Attributes**  
+Sparsity:**++++**  
+Sparsification Speed:**+++**  
+Accuracy:**+++++**  
+
+## Quick Start
+
+We'll show you how to:
+
+-  Create a Neural Magic Account.
+-   Install Sparsify in your local training environment. Using a  [virtual environment](https://docs.python.org/3/library/venv.html)  is highly recommended.
+-   Get your Sparsify API key.
+
+
+### Create a Neural Magic Account CAN WE PERMALINK THESE
+
+Creating a new account is simple and free. Visit the [Neural Magic's Web App Platform](https://account.neuralmagic.com/signup)  and create an account using your email. If you already have a Neural Magic Account, [sign in](https://account.neuralmagic.com/signup) with your email.
+
+###  Install Sparsify
+
+There are several ways to install Sparsify on your system. The easiest way is using  `pip`. It is advised to create a fresh [virtual environment](https://docs.python.org/3/library/venv.html)  before installing Sparisfy to avoid dependency issues.
+
+This repository is tested on Python 3.7-3.10, Linux/Debian systems, and Chrome 87+.
 
 Install with pip using:
 
@@ -209,6 +136,158 @@ pip install sparsify
 
 Depending on your flow, PyTorch, Keras, or TensorFlow must be installed in the local environment along with Sparsify. 
 
+
+### Get your Sparsify API Key
+
+1.  Once you successfully log in to your Sparsify Account, you will see your current API Key under step 3 of the **'Let's get set up'**  modal. 
+2. Click  **Copy**  to copy the API key to the clipboard.
+
+[![User profile](https://www.comet.com/docs/v2/img/account_settings_profile.png)](https://www.comet.com/docs/v2/img/account_settings_profile.png)
+
+
+ ### Recommended Hardware Support and System Requirements
+
+Sparsify requires the same hardware that is required to train standard neural networks such as a GPU, TPU, or other specialized hardware for training. We recommend you use a Linux environment with a GPU that has a minimum of 128 GB of RAM, 16 GB of GPU Memory, 4 cores, and is CUDA-enabled. If you encounter issues setting up your training environment, file a GitHub issue [here]( https://github.com/neuralmagic/sparsify/issues).
+https://github.com/neuralmagic/sparsify/issues). 
+
+Sparsify is tested on Python 3.7-3.10, ONNX 1.5.0-1.12.0, ONNX opset version 11+, and manylinux compliant systems. Using a  [virtual environment](https://docs.python.org/3/library/venv.html)  is highly recommended.
+
+## Run an Experiment
+
+### One-Shot Experiment Examples
+
+**CV**  
+To get a model that was trained for image classification and that is balanced for performance and accuracy during inference, you can call the Sparsify One-Shot Experimentas follows:
+```bash
+(sparsify) ~ sparsify.run one-shot
+--model ./model/resnet-50.onnx \
+--data ./calibration_dataset \  
+--use-case image-classification \  
+--optim-level 0.50
+```
+
+**NLP**   
+To get a model that was trained for question answering on your dataset and that is optimized for max performance, you can call the Sparsify One-Shot Experiment as follows:
+```bash
+(sparsify) ~ sparsify.run one-shot
+--model ./model/bert-large.onnx \
+--data ./calibration_dataset \  
+--use-case qa \  
+--optim-level 1.0
+```
+
+### Sparse-Transfer Experiment Examples
+
+**CV**   
+To get a model that was trained for object detection and that is optimized 80% for performance, you can call the Sparsify Sparse-Transfer Experiment as follows:
+```bash
+(sparsify) ~ sparsify.run sparse-transfer
+--data ./training_dataset \  
+--use-case object-detection \  
+--optim-level 0.80
+```
+**NLP**   
+To get a model that was trained for sentiment analysis on your own dataset and that is balanced for performance and accuracy during inference, you can call the Sparsify Sparse-Transfer Experiment as follows:
+```bash
+(sparsify) ~ sparsify.run sparse-transfer
+--data ./training_dataset \  
+--use-case sentiment-analysis \  
+--optim-level 0.50
+```
+
+### Training-Aware Experiment Examples
+
+**CV**   
+To get a model that was trained for image classification and that is balanced for performance and accuracy during inference, you can call the Sparsify Training-Aware Experiment as follows:
+```bash
+(sparsify) ~ sparsify.run training-aware
+--model ./model/resnet-50.onnx \
+--data ./calibration_dataset \  
+--use-case image-classification \  
+--optim-level 0.50
+```
+**NLP**   
+To get a model that was trained for question answering on your dataset and that is optimized for max performance, you can call the Sparsify Training-Aware Experiment as follows:
+```bash
+(sparsify) ~ sparsify.run training-aware
+--model ./model/bert-large.onnx \
+--data ./calibration_dataset \  
+--use-case qa \  
+--optim-level 1.0
+```
+
+## Sparsify APIs Usage and Parameters
+
+#### Model Selection  
+For the One-Shot and Training-Aware Experiments, you will need to provide a dense model you wish to optimize for inference. When running the `sparsify.run` command for either of these Experiments you'll need to supply the argument `--model PATH_TO_DENSE_ONNX_MODEL` with the path to your model in your local working directory. The maximum model size is 2GB.
+  
+#### Data Selection  
+For all Sparsify Experiments, you will need to provide a training dataset to fit to your sparse model you wish to create. You will need to make sure that your data is properly formatted to work with Sparsify. Depending on your use case, your data may need to take a specific form.  
+
+To view how to properly format your data for use with Sparsify, view the Use Case Data Tutorials below (LINK) . Once your data is properly formatted, run the `sparsify.run` command and be sure to supply the argument `--data PATH_TO_DATA` with the path to your data in your local working directory. 
+
+#### Use Case Selection  
+To use Sparsify, you must designate a use case and provide a dataset that you wish to get a sparse ONNX model for. You are required to designate both the use-case as well as provide a training dataset that will be applied for the Sparse-Transfer and Training-Aware Experiments. For the One-Shot Experiment, you will additionally need to provide a dense model you wish to optimize for inference.
+   
+   **Use Cases**  
+   You can select from the following lists of supported list of use-cases (--use-case) to create a performant model for: 
+-   CV - classification: `cv-classification`
+-   CV - detection: `cv-detection`
+-   CV - segmentation: `cv-segmentation`
+-   NLP - question answering: `nlp-question_answering`
+-   NLP - text classification: `nlp-text_classification`
+-   NLP - sentiment analysis: `nlp-sentiment_analysis`
+-   NLP - token classification: `nlp-token_classification`
+-   NLP - named entity recognition: `nlp-named_entity_recognition`
+
+
+#### Optimization Level  
+When using Sparsify, you will have the ability to set a model optimization level. This optimization level is a value between 0.0 and 1.0 where 0.0 is fully optimized for accuracy and 1.0 is fully optimized for performance. Note that if you fully optimize for one extreme that does not mean that there will be no sparsity present or accuracy will be completely ignored. It just means that Sparsify will optimize your model to that metric as much as possible, while maintaining a reasonable accuracy or performance value. 
+
+## Examples and Tutorials  
+
+
+### Data Formatting Tutorial 
+
+#### CV - classification: `cv-classification`  
+
+Your data should be in the `COCO` format for cv-classification
+
+**Example**   
+
+
+#### CV - detection: `cv-detection`  
+
+Your data should be in the [`COCO` format](https://cocodataset.org/#format-data)  for cv-detection use cases. 
+
+**Example**   
+```
+To be filled in. 
+
+# import dataset
+
+# format dataset in proper coco format 
+
+# save to local directory
+
+# sparsify.run one-shot
+--model ./yolov5.onnx \
+--data ./coco_dataset \  
+--use-case image-classification \  
+--optim-level 0.50
+```
+
+REPEAT
+
+
+
+-   CV - detection: `cv-detection`
+-   CV - segmentation: `cv-segmentation`
+-   NLP - question answering: `nlp-question_answering`
+-   NLP - text classification: `nlp-text_classification`
+-   NLP - sentiment analysis: `nlp-sentiment_analysis`
+-   NLP - token classification: `nlp-token_classification`
+-   NLP - named entity recognition: `nlp-named_entity_recognition`
 
 ## Resources
 

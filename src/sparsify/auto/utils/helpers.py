@@ -34,7 +34,7 @@ __all__ = [
     "initialize_banner_logger",
 ]
 
-SAVE_DIR = "auto_{{task}}{:_%Y_%m_%d_%H_%M_%S}".format(datetime.now())
+SAVE_DIR = "{{run_mode}}_{{task}}{:_%Y_%m_%d_%H_%M_%S}".format(datetime.now())
 
 
 def initialize_banner_logger():
@@ -53,15 +53,18 @@ def create_save_directory(api_args: "APIArgs") -> Tuple[str]:  # noqa: F821
 
     """
     save_directory = os.path.join(
-        api_args.save_directory, SAVE_DIR.format(task=api_args.task)
+        api_args.save_directory,
+        SAVE_DIR.format(run_mode=api_args.run_mode.value, task=api_args.task),
     )
-    log_directory = os.path.join(save_directory, "training", "logs")
-    artifact_directory = os.path.join(save_directory, "training", "run_artifacts")
+    train_directory = os.path.join(save_directory, "training_artifacts")
+    log_directory = os.path.join(save_directory, "logs")
+    deploy_directory = os.path.join(save_directory, "deployment")
     os.makedirs(save_directory, exist_ok=True)
+    os.makedirs(train_directory)
     os.makedirs(log_directory)
-    os.makedirs(artifact_directory)
+    os.makedirs(deploy_directory)
 
-    return save_directory, artifact_directory, log_directory
+    return train_directory, log_directory, deploy_directory
 
 
 def save_history(
@@ -152,7 +155,7 @@ class _BannerFormatter(logging.Formatter):
     bold_red = "\x1b[31;1m"
     reset = "\x1b[0m"
     banner_format = (
-        f"\n{blue}*************************SPARSIFY AUTO**********************{reset}"
+        f"\n{blue}*************************SPARSIFY***************************{reset}"
         "\n%(message)s"
         f"\n{blue}************************************************************\n{reset}"
     )

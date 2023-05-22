@@ -24,7 +24,7 @@ from typing import Any, Dict, Generic, TypeVar
 
 from sparseml.utils import Singleton
 from sparsify.models import Job, JobStatus, database
-from sparsify.workers.base import JobWorker, JobWorkerRegistry
+from sparsify.workers.base import JobWorkerRegistry
 
 
 __all__ = ["JobNotFoundError", "JobCancelationFailureError", "JobWorkerManager"]

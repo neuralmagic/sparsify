@@ -27,10 +27,10 @@ from sparseml.onnx.utils import (
     DeepSparseModelRunner,
     ModelRunner,
     ORTModelRunner,
-    check_load_model,
     get_node_by_id,
     prune_model_one_shot_iter,
 )
+from sparsezoo.utils import load_model
 from sparsify.blueprints.utils import get_project_optimizer_by_ids
 from sparsify.models import ProjectBenchmark, ProjectModel
 from sparsify.schemas import (
@@ -349,7 +349,7 @@ class CreateBenchmarkJobWorker(JobWorker):
         pruned_models = {}
 
         for inference_model_optimization in optims:
-            model_proto = check_load_model(project_model.file_path)
+            model_proto = load_model(project_model.file_path)
 
             for progress in self._get_pruned_model_proto(
                 model_proto, inference_model_optimization

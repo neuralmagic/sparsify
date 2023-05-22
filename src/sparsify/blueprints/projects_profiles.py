@@ -20,7 +20,6 @@ import datetime
 import json
 import logging
 from http import HTTPStatus
-from typing import Dict
 
 from flasgger import swag_from
 from flask import Blueprint, jsonify, request

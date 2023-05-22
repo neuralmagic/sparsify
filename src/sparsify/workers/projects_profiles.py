@@ -379,7 +379,7 @@ class CreateLossProfileJobWorker(BaseProfileJobWorker):
     ):
         analysis = None
 
-        for (analysis, progress) in pruning_loss_sens_magnitude_iter(
+        for analysis, progress in pruning_loss_sens_magnitude_iter(
             model.file_path, [0.0]
         ):
             yield JobProgressSchema().dump(
@@ -410,7 +410,7 @@ class CreateLossProfileJobWorker(BaseProfileJobWorker):
 
         analysis = None
 
-        for (analysis, progress) in pruning_loss_sens_magnitude_iter(model.file_path):
+        for analysis, progress in pruning_loss_sens_magnitude_iter(model.file_path):
             yield JobProgressSchema().dump(
                 {
                     "iter_indefinite": False,
@@ -655,7 +655,7 @@ class CreatePerfProfileJobWorker(BaseProfileJobWorker):
     ):
         analysis = None
 
-        for (analysis, progress) in pruning_perf_sens_one_shot_iter(
+        for analysis, progress in pruning_perf_sens_one_shot_iter(
             model.file_path,
             data,
             self.batch_size,
@@ -690,7 +690,7 @@ class CreatePerfProfileJobWorker(BaseProfileJobWorker):
     ):
         analysis = None
 
-        for (analysis, progress) in pruning_perf_sens_one_shot_iter(
+        for analysis, progress in pruning_perf_sens_one_shot_iter(
             model.file_path,
             data,
             self.batch_size,

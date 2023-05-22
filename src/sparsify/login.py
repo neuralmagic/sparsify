@@ -13,14 +13,17 @@
 # limitations under the License.
 
 """
-Usage: sparsify.login [OPTIONS]
+Usage: sparsify.login [OPTIONS] API_KEY
 
   sparsify.login utility to log into sparsify locally.
 
+  sparsify.login [API_KEY]
+
+  API_KEY: The API key copied from your sparsify account
+
 Options:
-  --api-key TEXT  API key copied from your account.  [required]
-  --version       Show the version and exit.  [default: False]
-  --help          Show this message and exit.  [default: False]
+  --version  Show the version and exit.  [default: False]
+  --help     Show this message and exit.  [default: False]
 """
 
 import importlib
@@ -48,17 +51,16 @@ _LOGGER = logging.getLogger(__name__)
 
 
 @click.command(context_settings=CONTEXT_SETTINGS)
-@click.option(
-    "--api-key",
-    type=str,
-    help="API key copied from your account. If not provided, "
-    "will attempt to use the credentials stored on disk.",
-)
+@click.argument("api-key", type=str, required=True)
 @click.version_option(version=version_major_minor)
 @click.option("--debug/--no-debug", default=False, hidden=True)
 def main(api_key: str, debug: bool = False):
     """
     sparsify.login utility to log into sparsify locally.
+
+    sparsify.login [API_KEY]
+
+    API_KEY: The API key copied from your sparsify account
     """
     set_log_level(logger=_LOGGER, level=logging.DEBUG if debug else logging.INFO)
     _LOGGER.info("Logging into sparsify...")

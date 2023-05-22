@@ -15,12 +15,7 @@
 import os
 
 import click
-<<<<<<< HEAD
-from sparseml.pytorch.image_classification.utils import OPTIMIZERS
-from sparsify.utils import constants
-=======
 from sparsify.utils.constants import TASK_REGISTRY
->>>>>>> 29dbea2... fixes for initial E2E runs of sparse transfer and training aware (#207)
 
 
 __all__ = [
@@ -167,14 +162,7 @@ def add_model_opts(*, require_model: bool, include_optimizer: bool = False):
         "--model", required=require_model, type=str, help="Path to model."
     )
     optimizer = click.option(
-<<<<<<< HEAD
-        "--optimizer",
-        required=require_optimizer,
-        type=click.Choice(OPTIMIZERS, case_sensitive=False),
-        help="The optimizer to use",
-=======
         "--optimizer", required=False, type=str, help="Path to optimizer."
->>>>>>> 29dbea2... fixes for initial E2E runs of sparse transfer and training aware (#207)
     )
 
     def wrapped(f):

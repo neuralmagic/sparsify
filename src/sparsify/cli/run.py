@@ -16,6 +16,7 @@ import json
 from pathlib import Path
 
 import click
+from sparsezoo.analyze.cli import CONTEXT_SETTINGS
 from sparsify.cli import opts
 
 
@@ -30,12 +31,13 @@ def main():
     ...
 
 
-@main.command()
+@main.command(context_settings=CONTEXT_SETTINGS)
 @opts.add_info_opts
 @opts.add_model_opts(require_model=True, require_optimizer=False)
 @opts.add_data_opts
 @opts.add_deploy_opts
 @opts.add_optim_opts
+@opts.OPTIM_LEVEL
 def one_shot(**kwargs):
     """
     One shot sparsification of ONNX models
@@ -60,7 +62,7 @@ def one_shot(**kwargs):
     )
 
 
-@main.command()
+@main.command(context_settings=CONTEXT_SETTINGS)
 @opts.add_info_opts
 @opts.add_model_opts(require_model=False, require_optimizer=True)
 @opts.add_data_opts
@@ -76,7 +78,7 @@ def sparse_transfer(**kwargs):
     auto.main(_parse_run_args_to_auto(sparse_transfer=True, **kwargs))
 
 
-@main.command()
+@main.command(context_settings=CONTEXT_SETTINGS)
 @opts.add_info_opts
 @opts.add_model_opts(require_model=False, require_optimizer=True)
 @opts.add_data_opts

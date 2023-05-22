@@ -20,7 +20,7 @@ __all__ = [
     "TransformersExportArgs",
 ]
 
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 
 from pydantic import Field
 from sparseml.transformers.text_classification import _TASK_TO_KEYS
@@ -34,8 +34,8 @@ class _TransformersTrainArgs(BaseArgs):
             "huggingface.co/models"
         )
     )
-    distill_teacher: Optional[str] = Field(
-        default=None,
+    distill_teacher: str = Field(
+        default="disable",
         description=("Teacher model which needs to be a trained NER model"),
     )
     config_name: Optional[str] = Field(
@@ -71,8 +71,8 @@ class _TransformersTrainArgs(BaseArgs):
             "https://github.com/neuralmagic/sparseml for more information"
         ),
     )
-    recipe_args: Optional[str] = Field(
-        default=None,
+    recipe_args: Optional[Dict[str, Any]] = Field(
+        default_factory=dict,
         description="Recipe arguments to be overwritten",
     )
     dataset_name: Optional[str] = Field(
@@ -209,8 +209,8 @@ class _TransformersTrainArgs(BaseArgs):
     )
     max_grad_norm: float = Field(default=1.0, description="Max gradient norm.")
 
-    num_train_epochs: Optional[float] = Field(
-        default=None, description="Total number of training epochs to perform."
+    num_train_epochs: float = Field(
+        default=1, description="Total number of training epochs to perform."
     )
     max_steps: int = Field(
         default=-1,

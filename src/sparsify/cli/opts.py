@@ -153,6 +153,7 @@ OPTIM_LEVEL = click.option(
         "[0, 1]. Default 0.5"
     ),
 )
+TRAIN_KWARGS = click.option("--train-kwargs", default=None, type=str)
 
 
 def add_info_opts(f):
@@ -205,4 +206,9 @@ def add_optim_opts(f):
         OPTIM_LEVEL,
     ]:
         f = fn(f)
+    return f
+
+
+def add_kwarg_opts(f):
+    f = TRAIN_KWARGS(f)
     return f

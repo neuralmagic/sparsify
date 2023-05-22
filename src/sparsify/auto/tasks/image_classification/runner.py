@@ -59,8 +59,7 @@ class ImageClassificationRunner(TaskRunner):
     def __init__(self, config: SparsificationTrainingConfig):
         super().__init__(config)
         self._model_save_name = os.path.join(
-            "training",
-            ("model-one-shot.pth" if self.train_args.one_shot else "model.pth"),
+            *self.export_args.checkpoint_path.split(os.sep)[-3:]
         )
 
     @classmethod
@@ -123,12 +122,10 @@ class ImageClassificationRunner(TaskRunner):
         """
         Update run directories to save to the temporary run directory
         """
-        self.train_args.save_dir = os.path.join(
-            self.run_directory.name, self.train_args.save_dir
-        )
+        self.train_args.save_dir = self.run_directory
         self.train_args.logs_dir = self.log_directory
         self.export_args.checkpoint_path = os.path.join(
-            self.run_directory.name, self.export_args.checkpoint_path
+            self.run_directory, self.export_args.checkpoint_path
         )
         self.export_args.save_dir = self.train_args.save_dir
 
@@ -219,8 +216,11 @@ class ImageClassificationRunner(TaskRunner):
             recovery=None,
         )
 
-    def _get_model_artifact_directory(self) -> str:
+    def _get_default_deployment_directory(self, train_directory: str) -> str:
         """
-        Return the absolute path to the temporary run artifacts directory
+        Return the path to where the deployment directory is created by export
+
+        :param train_directory: train directory from which the export directory was
+            created. Used for relative pathing
         """
-        return os.path.join(self.train_args.save_dir, self.train_args.model_tag)
+        return os.path.join(train_directory, self.train_args.model_tag, "deployment")

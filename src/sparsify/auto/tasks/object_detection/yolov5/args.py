@@ -66,6 +66,9 @@ class _Yolov5BaseTrainArgs(BaseArgs):
     project: Union[str, Path] = Field(
         default="train", description="save to project/name"
     )
+    log_dir: Union[str, Path] = Field(
+        default=None, description="optional path to re-route logging to"
+    )
     name: str = Field(default="exp", description="save to project/name")
     exist_ok: bool = Field(
         default=False, description="existing project/name ok, do not increment"
@@ -137,7 +140,6 @@ class Yolov5ExportArgs(BaseArgs):
     )
     half: bool = Field(default=False, description="FP16 half-precision export")
     inplace: bool = Field(default=False, description="set YOLOv5 Detect() inplace=True")
-    train: bool = Field(default=False, description="model.train() mode")
     optimize: bool = Field(
         default=False, description="TorchScript: optimize for mobile"
     )
@@ -150,6 +152,13 @@ class Yolov5ExportArgs(BaseArgs):
     agnostic_nms: bool = Field(
         default=False, description="TF: add agnostic NMS to model"
     )
-    remove_grid: bool = Field(
-        default=False, description="remove export of Detect() layer grid"
+    topk_per_class: int = Field(
+        default=100, description="TF.js NMS: topk per class to keep"
+    )
+    iou_thres: float = Field(default=0.45, description="TF.js NMS: IoU threshold")
+    conf_thres: float = Field(
+        default=0.25, description="TF.js NMS: confidence threshold"
+    )
+    export_samples: int = Field(
+        default=0, description="number of samples to export with onnx"
     )

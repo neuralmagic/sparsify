@@ -23,3 +23,5 @@ RUN if [ -z "${GIT_CHECKOUT}" ] ; then pip3 install --no-cache-dir --upgrade dee
 # if $GIT_CHECKOUT is specified - clone, checkout $GIT_CHECKOUT, and install with -e
 RUN if [ -n "${GIT_CHECKOUT}" ] ; then git clone https://github.com/neuralmagic/deepsparse.git --depth 1 -b $GIT_CHECKOUT; fi
 RUN if [ -n "${GIT_CHECKOUT}" ] ; then pip3 install --no-cache-dir --upgrade -e "./deepsparse[server]" ; fi
+
+CMD bash

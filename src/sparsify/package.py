@@ -11,22 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""
-Usage: sparsify.package [OPTIONS]
-
-Options:
-  --version                       Show the version and exit.  [default: False]
-  --task [image_classification|object_detection|segmentation|question_answering|
-  text_classification|sentiment_analysis|token_classification]
-                                  The task to package depoyment directory for
-                                  [required]
-  --deployment-dir DIRECTORY      The directory containing the deployment
-                                  files to package  [required]
-  --help                          Show this message and exit.  [default:
-                                  False]
-"""
 import logging
 from pathlib import Path
+from typing import Optional
 
 import click
 from sparsezoo.analyze.cli import CONTEXT_SETTINGS
@@ -71,39 +58,50 @@ _LOGGER = logging.getLogger(__name__)
     required=True,
 )
 @click.option(
-    "--preprocessing",
+    "--processing_file",
     type=str,
-    help="Sets the pre-processing function to use",
+    default=None,
+    help="A python file containing a pre-processing (`preprocess`) and/or post-processing (`postprocess`) function",
 )
 @click.option(
-    "--postprocessing",
-    type=str,
-    help="Sets the post-processing function to use",
+    "--output_dir",
+    type=click.Path(file_okay=False, dir_okay=True, writable=True),
+    default=None,
+    help="A directory where the packaged deployment directory will be saved, if not specified it will be "
+    "saved in the parent directory of the experiment directory, under `deployment` folder",
 )
 @click.option("--debug/--no-debug", default=False, hidden=True)
 def main(
     experiment: str,
     task: str,
-    log_level: str,
+    log_level: str, # TODO: Change to logging_config and support that
     deploy_type: str,
-    preprocessing: str,
-    postprocessing: str,
+    processing_file: Optional[str],
+    output_dir: Optional[str],
     debug: bool = False,
 ):
     set_log_level(logger=_LOGGER, level=log_level)
     if deploy_type != "server":
         raise NotImplementedError(f"Deployment type {deploy_type} is not yet supported")
-    if preprocessing is not None:
-        raise NotImplementedError(
-            f"Pre-processing function {preprocessing} is not yet supported"
-        )
-    if postprocessing is not None:
-        raise NotImplementedError(
-            f"Post-processing function {postprocessing} is not yet supported"
-        )
-    print(
-        package_instructions(experiment=experiment, task=task, log_level=log_level)
-    )
+    
+    if output_dir is None:
+        output_dir = Path(experiment).parent / "deployment"
+
+    else:
+        output_dir = Path(output_dir)
+        if any(output_dir.iterdir()):
+            raise ValueError(
+                f"Output directory {output_dir} is not empty. Please specify an empty directory"
+            )
+    # move the experiment directory to the output directory
+    # move dockerfile to output directory
+    # move processing file to output directory
+    # create a server-config with processing file if specified
+    # display instructions for packaging
+
+    # print(
+    #     package_instructions(experiment=experiment, task=task, log_level=log_level)
+    # )
     _LOGGER.debug(f"locals: {locals()}")
 
 

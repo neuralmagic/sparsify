@@ -22,7 +22,7 @@ from sparsezoo.analyze import ModelAnalysis
 
 __all__ = [
     "create_analysis_file",
-    "get_non_existent_yaml_filename",
+    "get_non_existent_filename",
     "set_log_level",
     "strtobool",
 ]
@@ -68,29 +68,39 @@ def set_log_level(logger: logging.Logger, level: int) -> None:
         handler.setLevel(level=level)
 
 
-def get_non_existent_yaml_filename(
-    working_dir: Path, filename: str = "analysis"
+def get_non_existent_filename(
+    parent_dir: Path, filename: str = "analysis.yaml"
 ) -> Path:
     """
-    Get a filename that does not exist in the given directory
+    Get a filename that does not exist in the given directory,
+    if filename exists, append _1, _2, etc. until a filename
+    that does not exist is found. if filename includes an extension,
+    the extension will be preserved.
 
-    >>> get_non_existent_yaml_filename(Path("/tmp"), "analysis")
+
+    >>> get_non_existent_filename(Path("/tmp"), "analysis")
+    PosixPath('/tmp/analysis')
+
+    >>> get_non_existent_filename(Path("/tmp"), "analysis.yaml")
     PosixPath('/tmp/analysis.yaml')
 
-    :param working_dir: The directory to check for the `filename.yaml`
-    :param filename: The filename to check for, without `.yaml` extension
+    :param wor_dir: The directory to check for the `filename.yaml`
+    :param filename: The filename to check for, if it includes an extension,
+        the extension will be preserved. Default: "analysis.yaml"
     :return: The filename that does not exist in the given directory.
-        Note: the returned filename will include a `.yaml` extension
     """
-    if not working_dir.exists():
-        return working_dir.joinpath(filename)
+    if not parent_dir.exists():
+        return parent_dir.joinpath(filename)
 
     i = 1
-    while working_dir.joinpath(filename).with_suffix(".yaml").exists():
-        filename = f"{filename}_{i}"
+    while parent_dir.joinpath(filename).exists():
+        suffix = Path(filename).suffix
+        filename = f"{Path(filename).stem}_{i}"
+        if suffix:
+            filename = Path(filename).with_suffix(suffix=suffix)
         i += 1
 
-    return working_dir.joinpath(filename).with_suffix(".yaml")
+    return parent_dir.joinpath(filename)
 
 
 def create_analysis_file(working_dir: str, model: str) -> str:
@@ -104,7 +114,7 @@ def create_analysis_file(working_dir: str, model: str) -> str:
     working_dir = Path(working_dir)
     working_dir.mkdir(parents=True, exist_ok=True)
     analysis_file_path = str(
-        get_non_existent_yaml_filename(working_dir=working_dir, filename="analysis")
+        get_non_existent_filename(parent_dir=working_dir, filename="analysis.yaml")
     )
     analysis = ModelAnalysis.create(model)
     analysis.yaml(file_path=analysis_file_path)

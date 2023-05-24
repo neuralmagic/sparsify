@@ -18,7 +18,7 @@ from typing import Optional
 import click
 from sparsezoo.analyze.cli import CONTEXT_SETTINGS
 from sparsezoo.utils import TASKS_WITH_ALIASES
-from sparsify.utils import set_log_level
+from sparsify.utils import get_non_existent_filename, set_log_level
 from sparsify.version import version_major_minor
 
 
@@ -61,20 +61,22 @@ _LOGGER = logging.getLogger(__name__)
     "--processing_file",
     type=str,
     default=None,
-    help="A python file containing a pre-processing (`preprocess`) and/or post-processing (`postprocess`) function",
+    help="A python file containing a pre-processing (`preprocess`) "
+    "and/or post-processing (`postprocess`) function",
 )
 @click.option(
     "--output_dir",
     type=click.Path(file_okay=False, dir_okay=True, writable=True),
     default=None,
-    help="A directory where the packaged deployment directory will be saved, if not specified it will be "
-    "saved in the parent directory of the experiment directory, under `deployment` folder",
+    help="A directory where the packaged deployment directory will "
+    "be saved, if not specified it will be saved in the parent "
+    "directory of the experiment directory, under `deployment` folder",
 )
 @click.option("--debug/--no-debug", default=False, hidden=True)
 def main(
     experiment: str,
     task: str,
-    log_level: str, # TODO: Change to logging_config and support that
+    log_level: str,  # TODO: Change to logging_config and support that
     deploy_type: str,
     processing_file: Optional[str],
     output_dir: Optional[str],
@@ -83,15 +85,17 @@ def main(
     set_log_level(logger=_LOGGER, level=log_level)
     if deploy_type != "server":
         raise NotImplementedError(f"Deployment type {deploy_type} is not yet supported")
-    
-    if output_dir is None:
-        output_dir = Path(experiment).parent / "deployment"
 
+    if output_dir is None:
+        output_dir = get_non_existent_filename(
+            parent_dir=Path(experiment).parent, filename="deployment"
+        )
     else:
         output_dir = Path(output_dir)
         if any(output_dir.iterdir()):
             raise ValueError(
-                f"Output directory {output_dir} is not empty. Please specify an empty directory"
+                f"Output directory {output_dir} is not empty. "
+                "Please specify an empty directory"
             )
     # move the experiment directory to the output directory
     # move dockerfile to output directory

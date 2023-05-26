@@ -11,10 +11,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import glob
 import importlib
 import os
 import shutil
 import subprocess
+import tempfile
 
 import pytest
 
@@ -22,201 +24,207 @@ from fastai.vision.all import URLs, untar_data
 from sparsify.utils import TASK_REGISTRY
 
 
-_OUTPUT_DIRECTORY = "pytest_output"
-_RUN_DIRECTORY = "pytest_run"
+_OUTPUT_DIRECTORY = "sparsify_training_temp_integration_test"
 _SPARSIFYML_INSTALLED: bool = importlib.util.find_spec("sparsifyml") is not None
-_MAX_STEPS = 1
-_NUM_TRIALS = "2"
-
-
-def _find_file_recursively(directory: str, file_name_or_extension: str) -> bool:
-    for root, dirs, files in os.walk(directory):
-        for file in files:
-            if file.endswith(file_name_or_extension):
-                return True
-    return False
+_EXTENSIVE_TESTING_ENABLED = os.environ.get(
+    "SPARSIFY_EXTENSIVE_INTEGRATION_TEST", True  # TODO: remove
+)
 
 
 @pytest.mark.parametrize(
-    "task, command, expected_files",
+    "task, command, extensive",
     [
         (
-            "object_detection",
+            "question_answering",
             [
-                "--task",
-                "object_detection",
-                "--dataset",
-                "coco128.yaml",
-                "--save_directory",
-                f"{_OUTPUT_DIRECTORY}",
-                "--num_trials",
-                _NUM_TRIALS,
-                "--kwargs",
-                (str({"epochs": 1, "batch_size": 64, "project": _RUN_DIRECTORY})),
+                "sparse-transfer",
+                "--use-case",
+                "question-answering",
+                "--data",
+                "squad",
+                "--train-kwargs",
+                "{'max_steps': 10, 'max_eval_samples': 10}",
             ],
-            ["last.pt", "last.onnx"],
-        ),
-        (
-            "image_classification",
-            [
-                "--task",
-                "image_classification",
-                "--dataset",
-                "~/data/imagenette-160",
-                "--num_trials",
-                _NUM_TRIALS,
-                "--save_directory",
-                f"{_OUTPUT_DIRECTORY}",
-                "--kwargs",
-                (
-                    str(
-                        {
-                            "max_train_steps": _MAX_STEPS,
-                            "max_eval_steps": _MAX_STEPS,
-                            "save_dir": _RUN_DIRECTORY,
-                        }
-                    )
-                ),
-            ],
-            ["model.pth", "model.onnx"],
+            False,
         ),
         (
             "question_answering",
             [
-                "--task",
-                "question_answering",
-                "--dataset",
+                "training-aware",
+                "--use-case",
+                "question-answering",
+                "--data",
                 "squad",
-                "--save_directory",
-                f"{_OUTPUT_DIRECTORY}",
-                "--num_trials",
-                _NUM_TRIALS,
-                "--kwargs",
-                (
-                    str(
-                        {
-                            "max_steps": _MAX_STEPS,
-                            "max_eval_samples": _MAX_STEPS,
-                            "max_predict_samples": _MAX_STEPS,
-                            "output_dir": _RUN_DIRECTORY,
-                        }
-                    )
-                ),
-                "--teacher_kwargs",
-                (
-                    str(
-                        {
-                            "max_steps": _MAX_STEPS,
-                            "max_eval_samples": _MAX_STEPS,
-                            "max_predict_samples": _MAX_STEPS,
-                            "output_dir": _RUN_DIRECTORY,
-                        }
-                    )
-                ),
+                "--model",
+                "bert-base-uncased",
+                "--train-kwargs",
+                "{'max_steps': 10, 'max_eval_samples': 10}",
             ],
-            ["pytorch_model.bin", "model.onnx"],
+            True,
         ),
         (
             "text_classification",
             [
-                "--task",
-                "text_classification",
-                "--dataset",
-                "glue",
-                "--save_directory",
-                f"{_OUTPUT_DIRECTORY}",
-                "--num_trials",
-                _NUM_TRIALS,
-                "--kwargs",
-                (
-                    str(
-                        {
-                            "task_name": "mnli",
-                            "max_steps": _MAX_STEPS,
-                            "max_eval_samples": _MAX_STEPS,
-                            "max_predict_samples": _MAX_STEPS,
-                            "output_dir": _RUN_DIRECTORY,
-                            "label_column_name": "label",
-                        }
-                    )
-                ),
-                "--teacher_kwargs",
-                (
-                    str(
-                        {
-                            "max_steps": _MAX_STEPS,
-                            "max_eval_samples": _MAX_STEPS,
-                            "max_predict_samples": _MAX_STEPS,
-                            "output_dir": _RUN_DIRECTORY,
-                        }
-                    )
-                ),
+                "sparse-transfer",
+                "--use-case",
+                "text-classification",
+                "--data",
+                "",
+                "--train-kwargs",
+                "{'max_steps': 10, 'max_eval_samples': 10, 'task_name': 'mnli' }",  # noqa: E501
             ],
-            ["pytorch_model.bin", "model.onnx"],
+            True,
+        ),
+        (
+            "text_classification",
+            [
+                "training-aware",
+                "--use-case",
+                "text-classification",
+                "--data",
+                "",
+                "--model",
+                "bert-base-uncased",
+                "--train-kwargs",
+                "{'max_steps': 10, 'max_eval_samples': 10, 'task_name': 'mnli'}",
+            ],
+            True,
         ),
         (
             "token_classification",
             [
-                "--task",
-                "token_classification",
-                "--dataset",
+                "sparse-transfer",
+                "--use-case",
+                "token-classification",
+                "--data",
                 "conll2003",
-                "--save_directory",
-                f"{_OUTPUT_DIRECTORY}",
-                "--num_trials",
-                _NUM_TRIALS,
-                "--kwargs",
-                (
-                    str(
-                        {
-                            "max_steps": _MAX_STEPS,
-                            "max_eval_samples": _MAX_STEPS,
-                            "max_predict_samples": _MAX_STEPS,
-                            "output_dir": _RUN_DIRECTORY,
-                        }
-                    )
-                ),
-                "--teacher_kwargs",
-                (
-                    str(
-                        {
-                            "max_steps": _MAX_STEPS,
-                            "max_eval_samples": _MAX_STEPS,
-                            "max_predict_samples": _MAX_STEPS,
-                            "output_dir": _RUN_DIRECTORY,
-                        }
-                    )
-                ),
+                "--train-kwargs",
+                "{'max_steps': 10, 'max_eval_samples': 10}",
             ],
-            ["pytorch_model.bin", "model.onnx"],
+            True,
+        ),
+        (
+            "token_classification",
+            [
+                "training-aware",
+                "--use-case",
+                "token-classification",
+                "--data",
+                "conll2003",
+                "--model",
+                "bert-base-uncased",
+                "--train-kwargs",
+                "{'max_steps': 10, 'max_eval_samples': 10}",
+            ],
+            True,
+        ),
+        (
+            "object_detection",
+            [
+                "sparse-transfer",
+                "--use-case",
+                "object-detection",
+                "--data",
+                "coco128.yaml",
+                "--train-kwargs",
+                "{'max_steps': 10}",
+            ],
+            True,
+        ),
+        (
+            "object_detection",
+            [
+                "training-aware",
+                "--use-case",
+                "object-detection",
+                "--data",
+                "coco128.yaml",
+                "--model",
+                "yolov5s.pt",
+                "--train-kwargs",
+                "{'max_steps': 10}",
+            ],
+            False,
+        ),
+        (
+            "image_classification",
+            [
+                "sparse-transfer",
+                "--use-case",
+                "image_classification",
+                "--data",
+                "imagenette",
+                "--train-kwargs",
+                "{'max_train_steps': 5,'max_eval_steps': 5}",
+            ],
+            False,
+        ),
+        (
+            "image_classification",
+            [
+                "training-aware",
+                "--use-case",
+                "image_classification",
+                "--model",
+                "zoo:cv/classification/mobilenet_v2-1.0/pytorch/sparseml/imagenet/base-none",  # noqa: E501
+                "--data",
+                "imagenette",
+                "--train-kwargs",
+                "{'max_train_steps': 5,'max_eval_steps': 5}",
+            ],
+            True,
         ),
     ],
 )
-class TestAbridgedCLIRun:
-    @pytest.fixture()
-    def setup(self, task, command):
-        if TASK_REGISTRY[task] == "image_classification":
-            data_path = untar_data(URLs.IMAGENETTE_160)
-            command = command + ["--dataset", str(data_path)]
+@pytest.mark.skipif(
+    not _SPARSIFYML_INSTALLED, reason="`sparsifyml` needed to run local tests"
+)
+def test_output(task, command, extensive):
+    if extensive and not _EXTENSIVE_TESTING_ENABLED:
+        pytest.skip(
+            "To enable all integration tests, set "
+            "SPARSIFY_EXTENSIVE_INTEGRATION_TEST=true"
+        )
 
-        subprocess.check_call(["sparsify.auto"] + command)
+    if TASK_REGISTRY[task] == "image_classification":
+        data_path = untar_data(URLs.IMAGENETTE_160)
+        data_idx = command.index("--data")
+        command[data_idx + 1] = str(data_path)
+    test_dir = tempfile.TemporaryDirectory(dir=".", prefix=_OUTPUT_DIRECTORY)
+    command.extend(["--working-dir", test_dir.name])
 
-        yield task
+    subprocess.check_call(["sparsify.run"] + command)
+    _validate_experiment_directory(test_dir.name)
 
-        if TASK_REGISTRY[task] == "image_classification":
-            shutil.rmtree(data_path)
+    if TASK_REGISTRY[task] == "image_classification":
+        shutil.rmtree(data_path)
+    test_dir.cleanup
 
-        if os.path.exists(_OUTPUT_DIRECTORY):
-            shutil.rmtree(_OUTPUT_DIRECTORY)
-        if os.path.exists(_RUN_DIRECTORY):
-            shutil.rmtree(_RUN_DIRECTORY)
 
-    @pytest.mark.skipif(
-        not _SPARSIFYML_INSTALLED, reason="`sparsifyml` needed to run local tests"
-    )
-    def test_output(self, setup, expected_files):
-        assert not os.path.exists(_RUN_DIRECTORY)
-        assert os.path.exists(_OUTPUT_DIRECTORY)
-        assert _find_file_recursively(_OUTPUT_DIRECTORY, "results.txt")
-        for file in expected_files:
-            assert _find_file_recursively(_OUTPUT_DIRECTORY, file)
+def _validate_experiment_directory(directory):
+    experiment_dir = os.listdir(directory)
+    experiment_dir = [
+        dir for dir in experiment_dir if os.path.isdir(os.path.join(directory, dir))
+    ]
+    assert len(experiment_dir) == 1
+    experiment_dir = os.path.join(directory, experiment_dir[0])
+    _validate_logs_directory(experiment_dir)
+    _validate_training_artifacts_directory(experiment_dir)
+    _validate_deployment_directory(experiment_dir)
+    assert os.path.exists(os.path.join(experiment_dir, "metrics.yaml"))
+
+
+def _validate_deployment_directory(directory):
+    assert os.path.exists(os.path.join(directory, "deployment"))
+    assert len(glob.glob(os.path.join(directory, "deployment", "*.onnx"))) > 0
+    assert os.path.exists(os.path.join(directory, "deployment", "readme.txt"))
+
+
+def _validate_logs_directory(directory):
+    assert os.path.exists(os.path.join(directory, "logs"))
+    assert len(os.listdir(os.path.join(directory, "logs"))) > 0
+
+
+def _validate_training_artifacts_directory(directory):
+    assert os.path.exists(os.path.join(directory, "training_artifacts"))
+    assert len(os.listdir(os.path.join(directory, "training_artifacts"))) > 0

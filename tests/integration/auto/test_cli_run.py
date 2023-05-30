@@ -166,7 +166,7 @@ _EXTENSIVE_TESTING_ENABLED = os.environ.get(
                 "--use-case",
                 "image_classification",
                 "--model",
-                "zoo:cv/classification/mobilenet_v2-1.0/pytorch/sparseml/imagenet/base-none",  # noqa: E501
+                "zoo:cv/classification/resnet_v1-50/pytorch/sparseml/imagenette/pruned-conservative",  # noqa: E501
                 "--data",
                 "imagenette",
                 "--train-kwargs",

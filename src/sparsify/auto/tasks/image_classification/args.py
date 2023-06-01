@@ -57,11 +57,11 @@ class _ImageClassificationBaseArgs(BaseArgs):
     )
     pretrained: str = Field(default="True", description="type of pretrained weights")
     pretrained_dataset: str = Field(default=None, description="checkpoint data name")
-    model_kwargs: str = Field(
-        default=dict(), description="json string for model constructor args"
+    model_kwargs: Optional[Dict[str, Any]] = Field(
+        default_factory=dict, description="json string for model constructor args"
     )
-    dataset_kwargs: str = Field(
-        default=dict(), description="json string for dataset constructor args"
+    dataset_kwargs: Optional[Dict[str, Any]] = Field(
+        default_factory=dict, description="json string for dataset constructor args"
     )
     model_tag: str = Field(description="required - tag for model under save_dir")
     save_dir: Union[str, Path] = Field(default=ROOT)

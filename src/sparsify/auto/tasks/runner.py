@@ -79,8 +79,8 @@ def retry_stage(stage: str):
             # attempt run and catch errors until success or maximum number of attempts
             # exceeded
             while not error_handler.max_attempts_exceeded():
+                out = func(self, *args, **kwargs)
                 try:
-                    out = func(self, *args, **kwargs)
                     exception = None
                 except Exception as e:
                     exception = e

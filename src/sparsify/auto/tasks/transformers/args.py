@@ -554,6 +554,20 @@ class QuestionAnsweringArgs(_TransformersTrainArgs):
         ),
     )
 
+    def _serialize_bool(self, key: str, value: bool) -> Optional[str]:
+        """
+        Handles logic for converting bools to valid argument strings.
+
+        :return: serialized string or None
+        """
+        # Fields that default to true on the integration side and should be appended
+        # with `--no_` if false
+        _HF_TRUE_DEFAULTS = ["pad_to_max_length"]
+        if key in _HF_TRUE_DEFAULTS:
+            return "--no_" + key if value is False else None
+
+        return super(QuestionAnsweringArgs, self)._serialize_bool(key, value)
+
 
 class TextClassificationArgs(_TransformersTrainArgs):
     max_predict_samples: Optional[int] = Field(
@@ -569,18 +583,26 @@ class TextClassificationArgs(_TransformersTrainArgs):
             "The name of the task to train on: " + ", ".join(_TASK_TO_KEYS.keys())
         ),
     )
-    text_column_name: Optional[str] = Field(
-        default=None,
-        description=(
-            "The column name of text to input in the file " "(a csv or JSON file)."
-        ),
-    )
     label_column_name: Optional[str] = Field(
-        default=None,
+        default="label",
         description=(
             "The column name of label to input in the file " "(a csv or JSON file)."
         ),
     )
+
+    def _serialize_bool(self, key: str, value: bool) -> Optional[str]:
+        """
+        Handles logic for converting bools to valid argument strings.
+
+        :return: serialized string or None
+        """
+        # Fields that default to true on the integration side and should be appended
+        # with `--no_` if false
+        _HF_TRUE_DEFAULTS = ["pad_to_max_length"]
+        if key in _HF_TRUE_DEFAULTS:
+            return "--no_" + key if value is False else None
+
+        return super(TextClassificationArgs, self)._serialize_bool(key, value)
 
 
 class TokenClassificationArgs(_TransformersTrainArgs):

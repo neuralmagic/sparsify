@@ -179,7 +179,7 @@ _EXTENSIVE_TESTING_ENABLED = os.environ.get(
 @pytest.mark.skipif(
     not _SPARSIFYML_INSTALLED, reason="`sparsifyml` needed to run local tests"
 )
-def test_output(task, command, extensive):
+def test_integration_output(task, command, extensive):
     if extensive and not _EXTENSIVE_TESTING_ENABLED:
         pytest.skip(
             "To enable all integration tests, set "

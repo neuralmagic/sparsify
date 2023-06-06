@@ -22,5 +22,5 @@ jobs:
     - name: "⚙️ Logging into Sparsify"
       run: sparsify.login ${{ secrets.NM_SPARSIFY_TEST_API_KEY }}
     - name: "🔬 Running integrations tests (pre-commit)"
-      run: make test_integration
+      run: make test_integration TARGETS=auto
 

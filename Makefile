@@ -14,10 +14,6 @@ ifneq ($(findstring auto,$(TARGETS)),auto)
     PYTEST_ARGS := $(PYTEST_ARGS) --ignore tests/sparsify/auto
 	INTEGRATION_TEST_ARGS := $(INTEGRATION_TEST_ARGS) --ignore tests/integration/auto
 endif
-ifneq ($(findstring package,$(TARGETS)),package)
-    PYTEST_ARGS := $(PYTEST_ARGS) --ignore tests/sparsify/package
-	INTEGRATION_TEST_ARGS := $(INTEGRATION_TEST_ARGS) --ignore tests/integration/package
-endif
 
 # run checks on all files for the repo
 quality:

@@ -1,0 +1,41 @@
+name: Integrations Testing
+on: 
+  pull_request:
+    branches:
+      - sparsify.alpha
+      - main
+      - 'release/*'
+
+jobs:
+  test-setup:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - run: git branch --show-current
+      - name: Get current branch
+        id: get-branch
+        run: >
+          (git branch --show-current | grep -E "release/")
+          && echo "::set-output name=branch::$(git branch --show-current)"
+          || echo "::set-output name=branch::main"
+  integrations-tests:
+    runs-on: ubuntu-22.04
+    needs: test-setup
+    env:
+      SPARSEZOO_TEST_MODE: "true"
+      SPARSIFY_EXTENSIVE_INTEGRATION_TEST: ""
+    steps:
+      steps:
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - uses: actions/checkout@v2
+      - name: "⚙️ Install dependencies"
+        run: pip3 install -e .[dev]
+      - name: "⚙️ Logging into Sparsify"
+        run: sparsify.login ${{ secrets.NM_SPARSIFY_TEST_API_KEY }}
+      - name: "🔬 Running integrations tests (pre-commit}})"
+        run: make test_integration
+

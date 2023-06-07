@@ -111,18 +111,18 @@ def _test_trial_artifact_directory(directory_path: str) -> bool:
     "sparsify.auto.scripts.main.APIArgs.from_cli",
     MagicMock(return_value=APIArgs(**_TEST_CONFIG)),
 )
-@patch(
-    "sparsify.auto.scripts.main.request_student_teacher_configs",
-    MagicMock(
-        return_value=(
-            SparsificationTrainingConfig(**_TEST_CONFIG),
-            _TEST_TEACHER_CONFIG,
-        )
-    ),
-)
-@patch(
-    "sparsify.auto.scripts.main.api_request_tune", MagicMock(return_value=_TEST_CONFIG)
-)
+# @patch(
+#     "sparsify.auto.scripts.main.request_student_teacher_configs",
+#     MagicMock(
+#         return_value=(
+#             SparsificationTrainingConfig(**_TEST_CONFIG),
+#             _TEST_TEACHER_CONFIG,
+#         )
+#     ),
+# )
+# @patch(
+#     "sparsify.auto.scripts.main.api_request_tune", MagicMock(return_value=_TEST_CONFIG)
+# )
 @pytest.mark.skipif(
     not _SPARSIFYML_INSTALLED, reason="`sparsifyml` needed to run local tests"
 )

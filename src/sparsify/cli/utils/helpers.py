@@ -13,17 +13,22 @@
 # limitations under the License.
 
 
+import typing
 from enum import Enum
+
 import click
 from pydantic import BaseModel
-import typing
+
 
 __all__ = [
     "get_click_options_from_base_model",
+    "get_base_models_from_options",
 ]
 
 
-def get_click_options_from_base_model(base_models: typing.Union[BaseModel, typing.List[BaseModel]]):
+def get_click_options_from_base_model(
+    base_models: typing.Union[BaseModel, typing.List[BaseModel]]
+):
     """
     A decorator that takes pydantic BaseModels and converts them into a click options
     """
@@ -39,12 +44,12 @@ def get_click_options_from_base_model(base_models: typing.Union[BaseModel, typin
                 kwargs["type"] = _get_type_from_outer_type(field.outer_type_)
                 if field.allow_none:
                     kwargs["default"] = None
-                
+
                 if not field.required:
                     kwargs["default"] = field.get_default()
                 else:
                     kwargs["required"] = field.required
-                
+
                 kwargs["help"] = field.field_info.description or ""
                 options.append(click.option(*args, **kwargs))
 
@@ -55,11 +60,23 @@ def get_click_options_from_base_model(base_models: typing.Union[BaseModel, typin
     return wrapper
 
 
+def get_base_models_from_options(
+    models: typing.Union[BaseModel, typing.List[BaseModel]],
+    options: typing.Dict[str, typing.Any],
+) -> typing.List[BaseModel]:
+    if not isinstance(models, list):
+        models = [models]
+
+    model_objects = [model.parse_obj(options) for model in models]
+
+    return model_objects
+
+
 def _get_type_from_outer_type(outer_type):
     if isinstance(outer_type, Enum):
         return click.Choice([e.value for e in outer_type], case_sensitive=False)
-    
+
     if typing.get_origin(outer_type) is typing.Union:
         raise ValueError("Union types are not supported")
-    
+
     return outer_type

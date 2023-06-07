@@ -70,8 +70,7 @@ from sparsezoo.analyze import ModelAnalysis
 from sparsezoo.analyze.cli import CONTEXT_SETTINGS
 from sparsify import init, login
 from sparsify.cli import opts
-from sparsify.utils import SparsifyClient, SparsifyCredentials, UserInfo, set_log_level
-from sparsify.utils.helpers import ExperimentStatus, get_non_existent_filename
+from sparsify.utils import SparsifyClient, SparsifyCredentials, UserInfo, set_log_level, ExperimentStatus, get_non_existent_yaml_filename
 from sparsify.version import version_major_minor
 
 
@@ -123,6 +122,7 @@ def apply(**kwargs):
         )
         kwargs.update({"experiment_type": experiment_type})
 
+    project_id = kwargs["project_id"]
     if kwargs["project_id"] is None:
         project_id = client.get(url=f"/experiments/{experiment_id}/project_id")
         kwargs.update({"project_id": project_id})
@@ -170,8 +170,8 @@ def apply(**kwargs):
         )
         subprocess.run(command_str)
         analysis_file_path = str(
-            get_non_existent_filename(
-                workng_dir=kwargs["working_dir"], filename="analysis.yaml"
+            get_non_existent_yaml_filename(
+                working_dir=kwargs["working_dir"], filename="analysis"
             )
         )
         analysis = ModelAnalysis.create(kwargs["working_dir"])

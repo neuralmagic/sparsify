@@ -69,7 +69,7 @@ def set_log_level(logger: logging.Logger, level: int) -> None:
 
 
 def get_non_existent_yaml_filename(
-    workng_dir: Path, filename: str = "analysis"
+    working_dir: Path, filename: str = "analysis"
 ) -> Path:
     """
     Get a filename that does not exist in the given directory
@@ -77,20 +77,20 @@ def get_non_existent_yaml_filename(
     >>> get_non_existent_yaml_filename(Path("/tmp"), "analysis")
     PosixPath('/tmp/analysis.yaml')
 
-    :param workng_dir: The directory to check for the `filename.yaml`
+    :param working_dir: The directory to check for the `filename.yaml`
     :param filename: The filename to check for, without `.yaml` extension
     :return: The filename that does not exist in the given directory.
         Note: the returned filename will include a `.yaml` extension
     """
-    if not workng_dir.exists():
-        return workng_dir.joinpath(filename)
+    if not working_dir.exists():
+        return working_dir.joinpath(filename)
 
     i = 1
-    while workng_dir.joinpath(filename).with_suffix(".yaml").exists():
+    while working_dir.joinpath(filename).with_suffix(".yaml").exists():
         filename = f"{filename}_{i}"
         i += 1
 
-    return workng_dir.joinpath(filename).with_suffix(".yaml")
+    return working_dir.joinpath(filename).with_suffix(".yaml")
 
 
 def create_analysis_file(working_dir: str, model: str) -> str:
@@ -103,7 +103,7 @@ def create_analysis_file(working_dir: str, model: str) -> str:
     """
     working_dir = Path(working_dir).mkdir(parents=True, exist_ok=True)
     analysis_file_path = str(
-        get_non_existent_yaml_filename(workng_dir=working_dir, filename="analysis")
+        get_non_existent_yaml_filename(working_dir=working_dir, filename="analysis")
     )
     analysis = ModelAnalysis.create(model)
     analysis.yaml(file_path=analysis_file_path)

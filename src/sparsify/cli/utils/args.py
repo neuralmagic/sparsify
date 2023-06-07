@@ -166,3 +166,12 @@ class InfoArgs(BaseModel):
         description="The working directory for this experiment, will default to"
         " the current working directory if not provided",
     )
+
+class APIKey(BaseModel):
+    """
+    API Key specific arguments for sparsify
+    """
+
+    api_key: Optional[str] = Field(
+        default=None, description="The sparsify API key"
+    )

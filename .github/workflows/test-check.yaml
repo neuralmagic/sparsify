@@ -48,4 +48,4 @@ jobs:
       - name: "🔬 Running package tests"
         run: make test TARGETS=package
       - name: "🔬 Running auto tests"
-        run: make test TARGETS=auto
+        run: pip install sparseml[yolov5] && make test TARGETS=auto

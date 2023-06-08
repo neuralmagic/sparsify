@@ -72,7 +72,7 @@ Coming soon!
 
 ## Installation
 
-This repository is tested on Python 3.7-3.9, Linux/Debian systems, and Chrome 87+.
+This repository is tested on Python 3.8-3.9, Linux/Debian systems, and Chrome 87+.
 It is recommended to install in a [virtual environment](https://docs.python.org/3/library/venv.html) to keep your system in order.
 
 Install with pip using:

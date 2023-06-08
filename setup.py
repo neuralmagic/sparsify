@@ -23,7 +23,7 @@ is_release = None
 version = "unknown"
 version_major_minor = version
 
-# load and overwrite version and release info from sparseml package.py
+# load and overwrite version and release info from sparseml package
 exec(open(os.path.join("src", "sparsify", "version.py")).read())
 print(f"loaded version {version} from src/sparsify/version.py")
 version_nm_deps = f"{version_major_minor}.0"
@@ -83,7 +83,7 @@ def _setup_entry_points() -> Dict:
             "sparsify.login=sparsify.login:main",
             "sparsify.init=sparsify.init:main",
             "sparsify.apply=sparsify.apply:main",
-            "sparsify.package.py=sparsify.package.py:main",
+            "sparsify.package=sparsify.package:main",
         ]
     }
 

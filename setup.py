@@ -52,6 +52,7 @@ _dev_deps = [
     "flake8>=3.8.3",
     "isort>=5.7.0",
     "pytest>=6.0.0",
+    "pytest-lazy-fixture>=0.6.3",
     "wheel>=0.36.2",
     "fastai>=2.7.7",
 ]

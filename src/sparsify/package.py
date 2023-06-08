@@ -15,14 +15,17 @@ import logging
 from pathlib import Path
 from typing import Optional
 
+import yaml
+
 import click
+from deepsparse.loggers.config import PipelineSystemLoggingConfig
+from deepsparse.server.config import EndpointConfig, ServerConfig
 from sparsezoo.analyze.cli import CONTEXT_SETTINGS
 from sparsezoo.utils import TASKS_WITH_ALIASES
-from sparsify.utils import get_non_existent_filename, set_log_level
+from sparsify.utils import base_model_to_yaml, copy, get_non_existent_filename
 from sparsify.version import version_major_minor
 
 
-__all__ = ["package_instructions"]
 _LOGGER = logging.getLogger(__name__)
 
 
@@ -31,7 +34,7 @@ _LOGGER = logging.getLogger(__name__)
 @click.option(
     "--task",
     type=click.Choice(TASKS_WITH_ALIASES, case_sensitive=False),
-    help="The task to package depoyment directory for",
+    help="The task to package deployment directory for",
     required=True,
 )
 @click.option(
@@ -42,13 +45,9 @@ _LOGGER = logging.getLogger(__name__)
     required=True,
 )
 @click.option(
-    "--log-level",
-    type=click.Choice(
-        ["debug", "info", "warn", "critical", "error"], case_sensitive=False
-    ),
-    help="Sets the logging level",
-    default="info",
-    required=True,
+    "--logging-config",
+    type=click.Path(exists=True, file_okay=True, dir_okay=False, readable=True),
+    help="The logging configuration file to use",
 )
 @click.option(
     "--deploy-type",
@@ -76,13 +75,12 @@ _LOGGER = logging.getLogger(__name__)
 def main(
     experiment: str,
     task: str,
-    log_level: str,  # TODO: Change to logging_config and support that
+    logging_config: Optional[str],  # TODO: Change to logging_config and support that
     deploy_type: str,
     processing_file: Optional[str],
     output_dir: Optional[str],
     debug: bool = False,
 ):
-    set_log_level(logger=_LOGGER, level=log_level)
     if deploy_type != "server":
         raise NotImplementedError(f"Deployment type {deploy_type} is not yet supported")
 
@@ -97,42 +95,56 @@ def main(
                 f"Output directory {output_dir} is not empty. "
                 "Please specify an empty directory"
             )
-    # move the experiment directory to the output directory
-    # move dockerfile to output directory
-    # move processing file to output directory
-    # create a server-config with processing file if specified
-    # display instructions for packaging
 
-    # print(
-    #     package_instructions(experiment=experiment, task=task, log_level=log_level)
-    # )
-    _LOGGER.debug(f"locals: {locals()}")
+    dockerfile_directory: Path = Path(__file__).parent.parent / "docker"
+    dockerfile_path: Path = copy(dockerfile_directory / "Dockerfile", output_dir)
 
+    new_experiment_dir: Path = copy(Path(experiment), output_dir)
+    docker_output_dir = Path("/home/deployment")
 
-def package_instructions(experiment: str, task: str, log_level: str = "info"):
-    """
-    Returns instructions for packaging a deployment directory for a given task.
+    endpoint_config = EndpointConfig(
+        task=task,
+        name=f"{task}-endpoint",
+        route="/predict",
+        model=docker_output_dir.joinpath(new_experiment_dir.name),
+    )
 
-    :param experiment: The path to the deployment directory
-    :param task: The task to package depoyment directory for
-    :param log_level: Sets the logging level for deepsparse.server command
-    :return: The instructions for packaging a deployment directory for a given task
-    """
-    dockerfile_directory = Path(__file__).parent.parent / "docker"
-    dockerfile_path = dockerfile_directory / "Dockerfile"
+    if processing_file:
+        if task != "custom":
+            raise ValueError(
+                "Processing file is only supported for custom tasks, "
+                f"but task {task} was specified"
+            )
+        processing_file_path: Path = copy(Path(processing_file), output_dir)
+        # Add the processing file to the endpoint config
+        endpoint_config.kwargs = {
+            "processing_file": docker_output_dir.joinpath(processing_file_path.name)
+        }
+
+    if logging_config:
+        with open(logging_config, "r") as fp:
+            logging_config_obj = yaml.safe_load(fp)
+        endpoint_config.logging_config = PipelineSystemLoggingConfig(
+            **logging_config_obj
+        )
+
+    server_config = ServerConfig(endpoints=[endpoint_config])
+    config_path: Path = get_non_existent_filename(
+        parent_dir=output_dir, filename="server-config.yaml"
+    )
+    base_model_to_yaml(model=server_config, file_path=str(config_path))
+
     deployment_instructions = f"""
-        Use the dockerfile in {dockerfile_path} to build sparsify
-        image and run the `deepsparse.server`
+    Use the dockerfile at {dockerfile_path} to build deepsparse
+    image and run the `deepsparse.server`
 
-        Run the following command inside `{dockerfile_directory}`
-        directory (Note: replace <API_KEY> with appropriate sparsify api key):
+    Run the following command inside `{output_dir}` directory:
 
-        ```bash
-        docker build --build-arg SPARSIFY_API_KEY=<API_KEY> -t sparsify_docker . \\
-            && docker run -it -v {experiment}:/home/deployment  \\
-                sparsify_docker deepsparse.server \\
-                    --task {task} --model_path /home/deployment \\
-                    --log-level {log_level}
-        ```
+    ```bash
+    docker build -t deepsparse_docker . \\
+    && docker run -it -v {output_dir}:{docker_output_dir} deepsparse_docker \\
+     deepsparse.server --task {task} \\
+     --config_file {docker_output_dir.joinpath(config_path.name)} \\
+    ```
     """
-    return deployment_instructions
+    _LOGGER.debug(f"locals: {locals()}")

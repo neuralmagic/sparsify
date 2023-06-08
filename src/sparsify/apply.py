@@ -71,8 +71,14 @@ from sparsezoo.analyze import ModelAnalysis
 from sparsezoo.analyze.cli import CONTEXT_SETTINGS
 from sparsify import init, login
 from sparsify.cli import opts
-from sparsify.utils import ExperimentStatus, SparsifyClient, UserInfo, set_log_level
-from sparsify.utils.helpers import get_non_existent_yaml_filename
+from sparsify.utils import (
+    ExperimentStatus,
+    SparsifyClient,
+    SparsifyCredentials,
+    UserInfo,
+    get_non_existent_filename,
+    set_log_level,
+)
 from sparsify.version import version_major_minor
 
 
@@ -171,8 +177,8 @@ def apply(**kwargs):
         )
         subprocess.run(command_str)
         analysis_file_path = str(
-            get_non_existent_yaml_filename(
-                working_dir=kwargs["working_dir"], filename="analysis"
+            get_non_existent_filename(
+                parent_dir=kwargs["working_dir"], filename="analysis.yaml"
             )
         )
         analysis = ModelAnalysis.create(kwargs["working_dir"])

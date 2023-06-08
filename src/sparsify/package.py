@@ -75,7 +75,7 @@ _LOGGER = logging.getLogger(__name__)
 def main(
     experiment: str,
     task: str,
-    logging_config: Optional[str],  # TODO: Change to logging_config and support that
+    logging_config: Optional[str],
     deploy_type: str,
     processing_file: Optional[str],
     output_dir: Optional[str],

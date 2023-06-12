@@ -21,19 +21,28 @@ from pydantic import BaseModel
 
 
 __all__ = [
-    "get_click_options_from_base_model",
+    "get_click_options_from_base_models",
     "get_base_models_from_options",
 ]
 
 
-def get_click_options_from_base_model(
+def get_click_options_from_base_models(
     base_models: typing.Union[BaseModel, typing.List[BaseModel]]
 ):
     """
     A decorator that takes pydantic BaseModels and converts them into a click options
+
+    :param base_models: a pydantic BaseModel or list of BaseModels to convert
+        into click options
+    :return: a decorated function that adds click options to the click command it
+        is applied to
     """
 
     def wrapper(func):
+        """
+        :param func: the function to add the click options to, this function should
+            also be a click command, (i.e decorated with @click.command or @click.group)
+        """
         options = []
         _base_models = base_models if isinstance(base_models, list) else [base_models]
         for base_model in _base_models:

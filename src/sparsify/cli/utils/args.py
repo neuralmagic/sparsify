@@ -175,3 +175,4 @@ class APIKey(BaseModel):
     api_key: Optional[str] = Field(
         default=None, description="The sparsify API key"
     )
+    

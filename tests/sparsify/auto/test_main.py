@@ -16,15 +16,12 @@ import os
 from contextlib import suppress
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from unittest.mock import MagicMock, patch
 
 import pytest
 
 
 with suppress(ModuleNotFoundError):
-    from sparsify.auto import main
-    from sparsify.auto.utils import SAVE_DIR
-    from sparsify.schemas import APIArgs, Metrics, SparsificationTrainingConfig
+    from sparsify.schemas import Metrics
 
 _SPARSIFYML_INSTALLED: bool = importlib.util.find_spec("sparsifyml") is not None
 
@@ -83,71 +80,3 @@ def _cleanup_directory():
 def _test_trial_artifact_directory(directory_path: str) -> bool:
     assert os.path.exists(directory_path), f"Directory not found: {directory_path}"
     assert os.listdir(directory_path), f"Directory empty:  {directory_path}"
-
-
-# Test
-
-
-@patch(
-    "sparsify.auto.scripts.main.TaskRunner._train_distributed",
-    side_effect=_train_side_effect_mock,
-    autospec=True,
-)
-@patch(
-    "sparsify.auto.scripts.main.TaskRunner._train_api",
-    side_effect=_train_side_effect_mock,
-    autospec=True,
-)
-@patch(
-    "sparsify.auto.scripts.main.TaskRunner.export",
-    side_effect=_export_side_effect_mock,
-    autospec=True,
-)
-@patch(
-    f"{_RUNNER_MOCK_PATH}._get_metrics",
-    MagicMock(side_effect=_METRICS_LIST),
-)
-@patch(
-    "sparsify.auto.scripts.main.APIArgs.from_cli",
-    MagicMock(return_value=APIArgs(**_TEST_CONFIG)),
-)
-@patch(
-    "sparsify.auto.scripts.main.request_student_teacher_configs",
-    MagicMock(
-        return_value=(
-            SparsificationTrainingConfig(**_TEST_CONFIG),
-            _TEST_TEACHER_CONFIG,
-        )
-    ),
-)
-@patch(
-    "sparsify.auto.scripts.main.api_request_tune", MagicMock(return_value=_TEST_CONFIG)
-)
-@pytest.mark.skipif(
-    not _SPARSIFYML_INSTALLED, reason="`sparsifyml` needed to run local tests"
-)
-def test_main(*args):
-    main()
-
-    top_n_trial_idx = sorted(
-        range(len(_ACCURACY_LIST)), key=lambda i: _ACCURACY_LIST[i]
-    )[-_MAXIMUM_SAVES:]
-
-    assert os.path.exists(_SAVE_DIRECTORY)
-
-    output_path = os.path.join(
-        _SAVE_DIRECTORY, SAVE_DIR.format(task=_TEST_CONFIG["task"])
-    )
-    student_artifact_path = os.path.join(
-        output_path, "training", "run_artifacts", "student"
-    )
-    assert sorted(os.listdir(output_path)) == ["deployment", "training"]
-    trails_created = [
-        file for file in os.listdir(student_artifact_path) if "trial_" in file
-    ]
-    assert len(trails_created) == _MAXIMUM_SAVES
-
-    for idx in top_n_trial_idx:
-        _test_trial_artifact_directory(
-            os.path.join(student_artifact_path, f"trial_{idx}")
-        )

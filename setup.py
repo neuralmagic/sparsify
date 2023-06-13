@@ -39,6 +39,7 @@ _deps = [
     "setuptools>=56.0.0",
     "optuna>=3.0.2",
     "onnxruntime-gpu",
+    "protobuf<=3.20.1,>=3.12.2",
 ]
 _nm_deps = [
     f"{'sparsezoo' if is_release else 'sparsezoo-nightly'}~={version_nm_deps}",

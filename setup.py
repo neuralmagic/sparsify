@@ -42,8 +42,8 @@ _deps = [
 ]
 _nm_deps = [
     f"{'sparsezoo' if is_release else 'sparsezoo-nightly'}~={version_nm_deps}",
-    f"{'sparseml' if is_release else 'sparseml-nightly'}[torchvision,transformers,yolov5]~={version_nm_deps}",  # noqa E501
-    f"{'deepsparse' if is_release else 'deepsparse-nightly'}~={version_nm_deps}",
+    f"{'sparseml' if is_release else 'sparseml-nightly'}[torchvision]~={version_nm_deps}",  # noqa E501
+    f"{'deepsparse[server]' if is_release else 'deepsparse-nightly[server]'}~={version_nm_deps}",
 ]
 
 

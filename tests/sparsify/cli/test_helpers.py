@@ -21,8 +21,10 @@ import pytest
 import click
 from click.testing import CliRunner
 from pydantic import BaseModel, Field, ValidationError
-from sparsify.cli.utils import get_click_options_from_base_model
-from sparsify.cli.utils.helpers import get_base_models_from_options
+from sparsify.cli.utils.helpers import (
+    get_base_models_from_options,
+    get_click_options_from_base_models,
+)
 
 
 class SimpleFieldsWithDefaults(BaseModel):
@@ -87,7 +89,7 @@ class MutuallyExclusiveFieldsB(BaseModel):
 )
 def test_simple_fields(model_or_models, args, exit_code):
     @click.command()
-    @get_click_options_from_base_model(model_or_models)
+    @get_click_options_from_base_models(model_or_models)
     def main(**kwargs):
         pass
 

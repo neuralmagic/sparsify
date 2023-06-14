@@ -61,7 +61,7 @@ from sparsify.utils import TASK_REGISTRY, TaskName
                 "Segmentation",
                 "SEGMENTATION",
             ],
-            ["object_segmentation"],
+            ["object-segmentation"],
         ),
         (
             "question_answering",

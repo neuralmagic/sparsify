@@ -26,7 +26,7 @@ from sparsify.utils import TASK_REGISTRY, TaskName
             "cv",
             "classification",
             ["Image-Classification", "ic", "IC", "classification", "CLASSIFICATION"],
-            ["image classification", "imageclassification"],
+            ["cv"],
         ),
         (
             "object_detection",
@@ -40,7 +40,7 @@ from sparsify.utils import TASK_REGISTRY, TaskName
                 "detection",
                 "DETECTION",
             ],
-            ["object detection", "objectdetection"],
+            ["yolo"],
         ),
         (
             "segmentation",
@@ -51,7 +51,7 @@ from sparsify.utils import TASK_REGISTRY, TaskName
                 "Segmentation",
                 "SEGMENTATION",
             ],
-            ["object_segmentation"],
+            ["object-segmentation"],
         ),
         (
             "question_answering",
@@ -63,7 +63,7 @@ from sparsify.utils import TASK_REGISTRY, TaskName
                 "qa",
                 "QA",
             ],
-            ["question answering", "questionanswering"],
+            ["questionanswer"],
         ),
         (
             "text_classification",
@@ -75,7 +75,7 @@ from sparsify.utils import TASK_REGISTRY, TaskName
                 "glue",
                 "GLUE",
             ],
-            ["text classification", "textclassification"],
+            ["text"],
         ),
         (
             "sentiment_analysis",
@@ -87,7 +87,7 @@ from sparsify.utils import TASK_REGISTRY, TaskName
                 "sentiment",
                 "SENTIMENT",
             ],
-            ["sentiment analysis", "sentimentanalysis"],
+            ["imdb"],
         ),
         (
             "token_classification",
@@ -95,7 +95,7 @@ from sparsify.utils import TASK_REGISTRY, TaskName
             "nlp",
             "token_classification",
             ["Token-Classification", "ner", "NER", "Named-Entity-Recognition"],
-            ["token classification", "tokenclassification"],
+            ["token"],
         ),
     ],
 )

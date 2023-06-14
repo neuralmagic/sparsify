@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import ast
 import json
 from pathlib import Path
 
@@ -33,7 +34,7 @@ def main():
 
 @main.command(context_settings=CONTEXT_SETTINGS)
 @opts.add_info_opts
-@opts.add_model_opts(require_model=True, require_optimizer=False)
+@opts.add_model_opts(require_model=True)
 @opts.add_data_opts
 @opts.add_deploy_opts
 @opts.add_optim_opts
@@ -50,13 +51,13 @@ def one_shot(**kwargs):
         recipe_args = json.loads(recipe_args)
 
     one_shot.one_shot(
-        task=kwargs["use_case"],
-        model_file=Path(kwargs["model"]),
+        model=Path(kwargs["model"]),
         dataset_dir=Path(kwargs["data"]),
         num_samples=kwargs["train_samples"] or -1,
         deploy_dir=Path(kwargs["working_dir"]),
         eval_metric=kwargs["eval_metric"],
-        opt_level=kwargs["optim_level"],
+        optim_level=kwargs["optim_level"],
+        use_case=kwargs["use_case"],
         recipe_file=Path(kwargs["recipe"]) if kwargs["recipe"] is not None else None,
         recipe_args=recipe_args,
     )
@@ -64,10 +65,11 @@ def one_shot(**kwargs):
 
 @main.command(context_settings=CONTEXT_SETTINGS)
 @opts.add_info_opts
-@opts.add_model_opts(require_model=False, require_optimizer=True)
+@opts.add_model_opts(require_model=False)
 @opts.add_data_opts
 @opts.add_deploy_opts
 @opts.add_optim_opts
+@opts.add_kwarg_opts
 def sparse_transfer(**kwargs):
     """
     Run sparse transfer learning for a use case against a supported task and model
@@ -80,10 +82,11 @@ def sparse_transfer(**kwargs):
 
 @main.command(context_settings=CONTEXT_SETTINGS)
 @opts.add_info_opts
-@opts.add_model_opts(require_model=False, require_optimizer=True)
+@opts.add_model_opts(require_model=True)
 @opts.add_data_opts
 @opts.add_deploy_opts
 @opts.add_optim_opts
+@opts.add_kwarg_opts
 def training_aware(**kwargs):
     """
     Run training aware sparsification for a use case against a supported task and model
@@ -100,6 +103,13 @@ def _parse_run_args_to_auto(sparse_transfer: bool, **kwargs):
     if kwargs["eval_metric"] == "kl":
         raise ValueError("--eval-metric kl is not supported currently.")
 
+    recipe_args = (
+        ast.literal_eval(kwargs["recipe_args"]) if kwargs["recipe_args"] else {}
+    )
+    train_kwargs = (
+        ast.literal_eval(kwargs["train_kwargs"]) if kwargs["train_kwargs"] else {}
+    )
+
     return APIArgs(
         task=kwargs["use_case"],
         dataset=kwargs["data"],
@@ -107,16 +117,10 @@ def _parse_run_args_to_auto(sparse_transfer: bool, **kwargs):
         optim_level=kwargs["optim_level"],
         base_model=kwargs["model"],
         recipe=kwargs["recipe"],
-        recipe_args=kwargs["recipe_args"] or {},
+        recipe_args=recipe_args,
         distill_teacher=kwargs["teacher"] or "off",
-        num_trials=1,  # for now, only running 1 trial
-        max_train_time=100000,  # 1 trial, so setting max time arbitrarily high
-        maximum_trial_saves=1,  # 1 trial
         optimizing_metric=[kwargs["eval_metric"]],
-        kwargs={},  # not yet supported
-        teacher_kwargs={},
-        tuning_parameters=None,
-        teacher_tuning_parameters=None,
+        kwargs=train_kwargs,
         run_mode="sparse_transfer" if sparse_transfer else "training_aware",
     )
 

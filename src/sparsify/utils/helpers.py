@@ -167,7 +167,9 @@ def copy(file_or_dir: Path, dest: Path) -> Path:
         )
 
     dest_file_name = dest / file_or_dir.name
-    dest.mkdir(exist_ok=True, parents=True)
+    if dest.suffix == "":
+        dest.mkdir(exist_ok=True, parents=True)
+
     if file_or_dir.is_dir():
         # rely on suffix to determine if dest is a file or directory
         #  as pathlib is_file() method will return false if dest does not exist

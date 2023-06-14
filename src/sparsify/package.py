@@ -145,7 +145,8 @@ def main(
 
     ```bash
     docker build -t deepsparse_docker . \\
-    && docker run -it -v {output_dir}:{docker_output_dir} deepsparse_docker \\
+    && docker container run -it -p 5543:5543 -v {output_dir}:{docker_output_dir} \\
+    --build-arg DEPS=all deepsparse_docker \\
      deepsparse.server \\
      --config_file {docker_output_dir.joinpath(config_path.name)}
     ```

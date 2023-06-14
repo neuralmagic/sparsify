@@ -2,12 +2,12 @@ name: Test Checks
 on: 
   pull_request:
     branches:
-      - sparsify.alpha  # TODO: delete after merge
+      - sparsify.beta  # TODO: delete after merge
       - main
       - 'release/*'
   push:
     branches:
-      - sparsify.alpha  # TODO: delete after merge
+      - sparsify.beta  # TODO: delete after merge
       - main
       - 'release/*'
 
@@ -24,7 +24,7 @@ jobs:
         id: python-check
         # TODO: delete sparsify.alpha reference after merge
         run: >
-          ((git diff --name-only origin/sparsify.alpha HEAD | grep -E "[src|tests]/sparsify|setup.py")
+          ((git diff --name-only origin/sparsify.beta HEAD | grep -E "[src|tests]/sparsify|setup.py")
           || (echo $GITHUB_REF | grep -E "refs/heads/[release/|main]"))
           && echo "::set-output name=output::1" || echo "::set-output name=output::0"
   python-tests:
@@ -42,10 +42,10 @@ jobs:
       - name: "⚙️ Install dependencies"
         run: pip3 install -e .[dev]
       - name: "⚙️ Logging into Sparsify"
-        run: sparsify.login ${{ secrets.NM_SPARSIFY_TEST_API_KEY }}
+        run: sparsify.login --api-key ${{ secrets.NM_SPARSIFY_TEST_API_KEY }}
       - name: "🔬 Running base tests"
         run: make test
       - name: "🔬 Running package tests"
         run: make test TARGETS=package
       - name: "🔬 Running auto tests"
-        run: make test TARGETS=auto
+        run: pip install sparseml[yolov5] && make test TARGETS=auto

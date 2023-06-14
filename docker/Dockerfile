@@ -1,5 +1,5 @@
 ARG VERSION
-# Can have the following values: all, base, dev
+# Can have the following values: all, base
 ARG DEPS="all"
 ARG VENV="/venv"
 ARG BRANCH
@@ -100,15 +100,6 @@ RUN \
 
 FROM container_branch_${DEPS} AS build
 RUN echo Build complete, going onto prod
-
-
-FROM base as dev
-ARG VENV
-COPY --from=build $VENV $VENV
-COPY --from=build deepsparse deepsparse
-ENV PATH="${VENV}/bin:$PATH"
-HEALTHCHECK CMD python -c 'import deepsparse'
-CMD bash
 
 
 FROM base as prod

@@ -144,10 +144,9 @@ def main(
     Run the following command inside `{output_dir}` directory:
 
     ```bash
-    docker build -t deepsparse_docker . \\
+    docker build --target prod --build-arg DEPS=all -t deepsparse_docker . \\
     && docker container run -it -p 5543:5543 -v {output_dir}:{docker_output_dir} \\
-    --build-arg DEPS=all deepsparse_docker \\
-     deepsparse.server \\
+    deepsparse_docker deepsparse.server \\
      --config_file {docker_output_dir.joinpath(config_path.name)}
     ```
     """

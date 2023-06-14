@@ -160,11 +160,14 @@ def copy(file_or_dir: Path, dest: Path) -> Path:
     :param dest: The destination to copy to
     :return: The destination path
     """
+    _LOGGER.info("Copying %s to %s" % (file_or_dir, dest))
     if not file_or_dir.exists():
         raise FileNotFoundError(
             f"Cannot copy {file_or_dir} to {dest}, {file_or_dir} does not exist"
         )
 
+    dest_file_name = dest / file_or_dir.name
+    dest.mkdir(exist_ok=True, parents=True)
     if file_or_dir.is_dir():
         # rely on suffix to determine if dest is a file or directory
         #  as pathlib is_file() method will return false if dest does not exist
@@ -173,11 +176,12 @@ def copy(file_or_dir: Path, dest: Path) -> Path:
                 f"Cannot copy directory {file_or_dir} to file {dest}, "
                 "destination must also be a directory"
             )
-        shutil.copytree(file_or_dir, dest)
-    else:
-        shutil.copy(file_or_dir, dest)
 
-    return dest / file_or_dir.name
+        shutil.copytree(file_or_dir, dest_file_name)
+    else:
+        shutil.copy(file_or_dir, dest_file_name)
+
+    return dest_file_name
 
 
 if __name__ == "__main__":

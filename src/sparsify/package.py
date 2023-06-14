@@ -22,7 +22,12 @@ from deepsparse.loggers.config import PipelineSystemLoggingConfig
 from deepsparse.server.config import EndpointConfig, ServerConfig
 from sparsezoo.analyze.cli import CONTEXT_SETTINGS
 from sparsezoo.utils import TASKS_WITH_ALIASES
-from sparsify.utils import base_model_to_yaml, copy, get_non_existent_filename
+from sparsify.utils import (
+    base_model_to_yaml,
+    copy,
+    get_non_existent_filename,
+    set_log_level,
+)
 from sparsify.version import version_major_minor
 
 
@@ -81,6 +86,7 @@ def main(
     output_dir: Optional[str],
     debug: bool = False,
 ):
+    set_log_level(logger=_LOGGER, level=logging.DEBUG if debug else logging.INFO)
     if deploy_type != "server":
         raise NotImplementedError(f"Deployment type {deploy_type} is not yet supported")
 
@@ -90,13 +96,8 @@ def main(
         )
     else:
         output_dir = Path(output_dir)
-        if any(output_dir.iterdir()):
-            raise ValueError(
-                f"Output directory {output_dir} is not empty. "
-                "Please specify an empty directory"
-            )
 
-    dockerfile_directory: Path = Path(__file__).parent.parent / "docker"
+    dockerfile_directory: Path = Path(__file__).parent.parent.parent / "docker"
     dockerfile_path: Path = copy(dockerfile_directory / "Dockerfile", output_dir)
 
     new_experiment_dir: Path = copy(Path(experiment), output_dir)
@@ -106,7 +107,7 @@ def main(
         task=task,
         name=f"{task}-endpoint",
         route="/predict",
-        model=docker_output_dir.joinpath(new_experiment_dir.name),
+        model=str(docker_output_dir.joinpath(new_experiment_dir.name)),
     )
 
     if processing_file:
@@ -118,7 +119,9 @@ def main(
         processing_file_path: Path = copy(Path(processing_file), output_dir)
         # Add the processing file to the endpoint config
         endpoint_config.kwargs = {
-            "processing_file": docker_output_dir.joinpath(processing_file_path.name)
+            "processing_file": str(
+                docker_output_dir.joinpath(processing_file_path.name)
+            ),
         }
 
     if logging_config:
@@ -143,8 +146,9 @@ def main(
     ```bash
     docker build -t deepsparse_docker . \\
     && docker run -it -v {output_dir}:{docker_output_dir} deepsparse_docker \\
-     deepsparse.server --task {task} \\
-     --config_file {docker_output_dir.joinpath(config_path.name)} \\
+     deepsparse.server \\
+     --config_file {docker_output_dir.joinpath(config_path.name)}
     ```
     """
+    print(deployment_instructions)
     _LOGGER.debug(f"locals: {locals()}")

@@ -17,7 +17,7 @@ limitations under the License.
 
 <h1><img alt="tool icon" src="https://neuralmagic.com/wp-content/uploads/2023/03/Sparsify.svg" />&nbsp;&nbsp;Sparsify [Alpha]</h1>
 
-<h3>ML model optimization platform to accelerate inferencing at scale. </h3>
+<h3> ML model optimization product to accelerate inference. </h3>
 
 <p>
     <a href="https://docs.neuralmagic.com/sparsify/">
@@ -54,7 +54,8 @@ limitations under the License.
 
 ## Overview
 
-Use Sparsify to easily create sparse, performant models. Sparsify can help you optimize models from scratch or sparse transfer learn onto your own data to target best-in-class inference performance on your target deployment hardware. To get started with the Sparsify Cloud UI, create an account [here](https://app.neuralmagic.com) and check out the [Sparsify Quickstart Guide](https://docs.neuralmagic.com/sparsify/quickstart).
+
+Sparsify enables you to apply model compression techniques to accelerate inference. Use Sparsify to easily create sparse, performant models. Sparsify can help you optimize models from scratch or sparse transfer learn onto your own data to target best-in-class inference performance on your target deployment hardware. To get started with the Sparsify Cloud UI, create an account [here](https://app.neuralmagic.com) and check out the [Sparsify Quickstart Guide](https://docs.neuralmagic.com/sparsify/quickstart).
 
 Sparsify makes applying state-of-the-art [sparsification](https://docs.neuralmagic.com/user-guides/sparsification) algorithms using techniques such as pruning and quantization to any neural network easy with a simple UI and one-command API calls that removes the complexity of hyperparameter tuning and sparsification targets which can accelerate inference speeds.
 
@@ -79,12 +80,15 @@ Sparsify has three experiment types each with different attributes across sparsi
 
 `sparsify.run one-shot --use-case image_classification --model MODEL_PATH --data DATA_PATH --working-dir sparsify`
 
-🚨**Note**🚨: Sparsify is currently in an alpha state. Please provide your feedback on your experience, what you do not like about Sparsify and what you'd like to see next. Your feedback will be integral in driving the future of Sparsify forward and we thank you in advance. Provide feedback (bug reports, UI issues, CLI errors, or just say hello to our team) [here](https://github.com/neuralmagic/sparsify/issues). 
+🚨**Note**🚨: Sparsify is currently an alpha release, so you have the opportunity to influence the development process for the product. You can report UI issues and CLI errors, submit bug reports, and provide general feedback about the product to the team via [email](mailto: rob@neuralmagic.com) or via [GitHub Issues](https://github.com/neuralmagic/sparsify/issues).  Please do NOT use this alpha unless you are ready for bugs and want to contribute to the process by reporting them to us.
+
+As an alpha release, no support is provided but you can refer to this README for guidance on usage and example commands. We appreciate your input as it helps us make fixes and add improvements that much more quickly, so we can get the final release ready to launch. Thank you for your interest and support! 
 
 
 ### One-Shot 
 
-An **One-Shot** Experiment enables you to generate a sparse model from your dense model, tuned on your calibration dataset all without a full retraining of the model; reducing your time to deploy.
+A **One-Shot** Experiment enables you to generate a sparse model from a dense model and a calibration dataset, without having to retrain your model.
+
 
 **Attributes**  
 Sparsity: **+++**  
@@ -93,7 +97,7 @@ Accuracy:**+++**
 
 ### Sparse-Transfer
 
-A **Sparse-Transfer** Experiment takes care of the transfer learning process and fits your data to a model optimized on your metric of choice; making generating performant models for your specific use case quick & easy.
+A **Sparse-Transfer** Experiment enables you to provide a dataset for a use case and create a sparse performant model fit on your data.
 
 **Attributes**  
 Sparsity: **+++++**  
@@ -102,7 +106,7 @@ Accuracy:**++++**
 
 ### Training-Aware
 
-A **Training-Aware** Experiment enables you to reference a dense model and a training set to create a sparsification recipe and apply it to your dense model; allowing you to sparsify any model.
+A **Training-Aware** Experiment enables you to train any dense model with your training set, to create a sparsification recipe and apply it to the dense model to sparsify it.
 
 **Attributes**  
 Sparsity:**++++**  
@@ -116,6 +120,7 @@ We'll show you how to:
 -  Create a Neural Magic Account.
 -   Install Sparsify in your local training environment. Using a  [virtual environment](https://docs.python.org/3/library/venv.html)  is highly recommended.
 -   Get your Sparsify API key.
+-   Generate code to run your first experiment
 
 
 ### Create a Neural Magic Account CAN WE PERMALINK THESE
@@ -144,6 +149,14 @@ Depending on your flow, PyTorch, Keras, or TensorFlow must be installed in the l
 
 [![User profile](https://www.comet.com/docs/v2/img/account_settings_profile.png)](https://www.comet.com/docs/v2/img/account_settings_profile.png)
 
+
+### Generate code snippet for an Experiment
+1. Click on 'Start Sparsifying' on the Sparsify Homepage.
+2. Select your Use Case, Experiment Type and Optimization tradeoff via the slider.
+3. Click 'Generate Code Snippet'.
+4. Make sure you have installed and logged into Sparsify via your CLI.
+5. Copy the code snippet and substitute in your local data_path and/or model_path in the code snippet and run via the CLI.
+   
 
  ### Recommended Hardware Support and System Requirements
 

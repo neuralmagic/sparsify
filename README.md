@@ -35,6 +35,9 @@ limitations under the License.
     <a href="https://github.com/neuralmagic/sparsify/releases">
         <img alt="GitHub release" src="https://img.shields.io/github/release/neuralmagic/sparsify.svg?style=for-the-badge" height=25>
     </a>
+    <a href="https://github.com/neuralmagic/sparsify/releases">
+        <img alt="Stability" src="https://img.shields.io/badge/stability-alpha-f4d03f.svg" height=25>
+    </a>
     <a href="https://github.com/neuralmagic/sparsify/blob/main/LICENSE">
         <img alt="GitHub" src="https://img.shields.io/github/license/neuralmagic/sparsify.svg?color=lightgray&style=for-the-badge" height=25>
     </a>
@@ -127,11 +130,14 @@ We'll show you how to:
 
 Creating a new account is simple and free. Visit the [Neural Magic's Web App Platform](https://account.neuralmagic.com/signup)  and create an account using your email. If you already have a Neural Magic Account, [sign in](https://account.neuralmagic.com/signup) with your email.
 
+[![User profile](https://neuralmagicdev.wpengine.com/wp-content/uploads/2023/06/Screenshot-2023-06-15-at-11.38.00-AM.png)](https://neuralmagicdev.wpengine.com/wp-content/uploads/2023/06/Screenshot-2023-06-15-at-11.38.00-AM.png)
+
+
 ###  Install Sparsify
 
 There are several ways to install Sparsify on your system. The easiest way is using  `pip`. It is advised to create a fresh [virtual environment](https://docs.python.org/3/library/venv.html)  before installing Sparisfy to avoid dependency issues.
 
-This repository is tested on Python 3.7-3.10, Linux/Debian systems, and Chrome 87+.
+This repository is tested on Python 3.8-3.10, Linux/Debian systems, and Chrome 87+.
 
 Install with pip using:
 
@@ -144,26 +150,31 @@ Depending on your flow, PyTorch, Keras, or TensorFlow must be installed in the l
 
 ### Get your Sparsify API Key
 
-1.  Once you successfully log in to your Sparsify Account, you will see your current API Key under step 3 of the **'Let's get set up'**  modal. 
+1.  Once you successfully log in to your Sparsify Account, you will see your current API Key under step 3 of the **'Get set up'**  modal. 
 2. Click  **Copy**  to copy the API key to the clipboard.
 
-[![User profile](https://www.comet.com/docs/v2/img/account_settings_profile.png)](https://www.comet.com/docs/v2/img/account_settings_profile.png)
+[![Homepage](https://neuralmagic.wpengine.com/wp-content/uploads/2023/06/Screenshot-2023-06-15-at-11.36.12-AM.png)](https://neuralmagic.wpengine.com/wp-content/uploads/2023/06/Screenshot-2023-06-15-at-11.36.12-AM.png)
 
 
 ### Generate code snippet for an Experiment
 1. Click on 'Start Sparsifying' on the Sparsify Homepage.
 2. Select your Use Case, Experiment Type and Optimization tradeoff via the slider.
+[![Sparsify Modal](https://neuralmagic.wpengine.com/wp-content/uploads/2023/06/Screenshot-2023-06-15-at-11.36.32-AM.png)]([https://neuralmagic.wpengine.com/wp-content/uploads/2023/06/Screenshot-2023-06-15-at-11.36.12-AM.png](https://neuralmagic.wpengine.com/wp-content/uploads/2023/06/Screenshot-2023-06-15-at-11.36.32-AM.png))
+
 3. Click 'Generate Code Snippet'.
 4. Make sure you have installed and logged into Sparsify via your CLI.
 5. Copy the code snippet and substitute in your local data_path and/or model_path in the code snippet and run via the CLI.
-   
+
+[![Sparsify Modal](https://neuralmagic.wpengine.com/wp-content/uploads/2023/06/Screenshot-2023-06-15-at-11.36.40-AM.png)]([https://neuralmagic.wpengine.com/wp-content/uploads/2023/06/Screenshot-2023-06-15-at-11.36.40-AM.png))
+
+
 
  ### Recommended Hardware Support and System Requirements
 
-Sparsify requires the same hardware that is required to train standard neural networks such as a GPU, TPU, or other specialized hardware for training. We recommend you use a Linux environment with a GPU that has a minimum of 128 GB of RAM, 16 GB of GPU Memory, 4 cores, and is CUDA-enabled. If you encounter issues setting up your training environment, file a GitHub issue [here]( https://github.com/neuralmagic/sparsify/issues).
+Sparsify requires a GPU with CUDA + CuDNN in order to train the sparse models. We recommend you use a Linux environment with a GPU that has a minimum of 128 GB of RAM, 16 GB of GPU Memory, 4 cores, and is CUDA-enabled. If you encounter issues setting up your training environment, file a GitHub issue [here]( https://github.com/neuralmagic/sparsify/issues).
 https://github.com/neuralmagic/sparsify/issues). 
 
-Sparsify is tested on Python 3.7-3.10, ONNX 1.5.0-1.12.0, ONNX opset version 11+, and manylinux compliant systems. Using a  [virtual environment](https://docs.python.org/3/library/venv.html)  is highly recommended.
+Sparsify is tested on Python 3.8-3.10, ONNX 1.5.0-1.12.0, ONNX opset version 11+, and manylinux compliant systems. Using a  [virtual environment](https://docs.python.org/3/library/venv.html)  is highly recommended.
 
 ## Run an Experiment
 

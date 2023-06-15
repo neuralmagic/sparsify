@@ -14,7 +14,7 @@
 
 import pytest
 
-from sparsify.utils.helpers import copy
+from sparsify.utils.helpers import copy_file
 
 
 @pytest.fixture
@@ -139,12 +139,12 @@ def test_check_existence(path, exists):
         ),
     ],
 )
-def test_copy(path_a, path_b, expected):
+def test_copy_file(path_a, path_b, expected):
     if isinstance(expected, (OSError, ValueError)):
         with pytest.raises(expected.__class__):
-            copy(path_a, path_b)
+            copy_file(path_a, path_b)
     else:
-        copy(path_a, path_b)
+        copy_file(path_a, path_b)
         if path_a.is_dir():
             assert path_b.is_dir()
             assert list(path_a.iterdir()) == list(path_b.iterdir())

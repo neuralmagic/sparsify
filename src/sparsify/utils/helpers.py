@@ -27,7 +27,7 @@ from sparsezoo.analyze import ModelAnalysis
 
 __all__ = [
     "base_model_to_yaml",
-    "copy",
+    "copy_file",
     "create_analysis_file",
     "get_non_existent_filename",
     "set_log_level",
@@ -150,7 +150,7 @@ def base_model_to_yaml(
     return ret
 
 
-def copy(file_or_dir: Path, dest: Path) -> Path:
+def copy_file(file_or_dir: Path, dest: Path) -> Path:
     """
     Copy a file or directory to a destination.
 

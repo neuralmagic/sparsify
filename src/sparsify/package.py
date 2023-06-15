@@ -24,7 +24,7 @@ from sparsezoo.analyze.cli import CONTEXT_SETTINGS
 from sparsezoo.utils import TASKS_WITH_ALIASES
 from sparsify.utils import (
     base_model_to_yaml,
-    copy,
+    copy_file,
     get_non_existent_filename,
     set_log_level,
 )
@@ -97,10 +97,12 @@ def main(
     else:
         output_dir = Path(output_dir)
 
-    dockerfile_directory: Path = Path(__file__).parent.parent.parent / "docker"
-    dockerfile_path: Path = copy(dockerfile_directory / "Dockerfile", output_dir)
+    dockerfile_directory: Path = (
+        Path(__file__).parent.parent.parent / "docker" / "package"
+    )
+    dockerfile_path: Path = copy_file(dockerfile_directory / "Dockerfile", output_dir)
 
-    new_experiment_dir: Path = copy(Path(experiment), output_dir)
+    new_experiment_dir: Path = copy_file(Path(experiment), output_dir)
     docker_output_dir = Path("/home/deployment")
 
     endpoint_config = EndpointConfig(
@@ -116,7 +118,7 @@ def main(
                 "Processing file is only supported for custom tasks, "
                 f"but task {task} was specified"
             )
-        processing_file_path: Path = copy(Path(processing_file), output_dir)
+        processing_file_path: Path = copy_file(Path(processing_file), output_dir)
         # Add the processing file to the endpoint config
         endpoint_config.kwargs = {
             "processing_file": str(

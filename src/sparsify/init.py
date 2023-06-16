@@ -56,8 +56,8 @@ from sparsify.cli import opts
 from sparsify.utils import (
     ExperimentStatus,
     SparsifyClient,
-    SparsifyCredentials,
     UserInfo,
+    experiment_initialized,
     get_non_existent_yaml_filename,
     set_log_level,
 )
@@ -115,29 +115,28 @@ def init(
     working_dir: Optional[str] = None,
     eval_metric: Optional[str] = None,
     **kwargs,
-) -> Tuple[str, str]:
+) -> Optional[Tuple[str, str]]:
     """
     Initialize an experiment and provision all local and cloud resources necessary
 
     :param model: Path to model.
     :param model_id: sparsify model id. Must be specified if model is not specified.
-    :param experiment_id: Id of the experiment this run belongs to.
+    :param experiment_id: id of the experiment this run belongs to.
     :param experiment_type: The type of the experiment to run, required
         if experiment_id is not specified.
     :param use_case: The task this model is for, required if experiment_id
         is not specified.
     :param working_dir: dir Path to save the model analysis yaml file.
     :param eval_metric: Metric that the model is evaluated against on the task.
-    :return: Tuple of experiment_id and project_id
+    :return: Tuple of experiment_id and project_id, if experiment_id is not initialized
+        else None.
     """
     if model is None and model_id is None:
         raise ValueError("--model or --model-id must be specified.")
 
-    credentials = SparsifyCredentials()
-    access_token = credentials.get_access_token(scope="sparsify:write")
-    client = SparsifyClient(access_token=access_token)
+    client = SparsifyClient(scope="sparsify:write")
     client.health_check()
-    user_info: UserInfo = credentials.get_user_info()
+    user_info: UserInfo = client.user_info
     _LOGGER.info(f"Logged in as {user_info.email}")
 
     project_id = client.create_project_if_does_not_exist(user_info=user_info)
@@ -159,18 +158,18 @@ def init(
     )
 
     # check if experiment already initialized or errored out
-    experiment_status = client.get(url=f"/experiments/{experiment_id}/status")
-    if not ExperimentStatus.initialization_pending(status=experiment_status):
+    if experiment_initialized(client=client, experiment_id=experiment_id):
         _LOGGER.info(f"Experiment {experiment_id} already initialized.")
         return
 
-    working_dir = Path(working_dir).mkdir(parents=True, exist_ok=True)
+    working_dir: Path = Path(working_dir)
+    working_dir.mkdir(parents=True, exist_ok=True)
     analysis_file_path = str(
         get_non_existent_yaml_filename(working_dir=working_dir, filename="analysis")
     )
     analysis = ModelAnalysis.create(model)
     analysis.yaml(file_path=analysis_file_path)
-    analysis_id = client.create_analysis(
+    analysis_id = client.upload_analysis(
         user_info=user_info,
         model_id=model_id,
         project_id=project_id,

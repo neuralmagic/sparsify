@@ -225,7 +225,6 @@ class SparsifyCredentials:
         """
         Authenticate credentials with sparsify api
 
-        :param scope: The scope to request for the token
         :return: The requested access token
         """
 
@@ -245,7 +244,7 @@ class SparsifyCredentials:
         """
         Get the user info for current credentials
 
-        :precodition: The credentials are authenticated
+        :precondition: The credentials are authenticated
         :return: The requested UserInfo object
         """
         id_token = self._get_token_response(scope="sparsify:write")["id_token"]
@@ -327,7 +326,7 @@ class SparsifySession(requests.Session):
 
         :param access_token: The access token to use for the session
         """
-        self._session.headers.update(
+        self.headers.update(
             {
                 "Authorization": f"Bearer {access_token}",
                 "Content-Type": "application/json",
@@ -356,7 +355,8 @@ class SparsifySession(requests.Session):
 class SparsifyClient(object):
     """
     A client for the sparsify API
-    :param access_token: The access token to use for the client
+
+    :param scope: The scope to request for the token
     """
 
     def __init__(self, scope: str = "pypi:read"):
@@ -517,7 +517,7 @@ class SparsifyClient(object):
         _LOGGER.debug("Creating a new experiment")
         response = self.post(url=endpoint, data=json.dumps(payload))
         experiment_id = response.json()["experiment_id"]
-        _LOGGER.debug("Experiment created with id: %s", (experiment_id))
+        _LOGGER.debug("Experiment created with id: %s", experiment_id)
 
         self.update_experiment_status(
             experiment_id=experiment_id, status=ExperimentStatus.PENDING.value
@@ -569,6 +569,7 @@ class SparsifyClient(object):
 
     @debug_logging
     def upload_analysis(
+        self,
         user_info: UserInfo,
         model_id: str,
         project_id: str,
@@ -608,7 +609,7 @@ class SparsifyClient(object):
         response_data = dict(analysis_id="test_analysis_id")
         analysis_id = response_data["analysis_id"]
 
-        _LOGGER.debug("Created analysis id: %s", (analysis_id))
+        _LOGGER.debug("Created analysis id: %s", analysis_id)
         return analysis_id
 
     @debug_logging
@@ -622,9 +623,9 @@ class SparsifyClient(object):
         endpoint = f"/experiments/{experiment_id}"
         payload = dict(status=status)
 
-        _LOGGER.debug("Updating experiment status to %s", (status))
+        _LOGGER.debug("Updating experiment status to %s", status)
         self.put(url=endpoint, data=json.dumps(payload))
-        _LOGGER.debug("Experiment status updated to %s", (status))
+        _LOGGER.debug("Experiment status updated to %s", status)
 
     @debug_logging
     def update_experiment_eval_metric(self, experiment_id: str, eval_metric: str):
@@ -637,16 +638,17 @@ class SparsifyClient(object):
         endpoint = f"/experiments/{experiment_id}"
         payload = dict(eval_metric=eval_metric)
 
-        _LOGGER.debug("Updating experiment status to %s", (eval_metric))
+        _LOGGER.debug("Updating experiment status to %s", eval_metric)
         self.put(url=endpoint, data=json.dumps(payload))
-        _LOGGER.debug("Experiment status updated to %s", (eval_metric))
+        _LOGGER.debug("Experiment status updated to %s", eval_metric)
 
 
 def experiment_initialized(client: SparsifyClient, experiment_id: str) -> bool:
     """
     :return: True if experiment is initialized, False otherwise.
     """
-    experiment_status = client.get(url=f"/experiments/{experiment_id}/status")
+    response = client.get(url=f"/experiments/{experiment_id}/status")
+    experiment_status = response.json()["status"]
     if not ExperimentStatus.initialization_pending(status=experiment_status):
         return True
     return False

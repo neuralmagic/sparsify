@@ -101,7 +101,8 @@ def create_analysis_file(working_dir: str, model: str) -> str:
     :param model: Path to model file, or SparseZoo stub.
     :return: str path to the analysis yaml file.
     """
-    working_dir = Path(working_dir).mkdir(parents=True, exist_ok=True)
+    working_dir = Path(working_dir)
+    working_dir.mkdir(parents=True, exist_ok=True)
     analysis_file_path = str(
         get_non_existent_yaml_filename(working_dir=working_dir, filename="analysis")
     )

@@ -51,10 +51,10 @@ _LOGGER = logging.getLogger(__name__)
 
 
 @click.command(context_settings=CONTEXT_SETTINGS)
-@click.argument("api-key", type=str, required=True)
+@click.argument("api-key", type=str, required=False)
 @click.version_option(version=version_major_minor)
 @click.option("--debug/--no-debug", default=False, hidden=True)
-def main(api_key: str, debug: bool = False):
+def main(api_key: Optional[str] = None, debug: bool = False):
     """
     sparsify.login utility to log into sparsify locally.
 
@@ -145,20 +145,11 @@ def authenticate(api_key: Optional[str] = None) -> bool:
         will attempt to use the credentials stored on disk
     :return: True if authenticated, False otherwise
     """
-    if not credentials_exists():
-        raise SparsifyLoginRequired(
-            "No valid sparsify credentials found. Please run `sparsify.login`"
-        )
-
-    with get_sparsify_credentials_path().open() as fp:
-        credentials = json.load(fp)
-
-    if "api_key" not in credentials:
-        raise SparsifyLoginRequired(
-            "No valid sparsify credentials found. Please run `sparsify.login`"
-        )
-
-    login(api_key=credentials["api_key"])
+    try:
+        login(api_key=api_key)
+    except (InvalidAPIKey, SparsifyLoginRequired):
+        return False
+    return True
 
 
 if __name__ == "__main__":

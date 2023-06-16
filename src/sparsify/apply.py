@@ -64,13 +64,15 @@ Options:
 
 import logging
 import subprocess
+from typing import List
 
 import click
 from sparsezoo.analyze import ModelAnalysis
 from sparsezoo.analyze.cli import CONTEXT_SETTINGS
 from sparsify import init, login
 from sparsify.cli import opts
-from sparsify.utils import SparsifyClient, SparsifyCredentials, UserInfo, set_log_level, ExperimentStatus, get_non_existent_yaml_filename
+from sparsify.utils import ExperimentStatus, SparsifyClient, UserInfo, set_log_level
+from sparsify.utils.helpers import get_non_existent_yaml_filename
 from sparsify.version import version_major_minor
 
 
@@ -82,7 +84,7 @@ _LOGGER = logging.getLogger(__name__)
 @click.command(context_settings=CONTEXT_SETTINGS)
 @opts.EXPERIMENT_TYPE
 @opts.add_info_opts
-@opts.add_model_opts(require_model=False, require_optimizer=False)
+@opts.add_model_opts(require_model=False, include_optimizer=False)
 @opts.add_optim_opts
 @opts.add_data_opts
 @opts.add_deploy_opts
@@ -108,11 +110,9 @@ def apply(**kwargs):
     experiment_id = kwargs.get("experiment_id")
     if experiment_id is None:
         experiment_id, project_id = init(**kwargs)
-    credentials = SparsifyCredentials()
-    access_token = credentials.get_access_token(scope="sparsify:write")
-    client = SparsifyClient(access_token=access_token)
+    client = SparsifyClient(scope="sparsify:write")
     client.health_check()
-    user_info: UserInfo = credentials.get_user_info()
+    user_info: UserInfo = client.user_info
     _LOGGER.info(f"Logged in as {user_info.email}")
 
     experiment_type = kwargs.get("experiment_type")
@@ -122,12 +122,13 @@ def apply(**kwargs):
         )
         kwargs.update({"experiment_type": experiment_type})
 
-    project_id = kwargs["project_id"]
-    if kwargs["project_id"] is None:
-        project_id = client.get(url=f"/experiments/{experiment_id}/project_id")
-        kwargs.update({"project_id": project_id})
+    project_id = client.create_project_if_does_not_exist(
+        user_info=user_info,
+        project_id=kwargs["project_id"],
+    )
+    kwargs.update({"project_id": project_id})
 
-    command_args = []
+    command_args: List[str] = []
     if experiment_type == "sparse-transfer":
         command_args = [
             experiment_type,
@@ -176,7 +177,7 @@ def apply(**kwargs):
         )
         analysis = ModelAnalysis.create(kwargs["working_dir"])
         analysis.yaml(file_path=analysis_file_path)
-        analysis_id = client.create_analysis(
+        analysis_id = client.upload_analysis(
             user_info=user_info,
             model_id=kwargs["model_id"],
             project_id=project_id,

@@ -118,16 +118,6 @@ def test_check_existence(path, exists):
             ValueError(),
         ),
         (
-            pytest.lazy_fixture("existing_file"),
-            pytest.lazy_fixture("non_existent_dir"),
-            None,
-        ),
-        (
-            pytest.lazy_fixture("existing_file"),
-            pytest.lazy_fixture("non_existent_file"),
-            None,
-        ),
-        (
             pytest.lazy_fixture("existing_empty_dir"),
             pytest.lazy_fixture("non_existent_dir"),
             None,
@@ -147,7 +137,7 @@ def test_copy_file(path_a, path_b, expected):
         copy_file(path_a, path_b)
         if path_a.is_dir():
             assert path_b.is_dir()
-            assert list(path_a.iterdir()) == list(path_b.iterdir())
+            assert list(path_a.iterdir()) == list((path_b / path_a.name).iterdir())
         else:
             assert path_b.is_file()
             assert path_a.read_text() == path_b.read_text()

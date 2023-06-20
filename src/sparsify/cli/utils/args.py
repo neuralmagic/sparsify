@@ -17,6 +17,7 @@ from typing import Optional
 
 from pydantic import BaseModel, Field
 
+
 __all__ = [
     "Optimizers",
     "ModelArgs",
@@ -82,7 +83,7 @@ class DataArgs(BaseModel):
     data: Optional[str] = Field(
         default=None,
         description="Path to dataset folder containing training/validation "
-                    "data or both",
+        "data or both",
     )
     eval_metric: Optional[str] = Field(
         default=None, description="The metric to use for evaluation"
@@ -90,12 +91,12 @@ class DataArgs(BaseModel):
     train_samples: Optional[int] = Field(
         default=None,
         description="Number of training samples, will represent all samples"
-                    " if not provided",
+        " if not provided",
     )
     val_samples: Optional[int] = Field(
         default=None,
         description="Number of validation samples, will represent all samples"
-                    " if not provided",
+        " if not provided",
     )
 
 
@@ -133,7 +134,7 @@ class SparsificationArgs(BaseModel):
     optim_for_hardware: Optional[float] = Field(
         default=None,
         description="The optimization level for current hardware, "
-                    "must be a float b/w [0-1]",
+        "must be a float b/w [0-1]",
     )
 
 
@@ -145,7 +146,7 @@ class InfoArgs(BaseModel):
     experiment_type: Optional[ExperimentType] = Field(
         default=None,
         description="The experiment type to use, must be one of "
-                    f"{[element.value for element in ExperimentType]}",
+        f"{[element.value for element in ExperimentType]}",
     )
 
     use_case: Optional[str] = Field(
@@ -163,7 +164,7 @@ class InfoArgs(BaseModel):
     working_dir: Optional[str] = Field(
         default=None,
         description="The working directory for this experiment, will default to"
-                    " the current working directory if not provided",
+        " the current working directory if not provided",
     )
 
 
@@ -172,6 +173,4 @@ class APIKey(BaseModel):
     API Key specific arguments for sparsify
     """
 
-    api_key: Optional[str] = Field(
-        default=None, description="The sparsify API key"
-    )
+    api_key: Optional[str] = Field(default=None, description="The sparsify API key")

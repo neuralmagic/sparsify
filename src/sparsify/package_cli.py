@@ -17,11 +17,10 @@ from typing import Optional
 import click
 from sparsezoo.analyze.cli import CONTEXT_SETTINGS
 from sparsezoo.utils import TASKS_WITH_ALIASES
-from sparsify.utils import (
-    set_log_level,
-)
+from sparsify.utils import set_log_level
 from sparsify.utils.package_helpers import package
 from sparsify.version import version_major_minor
+
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -38,7 +37,7 @@ _LOGGER = logging.getLogger(__name__)
     "--experiment",
     type=click.Path(exists=True, file_okay=False, dir_okay=True, readable=True),
     help="The directory containing the deployment files to package, "
-         "or sparsify experiment-id (Not yet supported)",
+    "or sparsify experiment-id (Not yet supported)",
     required=True,
 )
 @click.option(
@@ -58,25 +57,25 @@ _LOGGER = logging.getLogger(__name__)
     type=str,
     default=None,
     help="A python file containing a pre-processing (`preprocess`) "
-         "and/or post-processing (`postprocess`) function",
+    "and/or post-processing (`postprocess`) function",
 )
 @click.option(
     "--output_dir",
     type=click.Path(file_okay=False, dir_okay=True, writable=True),
     default=None,
     help="A directory where the packaged deployment directory will "
-         "be saved, if not specified it will be saved in the parent "
-         "directory of the experiment directory, under `deployment` folder",
+    "be saved, if not specified it will be saved in the parent "
+    "directory of the experiment directory, under `deployment` folder",
 )
 @click.option("--debug/--no-debug", default=False, hidden=True)
 def main(
-        experiment: str,
-        task: str,
-        logging_config: Optional[str],
-        deploy_type: str,
-        processing_file: Optional[str],
-        output_dir: Optional[str],
-        debug: bool = False,
+    experiment: str,
+    task: str,
+    logging_config: Optional[str],
+    deploy_type: str,
+    processing_file: Optional[str],
+    output_dir: Optional[str],
+    debug: bool = False,
 ):
     set_log_level(logger=_LOGGER, level=logging.DEBUG if debug else logging.INFO)
     if deploy_type != "server":
@@ -84,10 +83,11 @@ def main(
 
     package(
         experiment=experiment,
-        logging_config=logging_config,
-        output_dir=output_dir,
-        processing_file=processing_file,
         task=task,
+        logging_config=logging_config,
+        deploy_type=deploy_type,
+        processing_file=processing_file,
+        output_dir=output_dir,
     )
 
 

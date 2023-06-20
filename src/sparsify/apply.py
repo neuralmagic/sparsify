@@ -74,7 +74,6 @@ from sparsify.cli import opts
 from sparsify.utils import (
     ExperimentStatus,
     SparsifyClient,
-    SparsifyCredentials,
     UserInfo,
     get_non_existent_filename,
     set_log_level,
@@ -169,7 +168,8 @@ def apply(**kwargs):
     else:
         raise ValueError(f"Invalid experiment type {experiment_type}")
 
-    command_str = ["sparsify", "run", experiment_type].extend(command_args)
+    command_str = ["sparsify", "run", experiment_type]
+    command_str.extend(command_args)
 
     try:
         client.update_experiment_status(

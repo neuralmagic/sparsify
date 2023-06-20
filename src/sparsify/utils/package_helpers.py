@@ -1,31 +1,47 @@
+# Copyright (c) 2021 - present / Neuralmagic, Inc. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import logging
 from pathlib import Path
 from typing import Optional
 
 import yaml
+
 from deepsparse.loggers.config import PipelineSystemLoggingConfig
 from deepsparse.server.config import EndpointConfig, ServerConfig
-from sparsify.utils import (
-    get_non_existent_filename,
-    copy_file,
+from sparsify.utils.helpers import (
     base_model_to_yaml,
+    copy_file,
+    get_non_existent_filename,
 )
+
 
 __all__ = ["package", "DOCKERFILE_DIRECTORY"]
 
 DOCKERFILE_DIRECTORY: Path = (
-        Path(__file__).parent.parent.parent / "docker" / "package"
+    Path(__file__).parent.parent.parent.parent / "docker" / "package"
 )
 _LOGGER = logging.getLogger(__name__)
 
 
 def package(
-        experiment: str,
-        task: str,
-        logging_config: Optional[str],
-        deploy_type: str,
-        processing_file: Optional[str],
-        output_dir: Optional[str],
+    experiment: str,
+    task: str,
+    logging_config: Optional[str],
+    deploy_type: str = "server",
+    processing_file: Optional[str] = None,
+    output_dir: Optional[str] = None,
 ) -> None:
     """
     Given an experiment directory and other configs, packages everything into a
@@ -53,8 +69,7 @@ def package(
         Path(output_dir)
         if output_dir is not None
         else get_non_existent_filename(
-            parent_dir=Path(experiment).parent,
-            filename="deployment"
+            parent_dir=Path(experiment).parent, filename="deployment"
         )
     )
     local_server_config_path: Path = get_non_existent_filename(
@@ -81,7 +96,7 @@ def package(
     )
     base_model_to_yaml(
         model=ServerConfig(endpoints=[endpoint_config]),
-        file_path=str(local_server_config_path)
+        file_path=str(local_server_config_path),
     )
 
     # display deployment instructions
@@ -96,12 +111,59 @@ def package(
     _LOGGER.debug("locals: %s", locals())
 
 
+def _get_endpoint_config(
+    task: str,
+    processing_file: Optional[str],
+    local_output_dir_path: Path,
+    docker_output_dir: Path,
+    logging_config: Optional[str],
+    copied_experiment_dir_name: str,
+) -> EndpointConfig:
+    """
+    Returns the endpoint config for the given task
+
+    :param task: the task to package deployment directory for
+    :param processing_file: the processing file to copy
+    :param local_output_dir_path: the local output directory path
+    :param docker_output_dir: the docker output directory to use for the endpoint
+    :param logging_config: the logging config file path
+    :param copied_experiment_dir_name: the name of the copied experiment directory
+    :return: the endpoint config for the given task
+    """
+    endpoint_config: EndpointConfig = EndpointConfig(
+        task=task,
+        name=f"{task}-endpoint",
+        route="/predict",
+        model=str(docker_output_dir.joinpath(copied_experiment_dir_name)),
+    )
+
+    endpoint_config.kwargs = _get_processing_file_kwargs_for_endpoint_config(
+        processing_file=processing_file,
+        task=task,
+        output_dir=local_output_dir_path,
+        docker_output_dir=docker_output_dir,
+    )
+
+    endpoint_config.logging_config = _load_logging_config(logging_config=logging_config)
+    return endpoint_config
+
+
 def _get_deployment_instructions(
-        dockerfile_path: Path,
-        local_output_dir: Path,
-        local_server_config_path: Path,
-        docker_output_dir: Path
+    dockerfile_path: Path,
+    local_output_dir: Path,
+    local_server_config_path: Path,
+    docker_output_dir: Path,
 ):
+    """
+    Returns the deployment instructions to be displayed to the user
+
+    :param dockerfile_path: the path to the dockerfile
+    :param local_output_dir: the local output directory where the deployment artifacts
+        exist
+    :param local_server_config_path: the local server config path
+    :param docker_output_dir: the docker output directory to use for the endpoint
+    :return: the deployment instructions to be displayed to the user
+    """
     return f"""
     Use the dockerfile at {dockerfile_path} to build deepsparse
     image and run the `deepsparse.server`
@@ -109,8 +171,9 @@ def _get_deployment_instructions(
     Run the following command inside `{local_output_dir}` directory:
 
     ```bash
-    docker build --target prod --build-arg DEPS=all -t deepsparse_docker . \\
-    && docker container run -it -p 5543:5543 -v {local_output_dir}:{docker_output_dir} \\
+    docker build --target prod --build-arg DEPS=all --tag deepsparse_docker . \\
+    && docker container run --interactive --tty --publish 5543:5543 \\
+    --volume {local_output_dir}:{docker_output_dir} \\
     deepsparse_docker deepsparse.server \\
      --config_file {docker_output_dir.joinpath(local_server_config_path.name)}
     ```
@@ -118,8 +181,15 @@ def _get_deployment_instructions(
 
 
 def _load_logging_config(
-        logging_config: Optional[str]
+    logging_config: Optional[str] = None,
 ) -> Optional[PipelineSystemLoggingConfig]:
+    """
+    Loads the logging config from the given file path, if provided
+
+    :param logging_config: the logging config file path
+    :return: PipelineSystemLoggingConfig object if valid yaml
+        logging_config is provided, else None
+    """
     if not logging_config:
         return
 
@@ -128,8 +198,19 @@ def _load_logging_config(
     return PipelineSystemLoggingConfig(**logging_config_obj)
 
 
-def _get_processing_file_kwargs(processing_file: Optional[str], task: str,
-                                output_dir: Path, docker_output_dir: Path):
+def _get_processing_file_kwargs_for_endpoint_config(
+    processing_file: Optional[str], task: str, output_dir: Path, docker_output_dir: Path
+):
+    """
+    Copies the processing file to the output directory and returns the kwargs to be
+    added to the endpoint config
+
+    :param processing_file: the processing file to copy
+    :param task: the task to package deployment directory for
+    :param output_dir: the output directory to copy the processing file to
+    :param docker_output_dir: the docker output directory to use for the endpoint
+    :return: the kwargs to be added to the endpoint config
+    """
     if not processing_file:
         return {}
 
@@ -141,33 +222,5 @@ def _get_processing_file_kwargs(processing_file: Optional[str], task: str,
     processing_file_path: Path = copy_file(Path(processing_file), output_dir)
     # Add the processing file to the endpoint config
     return {
-        "processing_file": str(
-            docker_output_dir.joinpath(processing_file_path.name)
-        ),
+        "processing_file": str(docker_output_dir.joinpath(processing_file_path.name)),
     }
-
-
-def _get_endpoint_config(
-        task: str,
-        processing_file: Optional[str],
-        local_output_dir_path: Path,
-        docker_output_dir: Path,
-        logging_config: Optional[str],
-        copied_experiment_dir_name: str,
-):
-    endpoint_config: EndpointConfig = EndpointConfig(
-        task=task,
-        name=f"{task}-endpoint",
-        route="/predict",
-        model=str(docker_output_dir.joinpath(copied_experiment_dir_name)),
-    )
-
-    endpoint_config.kwargs = _get_processing_file_kwargs(
-        processing_file=processing_file,
-        task=task,
-        output_dir=local_output_dir_path,
-        docker_output_dir=docker_output_dir,
-    )
-
-    endpoint_config.logging_config = _load_logging_config(logging_config=logging_config)
-    return endpoint_config

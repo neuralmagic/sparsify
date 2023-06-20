@@ -209,7 +209,7 @@ class SparsifyCredentials:
         or create a new file if it does not exist. Additionally,
         authenticate with the Sparsify API using the given api key.
 
-        :postcondition: The credentials file exists
+        :post-condition: The credentials file exists
         :param api_key: The api key to write to the credentials file
         :return: The SparsifyCredentials object
         """

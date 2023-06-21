@@ -51,7 +51,7 @@ def one_shot(**kwargs):
     one_shot.one_shot(
         model=Path(kwargs["model"]),
         dataset_dir=Path(kwargs["data"]),
-        num_samples=kwargs["train_samples"] or -1,
+        num_samples=kwargs["train_samples"] or None,
         deploy_dir=Path(kwargs["working_dir"]),
         eval_metric=kwargs["eval_metric"],
         optim_level=kwargs["optim_level"],

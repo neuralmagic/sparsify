@@ -59,8 +59,6 @@ docsupdate:
 
 # creates wheel file
 build:
-	@echo "Building UI";
-	mv -v build/* src/sparsify/ui/;
 	@echo "Building python package";
 	python3 setup.py sdist bdist_wheel $(BUILD_ARGS);
 
@@ -70,6 +68,5 @@ clean:
 	rm -rf docs/_build docs/build;
 	rm -rf build;
 	rm -rf dist;
-	find src/sparsify/ui/* | grep -v .gitkeep | xargs rm -rf;
 	rm -rf src/sparsify.egg-info;
 	find $(PYCHECKDIRS) | grep -E "(__pycache__|\.pyc|\.pyo)" | xargs rm -rf;

@@ -169,14 +169,12 @@ class ImageClassificationRunner(TaskRunner):
 
         # Check mode file exists
         if not os.path.isfile(onnx_file):
-            print(f"ONNX FILE PATH: {onnx_file}")
             return False
 
         # Check onnx graph
         try:
             model = onnx.load(onnx_file)
             onnx.checker.check_model(model)
-            print("FAILED ONNX CHECKER")
         except Exception:
             return False
 

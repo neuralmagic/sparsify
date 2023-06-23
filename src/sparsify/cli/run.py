@@ -18,6 +18,7 @@ from pathlib import Path
 
 import click
 from sparsezoo import Model
+from sparsify.check_environment import auto_checks, one_shot_checks
 from sparsify.cli import opts
 
 
@@ -44,6 +45,8 @@ def one_shot(**kwargs):
     """
     # raises exception if sparsifyml not installed
     from sparsify.one_shot import one_shot
+
+    one_shot_checks()
 
     recipe_args = kwargs.get("recipe_args")
     if isinstance(recipe_args, str):
@@ -75,6 +78,8 @@ def sparse_transfer(**kwargs):
     """
     from sparsify import auto
 
+    auto_checks()
+
     # recipe arg should be a sparse transfer recipe
     auto.main(_parse_run_args_to_auto(sparse_transfer=True, **kwargs))
 
@@ -91,6 +96,8 @@ def training_aware(**kwargs):
     Run training aware sparsification for a use case against a supported task and model
     """
     from sparsify import auto
+
+    auto_checks()
 
     # recipe arg should be a training aware recipe
     auto.main(_parse_run_args_to_auto(sparse_transfer=False, **kwargs))

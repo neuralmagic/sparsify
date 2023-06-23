@@ -14,7 +14,6 @@
 
 
 import json
-import logging
 import os
 from typing import Tuple
 
@@ -42,8 +41,6 @@ else:
 
 
 __all__ = ["ImageClassificationRunner"]
-
-_LOGGER = logging.getLogger(__name__)
 
 
 @TaskRunner.register_task(task=TASK_REGISTRY["image_classification"])

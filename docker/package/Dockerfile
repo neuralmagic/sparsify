@@ -81,23 +81,6 @@ RUN \
       $VENV/bin/pip install --no-cache-dir "deepsparse[server,yolo,onnxruntime,yolov8,transformers,image_classification]==$VERSION"; \
     fi;
 
-FROM base AS container_branch_dev
-ARG VENV
-ENV PATH="${VENV}/bin:$PATH"
-ENV PIP_DEFAULT_TIMEOUT=200
-ARG VERSION
-ARG MODE
-RUN \
-    if [ -n "$BRANCH" ] ; then \
-      echo Installing from BRANCH with editable mode && \
-      $VENV/bin/pip install -e  "./deepsparse[dev]"; \
-    else \
-      echo Installing from main  with editable mode && \
-      git clone https://github.com/neuralmagic/deepsparse.git --depth 1 -b main && \
-      $VENV/bin/pip install -e "./deepsparse[dev]"; \
-    fi;
-
-
 FROM container_branch_${DEPS} AS build
 RUN echo Build complete, going onto prod
 

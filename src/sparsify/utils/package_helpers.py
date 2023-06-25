@@ -42,7 +42,8 @@ def package(
     deploy_type: str = "server",
     processing_file: Optional[str] = None,
     output_dir: Optional[str] = None,
-) -> None:
+    return_instructions: bool = False,
+) -> Optional[str]:
     """
     Given an experiment directory and other configs, packages everything into a
     deployment directory with a dockerfile and display instructions on how to run a
@@ -63,6 +64,10 @@ def package(
     :param processing_file: the `processing_file` to use with deepsparse server
     :param output_dir: the directory where the packaged deployment directory will be,
         defaults to `deployment` folder in the current working directory
+    :param return_instructions: if True, returns the instructions on how to run the
+        deepsparse server, defaults to False
+    :return: the instructions on how to run the deepsparse server if
+        ``return_instructions` is True, else None
     """
     # define paths
     local_output_dir_path: Path = (
@@ -76,7 +81,9 @@ def package(
         parent_dir=local_output_dir_path, filename="server-config.yaml"
     )
     docker_output_dir: Path = Path("/home/deployment")
-
+    deployment_readme_path: Path = get_non_existent_filename(
+        parent_dir=local_output_dir_path, filename="README.md"
+    )
     # copy artifacts
     copied_dockerfile: Path = copy_file(
         DOCKERFILE_DIRECTORY / "Dockerfile", dest=local_output_dir_path
@@ -99,16 +106,24 @@ def package(
         file_path=str(local_server_config_path),
     )
 
-    # display deployment instructions
-    print(
-        _get_deployment_instructions(
-            dockerfile_path=copied_dockerfile,
-            docker_output_dir=docker_output_dir,
-            local_output_dir=local_output_dir_path,
-            local_server_config_path=local_server_config_path,
-        )
+    # place deployment instructions
+    deployment_instructions = _get_deployment_instructions(
+        dockerfile_path=copied_dockerfile,
+        docker_output_dir=docker_output_dir,
+        local_output_dir=local_output_dir_path,
+        local_server_config_path=local_server_config_path,
+    )
+
+    deployment_readme_path.write_text(deployment_instructions)
+
+    _LOGGER.info(
+        "Package created at %s. To deploy instructions at %s",
+        (local_output_dir_path, deployment_readme_path),
     )
     _LOGGER.debug("locals: %s", locals())
+
+    if return_instructions:
+        return deployment_instructions
 
 
 def _get_endpoint_config(

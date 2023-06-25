@@ -117,10 +117,10 @@ def package(
     deployment_readme_path.write_text(deployment_instructions)
 
     _LOGGER.info(
-        "Package created at %s. To deploy instructions at %s",
-        (local_output_dir_path, deployment_readme_path),
+        "Package created at %s. To deploy instructions at %s" %
+        (local_output_dir_path, deployment_readme_path)
     )
-    _LOGGER.debug("locals: %s", locals())
+    _LOGGER.debug("locals: %s" % locals())
 
     if return_instructions:
         return deployment_instructions

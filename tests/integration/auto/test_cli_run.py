@@ -27,7 +27,7 @@ from sparsify.utils import TASK_REGISTRY
 _OUTPUT_DIRECTORY = "sparsify_training_temp_integration_test"
 _SPARSIFYML_INSTALLED: bool = importlib.util.find_spec("sparsifyml") is not None
 _EXTENSIVE_TESTING_ENABLED = os.environ.get(
-    "SPARSIFY_EXTENSIVE_INTEGRATION_TEST", True  # TODO: remove
+    "SPARSIFY_EXTENSIVE_INTEGRATION_TEST", False
 )
 
 
@@ -143,6 +143,8 @@ _EXTENSIVE_TESTING_ENABLED = os.environ.get(
                 "yolov5s.pt",
                 "--train-kwargs",
                 "{'max_steps': 10}",
+                "--recipe-args",
+                "{'num_epochs': 2, 'num_qat_epochs': 1, 'num_qat_finetuning_epochs': 0, 'num_pruning_active_epochs': 1, 'num_pruning_finetuning_epochs': 0}",  # noqa: E501
             ],
             False,
         ),

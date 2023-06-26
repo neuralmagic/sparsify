@@ -30,7 +30,7 @@ def check_for_gpu():
     if not torch.cuda.is_available():
         _LOGGER.warn(
             "*************************** NO GPU DETECTED ***************************\n"
-            "No GPU detected on machine. The use of a GPU for training-aware "
+            "No GPU(s) detected on machine. The use of a GPU for training-aware "
             "sparsification, sparse-transfer learning, and one-shot sparsification is "
             "highly recommended.\n"
             "************************************************************************"

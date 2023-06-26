@@ -161,4 +161,4 @@ def check_ort_health(providers: Optional[List[str]] = None):
             "are properly installed."
         ) from e
 
-    _LOGGER.warning("Onnxruntime-gpu environment check completed successfully")
+    _LOGGER.warning("onnxruntime-gpu environment check completed successfully")

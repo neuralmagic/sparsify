@@ -83,7 +83,7 @@ Sparsify has three experiment types each with different attributes across sparsi
 
 `sparsify.run one-shot --use-case image_classification --model MODEL_PATH --data DATA_PATH --working-dir sparsify`
 
-🚨**Note**🚨: Sparsify is currently an alpha release, so you have the opportunity to influence the development process for the product. You can report UI issues and CLI errors, submit bug reports, and provide general feedback about the product to the team via [email](mailto: rob@neuralmagic.com) or via [GitHub Issues](https://github.com/neuralmagic/sparsify/issues).  Please do NOT use this alpha unless you are ready for bugs and want to contribute to the process by reporting them to us.
+🚨**Note**🚨: Sparsify is currently an alpha release, so you have the opportunity to influence the development process for the product. You can report UI issues and CLI errors, submit bug reports, and provide general feedback about the product to the team via [email](mailto::rob@neuralmagic.com) or via [GitHub Issues](https://github.com/neuralmagic/sparsify/issues).  Please do NOT use this alpha unless you are ready for bugs and want to contribute to the process by reporting them to us.
 
 As an alpha release, no support is provided but you can refer to this README for guidance on usage and example commands. We appreciate your input as it helps us make fixes and add improvements that much more quickly, so we can get the final release ready to launch. Thank you for your interest and support! 
 

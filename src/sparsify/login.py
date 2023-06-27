@@ -37,7 +37,7 @@ import click
 from sparsezoo.analyze.cli import CONTEXT_SETTINGS
 from sparsify.utils import SparsifyCredentials, set_log_level
 from sparsify.utils.exceptions import InvalidAPIKey, SparsifyLoginRequired
-from sparsify.version import version_major_minor
+from sparsify.version import is_release, version_major_minor
 
 
 __all__ = [
@@ -108,6 +108,7 @@ def install_sparsifyml(access_token: str) -> None:
             version_major_minor,
         )
         pypi_url_template = "https://nm:{}@pypi.neuralmagic.com"
+        sparsifyml_package_name = "sparsifyml" if is_release else "sparsifyml-nightly"
         subprocess.check_call(
             [
                 sys.executable,
@@ -116,7 +117,7 @@ def install_sparsifyml(access_token: str) -> None:
                 "install",
                 "--index-url",
                 pypi_url_template.format(access_token),
-                f"sparsifyml_nightly>={version_major_minor}",
+                f"{sparsifyml_package_name}~={version_major_minor}",
             ]
         )
     else:

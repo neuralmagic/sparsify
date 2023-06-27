@@ -142,7 +142,7 @@ _EXTENSIVE_TESTING_ENABLED = os.environ.get(
                 "--model",
                 "yolov5s.pt",
                 "--train-kwargs",
-                "{'max_steps': 10}",
+                "{'max_steps': 10, 'batch_size': 1, 'imgsz': 160}",
                 "--recipe-args",
                 "{'num_epochs': 2, 'num_qat_epochs': 1, 'num_qat_finetuning_epochs': 0, 'num_pruning_active_epochs': 1, 'num_pruning_finetuning_epochs': 0}",  # noqa: E501
             ],

@@ -140,7 +140,7 @@ _EXTENSIVE_TESTING_ENABLED = os.environ.get(
                 "--data",
                 "coco128.yaml",
                 "--model",
-                "yolov5s.pt",
+                "yolov5n.pt",
                 "--train-kwargs",
                 "{'max_steps': 10, 'batch_size': 1, 'imgsz': 160}",
                 "--recipe-args",

@@ -45,7 +45,7 @@ from sparsify.utils import (
     set_log_level,
 )
 from sparsify.utils.exceptions import SparsifyLoginRequired
-from sparsify.version import version_major_minor
+from sparsify.version import is_release, version_major_minor
 
 
 __all__ = [
@@ -111,6 +111,7 @@ def install_sparsifyml(access_token: str) -> None:
             f"Installing sparsifyml version {version_major_minor} "
             "from neuralmagic pypi server"
         )
+        sparsifyml_package_name = "sparsifyml" if is_release else "sparsifyml-nightly"
         subprocess.check_call(
             [
                 sys.executable,
@@ -119,7 +120,7 @@ def install_sparsifyml(access_token: str) -> None:
                 "install",
                 "--index-url",
                 get_authenticated_pypi_url(access_token=access_token),
-                f"sparsifyml_nightly>={version_major_minor}",
+                f"{sparsifyml_package_name}~={version_major_minor}",
             ]
         )
     else:

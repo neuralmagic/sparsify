@@ -17,6 +17,7 @@ from typing import Optional
 import click
 from sparsezoo.analyze.cli import CONTEXT_SETTINGS
 from sparsezoo.utils import TASKS_WITH_ALIASES
+from sparsify.cli.opts import validate_use_case
 from sparsify.utils import set_log_level
 from sparsify.utils.package_helpers import package
 from sparsify.version import version_major_minor
@@ -30,6 +31,7 @@ _LOGGER = logging.getLogger(__name__)
 @click.option(
     "--task",
     type=click.Choice(TASKS_WITH_ALIASES, case_sensitive=False),
+    callback=validate_use_case,
     help="The task to package deployment directory for",
     required=True,
 )

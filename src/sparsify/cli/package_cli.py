@@ -29,7 +29,7 @@ _LOGGER = logging.getLogger(__name__)
 @click.command(context_settings=CONTEXT_SETTINGS)
 @click.version_option(version=version_major_minor)
 @click.option(
-    "--task",
+    "--use-case",
     type=click.Choice(TASKS_WITH_ALIASES, case_sensitive=False),
     callback=validate_use_case,
     help="The task to package deployment directory for",
@@ -55,14 +55,14 @@ _LOGGER = logging.getLogger(__name__)
     required=True,
 )
 @click.option(
-    "--processing_file",
+    "--processing-file",
     type=str,
     default=None,
     help="A python file containing a pre-processing (`preprocess`) "
     "and/or post-processing (`postprocess`) function",
 )
 @click.option(
-    "--output_dir",
+    "--output-dir",
     type=click.Path(file_okay=False, dir_okay=True, writable=True),
     default=None,
     help="A directory where the packaged deployment directory will "
@@ -72,7 +72,7 @@ _LOGGER = logging.getLogger(__name__)
 @click.option("--debug/--no-debug", default=False, hidden=True)
 def main(
     experiment: str,
-    task: str,
+    use_case: str,
     logging_config: Optional[str],
     deploy_type: str,
     processing_file: Optional[str],
@@ -85,7 +85,7 @@ def main(
 
     package(
         experiment=experiment,
-        task=task,
+        use_case=use_case,
         logging_config=logging_config,
         deploy_type=deploy_type,
         processing_file=processing_file,

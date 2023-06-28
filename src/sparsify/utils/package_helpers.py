@@ -37,7 +37,7 @@ _LOGGER = logging.getLogger(__name__)
 
 def package(
     experiment: str,
-    task: str,
+    use_case: str,
     logging_config: Optional[str],
     deploy_type: str = "server",
     processing_file: Optional[str] = None,
@@ -58,7 +58,7 @@ def package(
     :pre-condition: `processing_file` is a valid python file containing pre-processing
         and/or post-processing utilities as expected by deepsparse server
     :param experiment: the experiment directory containing the model and configs
-    :param task: the task to package deployment directory for
+    :param use_case: the task to package deployment directory for
     :param logging_config: the logging configuration file to use with deepsparse server
     :param deploy_type: sets the deployment type, only supports `server`
     :param processing_file: the `processing_file` to use with deepsparse server
@@ -94,7 +94,7 @@ def package(
 
     # get endpoint config relative to docker output dir
     endpoint_config: EndpointConfig = _get_endpoint_config(
-        task=task,
+        task=use_case,
         processing_file=processing_file,
         local_output_dir_path=local_output_dir_path,
         docker_output_dir=docker_output_dir,

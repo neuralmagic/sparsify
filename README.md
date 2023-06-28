@@ -141,7 +141,7 @@ sparsify.login API_KEY
 
 For more details on locating the API_KEY, see the [Sparsify Cloud User Guide](https://github.com/neuralmagic/sparsify/docs/cloud-user-guide.md).
 
-For more details on the `sparsify login` command, see the [CLI/API Guide](https://github.com/neuralmagic/sparsify/docs/cli-api-guide.md).
+For more details on the `sparsify.login` command, see the [CLI/API Guide](https://github.com/neuralmagic/sparsify/docs/cli-api-guide.md).
 
 ### Run an Experiment
 

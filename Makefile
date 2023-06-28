@@ -40,7 +40,7 @@ test:
 # run end to end integration tests
 test_integration:
 	@echo "Running integration tests";
-	SPARSEZOO_TEST_MODE="true" pytest tests/integration  --ignore tests/sparsify $(INTEGRATION_TEST_ARGS);
+	SPARSEZOO_TEST_MODE="true" pytest -ls tests/integration  --ignore tests/sparsify $(INTEGRATION_TEST_ARGS);
 
 # create docs
 docs:

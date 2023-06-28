@@ -83,7 +83,7 @@ def _setup_entry_points() -> Dict:
             "sparsify.login=sparsify.login:main",
             "sparsify.init=sparsify.init:main",
             "sparsify.apply=sparsify.apply:main",
-            "sparsify.package=sparsify.package_cli:main",
+            "sparsify.package=sparsify.cli.package_cli:main",
         ]
     }
 

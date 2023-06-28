@@ -157,7 +157,7 @@ _EXTENSIVE_TESTING_ENABLED = os.environ.get(
                 "--data",
                 "imagenette",
                 "--train-kwargs",
-                "{'max_train_steps': 5,'max_eval_steps': 5}",
+                "{'max_train_steps': 5,'max_eval_steps': 5, 'train_batch_size': 4, 'test_batch_size': 4}",  # noqa: E501
             ],
             False,
         ),

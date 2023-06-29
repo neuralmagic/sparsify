@@ -55,16 +55,17 @@ limitations under the License.
     </a>
 </p>
 
-<img src="TODO:promo image" style="display:none" \>
+![Logo](https://drive.google.com/uc?id=1XnlBKpRQdsnLC4IPoiCoihXJNFh8y7OL)
 
 ## Overview
 
-Sparsify enables you to easily create faster and smaller Neural Networks without sacrificing accuracy by applying SOTA model compression techniques such as pruning, quantization, and distillation, among others.
-To empower users in compressing models, Sparsify is made up of two components: the Sparsify Cloud and the Sparsify CLI/API.
-The Cloud is a web application that allows users to create and manage Sparsify Experiments, explore hyperparameters, predict performance, and compare results across both experiments and deployment scenarios.
-The CLI/API is a Python package that allows users to run Sparsify Experiments locally, sync with the cloud, and integrate into your own workflows.
+Sparsify enables you to accelerate inference without sacrificing accuracy by applying state-of-the-art pruning, quantization, and distillation algorithms to Neural Networks with a simple web app and one-command API calls. 
 
-To get started immediately, [create an account](https://account.neuralmagic.com/signup) and then check out the [Installation](#Installation) and [Quick Start](#Quick Start) sections.
+To empower you in compressing models, Sparsify is made up of two components: the Sparsify Cloud and the Sparsify CLI/API.
+The Sparsify Cloud is a web application that allows you to create and manage Sparsify Experiments, explore hyperparameters, predict performance, and compare results across both experiments and deployment scenarios.
+The Sparsify CLI/API is a Python package that allows you to run Sparsify Experiments locally, sync with the Sparsify Cloud, and integrate into your own workflows.
+
+To get started immediately, [create an account](https://account.neuralmagic.com/signup) and then check out the [Installation](https://github.com/neuralmagic/sparsify/edit/Sparsify-Alpha-README/README.md#installation) and [Quick Start](https://github.com/neuralmagic/sparsify/edit/Sparsify-Alpha-README/README.md#quick-start) sections of this README.
 With all of that setup, sparsifying your models is as easy as:
 
 ```bash
@@ -74,7 +75,7 @@ sparsify.run one-shot --use-case image_classification --model resnet50 --data im
 <br>
 
 *🚨**Note**🚨: Sparsify is currently an alpha release, so you have the opportunity to influence the development process for the product. 
-You can report UI issues and CLI errors, submit bug reports, and provide general feedback about the product to the team via [email](mailto::rob@neuralmagic.com) or via [GitHub Issues](https://github.com/neuralmagic/sparsify/issues).
+You can report UI issues and CLI errors, submit bug reports, and provide general feedback about the product to the team via the [nm-sparsify Slack Channel](https://join.slack.com/t/discuss-neuralmagic/shared_invite/zt-1xkdlzwv9-2rvS6yQcCs7VDNUcWxctnw), [email](mailto::rob@neuralmagic.com) or via [GitHub Issues](https://github.com/neuralmagic/sparsify/issues).
 As an alpha release, limited support is provided through the community with GitHub Issues and Slack, APIs and UIs are subject to change, and the product is not yet ready for production use.
 Thank you for your interest and support!*
 
@@ -114,7 +115,7 @@ An account is required to manage your experiments and API keys.
 Visit the [Neural Magic's Web App Platform](https://account.neuralmagic.com/signup) and create an account by entering your email, name, and a unique password. 
 If you already have a Neural Magic Account, [sign in](https://account.neuralmagic.com/signin) with your email.
 
-For more details, see the [Cloud User Guide](https://github.com/neuralmagic/sparsify/docs/cloud-user-guide.md)
+For more details, see the [Sparsify Cloud User Guide](https://github.com/neuralmagic/sparsify/docs/cloud-user-guide.md).
 
 ### Install Sparsify
 
@@ -130,26 +131,26 @@ For more details and system/hardware requirements, see the [Installation](#Insta
 ### Login to Sparsify
 
 With Sparsify installed on your training hardware, you'll need to authorize the local CLI to access your account.
-This is done by running the `sparsify login` command and providing your API key.
-Locate your API key on the home page of the [Cloud](https://apps.neuralmagic.com/sparsify) under the **'Get set up'** modal.
+This is done by running the `sparsify.login` command and providing your API key.
+Locate your API key on the home page of the [Sparsify Cloud](https://apps.neuralmagic.com/sparsify) under the **'Get set up'** modal.
 Once you have located this, copy the command or the API key itself and run the following command:
 
 ```bash
-sparsify login API_KEY
+sparsify.login API_KEY
 ````
 
-For more details on locating the API_KEY, see the [Cloud User Guide](https://github.com/neuralmagic/sparsify/docs/cloud-user-guide.md).
+For more details on locating the API_KEY, see the [Sparsify Cloud User Guide](https://github.com/neuralmagic/sparsify/docs/cloud-user-guide.md).
 
-For more details on the `sparsify login` command, see the [CLI/API Guide](https://github.com/neuralmagic/sparsify/docs/cli-api-guide.md).
+For more details on the `sparsify.login` command, see the [CLI/API Guide](https://github.com/neuralmagic/sparsify/docs/cli-api-guide.md).
 
 ### Run an Experiment
 
 Experiments are the core of sparsifying a model.
-They are the process of applying sparsification algorithms in one-shot, training aware, or sparse transfer to a dataset and model.
+They are the process of applying sparsification algorithms in one-shot, training-aware, or sparse-transfer to a dataset and model.
 All experiments are run locally on your training hardware and can be synced with the cloud for further analysis and comparison.
 To run an experiment, you can use either the CLI or the API depending on your use case.
-The Cloud provides a UI for exploring hyperparameters, predicting performance, and generating the desired CLI/API command.
-For more info on generating commands from the Cloud, see the [Cloud User Guide](https://github.com/neuralmagic/sparsify/docs/cloud-user-guide.md).
+The Sparsify Cloud provides a UI for exploring hyperparameters, predicting performance, and generating the desired CLI/API command.
+For more info on generating commands from the Sparsify Cloud, see the [Sparsify Cloud User Guide](https://github.com/neuralmagic/sparsify/docs/cloud-user-guide.md).
 
 The general command for running an experiment is:
 
@@ -161,7 +162,7 @@ Where the values for each of the arguments follow these general rules:
 - EXPERIMENT_TYPE: one of `one-shot`, `training-aware`, or `sparse-transfer`; see the examples below for more details or the [CLI/API Guide](https://github.com/neuralmagic/sparsify/docs/cli-api-guide.md).
 - USE_CASE: the use case you're solving for such as `image-classification`, `object-detection`, `text-classification`, a custom use case, etc. A full list of supported use cases for each experiment type can be found [here](https://github.com/neuralmagic/sparsify/docs/use-cases-guide.md).
 - MODEL: the model you want to sparsify which can be a model name such as `resnet50`, a stub from the [SparseZoo](https://sparsezoo.neuralmagic.com), or a path to a local model. For one-shot, currently the model must be in an ONNX format. For training-aware and sparse-transfer, the model must be in a PyTorch format. More details on model formats can be found [here](https://github.com/neuralmagic/sparsify/docs/models-guide.md).
-- DATA: the dataset you want to use to the sparsify the model. This can be a dataset name such as `imagenette` or a path to a local dataset. Currently, one-shot only supports NPZ formatted datasets. Training aware and sparse transfer support PyTorch ImageFolder datasets for image classification, YOLOv5/v8 datasets for object detection and segmentation, and HuggingFace datasets for NLP/NLG. More details on dataset formats can be found [here](https://github.com/neuralmagic/sparsify/docs/datasets-guide.md).
+- DATA: the dataset you want to use to the sparsify the model. This can be a dataset name such as `imagenette` or a path to a local dataset. Currently, one-shot only supports NPZ formatted datasets. Training-Aware and sparse-transfer support PyTorch ImageFolder datasets for image classification, YOLOv5/v8 datasets for object detection and segmentation, and HuggingFace datasets for NLP/NLG. More details on dataset formats can be found [here](https://github.com/neuralmagic/sparsify/docs/datasets-guide.md).
 - OPTIM_LEVEL: the desired sparsification level from 0 (none) to 1 (max). The general rule is that 0 is the baseline model, <0.3 only quantizes the model, 0.3-1.0 increases the sparsity of the model and applies quantization. More details on sparsification levels can be found [here](https://github.com/neuralmagic/sparsify/docs/optim-levels-guide.md).
 
 #### Running One-Shot
@@ -171,7 +172,7 @@ Where the values for each of the arguments follow these general rules:
 | **++**   | **+++++**            | **+++**  |
 
 One-Shot experiments are the quickest way to create a faster and smaller version of your model.
-The algorithms are applied to the model post training utilizing a calibration dataset, so they result in no further training time and much faster sparsification times compared with training aware experiments.
+The algorithms are applied to the model post training utilizing a calibration dataset, so they result in no further training time and much faster sparsification times compared with training-aware experiments.
 
 Generally, one-shot experiments result in a 3-5x speedup with minimal accuracy loss.
 They are ideal for when you want to quickly sparsify your model and don't have a lot of time to spend on the sparsification process.
@@ -186,19 +187,19 @@ NLP Example:
 sparsify.run one-shot --use-case text_classification --model bert-base --data sst2 --optim-level 0.5
 ```
 
-#### Running Sparse Transfer
+#### Running Sparse-Transfer
 
 | Sparsity | Sparsification Speed | Accuracy  |
 |----------|----------------------|-----------|
 | **++++** | **++++**             | **+++++** |
 
-Sparse Transfer experiments are the second quickest way to create a faster and smaller model for your dataset. 
-Sparse, foundational models are sparsified in a training aware manner on a large dataset such as ImageNet.
+Sparse-Transfer experiments are the second quickest way to create a faster and smaller model for your dataset. 
+Sparse, foundational models are sparsified in a training-aware manner on a large dataset such as ImageNet.
 Then, the sparse patterns are transferred to your dataset through a fine-tuning process.
 
-Generally, sparse transfer experiments result in a 5-10x speedup with minimal accuracy loss.
+Generally, sparse-transfer experiments result in a 5-10x speedup with minimal accuracy loss.
 They are ideal when a sparse model already exists for your use case, and you want to quickly utilize it for your dataset.
-Note, the model argument is optional for sparse transfer experiments as Sparsify will select the best one from the SparseZoo for your use case if not supplied.
+Note, the model argument is optional for sparse-transfer experiments as Sparsify will select the best one from the SparseZoo for your use case if not supplied.
 
 CV Example:
 ```bash
@@ -210,19 +211,19 @@ NLP Example:
 sparsify.run sparse-transfer --use-case text_classification --data sst2 --optim-level 0.5
 ```
 
-#### Running Training Aware
+#### Running Training-Aware
 
 | Sparsity  | Sparsification Speed  | Accuracy  |
 |-----------|-----------------------|-----------|
 | **+++++** | **++**                | **+++++** |
 
-Training Aware experiments are the most accurate way to create a faster and smaller model for your dataset.
+Training-Aware experiments are the most accurate way to create a faster and smaller model for your dataset.
 The algorithms are applied to the model during training, so they offer the best possible recovery of accuracy.
 However, they do require additional training time and hyperparameter tuning to achieve the best results.
 
-Generally, training aware experiments result in a 6-12x speedup with minimal accuracy loss.
+Generally, training-aware experiments result in a 6-12x speedup with minimal accuracy loss.
 They are ideal when you have the time to train a model, have a custom model, or want to achieve the best possible accuracy.
-Note, the model argument is optional for sparse transfer experiments as Sparsify will select the best one from the SparseZoo for your use case if not supplied.
+Note, the model argument is optional for sparse-transfer experiments as Sparsify will select the best one from the SparseZoo for your use case if not supplied.
 
 CV Example:
 ```bash

@@ -58,7 +58,7 @@ from sparsify.utils import (
     SparsifyClient,
     UserInfo,
     experiment_initialized,
-    get_non_existent_yaml_filename,
+    get_non_existent_filename,
     set_log_level,
 )
 
@@ -165,7 +165,7 @@ def init(
     working_dir: Path = Path(working_dir)
     working_dir.mkdir(parents=True, exist_ok=True)
     analysis_file_path = str(
-        get_non_existent_yaml_filename(working_dir=working_dir, filename="analysis")
+        get_non_existent_filename(parent_dir=working_dir, filename="analysis.yaml")
     )
     analysis = ModelAnalysis.create(model)
     analysis.yaml(file_path=analysis_file_path)

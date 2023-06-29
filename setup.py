@@ -42,8 +42,8 @@ _deps = [
 ]
 _nm_deps = [
     f"{'sparsezoo' if is_release else 'sparsezoo-nightly'}~={version_nm_deps}",
-    f"{'sparseml' if is_release else 'sparseml-nightly'}[torchvision,transformers,yolov5]~={version_nm_deps}",  # noqa E501
-    f"{'deepsparse' if is_release else 'deepsparse-nightly'}~={version_nm_deps}",
+    f"{'sparseml' if is_release else 'sparseml-nightly'}[torchvision]~={version_nm_deps}",  # noqa E501
+    f"{'deepsparse[server]' if is_release else 'deepsparse-nightly[server]'}~={version_nm_deps}",  # noqa E501
 ]
 
 
@@ -52,6 +52,7 @@ _dev_deps = [
     "flake8>=3.8.3",
     "isort>=5.7.0",
     "pytest>=6.0.0",
+    "pytest-lazy-fixture>=0.6.3",
     "wheel>=0.36.2",
     "fastai>=2.7.7",
 ]
@@ -82,6 +83,7 @@ def _setup_entry_points() -> Dict:
             "sparsify.login=sparsify.login:main",
             "sparsify.init=sparsify.init:main",
             "sparsify.apply=sparsify.apply:main",
+            "sparsify.package=sparsify.cli.package_cli:main",
         ]
     }
 

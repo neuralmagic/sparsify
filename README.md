@@ -105,7 +105,7 @@ We'll show you how to:
 1. Create a Neural Magic Account.
 2. Install Sparsify in your local training environment.
 3. Login utilizing your API key.
-4. Run your first Experiment.
+4. Run an Experiment.
 5. Compare the Experiment results.
 
 ### Create a Neural Magic Account

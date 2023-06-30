@@ -81,7 +81,7 @@ To empower you in compressing models, Sparsify is made up of two components: the
 The Sparsify Cloud is a web application that allows you to create and manage Sparsify Experiments, explore hyperparameters, predict performance, and compare results across both Experiments and deployment scenarios.
 The Sparsify CLI/API is a Python package that allows you to run Sparsify Experiments locally, sync with the Sparsify Cloud, and integrate into your own workflows.
 
-To get started immediately, [create an account](https://account.neuralmagic.com/signup) and then check out the [Installation](https://github.com/neuralmagic/sparsify/edit/Sparsify-Alpha-README/README.md#installation) and [Quick Start](https://github.com/neuralmagic/sparsify/edit/Sparsify-Alpha-README/README.md#quick-start) sections of this README.
+To get started immediately, [create an account](https://account.neuralmagic.com/signup) and then check out the [Installation](#Installation) and [Quick Start](#quick-start) sections of this README.
 With all of that setup, sparsifying your models is as easy as:
 
 ```bash
@@ -131,7 +131,7 @@ An account is required to manage your Experiments and API keys.
 Visit the [Neural Magic's Web App Platform](https://account.neuralmagic.com/signup) and create an account by entering your email, name, and a unique password. 
 If you already have a Neural Magic Account, [sign in](https://account.neuralmagic.com/signin) with your email.
 
-For more details, see the [Sparsify Cloud User Guide](https://github.com/neuralmagic/sparsify/docs/cloud-user-guide.md).
+For more details, see the [Sparsify Cloud User Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/cloud-user-guide.md).
 
 ### Install Sparsify
 
@@ -155,9 +155,9 @@ Once you have located this, copy the command or the API key itself and run the f
 sparsify.login API_KEY
 ````
 
-For more details on locating the API_KEY, see the [Sparsify Cloud User Guide](https://github.com/neuralmagic/sparsify/docs/cloud-user-guide.md).
+For more details on locating the API_KEY, see the [Sparsify Cloud User Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/cloud-user-guide.md).
 
-For more details on the `sparsify.login` command, see the [CLI/API Guide](https://github.com/neuralmagic/sparsify/docs/cli-api-guide.md).
+For more details on the `sparsify.login` command, see the [CLI/API Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/cli-api-guide.md).
 
 ### Run an Experiment
 
@@ -166,7 +166,7 @@ They are the process of applying sparsification algorithms in One-Shot, Training
 All Experiments are run locally on your training hardware and can be synced with the cloud for further analysis and comparison.
 To run an Experiment, you can use either the CLI or the API depending on your use case.
 The Sparsify Cloud provides a UI for exploring hyperparameters, predicting performance, and generating the desired CLI/API command.
-For more info on generating commands from the Sparsify Cloud, see the [Sparsify Cloud User Guide](https://github.com/neuralmagic/sparsify/docs/cloud-user-guide.md).
+For more info on generating commands from the Sparsify Cloud, see the [Sparsify Cloud User Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/cloud-user-guide.md).
 
 The general command for running an Experiment is:
 
@@ -175,11 +175,11 @@ sparsify.run EXPERIMENT_TYPE --use-case USE_CASE --model MODEL --data DATA --opt
 ```
 
 Where the values for each of the arguments follow these general rules:
-- EXPERIMENT_TYPE: one of `one-shot`, `training-aware`, or `sparse-transfer`; see the examples below for more details or the [CLI/API Guide](https://github.com/neuralmagic/sparsify/docs/cli-api-guide.md).
-- USE_CASE: the use case you're solving for such as `image-classification`, `object-detection`, `text-classification`, a custom use case, etc. A full list of supported use cases for each Experiment type can be found [here](https://github.com/neuralmagic/sparsify/docs/use-cases-guide.md).
-- MODEL: the model you want to sparsify which can be a model name such as `resnet50`, a stub from the [SparseZoo](https://sparsezoo.neuralmagic.com), or a path to a local model. For One-Shot, currently the model must be in an ONNX format. For Training-Aware and Sparse-Transfer, the model must be in a PyTorch format. More details on model formats can be found [here](https://github.com/neuralmagic/sparsify/docs/models-guide.md).
-- DATA: the dataset you want to use to the sparsify the model. This can be a dataset name such as `imagenette` or a path to a local dataset. Currently, One-Shot only supports NPZ formatted datasets. Training-Aware and Sparse-Transfer support PyTorch ImageFolder datasets for image classification, YOLOv5/v8 datasets for object detection and segmentation, and HuggingFace datasets for NLP/NLG. More details on dataset formats can be found [here](https://github.com/neuralmagic/sparsify/docs/datasets-guide.md).
-- OPTIM_LEVEL: the desired sparsification level from 0 (none) to 1 (max). The general rule is that 0 is the baseline model, <0.3 only quantizes the model, 0.3-1.0 increases the sparsity of the model and applies quantization. More details on sparsification levels can be found [here](https://github.com/neuralmagic/sparsify/docs/optim-levels-guide.md).
+- EXPERIMENT_TYPE: one of `one-shot`, `training-aware`, or `sparse-transfer`; see the examples below for more details or the [CLI/API Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/cli-api-guide.md).
+- USE_CASE: the use case you're solving for such as `image-classification`, `object-detection`, `text-classification`, a custom use case, etc. A full list of supported use cases for each Experiment type can be found [here](https://github.com/neuralmagic/sparsify/blob/main/docs/use-cases-guide.md).
+- MODEL: the model you want to sparsify which can be a model name such as `resnet50`, a stub from the [SparseZoo](https://sparsezoo.neuralmagic.com), or a path to a local model. For One-Shot, currently the model must be in an ONNX format. For Training-Aware and Sparse-Transfer, the model must be in a PyTorch format. More details on model formats can be found [here](https://github.com/neuralmagic/sparsify/blob/main/docs/models-guide.md).
+- DATA: the dataset you want to use to the sparsify the model. This can be a dataset name such as `imagenette` or a path to a local dataset. Currently, One-Shot only supports NPZ formatted datasets. Training-Aware and Sparse-Transfer support PyTorch ImageFolder datasets for image classification, YOLOv5/v8 datasets for object detection and segmentation, and HuggingFace datasets for NLP/NLG. More details on dataset formats can be found [here](https://github.com/neuralmagic/sparsify/blob/main/docs/datasets-guide.md).
+- OPTIM_LEVEL: the desired sparsification level from 0 (none) to 1 (max). The general rule is that 0 is the baseline model, <0.3 only quantizes the model, 0.3-1.0 increases the sparsity of the model and applies quantization. More details on sparsification levels can be found [here](https://github.com/neuralmagic/sparsify/blob/main/docs/optim-levels-guide.md).
 
 #### Running One-Shot
 
@@ -188,7 +188,7 @@ Where the values for each of the arguments follow these general rules:
 | **++**   | **+++++**            | **+++**  |
 
 One-Shot Experiments are the quickest way to create a faster and smaller version of your model.
-The algorithms are applied to the model post training utilizing a calibration dataset, so they result in no further training time and much faster sparsification times compared with Training-Aware Experiments.
+The algorithms are applied to the model post-training utilizing a calibration dataset, so they result in no further training time and much faster sparsification times compared with Training-Aware Experiments.
 
 Generally, One-Shot Experiments result in a 3-5x speedup with minimal accuracy loss.
 They are ideal for when you want to quickly sparsify your model and don't have a lot of time to spend on the sparsification process.
@@ -251,16 +251,55 @@ NLP Example:
 sparsify.run training-aware --use-case text_classification --model bert-base --data sst2 --optim-level 0.5
 ```
 
-### Compare the Results
+### Compare the Experiment results
 
-Once you have run your Experiment, you can compare the results printed out to the console.
+Once you have run your Experiment, you can compare the results printed out to the console using the `deepsparse.benchmark` command. 
 In the near future, you will be able to compare the results in the Cloud, measure other scenarios, and compare the results to other Experiments.
+
+
+To compare the results of your Experiment with the original dense baseline model, you can use the `deepsparse.benchmark` command with your original model and the new optimized model on your deployment hardware. Models that have been optimized using Sparsify will generally run performantly on DeepSparse, Neural Magic's sparsity-aware CPU inference runtime. 
+
+
+For more information on benchmarking, see the [DeepSparse Benchmarking User Guide](https://github.com/neuralmagic/deepsparse/blob/main/docs/user-guide/deepsparse-benchmarking.md).
+
+Here is an example of a `deepsparse.benchmark`command: 
+
+```
+deepsparse.benchmark zoo:nlp/sentiment_analysis/obert-base/pytorch/huggingface/sst2/pruned90_quant-none --scenario sync
+
+```
 
 The results will look something like this:
 ```bash
-Sparsify Results:
-TODO
+2023-06-30 15:20:41 deepsparse.benchmark.benchmark_model INFO     Thread pinning to cores enabled
+downloading...: 100%|████████████████████████| 105M/105M [00:18<00:00, 5.81MB/s]
+DeepSparse, Copyright 2021-present / Neuralmagic, Inc. version: 1.6.0.20230629 COMMUNITY | (fc8b788a) (release) (optimized) (system=avx512, binary=avx512)
+[7ffba5a84700 >WARN<  operator() ./src/include/wand/utility/warnings.hpp:14] Generating emulated code for quantized (INT8) operations since no VNNI instructions were detected. Set NM_FAST_VNNI_EMULATION=1 to increase performance at the expense of accuracy.
+2023-06-30 15:21:13 deepsparse.benchmark.benchmark_model INFO     deepsparse.engine.Engine:
+	onnx_file_path: /home/rahul/.cache/sparsezoo/neuralmagic/obert-base-sst2_wikipedia_bookcorpus-pruned90_quantized/model.onnx
+	batch_size: 1
+	num_cores: 10
+	num_streams: 1
+	scheduler: Scheduler.default
+	fraction_of_supported_ops: 0.9981
+	cpu_avx_type: avx512
+	cpu_vnni: False
+2023-06-30 15:21:13 deepsparse.utils.onnx INFO     Generating input 'input_ids', type = int64, shape = [1, 128]
+2023-06-30 15:21:13 deepsparse.utils.onnx INFO     Generating input 'attention_mask', type = int64, shape = [1, 128]
+2023-06-30 15:21:13 deepsparse.utils.onnx INFO     Generating input 'token_type_ids', type = int64, shape = [1, 128]
+2023-06-30 15:21:13 deepsparse.benchmark.benchmark_model INFO     Starting 'singlestream' performance measurements for 10 seconds
+Original Model Path: zoo:nlp/sentiment_analysis/obert-base/pytorch/huggingface/sst2/pruned90_quant-none
+Batch Size: 1
+Scenario: sync
+Throughput (items/sec): 134.5611
+Latency Mean (ms/batch): 7.4217
+Latency Median (ms/batch): 7.4245
+Latency Std (ms/batch): 0.0264
+Iterations: 1346
 ```
+
+*Note: performance improvement is not guaranteed across all runtimes and hardware types.*
+
 
 ### Package for Deployment
 

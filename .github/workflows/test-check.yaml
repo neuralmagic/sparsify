@@ -20,7 +20,6 @@ jobs:
           fetch-depth: 0
       - name: "Checking if sparsify python code was changed"
         id: python-check
-        # TODO: delete sparsify.alpha reference after merge
         run: >
           ((git diff --name-only origin/main HEAD | grep -E "[src|tests]/sparsify|setup.py")
           || (echo $GITHUB_REF | grep -E "refs/heads/[release/|main]"))

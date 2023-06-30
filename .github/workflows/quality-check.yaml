@@ -2,12 +2,10 @@ name: Quality Checks
 on: 
   push:
     branches:
-      - sparsify.alpha  # TODO: delete after merge
       - main
       - 'release/*'
   pull_request:
     branches:
-      - sparsify.alpha  # TODO: delete after merge
       - main
       - 'release/*'
 jobs:

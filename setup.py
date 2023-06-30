@@ -32,7 +32,7 @@ _PACKAGE_NAME = "sparsify" if is_release else "sparsify-nightly"
 
 
 _deps = [
-    "pydantic>=1.8.2",
+    "pydantic>=1.8.2,<2.0.0",
     "pyyaml>=5.0.0",
     "click~=8.0.0",
     "tensorboard>=2.0.0",

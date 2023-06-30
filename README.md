@@ -69,7 +69,7 @@ To get started immediately, [create an account](https://account.neuralmagic.com/
 With all of that setup, sparsifying your models is as easy as:
 
 ```bash
-sparsify.run one-shot --use-case image_classification --model resnet50 --data imagenette --optim-level 0.5
+sparsify.run sparse-transfer --use-case image-classification --data imagenette --optim-level 50 --train-kwargs '{"dataset": "imagenette"}'
 ```
 
 <br>

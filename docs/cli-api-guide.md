@@ -13,7 +13,6 @@ pip install sparsify
 ```
 
 For more details and system/hardware requirements, see the [Installation](https://github.com/neuralmagic/sparsify#installation) section.
-https://github.com/neuralmagic/deepsparse/blob/main/ 
 
 ## Login to Sparsify
 

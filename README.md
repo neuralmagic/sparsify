@@ -81,7 +81,7 @@ To empower you in compressing models, Sparsify is made up of two components: the
 The Sparsify Cloud is a web application that allows you to create and manage Sparsify Experiments, explore hyperparameters, predict performance, and compare results across both Experiments and deployment scenarios.
 The Sparsify CLI/API is a Python package that allows you to run Sparsify Experiments locally, sync with the Sparsify Cloud, and integrate into your own workflows.
 
-To get started immediately, [create an account](https://account.neuralmagic.com/signup) and then check out the [Installation](https://github.com/neuralmagic/sparsify/blob/main/README.md#installation) and [Quick Start](https://github.com/neuralmagic/sparsify/blob/main/README.md#quick-start) sections of this README.
+To get started immediately, [create an account](https://account.neuralmagic.com/signup) and then check out the [Installation](#Installation) and [Quick Start](#quick-start) sections of this README.
 With all of that setup, sparsifying your models is as easy as:
 
 ```bash
@@ -131,7 +131,7 @@ An account is required to manage your Experiments and API keys.
 Visit the [Neural Magic's Web App Platform](https://account.neuralmagic.com/signup) and create an account by entering your email, name, and a unique password. 
 If you already have a Neural Magic Account, [sign in](https://account.neuralmagic.com/signin) with your email.
 
-For more details, see the [Sparsify Cloud User Guide](https://github.com/neuralmagic/sparsify/docs/cloud-user-guide.md).
+For more details, see the [Sparsify Cloud User Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/cloud-user-guide.md).
 
 ### Install Sparsify
 
@@ -188,7 +188,7 @@ Where the values for each of the arguments follow these general rules:
 | **++**   | **+++++**            | **+++**  |
 
 One-Shot Experiments are the quickest way to create a faster and smaller version of your model.
-The algorithms are applied to the model post training utilizing a calibration dataset, so they result in no further training time and much faster sparsification times compared with Training-Aware Experiments.
+The algorithms are applied to the model post-training utilizing a calibration dataset, so they result in no further training time and much faster sparsification times compared with Training-Aware Experiments.
 
 Generally, One-Shot Experiments result in a 3-5x speedup with minimal accuracy loss.
 They are ideal for when you want to quickly sparsify your model and don't have a lot of time to spend on the sparsification process.
@@ -251,16 +251,55 @@ NLP Example:
 sparsify.run training-aware --use-case text_classification --model bert-base --data sst2 --optim-level 0.5
 ```
 
-### Compare the Results
+### Compare the Experiment results
 
-Once you have run your Experiment, you can compare the results printed out to the console.
+Once you have run your Experiment, you can compare the results printed out to the console using the `deepsparse.benchmark` command. 
 In the near future, you will be able to compare the results in the Cloud, measure other scenarios, and compare the results to other Experiments.
+
+
+To compare the results of your Experiment with the original dense baseline model, you can use the `deepsparse.benchmark` command with your original model and the new optimized model on your deployment hardware. Models that have been optimized using Sparsify will generally run performantly on DeepSparse, Neural Magic's sparsity-aware CPU inference runtime. 
+
+
+For more information on benchmarking, see the [DeepSparse Benchmarking User Guide](https://github.com/neuralmagic/deepsparse/blob/main/docs/user-guide/deepsparse-benchmarking.md).
+
+Here is an example of a `deepsparse.benchmark`command: 
+
+```
+deepsparse.benchmark zoo:nlp/sentiment_analysis/obert-base/pytorch/huggingface/sst2/pruned90_quant-none --scenario sync
+
+```
 
 The results will look something like this:
 ```bash
-Sparsify Results:
-TODO
+2023-06-30 15:20:41 deepsparse.benchmark.benchmark_model INFO     Thread pinning to cores enabled
+downloading...: 100%|████████████████████████| 105M/105M [00:18<00:00, 5.81MB/s]
+DeepSparse, Copyright 2021-present / Neuralmagic, Inc. version: 1.6.0.20230629 COMMUNITY | (fc8b788a) (release) (optimized) (system=avx512, binary=avx512)
+[7ffba5a84700 >WARN<  operator() ./src/include/wand/utility/warnings.hpp:14] Generating emulated code for quantized (INT8) operations since no VNNI instructions were detected. Set NM_FAST_VNNI_EMULATION=1 to increase performance at the expense of accuracy.
+2023-06-30 15:21:13 deepsparse.benchmark.benchmark_model INFO     deepsparse.engine.Engine:
+	onnx_file_path: /home/rahul/.cache/sparsezoo/neuralmagic/obert-base-sst2_wikipedia_bookcorpus-pruned90_quantized/model.onnx
+	batch_size: 1
+	num_cores: 10
+	num_streams: 1
+	scheduler: Scheduler.default
+	fraction_of_supported_ops: 0.9981
+	cpu_avx_type: avx512
+	cpu_vnni: False
+2023-06-30 15:21:13 deepsparse.utils.onnx INFO     Generating input 'input_ids', type = int64, shape = [1, 128]
+2023-06-30 15:21:13 deepsparse.utils.onnx INFO     Generating input 'attention_mask', type = int64, shape = [1, 128]
+2023-06-30 15:21:13 deepsparse.utils.onnx INFO     Generating input 'token_type_ids', type = int64, shape = [1, 128]
+2023-06-30 15:21:13 deepsparse.benchmark.benchmark_model INFO     Starting 'singlestream' performance measurements for 10 seconds
+Original Model Path: zoo:nlp/sentiment_analysis/obert-base/pytorch/huggingface/sst2/pruned90_quant-none
+Batch Size: 1
+Scenario: sync
+Throughput (items/sec): 134.5611
+Latency Mean (ms/batch): 7.4217
+Latency Median (ms/batch): 7.4245
+Latency Std (ms/batch): 0.0264
+Iterations: 1346
 ```
+
+*Note: performance improvement is not guaranteed across all runtimes and hardware types.*
+
 
 ### Package for Deployment
 

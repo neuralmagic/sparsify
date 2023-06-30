@@ -12,6 +12,13 @@ jobs:
   quality-check:
     runs-on: ubuntu-latest
     steps:
+      - name: "Python Version"
+        run: python3 --version
+
+      - name: "Upgrade pip and output version"
+        run: |
+          python3 -m pip install --upgrade pip
+          pip3 --version
       - uses: actions/checkout@v2
       - uses: actions/checkout@v2
         with:
@@ -29,12 +36,7 @@ jobs:
         run: pip3 install sparseml/
       - name: "Clean sparseml directory"
         run: rm -r sparseml/
-      - uses: actions/setup-node@v2
-        with:
-          node-version: '14'
       - name: "⚙️ Install python dependencies"
         run: pip3 install .[dev]
-      - name: "⚙️ Install yarn dependencies"
-        run: yarn install
       - name: "🧹 Running quality checks"
         run: make quality

@@ -58,7 +58,7 @@ To run Sparsify for optimization:
 
 3. Click **APPLY**.
 
-    **Note:** If you need to change these settings in the future, you can do so by changing the [Settings](https://docs.neuralmagic.com/sparsify/main/source/userguide/07-settings.html). However, changing these values later will not change the modifiers on the Optimization screen.
+    **Note:** If you need to change these settings in the future, you can do so by changing the [Settings](https://docs.neuralmagic.com/archive/sparsify/main/source/userguide/07-settings.html). However, changing these values later will not change the modifiers on the Optimization screen.
 
 The Optimization screen is displayed. For example:
 
@@ -160,10 +160,10 @@ The training summary lays out all of the modifiers that are running and when tho
 
 ## Exporting
 
-When you are satisfied with the optimization setting, click the **EXPORT** button to export a configuration file and integrate code into your training, as described in the [Integrate](https://docs.neuralmagic.com/sparsify/main/source/userguide/06-integrate.html) section.
+When you are satisfied with the optimization setting, click the **EXPORT** button to export a configuration file and integrate code into your training, as described in the [Integrate](https://docs.neuralmagic.com/archive/sparsify/main/source/userguide/06-integrate.html) section.
 
 ---
 **Next steps...**
 
-Continue by [Benchmarking](https://docs.neuralmagic.com/sparsify/main/source/userguide/05a-benchmark.html).
-Otherwise, you are ready to [Integrate](https://docs.neuralmagic.com/sparsify/main/source/userguide/06-integrate.html).
+Continue by [Benchmarking](https://docs.neuralmagic.com/archive/sparsify/main/source/userguide/05a-benchmark.html).
+Otherwise, you are ready to [Integrate](https://docs.neuralmagic.com/archive/sparsify/main/source/userguide/06-integrate.html).

@@ -35,4 +35,4 @@ You can choose the PyTorch or TensorFlow framework, and the file code will chang
 ---
 **Next step...**
 
-Explore the [Optimization Config File and Code for Optimization](https://docs.neuralmagic.com/sparsify/main/source/userguide/06a-optimize-config.html).
+Explore the [Optimization Config File and Code for Optimization](https://docs.neuralmagic.com/archive/sparsify/main/source/userguide/06a-optimize-config.html).

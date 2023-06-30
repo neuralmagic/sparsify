@@ -62,7 +62,7 @@ If further instructions are needed, consult the [SparseML's documentation on Exp
 
     The project name is used throughout Sparsify as a reference to your model. For example, if you create multiple projects using the same model, unique project names will enable you to differentiate.
 
-    **Note:** You can change the project name at any time by returning to this dialog or by changing the name in the [Settings](https://docs.neuralmagic.com/sparsify/main/source/userguide/07-settings.html).
+    **Note:** You can change the project name at any time by returning to this dialog or by changing the name in the [Settings](https://docs.neuralmagic.com/archive/sparsify/main/source/userguide/07-settings.html).
 
     <kbd><img src="images/image_10.jpg" alt="(Project name and description)" width="300" height="240" /></kbd>
 
@@ -70,4 +70,4 @@ If further instructions are needed, consult the [SparseML's documentation on Exp
 
 5. Click **NEXT**.
 
-6. Continue by [Profiling Your Model](https://docs.neuralmagic.com/sparsify/main/source/userguide/04a-profiling-your-model.html).
+6. Continue by [Profiling Your Model](https://docs.neuralmagic.com/archive/sparsify/main/source/userguide/04a-profiling-your-model.html).

@@ -36,7 +36,7 @@ limitations under the License.
 <h3> ML model optimization product to accelerate inference. </h3>
 
 <p>
-    <a href="https://docs.neuralmagic.com/sparsify/">
+    <a href="https://docs.neuralmagic.com/archive/sparsify/">
         <img alt="Documentation" src="https://img.shields.io/badge/documentation-darkred?&style=for-the-badge&logo=read-the-docs" height=25>
     </a>
     <a href="https://join.slack.com/t/discuss-neuralmagic/shared_invite/zt-q1a1cnvo-YBoICSIw3L1dmQpjBeDurQ/">
@@ -270,7 +270,7 @@ Landing soon!
 
 ### Learning More
 
-- Documentation: [SparseML,](https://docs.neuralmagic.com/sparseml/) [SparseZoo,](https://docs.neuralmagic.com/sparsezoo/) [Sparsify,](https://docs.neuralmagic.com/sparsify/) [DeepSparse](https://docs.neuralmagic.com/deepsparse/)
+- Documentation: [SparseML,](https://docs.neuralmagic.com/sparseml/) [SparseZoo,](https://docs.neuralmagic.com/sparsezoo/) [Sparsify,](https://docs.neuralmagic.com/archive/sparsify/) [DeepSparse](https://docs.neuralmagic.com/deepsparse/)
 - Neural Magic: [Blog,](https://www.neuralmagic.com/blog/) [Resources](https://www.neuralmagic.com/resources/)
 
 ### Release History

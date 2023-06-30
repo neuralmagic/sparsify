@@ -16,6 +16,7 @@
 import argparse
 from pathlib import Path
 
+from sparsezoo import Model
 from sparsify.login import import_sparsifyml_authenticated
 from sparsify.utils import constants
 
@@ -99,7 +100,7 @@ def main():
 
     one_shot.one_shot(
         task=args.task,
-        model_file=Path(args.model),
+        model_file=Path(_maybe_unwrap_zoo_stub(args.model)),
         dataset_dir=Path(args.dataset),
         num_samples=args.num_samples,
         deploy_dir=Path(args.deploy_dir),
@@ -107,6 +108,12 @@ def main():
         optim_level=args.optim_level,
         recipe_file=Path(args.recipe) if args.recipe is not None else None,
     )
+
+
+def _maybe_unwrap_zoo_stub(model_path: str) -> str:
+    if model_path.startswith("zoo:"):
+        return Model(model_path).onnx_model.path
+    return model_path
 
 
 if __name__ == "__main__":

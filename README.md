@@ -105,8 +105,22 @@ In this quick start, you will:
 3. [Install](#step-3-installation) Sparsify in your local training environment.
 4. [Log in](#step-4-sparsify-login) utilizing your API key.
 5. [Run an Experiment](#step-5-running-experiments).
-6. [Compare](#step-6-comparing-experiment-results) the Experiment results.
-7. [Deploy optimized models](#step-7-deploying-your-model-with-deepsparse) with DeepSpare (optional).
+	* Experiments Overview
+ 		* One-Shot Experiments
+   		* Sparse-Transfer Experiments
+     		* Training-Aware Experiments
+       * Command Syntax and Argument Guides
+      		* `EXPERIMENT_TYPE`
+        	* `USE_CASE`
+         	* `MODEL`
+        	* `DATA`
+        	* `OPTIM_LEVEL`   
+       * Example Commands by Experiment Type
+       		* Running One-Shot Experiments
+   		* Running Sparse-Transfer Experiments
+     		* Running Training-Aware Experiments		
+7. [Compare](#step-6-comparing-experiment-results) the Experiment results.
+8. [Deploy optimized models](#step-7-deploying-your-model-with-deepsparse) with DeepSpare (optional).
 
 When you finish this quick start, sparsifying your models is as easy as:
 
@@ -210,8 +224,7 @@ Generally, Training-Aware Experiments result in a 6-12x speedup with minimal acc
 They are ideal when you have the time to train a model, have a custom model, or want to achieve the best possible accuracy.
 Note, the model argument is optional for Sparse-Transfer Experiments, as Sparsify will select the best one from the SparseZoo for your use case if not supplied.
 
-```
-### Experiment Command Syntax and Arguments
+### Command Syntax and Arguments
 Now that you have learned about Experiments and the various types, you are ready to run an Experiment.
 Running Experiments uses the following general command:
 
@@ -219,16 +232,16 @@ Running Experiments uses the following general command:
 sparsify.run EXPERIMENT_TYPE --use-case USE_CASE --model MODEL --data DATA --optim-level OPTIM_LEVEL
 ```
 
-Where the values for each of the arguments follow these general rules:
-- EXPERIMENT_TYPE: one of `one-shot`, `training-aware`, or `sparse-transfer`; see the examples below for more details or the [CLI/API Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/cli-api-guide.md).
-- USE_CASE: the use case you're solving for such as `image-classification`, `object-detection`, `text-classification`, a custom use case, etc. A full list of supported use cases for each Experiment type can be found [here](https://github.com/neuralmagic/sparsify/blob/main/docs/use-cases-guide.md).
-- MODEL: the model you want to sparsify which can be a model name such as `resnet50`, a stub from the [SparseZoo](https://sparsezoo.neuralmagic.com), or a path to a local model. For One-Shot, currently, the model must be in an ONNX format. For Training-Aware and Sparse-Transfer, the model must be in a PyTorch format. More details on model formats can be found [here](https://github.com/neuralmagic/sparsify/blob/main/docs/models-guide.md).
-- DATA: the dataset you want to use to sparsify the model. This can be a dataset name such as `imagenette` or a path to a local dataset. Currently, One-Shot only supports NPZ-formatted datasets. Training-Aware and Sparse-Transfer support PyTorch ImageFolder datasets for image classification, YOLOv5/v8 datasets for object detection and segmentation, and HuggingFace datasets for NLP/NLG. More details on dataset formats can be found [here](https://github.com/neuralmagic/sparsify/blob/main/docs/datasets-guide.md).
-- OPTIM_LEVEL: the desired sparsification level from 0 (none) to 1 (max). The general rule is that 0 is the baseline model, <0.3 only quantizes the model, 0.3-1.0 increases the sparsity of the model and applies quantization. More details on sparsification levels can be found [here](https://github.com/neuralmagic/sparsify/blob/main/docs/optim-levels-guide.md).
+The values for each of the arguments follow these general rules:
+- [Details]**`EXPERIMENT_TYPE`**: one of `one-shot`, `training-aware`, or `sparse-transfer`.
+- [[Details]](https://github.com/neuralmagic/sparsify/blob/main/docs/use-cases-guide.md)**`USE_CASE`**: the use case you're solving for, such as `image-classification`, `object-detection`, `text-classification`, or a custom use case.
+- [[Details]](https://github.com/neuralmagic/sparsify/blob/main/docs/models-guide.md) **`MODEL`**: the model you want to sparsify which can be a model name such as `resnet50`, a stub from the [SparseZoo](https://sparsezoo.neuralmagic.com), or a path to a local model. For One-Shot, currently, the model must be in an ONNX format. For Training-Aware and Sparse-Transfer, the model must be in a PyTorch format.
+- [[Details]](https://github.com/neuralmagic/sparsify/blob/main/docs/datasets-guide.md)**`DATA`**: the dataset you want to use to sparsify the model. This can be a dataset name such as `imagenette` or a path to a local dataset. Currently, One-Shot only supports NPZ-formatted datasets. Training-Aware and Sparse-Transfer support PyTorch ImageFolder datasets for image classification, YOLOv5/v8 datasets for object detection and segmentation, and Hugging Face datasets for NLP/NLG.
+- [[Details]](https://github.com/neuralmagic/sparsify/blob/main/docs/optim-levels-guide.md)**`OPTIM_LEVEL`**: the desired sparsification level from 0 (none) to 1 (max). The general rule is that 0 is the baseline model, <0.3 only quantizes the model, 0.3-1.0 increases the sparsity of the model and applies quantization.
 
-### Experiment Example Commands by Type
+### Example Commands by Experiment Type
 
-Now that you have learned about the syntax and arguments, here are examples you may wish to run:
+Here are examples you may wish to run; pick your use case and see if you can successfully run your first experiment!
 
 #### Running One-Shot Experiments
 

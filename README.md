@@ -233,11 +233,11 @@ sparsify.run EXPERIMENT_TYPE --use-case USE_CASE --model MODEL --data DATA --opt
 ```
 
 The values for each of the arguments follow these general rules:
-- [**`EXPERIMENT_TYPE`**: one of `one-shot`, `training-aware`, or `sparse-transfer`.
-- [[Details]](https://github.com/neuralmagic/sparsify/blob/main/docs/use-cases-guide.md)**`USE_CASE`**: the use case you're solving for, such as `image-classification`, `object-detection`, `text-classification`, or a custom use case.
-- [[Details]](https://github.com/neuralmagic/sparsify/blob/main/docs/models-guide.md) **`MODEL`**: the model you want to sparsify which can be a model name such as `resnet50`, a stub from the [SparseZoo](https://sparsezoo.neuralmagic.com), or a path to a local model. For One-Shot, currently, the model must be in an ONNX format. For Training-Aware and Sparse-Transfer, the model must be in a PyTorch format.
-- [[Details]](https://github.com/neuralmagic/sparsify/blob/main/docs/datasets-guide.md)**`DATA`**: the dataset you want to use to sparsify the model. This can be a dataset name such as `imagenette` or a path to a local dataset. Currently, One-Shot only supports NPZ-formatted datasets. Training-Aware and Sparse-Transfer support PyTorch ImageFolder datasets for image classification, YOLOv5/v8 datasets for object detection and segmentation, and Hugging Face datasets for NLP/NLG.
-- [[Details]](https://github.com/neuralmagic/sparsify/blob/main/docs/optim-levels-guide.md)**`OPTIM_LEVEL`**: the desired sparsification level from 0 (none) to 1 (max). The general rule is that 0 is the baseline model, <0.3 only quantizes the model, 0.3-1.0 increases the sparsity of the model and applies quantization.
+- **`EXPERIMENT_TYPE`**: one of `one-shot`, `training-aware`, or `sparse-transfer`.
+- [[Guide]](https://github.com/neuralmagic/sparsify/blob/main/docs/use-cases-guide.md) **`USE_CASE`**: the use case you're solving for, such as `image-classification`, `object-detection`, `text-classification`, or a custom use case.
+- [[Guide]](https://github.com/neuralmagic/sparsify/blob/main/docs/models-guide.md) **`MODEL`**: the model you want to sparsify which can be a model name such as `resnet50`, a stub from the [SparseZoo](https://sparsezoo.neuralmagic.com), or a path to a local model. For One-Shot, currently, the model must be in an ONNX format. For Training-Aware and Sparse-Transfer, the model must be in a PyTorch format.
+- [[Guide]](https://github.com/neuralmagic/sparsify/blob/main/docs/datasets-guide.md) **`DATA`**: the dataset you want to use to sparsify the model. This can be a dataset name such as `imagenette` or a path to a local dataset. Currently, One-Shot only supports NPZ-formatted datasets. Training-Aware and Sparse-Transfer support PyTorch ImageFolder datasets for image classification, YOLOv5/v8 datasets for object detection and segmentation, and Hugging Face datasets for NLP/NLG.
+- [[Guide]](https://github.com/neuralmagic/sparsify/blob/main/docs/optim-levels-guide.md) **`OPTIM_LEVEL`**: the desired sparsification level from 0 (none) to 1 (max). The general rule is that 0 is the baseline model, <0.3 only quantizes the model, 0.3-1.0 increases the sparsity of the model and applies quantization.
 
 ### Example Commands by Experiment Type
 

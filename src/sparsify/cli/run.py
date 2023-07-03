@@ -123,10 +123,12 @@ def _parse_run_args_to_auto(sparse_transfer: bool, **kwargs):
         run_mode="sparse_transfer" if sparse_transfer else "training_aware",
     )
 
+
 def _maybe_unwrap_zoo_stub(model_path: str) -> str:
     if model_path.startswith("zoo:"):
         return Model(model_path).onnx_model.path
     return model_path
+
 
 if __name__ == "__main__":
     main()

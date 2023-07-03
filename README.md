@@ -31,9 +31,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-<h1><img alt="tool icon" src="https://neuralmagic.com/wp-content/uploads/2023/03/Sparsify.svg" />&nbsp;&nbsp;Sparsify [Alpha]</h1>
+<h1><img alt="Sparsify tool icon" src="https://neuralmagic.com/wp-content/uploads/2023/03/Sparsify.svg" />&nbsp;&nbsp;Sparsify [Alpha]</h1>
 
-<h3> ML model optimization product to accelerate inference. </h3>
+<h3> ML model optimization product to accelerate inference </h3>
 
 <p>
     <a href="https://docs.neuralmagic.com/sparsify/">
@@ -73,6 +73,21 @@ limitations under the License.
 
 ![Logo](https://drive.google.com/uc?id=1XnlBKpRQdsnLC4IPoiCoihXJNFh8y7OL)
 
+## Introduction
+🚨 *July 2023: Sparsify's next generation is now in alpha as of version 1.6.0!*
+
+As of this update, support for [Sparsify's first generation](https://docs.neuralmagic.com/sparsify) has been deprecated. We highly recommend you try the alpha to get a sneak peek and influence the product's development process.
+
+Report UI issues and CLI errors, submit bug reports, and provide general feedback about the product to the team via the [nm-sparsify Slack Channel](https://join.slack.com/t/discuss-neuralmagic/shared_invite/zt-1xkdlzwv9-2rvS6yQcCs7VDNUcWxctnw), or via [GitHub Issues](https://github.com/neuralmagic/sparsify/issues). Alpha support is provided through those channels.
+
+🚨 *Sparsify Alpha Terms and Conditions*
+
+Sparsify Alpha is a pre-release version of Sparsify that is still in active development. The product is not yet ready for production use; APIs and UIs are subject to change. There may be bugs in the Alpha version, which we hope to have fixed before Beta and then a general Q3 2023 release. The feedback you provide on quality and usability helps us identify issues, fix them, and make Sparsify even better. This information is used internally by Neural Magic solely for that purpose. It is not shared or used in any other way.
+
+That being said, there is no cost to use this open-source alpha software. We are excited to share this release and hear what you think. Thank you in advance for your feedback and interest!
+
+
+
 ## Overview
 
 Sparsify enables you to accelerate inference without sacrificing accuracy by applying state-of-the-art pruning, quantization, and distillation algorithms to Neural Networks with a simple web app and one-command API calls. 
@@ -87,13 +102,6 @@ With all of that setup, sparsifying your models is as easy as:
 ```bash
 sparsify.run sparse-transfer --use-case image-classification --data imagenette --optim-level 0.5 --train-kwargs '{"dataset": "imagenette"}'
 ```
-
-<br>
-
-*🚨**Note**🚨: Sparsify is currently an alpha release, so you have the opportunity to influence the development process for the product. 
-You can report UI issues and CLI errors, submit bug reports, and provide general feedback about the product to the team via the [nm-sparsify Slack Channel](https://join.slack.com/t/discuss-neuralmagic/shared_invite/zt-1xkdlzwv9-2rvS6yQcCs7VDNUcWxctnw), [email](mailto::rob@neuralmagic.com) or via [GitHub Issues](https://github.com/neuralmagic/sparsify/issues).
-As an alpha release, limited support is provided through the community with GitHub Issues and Slack, APIs and UIs are subject to change, and the product is not yet ready for production use.
-Thank you for your interest and support!*
 
 ## Installation
 

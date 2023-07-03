@@ -114,6 +114,8 @@ When you finish this quick start, sparsifying your models is as easy as:
 sparsify.run sparse-transfer --use-case image-classification --data imagenette --optim-level 50 --train-kwargs '{"dataset": "imagenette"}'
 ```
 ## Step 1: Prerequisites
+Verify you have the correct software and hardware to run the Sparsify Alpha.
+
 **Software:** Sparsify is tested on Python 3.8 and 3.10, ONNX 1.5.0-1.12.0, ONNX opset version 11+, and manylinux compliant systems. Sparsify is not supported natively on Windows and MAC OS.
 
 **Hardware:** Sparsify requires a GPU with CUDA + CuDNN in order to sparsify neural networks. 

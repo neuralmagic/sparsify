@@ -128,7 +128,7 @@ If you encounter issues setting up your training environment, [file a GitHub iss
 Creating a new account is simple and free. An account is required to manage your Experiments and API keys.
 Visit the [Neural Magic's Web App Platform](https://account.neuralmagic.com/signup) and create an account by entering your email, name, and unique password. If you already have a Neural Magic Account, [sign in](https://account.neuralmagic.com/signin) with your email.
 
-For more details, see the [Sparsify Cloud User Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/cloud-user-guide.md).
+See the [Sparsify Cloud User Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/cloud-user-guide.md) for more details.
 
 ## Step 3: Installation
 
@@ -161,11 +161,11 @@ See the related guides for more details on:
 Experiments are the core of sparsifying a model. They allow you to apply sparsification algorithms to a dataset and model through three Experiment types detailed below: One-Shot, Training-Aware, or Sparse-Transfer. All Experiments are run locally on your training hardware and can be synced with the cloud for further analysis and comparison, using Sparsify's two components: 
 
 * Sparsify Cloud - explore hyperparameters, predict performance, and generate the desired CLI/API command.
-	*  See the [Sparsify Cloud User Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/cloud-user-guide.md) for more info on generating commands from the Sparsify Cloud.
+	*  See the [Sparsify Cloud User Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/cloud-user-guide.md) for more details on generating commands from the Sparsify Cloud.
 	
 * Sparsify CLI/API - run an experiment depending on your use case.
 
-The general command for running an Experiment is:
+To run an Experiment, use the general command:
 
 ```bash
 sparsify.run EXPERIMENT_TYPE --use-case USE_CASE --model MODEL --data DATA --optim-level OPTIM_LEVEL

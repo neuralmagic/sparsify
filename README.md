@@ -105,20 +105,20 @@ In this quick start, you will:
 3. [Install](#step-3-installation) Sparsify in your local training environment.
 4. [Log in](#step-4-sparsify-login) utilizing your API key.
 5. [Run an Experiment](#step-5-running-experiments).
-	* Experiments Overview
- 		* One-Shot Experiments
-       		* Sparse-Transfer Experiments
-       		* Training-Aware Experiments
-	* Command Syntax and Argument Guides
-   		* `EXPERIMENT_TYPE`
-        	* `USE_CASE`
-         	* `MODEL`
-        	* `DATA`
-        	* `OPTIM_LEVEL`   
-       	* Example Commands by Experiment Type
-       		* Running One-Shot Experiments
-           	* Running Sparse-Transfer Experiments
-     		* Running Training-Aware Experiments		
+* Experiments Overview
+  * [One-Shot Experiments](#one-shot-experiments)
+        * [Sparse-Transfer Experiments](#sparse-transfer-experiments)
+        * [Training-Aware Experiments](#training-aware-experiments)
+* Command Syntax and Argument Guides
+    * `EXPERIMENT_TYPE`
+        * `USE_CASE` [guide](https://github.com/neuralmagic/sparsify/blob/main/docs/use-cases-guide.md)
+         * `MODEL` [guide](https://github.com/neuralmagic/sparsify/blob/main/docs/models-guide.md)
+        * `DATA`[guide](https://github.com/neuralmagic/sparsify/blob/main/docs/datasets-guide.md)
+        * `OPTIM_LEVEL` [guide](https://github.com/neuralmagic/sparsify/blob/main/docs/optim-levels-guide.md)
+    *  Example Commands by Experiment Type
+        * [Running One-Shot Experiments](#running-one-shot-experiments)
+            * [Running Sparse-Transfer Experiments](#running-sparse-transfer-experiments)
+      * [Running Training-Aware Experiments](#running-training-aware-experiments)
 7. [Compare](#step-6-comparing-experiment-results) the Experiment results.
 8. [Deploy optimized models](#step-7-deploying-your-model-with-deepsparse) with DeepSpare (optional).
 
@@ -242,6 +242,7 @@ The values for each of the arguments follow these general rules:
 ### Example Commands by Experiment Type
 
 Here are examples you may wish to run; pick your use case and see if you can successfully run your first experiment!
+With successful experiments, a `model.onnx` file will be created in your working directory, which will be the optimized model, and you will have no CLI errors.
 
 #### Running One-Shot Experiments
 
@@ -250,7 +251,7 @@ Computer Vision:
 sparsify.run one-shot --use-case image_classification --model resnet50 --data imagenette --optim-level 0.5
 ```
 
-NLP Example:
+NLP:
 ```bash
 sparsify.run one-shot --use-case text_classification --model bert-base --data sst2 --optim-level 0.5
 ```

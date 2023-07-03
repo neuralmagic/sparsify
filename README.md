@@ -80,6 +80,7 @@ limitations under the License.
 
 This Quick Start provides a brief overview of Sparsify and then details several pathways you can work through. We encourage you to explore each for Sparsify's full benefits. As of this update, support for [Sparsify's first generation](https://docs.neuralmagic.com/sparsify) has been deprecated. We highly recommend you try the alpha to get a sneak peek and influence the product's development process.
 
+### Feedback and Support
 Report UI issues and CLI errors, submit bug reports, and provide general feedback about the product to the team via the [nm-sparsify Slack Channel](https://join.slack.com/t/discuss-neuralmagic/shared_invite/zt-1xkdlzwv9-2rvS6yQcCs7VDNUcWxctnw), or via [GitHub Issues](https://github.com/neuralmagic/sparsify/issues). Alpha support is provided through those channels.
 
 🚨 **Sparsify Alpha Terms and Conditions**
@@ -173,7 +174,7 @@ Where the values for each of the arguments follow these general rules:
 - DATA: the dataset you want to use to sparsify the model. This can be a dataset name such as `imagenette` or a path to a local dataset. Currently, One-Shot only supports NPZ-formatted datasets. Training-Aware and Sparse-Transfer support PyTorch ImageFolder datasets for image classification, YOLOv5/v8 datasets for object detection and segmentation, and HuggingFace datasets for NLP/NLG. More details on dataset formats can be found [here](https://github.com/neuralmagic/sparsify/blob/main/docs/datasets-guide.md).
 - OPTIM_LEVEL: the desired sparsification level from 0 (none) to 1 (max). The general rule is that 0 is the baseline model, <0.3 only quantizes the model, 0.3-1.0 increases the sparsity of the model and applies quantization. More details on sparsification levels can be found [here](https://github.com/neuralmagic/sparsify/blob/main/docs/optim-levels-guide.md).
 
-## Running One-Shot Experiments
+### Running One-Shot Experiments
 
 | Sparsity | Sparsification Speed | Accuracy |
 |----------|----------------------|----------|
@@ -195,7 +196,7 @@ NLP Example:
 sparsify.run one-shot --use-case text_classification --model bert-base --data sst2 --optim-level 0.5
 ```
 
-## Running Sparse-Transfer Experiments
+### Running Sparse-Transfer Experiments
 
 | Sparsity | Sparsification Speed | Accuracy  |
 |----------|----------------------|-----------|
@@ -231,7 +232,7 @@ However, they do require additional training time and hyperparameter tuning to a
 
 Generally, Training-Aware Experiments result in a 6-12x speedup with minimal accuracy loss.
 They are ideal when you have the time to train a model, have a custom model, or want to achieve the best possible accuracy.
-Note, the model argument is optional for Sparse-Transfer Experiments as Sparsify will select the best one from the SparseZoo for your use case if not supplied.
+Note, the model argument is optional for Sparse-Transfer Experiments, as Sparsify will select the best one from the SparseZoo for your use case if not supplied.
 
 CV Example:
 ```bash
@@ -252,7 +253,7 @@ In the near future, you will be able to compare the results in the Cloud, measur
 To compare the results of your Experiment with the original dense baseline model, use the `deepsparse.benchmark` command with your original model and the new optimized model on your deployment hardware. Models that have been optimized using Sparsify will generally run performantly on DeepSparse, Neural Magic's sparsity-aware CPU inference runtime. 
 
 
-For more information on benchmarking, see the [DeepSparse Benchmarking User Guide](https://github.com/neuralmagic/deepsparse/blob/main/docs/user-guide/deepsparse-benchmarking.md).
+See the [DeepSparse Benchmarking User Guide](https://github.com/neuralmagic/deepsparse/blob/main/docs/user-guide/deepsparse-benchmarking.md) for more information on benchmarking.
 
 Here is an example of a `deepsparse.benchmark`command: 
 
@@ -296,6 +297,23 @@ Iterations: 1346
 ### Package for Deployment
 
 Landing soon!
+
+## Step 7: Deploying Your Model With DeepSparse
+
+As an optional step to this quick start, now that you have your optimized model, you are ready for inferencing. To get the most inference performance out of your optimized model, we recommend you deploy on Neural Magic's [DeepSparse](https://docs.neuralmagic.com/deepsparse). DeepSparse is built to get the best performance out of optimized models on CPUs.  
+
+DeepSparse Server takes in a task and a model path and will enable you to serve models and `Pipelines` for deployment in HTTP.
+
+You can deploy any ONNX model using DeepSparse Server by running:
+```bash
+deepsparse.server \  
+task question_answering \  
+--model_path "zoo:nlp/question_answering/bert-base/pytorch/huggingface/squad/12layer_pruned80_quant-none-vnni"`
+```
+
+To run inference on your own model, change the model path to the location of your `model.onnx` file. Consult the [DeepSparse Server Docs](https://docs.neuralmagic.com/user-guides/deploying-deepsparse/deepsparse-server) for more details.
+
+If you're not ready for deploying, congratulations on completing the quick start! We welcome your [Sparsify Alpha feedback and support issues](#feedback-and-support) as described at the beginning of this guide.
 
 # Resources
 Now that you have explored the Sparsify Alpha Quick Start, here are other related resources.

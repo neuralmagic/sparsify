@@ -114,13 +114,13 @@ When you finish this quick start, sparsifying your models is as easy as:
 sparsify.run sparse-transfer --use-case image-classification --data imagenette --optim-level 50 --train-kwargs '{"dataset": "imagenette"}'
 ```
 ## Step 1: Prerequisites
-Verify you have the correct software and hardware to run the Sparsify Alpha.
+First, verify that you have the correct software and hardware to run the Sparsify Alpha.
 
 **Software:** Sparsify is tested on Python 3.8 and 3.10, ONNX 1.5.0-1.12.0, ONNX opset version 11+, and manylinux compliant systems. Sparsify is not supported natively on Windows and MAC OS.
 
 **Hardware:** Sparsify requires a GPU with CUDA + CuDNN in order to sparsify neural networks. 
 We recommend you use a Linux system with a GPU that has a minimum of 16GB of GPU Memory, 128GB of RAM, 4 CPU cores, and is CUDA-enabled. If you are sparsifying a very large model, you may need more RAM than the recommended 128GB.
-If you encounter issues setting up your training environment, file a GitHub issue [here](https://github.com/neuralmagic/sparsify/issues).
+If you encounter issues setting up your training environment, [file a GitHub issue](https://github.com/neuralmagic/sparsify/issues).
 
 ## Step 2: Account Creation
 

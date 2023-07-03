@@ -112,6 +112,7 @@ When you finish this quick start, sparsifying your models is as easy as:
 
 ```bash
 sparsify.run sparse-transfer --use-case image-classification --data imagenette --optim-level 50 --train-kwargs '{"dataset": "imagenette"}'
+
 ```
 ## Step 1: Prerequisites
 First, verify that you have the correct software and hardware to run the Sparsify Alpha.
@@ -142,7 +143,7 @@ pip install sparsify
 
 Next, with Sparsify installed on your training hardware:
 1. Authorize the local CLI to access your account by running the `sparsify.login` command and providing your API key.
-2. Locate your API key on the home page of the [Sparsify Cloud](https://apps.neuralmagic.com/sparsify) under the **'Get set up'** modal, and copy the command or the API key itself.
+2. Locate your API key on the homepage of the [Sparsify Cloud](https://apps.neuralmagic.com/sparsify) under the **'Get set up'** modal, and copy the command or the API key itself.
 3. Run the following command:
 
 ```bash
@@ -151,8 +152,9 @@ sparsify.login API_KEY
 
 See the related guides for more details on: 
 * Locating the API_KEY - [Sparsify Cloud User Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/cloud-user-guide.md).
-
 * Running the `sparsify.login` command - [CLI/API Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/cli-api-guide.md).
+
+**Note:** Once you have initially done steps 1–4, it is not necessary to repeat them. Simply use the [Sparsify Cloud Login](https://apps.neuralmagic.com/sparsify).
 
 ## Step 5: Running Experiments
 

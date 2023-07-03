@@ -154,7 +154,7 @@ See the related guides for more details on:
 * Locating the API_KEY - [Sparsify Cloud User Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/cloud-user-guide.md).
 * Running the `sparsify.login` command - [CLI/API Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/cli-api-guide.md).
 
-**Note:** Once you have initially done steps 1–4, it is not necessary to repeat them. Simply use the [Sparsify Cloud Login](https://apps.neuralmagic.com/sparsify).
+**Note:** Once you have initially done steps 1–4 and authorized your API key, it is not necessary to repeat them. Simply use the [Sparsify Cloud Login](https://apps.neuralmagic.com/sparsify) homepage to run Experiments described in the next section.
 
 ## Step 5: Running Experiments
 

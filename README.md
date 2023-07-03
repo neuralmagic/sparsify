@@ -78,7 +78,7 @@ limitations under the License.
 ## Introduction
 🚨 **July 2023: Sparsify's next generation is now in alpha as of version 1.6.0!**
 
-This Quick Start provides a brief overview of Sparsify and then details several pathways you can work through. We encourage you to explore each for Sparsify's full benefits. As of this update, support for [Sparsify's first generation](https://docs.neuralmagic.com/sparsify) has been deprecated. We highly recommend you try the alpha to get a sneak peek and influence the product's development process.
+This quick start provides a brief overview of Sparsify and then details several pathways you can work through. We encourage you to explore each for Sparsify's full benefits. As of this update, support for [Sparsify's first generation](https://docs.neuralmagic.com/sparsify) has been deprecated. We highly recommend you try the alpha to get a sneak peek and influence the product's development process.
 
 ### Feedback and Support
 Report UI issues and CLI errors, submit bug reports, and provide general feedback about the product to the team via the [nm-sparsify Slack Channel](https://join.slack.com/t/discuss-neuralmagic/shared_invite/zt-1xkdlzwv9-2rvS6yQcCs7VDNUcWxctnw), or via [GitHub Issues](https://github.com/neuralmagic/sparsify/issues). Alpha support is provided through those channels.

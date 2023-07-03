@@ -17,6 +17,7 @@ import json
 from pathlib import Path
 
 import click
+from sparsezoo import Model
 from sparsify.cli import opts
 
 
@@ -49,7 +50,7 @@ def one_shot(**kwargs):
         recipe_args = json.loads(recipe_args)
 
     one_shot.one_shot(
-        model=Path(kwargs["model"]),
+        model=Path(_maybe_unwrap_zoo_stub(kwargs["model"])),
         dataset_dir=Path(kwargs["data"]),
         num_samples=kwargs["train_samples"] or None,
         deploy_dir=Path(kwargs["working_dir"]),
@@ -121,6 +122,12 @@ def _parse_run_args_to_auto(sparse_transfer: bool, **kwargs):
         kwargs=train_kwargs,
         run_mode="sparse_transfer" if sparse_transfer else "training_aware",
     )
+
+
+def _maybe_unwrap_zoo_stub(model_path: str) -> str:
+    if model_path.startswith("zoo:"):
+        return Model(model_path).onnx_model.path
+    return model_path
 
 
 if __name__ == "__main__":

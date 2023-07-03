@@ -101,12 +101,12 @@ Sparsify empowers you to compress models through two components:
 In this quick start, you will:
 
 1. [Verify prerequisites](#step-1-prerequisites).
-2. [Create an account](https://account.neuralmagic.com/signup) a Neural Magic Account.
-3. [Install](#Installation) Sparsify in your local training environment.
-4. Log in utilizing your API key.
-5. Run an Experiment.
-6. Compare the Experiment results.
-7. Deploy optimized models with DeepSpare (optional).
+2. [Create an account](#step-2-account-creation) a Neural Magic Account.
+3. [Install](#step-3-installation) Sparsify in your local training environment.
+4. [Log in](#step-4-sparsify-login) utilizing your API key.
+5. [Run an Experiment](#step-5-running-experiments).
+6. [Compare](#step-6-comparing-experiment-results) the Experiment results.
+7. [Deploy optimized models](#step-7-deploying-your-model-with-deepsparse) with DeepSpare (optional).
 
 When you finish this quick start, sparsifying your models is as easy as:
 

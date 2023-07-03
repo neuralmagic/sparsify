@@ -107,17 +107,17 @@ In this quick start, you will:
 5. [Run an Experiment](#step-5-running-experiments).
 	* Experiments Overview
  		* One-Shot Experiments
-   		* Sparse-Transfer Experiments
-     		* Training-Aware Experiments
-       * Command Syntax and Argument Guides
-      		* `EXPERIMENT_TYPE`
+       		* Sparse-Transfer Experiments
+       		* Training-Aware Experiments
+	* Command Syntax and Argument Guides
+   		* `EXPERIMENT_TYPE`
         	* `USE_CASE`
          	* `MODEL`
         	* `DATA`
         	* `OPTIM_LEVEL`   
-       * Example Commands by Experiment Type
+       	* Example Commands by Experiment Type
        		* Running One-Shot Experiments
-   		* Running Sparse-Transfer Experiments
+           	* Running Sparse-Transfer Experiments
      		* Running Training-Aware Experiments		
 7. [Compare](#step-6-comparing-experiment-results) the Experiment results.
 8. [Deploy optimized models](#step-7-deploying-your-model-with-deepsparse) with DeepSpare (optional).

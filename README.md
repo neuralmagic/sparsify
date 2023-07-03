@@ -105,20 +105,20 @@ In this quick start, you will:
 3. [Install](#step-3-installation) Sparsify in your local training environment.
 4. [Log in](#step-4-sparsify-login) utilizing your API key.
 5. [Run an Experiment](#step-5-running-experiments).
-* Experiments Overview
-  * [One-Shot Experiments](#one-shot-experiments)
-        * [Sparse-Transfer Experiments](#sparse-transfer-experiments)
-        * [Training-Aware Experiments](#training-aware-experiments)
-* Command Syntax and Argument Guides
-    * `EXPERIMENT_TYPE`
-        * `USE_CASE` [guide](https://github.com/neuralmagic/sparsify/blob/main/docs/use-cases-guide.md)
+   * [Experiments Overview](#experiments-overview)
+  		* [One-Shot Experiments](#one-shot-experiments)
+  		* [Sparse-Transfer Experiments](#sparse-transfer-experiments)
+  		* [Training-Aware Experiments](#training-aware-experiments)
+	* [Command Syntax and Argument Guides](#command-syntax-and-arguments)
+		* `EXPERIMENT_TYPE`
+		* `USE_CASE` [guide](https://github.com/neuralmagic/sparsify/blob/main/docs/use-cases-guide.md)
          * `MODEL` [guide](https://github.com/neuralmagic/sparsify/blob/main/docs/models-guide.md)
         * `DATA`[guide](https://github.com/neuralmagic/sparsify/blob/main/docs/datasets-guide.md)
         * `OPTIM_LEVEL` [guide](https://github.com/neuralmagic/sparsify/blob/main/docs/optim-levels-guide.md)
-    *  Example Commands by Experiment Type
+    *  [Example Commands by Experiment Type](#example-commands-by-experiment-type)
         * [Running One-Shot Experiments](#running-one-shot-experiments)
-            * [Running Sparse-Transfer Experiments](#running-sparse-transfer-experiments)
-      * [Running Training-Aware Experiments](#running-training-aware-experiments)
+        * [Running Sparse-Transfer Experiments](#running-sparse-transfer-experiments)
+        * [Running Training-Aware Experiments](#running-training-aware-experiments)
 7. [Compare](#step-6-comparing-experiment-results) the Experiment results.
 8. [Deploy optimized models](#step-7-deploying-your-model-with-deepsparse) with DeepSpare (optional).
 
@@ -233,7 +233,7 @@ sparsify.run EXPERIMENT_TYPE --use-case USE_CASE --model MODEL --data DATA --opt
 ```
 
 The values for each of the arguments follow these general rules:
-- [Details]**`EXPERIMENT_TYPE`**: one of `one-shot`, `training-aware`, or `sparse-transfer`.
+- [**`EXPERIMENT_TYPE`**: one of `one-shot`, `training-aware`, or `sparse-transfer`.
 - [[Details]](https://github.com/neuralmagic/sparsify/blob/main/docs/use-cases-guide.md)**`USE_CASE`**: the use case you're solving for, such as `image-classification`, `object-detection`, `text-classification`, or a custom use case.
 - [[Details]](https://github.com/neuralmagic/sparsify/blob/main/docs/models-guide.md) **`MODEL`**: the model you want to sparsify which can be a model name such as `resnet50`, a stub from the [SparseZoo](https://sparsezoo.neuralmagic.com), or a path to a local model. For One-Shot, currently, the model must be in an ONNX format. For Training-Aware and Sparse-Transfer, the model must be in a PyTorch format.
 - [[Details]](https://github.com/neuralmagic/sparsify/blob/main/docs/datasets-guide.md)**`DATA`**: the dataset you want to use to sparsify the model. This can be a dataset name such as `imagenette` or a path to a local dataset. Currently, One-Shot only supports NPZ-formatted datasets. Training-Aware and Sparse-Transfer support PyTorch ImageFolder datasets for image classification, YOLOv5/v8 datasets for object detection and segmentation, and Hugging Face datasets for NLP/NLG.
@@ -328,11 +328,6 @@ Iterations: 1346
 ```
 
 *Note: performance improvement is not guaranteed across all runtimes and hardware types.*
-
-
-### Package for Deployment
-
-Landing soon!
 
 ## Step 7: Deploying Your Model With DeepSparse
 

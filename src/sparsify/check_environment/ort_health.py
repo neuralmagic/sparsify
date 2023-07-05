@@ -135,7 +135,7 @@ def check_ort_health(providers: Optional[List[str]] = None):
             input_batch=random_input,
             providers=providers,
         )
-    except RuntimeError as e:
+    except Exception as e:
         # If run fails, try again with CPU only to ensure this is a CUDA environment
         # issue
         if providers != ["CPUExecutionProvider"]:

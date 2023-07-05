@@ -14,6 +14,7 @@
 
 
 import logging
+import signal
 from typing import List, Optional
 
 import numpy
@@ -129,12 +130,26 @@ def check_ort_health(providers: Optional[List[str]] = None):
             get_input_names(model), generate_random_inputs(model)
         )
     }
+
+    # Define a custom exception and signal handler
+    class _TerminationSignal(Exception):
+        pass
+
+    def handle_termination_signal(signum, frame):
+        raise _TerminationSignal("Termination signal received")
+
+    # Register the signal handler for SIGTERM and SIGINT signals
+    signal.signal(signal.SIGTERM, handle_termination_signal)
+    signal.signal(signal.SIGINT, handle_termination_signal)
+
     try:
         run_onnx_model(
             model=model,
             input_batch=random_input,
             providers=providers,
         )
+    except _TerminationSignal as ts:
+        print("Termination signal caught:", ts)
     except Exception as e:
         # If run fails, try again with CPU only to ensure this is a CUDA environment
         # issue

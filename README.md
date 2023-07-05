@@ -85,7 +85,7 @@ To get started immediately, [create an account](https://account.neuralmagic.com/
 With all of that setup, sparsifying your models is as easy as:
 
 ```bash
-sparsify.run sparse-transfer --use-case image-classification --data imagenette --optim-level 0.5 --train-kwargs '{"dataset": "imagenette"}'
+sparsify.run sparse-transfer --use-case image-classification --data path/to/imagenette --optim-level 0.5 --train-kwargs '{"dataset": "imagenette"}'
 ```
 
 <br>
@@ -195,12 +195,12 @@ They are ideal for when you want to quickly sparsify your model and don't have a
 
 CV Example:
 ```bash
-sparsify.run one-shot --use-case image_classification --model resnet50 --data imagenette --optim-level 0.5
+sparsify.run one-shot --use-case image_classification --model resnet50 --data path/to/imagenette --optim-level 0.5
 ```
 
 NLP Example:
 ```bash
-sparsify.run one-shot --use-case text_classification --model bert-base --data sst2 --optim-level 0.5
+sparsify.run one-shot --use-case text_classification --model bert-base --data path/to/sst2 --optim-level 0.5
 ```
 
 #### Running Sparse-Transfer
@@ -219,12 +219,12 @@ Note, the model argument is optional for Sparse-Transfer Experiments as Sparsify
 
 CV Example:
 ```bash
-sparsify.run sparse-transfer --use-case image_classification --data imagenette --optim-level 0.5
+sparsify.run sparse-transfer --use-case image_classification --data path/to/imagenette --optim-level 0.5
 ```
 
 NLP Example:
 ```bash
-sparsify.run sparse-transfer --use-case text_classification --data sst2 --optim-level 0.5
+sparsify.run sparse-transfer --use-case text_classification --data path/to/sst2 --optim-level 0.5
 ```
 
 #### Running Training-Aware
@@ -243,12 +243,12 @@ Note, the model argument is optional for Sparse-Transfer Experiments as Sparsify
 
 CV Example:
 ```bash
-sparsify.run training-aware --use-case image_classification --model resnet50 --data imagenette --optim-level 0.5
+sparsify.run training-aware --use-case image_classification --model resnet50 --data path/to/imagenette --optim-level 0.5
 ```
 
 NLP Example:
 ```bash
-sparsify.run training-aware --use-case text_classification --model bert-base --data sst2 --optim-level 0.5
+sparsify.run training-aware --use-case text_classification --model bert-base --data path/to/sst2 --optim-level 0.5
 ```
 
 ### Compare the Experiment results

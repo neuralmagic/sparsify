@@ -9,6 +9,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
 
 ARG REF=main
 RUN git clone https://github.com/neuralmagic/sparsify && cd sparsify && git checkout $REF
-RUN python3 -m pip install --no-cache-dir -e ./sparsify
+RUN python3 -m pip install --upgrade pip && \
+    python3 -m pip install --no-cache-dir -e ./sparsify
 
 CMD ["/bin/bash"]

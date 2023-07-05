@@ -126,7 +126,7 @@ In this quick start, you will:
 When you finish this quick start, sparsifying your models is as easy as:
 
 ```bash
-sparsify.run sparse-transfer --use-case image-classification --data imagenette --optim-level 50 --train-kwargs '{"dataset": "imagenette"}'
+sparsify.run sparse-transfer --use-case image-classification --data path/to/imagenette --optim-level 0.5 --train-kwargs '{"dataset": "imagenette"}'
 
 ```
 ## Step 1: Prerequisites
@@ -249,36 +249,36 @@ With successful experiments, a `model.onnx` file will be created in your working
 
 Computer Vision:
 ```bash
-sparsify.run one-shot --use-case image_classification --model resnet50 --data imagenette --optim-level 0.5
+sparsify.run one-shot --use-case image_classification --model resnet50 --data path/to/imagenette --optim-level 0.5
 ```
 
 NLP:
 ```bash
-sparsify.run one-shot --use-case text_classification --model bert-base --data sst2 --optim-level 0.5
+sparsify.run one-shot --use-case text_classification --model bert-base --data path/to/sst2 --optim-level 0.5
 ```
 
 #### Running Sparse-Transfer Experiments
 
 Computer Vision:
 ```bash
-sparsify.run sparse-transfer --use-case image_classification --data imagenette --optim-level 0.5
+sparsify.run sparse-transfer --use-case image_classification --data path/to/imagenette --optim-level 0.5
 ```
 
 NLP:
 ```bash
-sparsify.run sparse-transfer --use-case text_classification --data sst2 --optim-level 0.5
+sparsify.run sparse-transfer --use-case text_classification --data path/to/sst2 --optim-level 0.5
 ```
 
 #### Running Training-Aware Experiments
 
 Computer Vision:
 ```bash
-sparsify.run training-aware --use-case image_classification --model resnet50 --data imagenette --optim-level 0.5
+sparsify.run training-aware --use-case image_classification --model resnet50 --data path/to/imagenette --optim-level 0.5
 ```
 
 NLP:
 ```bash
-sparsify.run training-aware --use-case text_classification --model bert-base --data sst2 --optim-level 0.5
+sparsify.run training-aware --use-case text_classification --model bert-base --data path/to/sst2 --optim-level 0.5
 ```
 
 ## Step 6: Comparing Experiment Results

@@ -15,7 +15,8 @@
 import json
 import math
 import os
-from typing import Tuple
+import re
+from typing import Dict, Tuple, Union
 
 import onnx
 
@@ -67,11 +68,14 @@ class _TransformersRunner(TaskRunner):
         :param config: training config to generate run for
         :return: tuple of training and export arguments
         """
+        dataset, data_file_args = cls.parse_data_args(config.dataset)
+        config.kwargs.update(data_file_args)
+
         train_args = cls.train_args_class(
             model_name_or_path=config.base_model,
             recipe=config.recipe,
             recipe_args=config.recipe_args,
-            dataset_name=config.dataset,
+            dataset_name=dataset,
             distill_teacher=config.distill_teacher
             if not config.distill_teacher == "off"
             else "disable",
@@ -83,6 +87,44 @@ class _TransformersRunner(TaskRunner):
         )
 
         return train_args, export_args
+
+    @classmethod
+    def parse_data_args(
+        cls, dataset: str
+    ) -> Tuple[Union[str, None], Dict[str : Union[str, None]]]:
+        """
+        Check if the dataset provided is a data directory. If it is, update the train,
+        test and validation file arguments with the approriate filepaths. This function
+        assumes any file containing the substrings "train", "test", or "val" are the
+        data files expected to be used. Duplicates will be updated to only use one file
+        path.
+
+        :params dataset: inputted data string arg. Assumed to either be a dataset which
+        can be downloaded publically or a locally available directory containing
+        data files.
+
+        :returns: updated dataset, train_file, test_file, and validation_file args
+        """
+        data_file_args = {}
+
+        if os.path.isdir(dataset):
+            for root, _, files in os.walk(dataset):
+                if re.search(r"train", files):
+                    data_file_args["train_file"] = os.path.join(root, files)
+                elif re.search(r"val", files):
+                    data_file_args["validation_file"] = os.path.join(root, files)
+                elif re.search(r"test", files):
+                    data_file_args["test_file"] = os.path.join(root, files)
+
+                if (
+                    data_file_args["train_file"]
+                    and data_file_args["validation_file"]
+                    and data_file_args["test_file"]
+                ):
+                    dataset = None
+                    break
+
+        return dataset, data_file_args
 
     def tune_args_for_hardware(self, hardware_specs: HardwareSpecs):
         """

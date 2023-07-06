@@ -97,7 +97,8 @@ class _TransformersRunner(TaskRunner):
         test and validation file arguments with the approriate filepaths. This function
         assumes any file containing the substrings "train", "test", or "val" are the
         data files expected to be used. Duplicates will be updated to only use one file
-        path.
+        path. Also, existing kwargs for train, test and validation files will be
+        overwritten if directory is provided.
 
         :params dataset: inputted data string arg. Assumed to either be a dataset which
         can be downloaded publically or a locally available directory containing

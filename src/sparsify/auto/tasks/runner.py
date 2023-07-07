@@ -15,6 +15,7 @@
 
 import gc
 import json
+import logging
 import os
 import shutil
 import socket
@@ -57,6 +58,8 @@ SUPPORTED_TASKS = [
     ]
 ]
 _TASK_RUNNER_IMPLS = {}
+_LOGGER = logging.getLogger(__name__)
+_LOGGER.setLevel(logging.INFO)  # set at top level to modify later
 
 
 def retry_stage(stage: str):
@@ -394,20 +397,24 @@ class TaskRunner:
         """
         Creates and/or moves deployment directory to the deployment directory for the
         mode corresponding to the trial_idx
-
+        :post-condition: The deployment artifacts will be moved from
+            origin_directory to deploy_directory
         :param train_directory: directory to grab the exported files from
         :param deploy_directory: directory to save the deployment files to
         """
         origin_directory = self._get_default_deployment_directory(train_directory)
-
+        _LOGGER.info("Moving %s to %s" % (origin_directory, deploy_directory))
         for filename in os.listdir(origin_directory):
             source_file = os.path.join(origin_directory, filename)
             target_file = os.path.join(deploy_directory, filename)
             shutil.move(source_file, target_file)
+
+        _LOGGER.info("Deleting %s" % origin_directory)
         shutil.rmtree(origin_directory)
 
         with open(os.path.join(deploy_directory, "readme.txt"), "x") as f:
             f.write("deployment instructions will go here")
+        _LOGGER.info("Deployment directory moved to %s" % deploy_directory)
 
     @abstractmethod
     def _train_completion_check(self) -> bool:

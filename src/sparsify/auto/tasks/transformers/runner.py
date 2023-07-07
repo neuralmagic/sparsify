@@ -16,7 +16,7 @@ import json
 import math
 import os
 import re
-from typing import Dict, Tuple, Union
+from typing import Tuple, Union
 
 import onnx
 
@@ -89,9 +89,7 @@ class _TransformersRunner(TaskRunner):
         return train_args, export_args
 
     @classmethod
-    def parse_data_args(
-        cls, dataset: str
-    ) -> Tuple[Union[str, None], Dict[str : Union[str, None]]]:
+    def parse_data_args(cls, dataset: str) -> Tuple[Union[str, None], dict]:
         """
         Check if the dataset provided is a data directory. If it is, update the train,
         test and validation file arguments with the approriate filepaths. This function
@@ -110,20 +108,23 @@ class _TransformersRunner(TaskRunner):
 
         if os.path.isdir(dataset):
             for root, _, files in os.walk(dataset):
-                if re.search(r"train", files):
-                    data_file_args["train_file"] = os.path.join(root, files)
-                elif re.search(r"val", files):
-                    data_file_args["validation_file"] = os.path.join(root, files)
-                elif re.search(r"test", files):
-                    data_file_args["test_file"] = os.path.join(root, files)
+                for f in files:
+                    if re.search(r"train", f):
+                        data_file_args["train_file"] = os.path.join(root, f)
+                    elif re.search(r"val", f):
+                        data_file_args["validation_file"] = os.path.join(root, f)
+                    elif re.search(r"test", f):
+                        data_file_args["test_file"] = os.path.join(root, f)
 
                 if (
-                    data_file_args["train_file"]
-                    and data_file_args["validation_file"]
-                    and data_file_args["test_file"]
+                    data_file_args.get("train_file", None)
+                    and data_file_args.get("validation_file", None)
+                    and data_file_args.get("test_file", None)
                 ):
-                    dataset = None
                     break
+
+        if data_file_args:
+            dataset = None
 
         return dataset, data_file_args
 

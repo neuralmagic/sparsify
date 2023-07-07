@@ -99,7 +99,7 @@ class _TransformersRunner(TaskRunner):
         overwritten if directory is provided.
 
         :params dataset: inputted data string arg. Assumed to either be a dataset which
-        can be downloaded publically or a locally available directory containing
+        can be downloaded publicly or a locally available directory containing
         data files.
 
         :returns: updated dataset, train_file, test_file, and validation_file args

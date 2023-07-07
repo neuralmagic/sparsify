@@ -69,14 +69,23 @@ class _TransformersRunner(TaskRunner):
         :param config: training config to generate run for
         :return: tuple of training and export arguments
         """
-        dataset, data_file_args = cls.parse_data_args(config.dataset)
+        dataset_name, data_file_args = cls.parse_data_args(config.dataset)
         config.kwargs.update(data_file_args)
+
+        if config.task == TASK_REGISTRY.get("text_classification") and (
+            dataset_name in _GLUE_TASK_NAMES
+        ):
+            # text classification GLUE datasets need special treatment
+            # since the proper dataset names are set as "task" with
+            # the top level dataset as "glue"
+            config.kwargs["task_name"] = dataset_name
+            dataset_name = "glue"
 
         train_args = cls.train_args_class(
             model_name_or_path=config.base_model,
             recipe=config.recipe,
             recipe_args=config.recipe_args,
-            dataset_name=dataset,
+            dataset_name=dataset_name,
             distill_teacher=config.distill_teacher
             if not config.distill_teacher == "off"
             else "disable",
@@ -327,6 +336,23 @@ _TASK_TO_EXPORT_TASK = {
     "question_answering": "qa",
     "text_classification": "glue",
     "token_classification": "ner",
+}
+
+
+# https://huggingface.co/datasets/glue
+_GLUE_TASK_NAMES = {
+    "ax",
+    "cola",
+    "mnli",
+    "mnli_matched",
+    "mnli_mismatched",
+    "mrpc",
+    "qnli",
+    "qqp",
+    "rte",
+    "sst2",
+    "stsb",
+    "wnli",
 }
 
 

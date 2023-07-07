@@ -15,7 +15,9 @@
 import json
 import math
 import os
-from typing import Tuple
+import re
+import warnings
+from typing import Tuple, Union
 
 import onnx
 
@@ -66,19 +68,18 @@ class _TransformersRunner(TaskRunner):
         a tuple of run args in the order (train_args, export_arts)
         :param config: training config to generate run for
         :return: tuple of training and export arguments
-        """
-
-        kwargs = config.kwargs
+        """  
+        dataset_name, data_file_args = cls.parse_data_args(config.dataset)
+        config.kwargs.update(data_file_args)
+  
         if config.task == TASK_REGISTRY.get("text_classification") and (
-            config.dataset in _GLUE_TASK_NAMES
+            dataset in _GLUE_TASK_NAMES
         ):
             # text classification GLUE datasets need special treatment
             # since the proper dataset names are set as "task" with
             # the top level dataset as "glue"
             dataset_name = "glue"
-            kwargs["task_name"] = config.dataset
-        else:
-            dataset_name = config.dataset
+            config.kwargs["task_name"] = config.dataset
 
         train_args = cls.train_args_class(
             model_name_or_path=config.base_model,
@@ -88,7 +89,7 @@ class _TransformersRunner(TaskRunner):
             distill_teacher=config.distill_teacher
             if not config.distill_teacher == "off"
             else "disable",
-            **kwargs,
+            **config.kwargs,
         )
 
         export_args = TransformersExportArgs(
@@ -96,6 +97,80 @@ class _TransformersRunner(TaskRunner):
         )
 
         return train_args, export_args
+
+    @classmethod
+    def parse_data_args(cls, dataset: str) -> Tuple[Union[str, None], dict]:
+        """
+        Check if the dataset provided is a data directory. If it is, update the train,
+        test and validation file arguments with the approriate filepaths. This function
+        assumes any file containing the substrings "train", "test", or "val" are the
+        data files expected to be used. Duplicates will be updated to only use one file
+        path. Also, existing kwargs for train, test and validation files will be
+        overwritten if directory is provided.
+
+        Example directory structure:
+        - data_for_training/
+            - some_train_file.json
+            - some_validation_file.json
+            - test_dir/
+                - some_test_file.json
+
+        :params dataset: inputted data string arg. Assumed to either be a dataset which
+        can be downloaded publicly or a locally available directory containing
+        data files.
+
+        :returns: updated dataset, train_file, test_file, and validation_file args
+        """
+        data_file_args = {}
+
+        def _check_and_update_file(root: str, current_file: str, file_type: str):
+            split_type = file_type.split("_")[0]
+
+            if data_file_args.get(file_type, None):
+                warnings.warn(
+                    f"A {split_type} file was already found with name "
+                    f"{data_file_args[file_type]}. Updating with {current_file} "
+                )
+
+            if not current_file.lower().endswith(("json", "csv")):
+                warnings.warn(
+                    f"Found {split_type} file named {current_file} "
+                    "with incorrect file type (expected: json or csv). Skipping file."
+                )
+            else:
+                data_file_args[file_type] = os.path.join(root, current_file)
+
+        if os.path.isdir(dataset):
+            for root, _, files in os.walk(dataset):
+                for f in files:
+                    if re.search(r"train", f):
+                        _check_and_update_file(root, f, "train_file")
+                    elif re.search(r"val", f):
+                        _check_and_update_file(root, f, "validation_file")
+                    elif re.search(r"test", f):
+                        _check_and_update_file(root, f, "test_file")
+
+                if (
+                    data_file_args.get("train_file", None)
+                    and data_file_args.get("validation_file", None)
+                    and data_file_args.get("test_file", None)
+                ):
+                    break
+
+            if not (
+                data_file_args.get("train_file", None)
+                and data_file_args.get("validation_file", None)
+            ):
+                raise Exception(
+                    "No training or validation files found. Be sure the "
+                    "directory provided to the data arg contains json or csv "
+                    "files with the train and val substrings in the filenames."
+                )
+
+        if data_file_args:
+            dataset = None
+
+        return dataset, data_file_args
 
     def tune_args_for_hardware(self, hardware_specs: HardwareSpecs):
         """

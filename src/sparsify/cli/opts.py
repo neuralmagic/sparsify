@@ -12,7 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import logging
 import os
+from functools import partial
 
 import click
 from sparsify.utils.constants import TASK_REGISTRY
@@ -20,7 +22,6 @@ from sparsify.utils.constants import TASK_REGISTRY
 
 __all__ = [
     "EXPERIMENT_TYPE",
-    "USE_CASE",
     "PROJECT_ID",
     "EXPERIMENT_ID",
     "WORKING_DIR",
@@ -42,12 +43,14 @@ __all__ = [
     "add_optim_opts",
 ]
 
+_LOGGER = logging.getLogger(__name__)
+
 _EXPERIMENT_TYPES = ["sparse-transfer", "one-shot", "training-aware"]
 _EVAL_METRICS = ["accuracy", "mAP", "recall", "f1"]  # TODO: add back kl
 _DEPLOY_ENGINES = ["deepsparse", "onnxruntime"]
 
 
-def validate_use_case(ctx, param, value):
+def validate_use_case(ctx, param, value, strict: bool = True):
     # click validator for --use-case
 
     # task_name: TaskName
@@ -55,9 +58,18 @@ def validate_use_case(ctx, param, value):
         # TaskName __eq__ matches against aliases and str standardization
         if value == task_name:
             return value
-    raise ValueError(
-        f"Unknown use-case {value}, supported use cases: {list(TASK_REGISTRY.keys())}"
-    )
+
+    if strict:
+        raise ValueError(
+            f"Unknown use-case {value}, supported use cases: "
+            f"{list(TASK_REGISTRY.keys())}"
+        )
+    else:
+        _LOGGER.warning(
+            f"Unknown use-case {value}, full feature set may not be availble for "
+            "custom use cases"
+        )
+        return value
 
 
 EXPERIMENT_TYPE = click.option(
@@ -65,13 +77,6 @@ EXPERIMENT_TYPE = click.option(
     default=None,
     type=click.Choice(_EXPERIMENT_TYPES, case_sensitive=False),
     help="The type of the experiment to run",
-)
-USE_CASE = click.option(
-    "--use-case",
-    required=True,
-    type=str,
-    callback=validate_use_case,
-    help="The task this model is for",
 )
 PROJECT_ID = click.option(
     "--project-id",
@@ -153,10 +158,21 @@ OPTIM_LEVEL = click.option(
 TRAIN_KWARGS = click.option("--train-kwargs", default=None, type=str)
 
 
-def add_info_opts(f):
-    for fn in [WORKING_DIR, EXPERIMENT_ID, PROJECT_ID, USE_CASE]:
-        f = fn(f)
-    return f
+def add_info_opts(*, require_known_use_case=True):
+    use_case = click.option(
+        "--use-case",
+        required=True,
+        type=str,
+        callback=partial(validate_use_case, strict=require_known_use_case),
+        help="The task this model is for",
+    )
+
+    def wrapped(f):
+        for fn in [WORKING_DIR, EXPERIMENT_ID, PROJECT_ID, use_case]:
+            f = fn(f)
+        return f
+
+    return wrapped
 
 
 def add_model_opts(*, require_model: bool, include_optimizer: bool = False):

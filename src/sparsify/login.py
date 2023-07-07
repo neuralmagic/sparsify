@@ -99,7 +99,16 @@ def install_sparsifyml(access_token: str) -> None:
     :param access_token: The access token to use for authentication
     """
     sparsifyml_spec = importlib.util.find_spec("sparsifyml")
-    sparsifyml = importlib.import_module("sparsifyml") if sparsifyml_spec else None
+
+    try:
+        sparsifyml = importlib.import_module("sparsifyml") if sparsifyml_spec else None
+    except ImportError as sparsifyml_import_error:
+        raise RuntimeError(
+            "sparsifyml installation detected in current environment, but an "
+            "exception was raised on import. ensure python3-dev is installed "
+            "for your python version and the `libpython` executable is available then "
+            f"re-run sparsify.login.\n\n{sparsifyml_import_error}"
+        )
 
     sparsifyml_installed = (
         sparsifyml_spec is not None

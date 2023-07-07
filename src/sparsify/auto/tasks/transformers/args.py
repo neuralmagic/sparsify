@@ -697,7 +697,7 @@ class TransformersExportArgs(BaseArgs):
         description="Sequence length to use. Default is 384. Can be overwritten later",
     )
     no_convert_qat: bool = Field(
-        default=True,
+        default=False,
         description=(
             "Set flag to not perform QAT to fully quantized conversion after export"
         ),

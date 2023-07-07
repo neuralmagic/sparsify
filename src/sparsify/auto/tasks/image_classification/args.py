@@ -158,3 +158,10 @@ class ImageClassificationExportArgs(_ImageClassificationBaseArgs):
     num_classes: Optional[int] = Field(
         default=None, description="number of classes for model load/export"
     )
+    convert_qat: bool = Field(
+        default=True,
+        description=(
+            "if True, exports of torch QAT graphs will be converted to a fully  "
+            "quantized representation. Default is True"
+        ),
+    )

@@ -68,18 +68,18 @@ class _TransformersRunner(TaskRunner):
         a tuple of run args in the order (train_args, export_arts)
         :param config: training config to generate run for
         :return: tuple of training and export arguments
-        """  
+        """
         dataset_name, data_file_args = cls.parse_data_args(config.dataset)
         config.kwargs.update(data_file_args)
-  
+
         if config.task == TASK_REGISTRY.get("text_classification") and (
-            dataset in _GLUE_TASK_NAMES
+            dataset_name in _GLUE_TASK_NAMES
         ):
             # text classification GLUE datasets need special treatment
             # since the proper dataset names are set as "task" with
             # the top level dataset as "glue"
+            config.kwargs["task_name"] = dataset_name
             dataset_name = "glue"
-            config.kwargs["task_name"] = config.dataset
 
         train_args = cls.train_args_class(
             model_name_or_path=config.base_model,

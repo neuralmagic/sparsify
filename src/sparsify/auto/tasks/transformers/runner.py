@@ -16,6 +16,7 @@ import json
 import math
 import os
 import re
+import warnings
 from typing import Tuple, Union
 
 import onnx
@@ -98,6 +99,13 @@ class _TransformersRunner(TaskRunner):
         path. Also, existing kwargs for train, test and validation files will be
         overwritten if directory is provided.
 
+        Example directory structure:
+        - data_for_training/
+            - some_train_file.json
+            - some_validation_file.json
+            - test_dir/
+                - some_test_file.json
+
         :params dataset: inputted data string arg. Assumed to either be a dataset which
         can be downloaded publicly or a locally available directory containing
         data files.
@@ -106,15 +114,32 @@ class _TransformersRunner(TaskRunner):
         """
         data_file_args = {}
 
+        def _check_and_update_file(root: str, current_file: str, file_type: str):
+            split_type = file_type.split("_")[0]
+
+            if data_file_args.get(file_type, None):
+                warnings.warn(
+                    f"A {split_type} file was already found with name "
+                    f"{data_file_args[file_type]}. Updating with {current_file} "
+                )
+
+            if not current_file.lower().endswith(("json", "csv")):
+                warnings.warn(
+                    f"Found {split_type} file named {current_file} "
+                    "with incorrect file type (expected: json or csv). Skipping file."
+                )
+            else:
+                data_file_args[file_type] = os.path.join(root, current_file)
+
         if os.path.isdir(dataset):
             for root, _, files in os.walk(dataset):
                 for f in files:
                     if re.search(r"train", f):
-                        data_file_args["train_file"] = os.path.join(root, f)
+                        _check_and_update_file(root, f, "train_file")
                     elif re.search(r"val", f):
-                        data_file_args["validation_file"] = os.path.join(root, f)
+                        _check_and_update_file(root, f, "validation_file")
                     elif re.search(r"test", f):
-                        data_file_args["test_file"] = os.path.join(root, f)
+                        _check_and_update_file(root, f, "test_file")
 
                 if (
                     data_file_args.get("train_file", None)
@@ -122,6 +147,16 @@ class _TransformersRunner(TaskRunner):
                     and data_file_args.get("test_file", None)
                 ):
                     break
+
+            if not (
+                data_file_args.get("train_file", None)
+                and data_file_args.get("validation_file", None)
+            ):
+                raise Exception(
+                    "No training or validation files found. Be sure the "
+                    "directory provided to the data arg contains json or csv "
+                    "files with the train and val substrings in the filenames."
+                )
 
         if data_file_args:
             dataset = None

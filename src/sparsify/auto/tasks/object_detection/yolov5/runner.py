@@ -20,6 +20,7 @@ from typing import Tuple
 
 import onnx
 import torch
+import yaml
 
 import pandas
 from pydantic import BaseModel
@@ -80,11 +81,12 @@ class Yolov5Runner(TaskRunner):
         :param config: training config to generate run for
         :return: tuple of training and export arguments
         """
+        dataset = cls.parse_data_args(config.dataset)
         train_args = Yolov5TrainArgs(
             weights=config.base_model,
             recipe=config.recipe,
             recipe_args=config.recipe_args,
-            data=config.dataset,
+            data=dataset,
             **config.kwargs,
         )
 
@@ -120,6 +122,68 @@ class Yolov5Runner(TaskRunner):
         )
 
         return train_args, export_args
+
+    @classmethod
+    def parse_data_args(cls, dataset: str) -> str:
+        """
+        Check if the dataset provided is a data directory.
+
+        Example directory structure:
+        - data_for_training/
+
+        :params dataset: inputted data string arg. Assumed to either be a dataset which
+        can be downloaded publicly or a locally available directory containing
+        data files.
+
+        :returns: path to yaml to download or the newly built yaml. If the data string
+        arg is a yaml for a publicly available dataset, this function will return the
+        same string.
+        """
+        data_file_args = {}
+
+        def _check_and_update_file(file_type: str, path: str):
+            if data_file_args.get(file_type, None):
+                data_file_args[file_type].append(path)
+            else:
+                data_file_args[file_type] = [path]
+                        
+        # TODO: do we expect train/test/val with images and labels in each?
+        # or the other way around
+        if os.path.isdir(dataset):
+            for root, dirs, _ in os.walk(dataset):
+                for d in dirs:
+                    # May have to do further processing on the root string as
+                    # yolov5 expects relative paths
+                    current_path = os.path.append(root, d)
+                    if re.search(r"train", f):
+                        _check_and_update_file("train", current_path)
+                    elif re.search(r"val", f):
+                        _check_and_update_file("val", current_path)
+                    elif re.search(r"test", f):
+                        _check_and_update_file("test", current_path)
+
+            if not (
+                data_file_args.get("train", None)
+                and data_file_args.get("val", None)
+            ):
+                raise Exception(
+                    "No training or validation files found. Be sure the "
+                    "directory provided to the data arg contains json or csv "
+                    "files with the train and val substrings in the filenames."
+                )
+
+        if data_file_args:
+            # Store the newly generated yaml in the same directory as the data
+            data_file_args["path"] = dataset
+            classes = {} # TODO: how do we expect to process the labels?
+            dataset = os.path.join(dataset, "data_local.yaml")
+            with open(dataset, "w") as file:
+                yaml.safe_dump(
+                    {**{"names": classes}, **data_file_args},
+                    file,
+                )
+
+        return dataset
 
     def tune_args_for_hardware(self, hardware_specs: HardwareSpecs):
         """

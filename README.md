@@ -152,7 +152,7 @@ See the [Sparsify Cloud User Guide](https://github.com/neuralmagic/sparsify/blob
 Install with pip using:
 
 ```bash
-pip install sparsify
+pip install sparsify-nightly
 ```
 ## Step 4: Sparsify Login
 

@@ -25,8 +25,9 @@ import onnxruntime as ort
 from deepsparse.utils import generate_random_inputs, get_input_names
 from sparsify.login import import_sparsifyml_authenticated
 
+
 import_sparsifyml_authenticated()
-from sparsifyml.one_shot.utils import run_onnx_model # noqa: E402
+from sparsifyml.one_shot.utils import run_onnx_model  # noqa: E402
 
 
 __all__ = ["check_ort_health"]

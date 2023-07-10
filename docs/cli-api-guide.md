@@ -25,7 +25,7 @@ Next, you'll need to install Sparsify on your training hardware.
 To do this, run the following command:
 
 ```bash
-pip install sparsify
+pip install sparsify-nightly
 ```
 
 For more details and system/hardware requirements, see the [Installation](https://github.com/neuralmagic/sparsify#installation) section.

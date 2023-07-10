@@ -23,7 +23,11 @@ from onnx import TensorProto, helper
 
 import onnxruntime as ort
 from deepsparse.utils import generate_random_inputs, get_input_names
-from sparsifyml.one_shot.utils import run_onnx_model
+from sparsify.login import import_sparsifyml_authenticated
+
+
+import_sparsifyml_authenticated()
+from sparsifyml.one_shot.utils import run_onnx_model  # noqa: E402
 
 
 __all__ = ["check_ort_health"]

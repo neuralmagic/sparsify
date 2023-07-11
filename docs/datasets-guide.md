@@ -199,37 +199,37 @@ class NumpyExportWrapper(torch.nn.Module):
         self.model = model
         self.model.eval()  # Set model to evaluation mode
         self.numpy_data = []
-    
+
     def forward(self, *args, **kwargs):
         with torch.no_grad():
             inputs = {}
             batch_size = 0
-            
+
             for index, arg in enumerate(args):
                 if isinstance(arg, Tensor):
                     inputs[f"input_{index}"] = arg
                     batch_size = arg.size[0]
-                
+
             for key, val in kwargs.items():
                 if isinstance(val, Tensor):
                     inputs[key] = val
-                    batch_size = arg.size[0]
-                
+                    batch_size = val.shape[0]
+
             start_index = len(self.numpy_data)
             for _ in range(batch_size):
                 self.numpy_data.append({})
-            
-            for index, (input_key, input_batch) in enumerate(inputs):
-                for input_ in input_batch:
-                    self.numpy_data[start_index + index][input_key] = input_
-            
+
+            for input_key in iter(inputs):
+              for idx, input in enumerate(inputs[input_key]):
+                  self.numpy_data[start_index+idx][input_key] = input
+
             return self.model(*args, **kwargs)
 
     def save(self, path: str = "data"):
         for index, item in enumerate(self.numpy_data):
             npz_file_path = f'{path}/input{str(index).zfill(4)}.npz'
             np.savez(npz_file_path, **item)
-            
+
         print(f'Saved {len(self.numpy_data)} npz files to {path}')
 
 model = NumpyExportWrapper(YOUR_MODEL)

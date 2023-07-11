@@ -46,7 +46,7 @@ class _Yolov5BaseTrainArgs(BaseArgs):
     noautoanchor: bool = Field(default=False, description="disable AutoAnchor")
     bucket: str = Field(default="", description="gsutil bucket")
     cache: str = Field(
-        default="ram", description='--cache images in "ram" (default) or "disk"'
+        default="disk", description='--cache images in "ram" or "disk" (default)'
     )
     image_weights: bool = Field(
         default=False, description="use weighted image selection for training"

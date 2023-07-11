@@ -26,6 +26,7 @@ from sparsify.auto.utils import (
 from sparsify.schemas import APIArgs
 from sparsify.schemas.auto_api import SparsificationTrainingConfig
 from tensorboard.program import TensorBoard
+from tensorboard.util import tb_logging
 
 
 _LOGGER = logging.getLogger("auto_banner")
@@ -40,6 +41,8 @@ def main(api_args: APIArgs):
         log_directory,
         deploy_directory,
     ) = create_save_directory(api_args)
+
+    _suppress_tensorboard_logs()
 
     # Launch tensorboard server
     tensorboard_server = TensorBoard()
@@ -62,3 +65,10 @@ def main(api_args: APIArgs):
     runner.create_deployment_directory(
         train_directory=train_directory, deploy_directory=deploy_directory
     )
+
+
+def _suppress_tensorboard_logs():
+    # set tensorboard logger to warning level
+    #  avoids a constant stream of logs from tensorboard
+    tb_logger = tb_logging.get_logger()
+    tb_logger.setLevel(logging.WARNING)

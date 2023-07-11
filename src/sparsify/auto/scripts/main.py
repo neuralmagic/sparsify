@@ -29,7 +29,8 @@ from tensorboard.program import TensorBoard
 from tensorboard.util import tb_logging
 
 
-_LOGGER = tb_logging.get_logger()
+TB_LOGGER = tb_logging.get_logger()
+_LOGGER = logging.getLogger("auto_banner")
 
 
 def main(api_args: APIArgs):
@@ -42,11 +43,8 @@ def main(api_args: APIArgs):
         deploy_directory,
     ) = create_save_directory(api_args)
 
-    logging_level = logging.WARNING
-    if "logging_level" in api_args.kwargs:
-        logging_level = api_args.kwargs["logging_level"]
-
-    _LOGGER.setLevel(logging_level)
+    tb_logging_level = logging.WARNING
+    TB_LOGGER.setLevel(tb_logging_level)
     # Launch tensorboard server
     tensorboard_server = TensorBoard()
     tensorboard_server.configure(argv=[None, "--logdir", log_directory])

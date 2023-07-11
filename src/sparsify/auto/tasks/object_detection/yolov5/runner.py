@@ -121,7 +121,7 @@ class Yolov5Runner(TaskRunner):
             dynamic=True,
         )
 
-        #return train_args, export_args
+        return train_args, export_args
 
     @classmethod
     def parse_data_args(cls, dataset: str) -> str:

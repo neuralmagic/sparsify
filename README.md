@@ -73,12 +73,12 @@ limitations under the License.
 
 ![Logo](https://drive.google.com/uc?id=1XnlBKpRQdsnLC4IPoiCoihXJNFh8y7OL)
 
-# Welcome to the Sparsify Alpha Quick Start
+# Welcome to the Sparsify [Alpha] Quickstart
 
 ## Introduction
 🚨 **July 2023: Sparsify's next generation is now in alpha as of version 1.6.0!**
 
-This quick start provides a brief overview of Sparsify and then details several pathways you can work through. We encourage you to explore each for Sparsify's full benefits. As of this update, support for [Sparsify's first generation](https://docs.neuralmagic.com/sparsify) has been deprecated. We highly recommend you try the alpha to get a sneak peek and influence the product's development process.
+This quickstart provides a brief overview of Sparsify and then details several pathways you can work through. We encourage you to explore each for Sparsify's full benefits. As of this update, support for [Sparsify's first generation](https://docs.neuralmagic.com/sparsify) has been deprecated. We highly recommend you try the alpha to get a sneak peek and influence the product's development process.
 
 🚨 **Sparsify Alpha Feedback and Support** 
 
@@ -99,7 +99,7 @@ Sparsify empowers you to compress models through two components:
 * Sparsify Cloud - a web application that allows you to create and manage Sparsify Experiments, explore hyperparameters, predict performance, and compare results across both Experiments and deployment scenarios.  
 * Sparsify CLI/API - a Python package that allows you to run Sparsify Experiments locally, sync with the Sparsify Cloud, and integrate them into your own workflows.
 
-In this quick start, you will:
+In this quickstart, you will:
 
 1. [Verify prerequisites](#step-1-prerequisites).
 2. [Create an account](#step-2-account-creation) a Neural Magic Account.
@@ -123,7 +123,7 @@ In this quick start, you will:
 7. [Compare](#step-6-comparing-experiment-results) the Experiment results.
 8. [Deploy optimized models](#step-7-deploying-your-model-with-deepsparse) with DeepSpare (optional).
 
-When you finish this quick start, sparsifying your models is as easy as:
+When you finish this quickstart, sparsifying your models is as easy as:
 
 ```bash
 sparsify.run sparse-transfer --use-case image-classification --data imagenette --optim-level 0.5 --train-kwargs '{"dataset": "imagenette"}'
@@ -332,7 +332,7 @@ Iterations: 1346
 
 ## Step 7: Deploying Your Model With DeepSparse
 
-As an optional step to this quick start, now that you have your optimized model, you are ready for inferencing. To get the most inference performance out of your optimized model, we recommend you deploy on Neural Magic's [DeepSparse](https://docs.neuralmagic.com/deepsparse). DeepSparse is built to get the best performance out of optimized models on CPUs.  
+As an optional step to this quickstart, now that you have your optimized model, you are ready for inferencing. To get the most inference performance out of your optimized model, we recommend you deploy on Neural Magic's [DeepSparse](https://docs.neuralmagic.com/deepsparse). DeepSparse is built to get the best performance out of optimized models on CPUs.  
 
 DeepSparse Server takes in a task and a model path and will enable you to serve models and `Pipelines` for deployment in HTTP.
 
@@ -345,10 +345,10 @@ task question_answering \
 
 To run inference on your own model, change the model path to the location of your `model.onnx` file. Consult the [DeepSparse Server Docs](https://docs.neuralmagic.com/user-guides/deploying-deepsparse/deepsparse-server) for more details.
 
-If you're not ready for deploying, congratulations on completing the quick start! We welcome your [Sparsify Alpha feedback and support issues](#feedback-and-support) as described at the beginning of this guide.
+If you're not ready for deploying, congratulations on completing the quickstart! We welcome your [Sparsify Alpha feedback and support issues](#feedback-and-support) as described at the beginning of this guide.
 
 # Resources
-Now that you have explored the Sparsify Alpha Quick Start, here are other related resources.
+Now that you have explored the Sparsify [Alpha] Quickstart, here are other related resources.
 
 ## Learning More
 

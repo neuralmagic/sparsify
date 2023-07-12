@@ -27,8 +27,22 @@ jobs:
              virtualenv venv
              source venv/bin/activate
              pip install -e .
+             buildTime=$(date +%Y%m%d)
+             version=$(grep '"version":' package.json | cut -d'"' -f4)
+             sed -i "s/\"version\":.*/\"version\": \"$version\.$buildTime\",/g" package.json
+             echo "INFO: replaced sparsify package.json to $version.$buildTime"
              make -B build
              deactivate
+             wheelFile=`cd dist; ls *.whl | grep sparsify`
+             linuxWheel38=`echo "${wheelFile}" | sed 's/any/manylinux1_x86_64/g' | sed 's/py3-none/cp38-cp38/g'`
+             linuxWheel39=`echo "${wheelFile}" | sed 's/any/manylinux1_x86_64/g' | sed 's/py3-none/cp39-cp39/g'`
+             linuxWheel310=`echo "${wheelFile}" | sed 's/any/manylinux1_x86_64/g' | sed 's/py3-none/cp310-cp310/g'`
+             cp dist/${wheelFile} dist/${linuxWheel38}
+             echo "INFO: renamed wheel file to ${linuxWheel38} for sparsify linux build for cp38."
+             cp dist/${wheelFile} dist/${linuxWheel39}
+             echo "INFO: renamed wheel file to ${linuxWheel39} for sparsify linux build for cp39."
+             mv dist/${wheelFile} dist/${linuxWheel310}
+             echo -e "renamed wheel file to ${linuxWheel310} for sparsify linux build for cp310."
              ls dist/
              aws s3 cp dist/*nightly*.whl s3://nm-github-actions/${{ github.event.repository.name }}/
              todaytime=`date +%Y%m%d`
@@ -36,7 +50,8 @@ jobs:
              aws s3 cp log_${GITHUB_REF_NAME}_nightly_${todaytime}_${GITHUB_SHA:0:7} s3://nm-github-actions/${{ github.event.repository.name }}/
              oldDate=`date --date='-2 month' +%Y%m%d`
              oldWhl=`(aws s3 ls s3://nm-github-actions/${{ github.event.repository.name }}/ | grep nightly | grep "${oldDate}") || echo "notfound"`
-             if [[ "${oldWhl}" != 'notfound' ]]; then
-                 echo "Remove old build ${oldWhl}"
-                 aws s3 rm s3://nm-github-actions/${{ github.event.repository.name }}/${oldWhl}
-             fi
+             for oldone in (echo "${oldWhl}")
+             do
+                 echo "Remove old build ${oldone}"
+                 aws s3 rm s3://nm-github-actions/${{ github.event.repository.name }}/${oldone}
+             done

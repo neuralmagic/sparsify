@@ -33,7 +33,7 @@ limitations under the License.
 | **++**   | **+++++**            | **+++**  |
 
 One-Shot Experiments are the quickest way to create a faster and smaller version of your model.
-The algorithms are applied to the model post-training utilizing a calibration dataset, so they result in no further training time and much faster sparsification times compared with Training-Aware Experiments.
+The algorithms are applied to the model post-training, utilizing a calibration dataset, so they result in no further training time and much faster sparsification times compared with Training-Aware Experiments.
 
 Generally, One-Shot Experiments result in a 3-5x speedup with minimal accuracy loss.
 They are ideal for when you want to quickly sparsify your model and don't have a lot of time to spend on the sparsification process.
@@ -41,9 +41,9 @@ They are ideal for when you want to quickly sparsify your model and don't have a
 
 ### One-Shot CLI Quickstart
 
-Now that you understand what a One-Shot Experiment is and the benefits including short optimization time due to post-training algorithms, let's jump into how to use the CLI to effectively run a One-Shot Experiment. 
+Now that you understand what a One-Shot Experiment is and the benefits, including short optimization time due to post-training algorithms, you can now use the CLI to effectively run a One-Shot Experiment. 
 
-Before you run a One-Shot Experiment, you need to make sure you are logged into the Sparsify CLI. For instructions on Installation and Setup, review the [Sparsify Install and Setup Section](README section.com) in the Sparsify README. 
+Before you run a One-Shot Experiment, confirm you are logged into the Sparsify CLI. For installation and setup instructions, review the [Sparsify Install and Setup Section](README section.com) in the Sparsify README. 
 
 One-Shot Experiments use the following general command:
 
@@ -59,7 +59,7 @@ The values for each of the arguments follow these general rules:
 
 #### USE_CASE
 
-The generally supported use cases for Sparsify currently are:
+The generally supported use cases for Sparsify are:
 
 -   CV - classification:  `cv-classification`
 -   CV - detection:  `cv-detection`
@@ -78,9 +78,9 @@ For full details on Sparsify use cases, read the [Sparsify Use Cases Guide](http
 
 #### MODEL
 
-One-Shot requires the model provided to be in an [ONNX format](https://onnx.ai/). For guidance on how to convert a Pytorch model to ONNX, read our [ONNX Export User Guide](https://docs.neuralmagic.com/user-guides/onnx-export). 
+One-Shot requires the model provided to be in an [ONNX format](https://onnx.ai/). For guidance on how to convert a PyTorch model to ONNX, read our [ONNX Export User Guide](https://docs.neuralmagic.com/user-guides/onnx-export). 
 
-In the near future, more formats including Pytorch will be added for support with One-Shot Experiments.
+In the near future, more formats including PyTorch will be added for support with One-Shot Experiments.
 
 #### DATA
 
@@ -169,7 +169,7 @@ for data in YOUR_DATA_LOADER:
 model.save()
 ```
 
-Note: Replace YOUR_MODEL and YOUR_DATA_LOADER with your PyTorch model and data loader, respectively.
+Note: Replace `YOUR_MODEL` and `YOUR_DATA_LOADER` with your PyTorch model and data loader, respectively.
 
 For full details on Sparsify datasets, read the [Sparsify Datasets Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/datasets-guide.md#sparsify-datasets-guide).
 
@@ -193,7 +193,7 @@ The specific ranges are the following:
 The default of 0.5 will result in a ~50% sparse model with INT8 quantization.
 
 
-For full details on Sparsify Optim Levels, read the [Sparsify Optim (Sparsification) Levels Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/optim-levels-guide.md).
+For full details on Sparsify optim levels, read the [Sparsify Optim (Sparsification) Levels Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/optim-levels-guide.md).
 
 
 ### Example One-Shot Experiment CLI Commands
@@ -204,13 +204,13 @@ Here are code examples of One-Shot Experiments you may wish to run; pick your us
 
 ##### Computer Vision Use Case:
 
-Let's say we have an image classification use case and want to run a One-Shot Experiment on a dense resnet50 model using the imagenette dataset. We want to quickly and cheaply generate a sparse model so that we can build a prototype of the resnet50 model inferencing on a CPU server in the cloud with DeepSparse. Getting a working model that meets our deployment requirements on the imagenette dataset will give us the confidence to continue on our initiative knowing we can hit the metrics required for the business. 
+You have an image classification use case and want to run a One-Shot Experiment on a dense ResNet-50 model using the imagenette dataset. You want to quickly and cheaply generate a sparse model so that you can build a prototype of the ResNet-50 model inferencing on a CPU server in the cloud with DeepSparse. Getting a working model that meets your deployment requirements on the imagenette dataset will give you the confidence to continue on your initiative knowing you can hit the metrics required for the business. 
 
-We are targeting a balanced model in terms of wanting to get a 3-5x performance boost in latency while also maintaining the high accuracy of the model so that we can confidently deploy the model in production to solve our business case. 
+You are targeting a balanced model in terms of wanting to get a 3-5x performance boost in latency while also maintaining the high accuracy of the model so that you can confidently deploy the model in production to solve your business case. 
 
-We can use a Sparsify One-Shot Experiment to try and reach our goal. We have a standard resnet50 model as our dense baseline on imagenette which Sparsify already has as an alias model and npz formatted dataset hosted for us to use out of the box. Since we want to very quickly achieve a 3-5x speedup in latency performance with minimal training costs, a One-Shot Experiment makes the most sense for us for its fast optimization and lower, moderately performant sparsity profile. 
+You can use a Sparsify One-Shot Experiment to try and reach your goal. You have a standard ResNet-50 model as your dense baseline on imagenette which Sparsify already has as an alias model and npz formatted dataset hosted for you to use out of the box. Since you want to very quickly achieve a 3-5x speedup in latency performance with minimal training costs, a One-Shot Experiment makes the most sense for you for its fast optimization and lower, moderately performant sparsity profile. 
 
-With all of these considerations in mind, we have put together the following One-Shot Experiment command to run in hopes to achieve our goal for this use case: 
+With all of these considerations in mind, run the following One-Shot Experiment command to achieve this use case goal: 
 ```bash
 sparsify.run one-shot --use-case image_classification --model resnet50 --data imagenette --optim-level 0.5
 ```
@@ -219,15 +219,15 @@ The output is as follows:
 MARK
 
 ##### NLP Use Case:
-We are working on a text classification use case to help classify text reviews received from our customers through our e-commerce website. We have been having slow inference times using the BERT-base model and want to improve the performance to save costs. 
+You are working on a text classification use case to help classify text reviews received from your customers through your e-commerce website. You have been having slow inference times using the BERT-base model and want to improve the performance to save costs. 
 
-We want to quickly and cheaply generate a sparse BERT-base model so that we can use it to classify our customer reviews at a lower cost due to the improved performance and speed of the model. We are focused on improving the throughput of the model to process more requests, faster. 
+You want to quickly and cheaply generate a sparse BERT-base model so that you can use it to classify our customer reviews at a lower cost due to the improved performance and speed of the model. You are focused on improving the throughput of the model to process more requests, faster. 
 
-We are targeting a balanced model in terms of wanting to get a 3-5x performance boost in throughput while having a high accuracy so our classifications are actionable. 
+You are targeting a balanced model in terms of wanting to get a 3-5x performance boost in throughput while having a high accuracy so your classifications are actionable. 
 
-We can use a Sparsify One-Shot Experiment to try and reach our goal. We have a standard BERT-base model as our dense baseline on the SST2 dataset which Sparsify already has as an alias model and npz formatted dataset hosted for us to use out of the box. We want to try and reduce our costs by improving the throughput performance of our model and we are limited by our compute spend and team size. A One-Shot Experiment makes the most sense for us for its fast optimization and lower cost pathway as opposed to fully retraining the model to optimize it. 
+You can use a Sparsify One-Shot Experiment to try and reach your goal. You have a standard BERT-base model as our dense baseline on the SST2 dataset which Sparsify already has as an alias model and npz formatted dataset hosted for you to use out of the box. You want to try and reduce your costs by improving the throughput performance of your model and you are limited by our compute spend and team size. A One-Shot Experiment makes the most sense for you for its fast optimization and lower cost pathway as opposed to fully retraining the model to optimize it. 
 
-With all of these considerations in mind, we have put together the following One-Shot Experiment command to run in hopes to achieve our goal for this use case. 
+With all of these considerations in mind, run the following One-Shot Experiment command to achieve your goal this use case goal: 
 
 ```bash
 sparsify.run one-shot --use-case text_classification --model bert-base --data sst2 --optim-level 0.5
@@ -238,7 +238,7 @@ MARK
 
 ### One-Shot Cloud Quickstart
 
-In addition to manually creating commands, you use the Sparsify Cloud to generate Sparsify One-Shot Experiment commands as well. 
+In addition to manually creating commands, you can use the Sparsify Cloud to generate Sparsify One-Shot Experiment commands. 
 
 To get started, read the [Sparsify Cloud User Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/cloud-user-guide.md). 
 

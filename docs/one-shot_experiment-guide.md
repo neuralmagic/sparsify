@@ -1,4 +1,5 @@
 
+
 <!--
 Copyright (c) 2021 - present / Neuralmagic, Inc. All Rights Reserved.
 
@@ -21,10 +22,11 @@ limitations under the License.
 1. One-Shot Experiment Overview
 2. One-Shot CLI Quickstart
 3. One-Shot Cloud Quickstart
-4. Resources
+4. Next Steps
+5. Resources
 
 
-### One-Shot Experiment Overivew
+### One-Shot Experiment Overview
 
 | Sparsity | Sparsification Speed | Accuracy |
 |----------|----------------------|----------|
@@ -41,7 +43,7 @@ They are ideal for when you want to quickly sparsify your model and don't have a
 
 Now that you understand what a One-Shot Experiment is and the benefits including short optimization time due to post-training algorithms, let's jump into how to use the CLI to effectively run a One-Shot Experiment. 
 
-Before you run a One-Shot Experiment, you need to make sure you are logged into the Sparsify CLI. For instruictions on Installation and Login, review the [Sparsify Getting Started Documentation](Link.com).
+Before you run a One-Shot Experiment, you need to make sure you are logged into the Sparsify CLI. For instructions on Installation and Setup, review the [Sparsify Install and Setup Section](README section.com) in the Sparsify README. 
 
 One-Shot Experiments use the following general command:
 
@@ -50,74 +52,201 @@ sparsify.run one-shot --use-case USE_CASE --model MODEL --data DATA --optim-leve
 ```
 
 The values for each of the arguments follow these general rules:
-- [Details]**`EXPERIMENT_TYPE`**: `one-shot`.
-- [[Details]](https://github.com/neuralmagic/sparsify/blob/main/docs/use-cases-guide.md)**`USE_CASE`**: the use case you're solving for, such as `image-classification`, `object-detection`, `text-classification`, or a custom use case. For a custom use case, you may ...
-- [[Details]](https://github.com/neuralmagic/sparsify/blob/main/docs/models-guide.md) **`MODEL`**:  One-Shot, currently, requires the model to be in an ONNX format. For guidance on how to convert a Pytorch model to ONNX, read our [ONNX Export User Guide](https://docs.neuralmagic.com/user-guides/onnx-export). 
-- [[Details]](https://github.com/neuralmagic/sparsify/blob/main/docs/datasets-guide.md)**`DATA`**: One-Shot, currently, only supports NPZ-formatted datasets. To format your dataset to run a One-Shot Experiment, 
-- [[Details]](https://github.com/neuralmagic/sparsify/blob/main/docs/optim-levels-guide.md)**`OPTIM_LEVEL`**: the desired sparsification level from 0 (none) to 1 (max). The general rule is that 0 is the baseline model, <0.3 only quantizes the model, 0.3-1.0 increases the sparsity of the model and applies quantization.
+- [**`USE_CASE`** ](#use_case)
+- [**`MODEL`**](#model)
+- [**`DATA`**](#data)
+- [**`OPTIM_LEVEL`**](#optim_level)
 
-### Example CLI Commands
+#### USE_CASE
 
-Here are examples of a valid One-Shot Experiment you may wish to run; pick your use case and run your first One-Shot Experiment!
+The generally supported use cases for Sparsify currently are:
+
+-   CV - classification:  `cv-classification`
+-   CV - detection:  `cv-detection`
+-   CV - segmentation:  `cv-segmentation`
+-   NLP - question answering:  `nlp-question_answering`
+-   NLP - text classification:  `nlp-text_classification`
+-   NLP - sentiment analysis:  `nlp-sentiment_analysis`
+-   NLP - token classification:  `nlp-token_classification`
+-   NLP - named entity recognition:  `nlp-named_entity_recognition`
+
+Note, other aliases are recognized for these use cases such as image-classification for cv-classification. Sparsify will automatically recognize these aliases and apply the correct use case.
+
+For One-Shot Experiments, both the CLIs and APIs always support custom use cases. To utilize, run a One-Shot Experiment with `--use-case` set to the desired custom use case. This custom use case can be any string as long as it does not contain ASCII characters. 
+
+For full details on Sparsify use cases, read the [Sparsify Use Cases Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/use-cases-guide.md).
+
+#### MODEL
+
+One-Shot requires the model provided to be in an [ONNX format](https://onnx.ai/). For guidance on how to convert a Pytorch model to ONNX, read our [ONNX Export User Guide](https://docs.neuralmagic.com/user-guides/onnx-export). 
+
+In the near future, more formats including Pytorch will be added for support with One-Shot Experiments.
+
+#### DATA
+
+For One-Shot Experiments, Sparsify utilizes the `.npz` format for data storage, which is a file format based on the popular NumPy library. This format is efficient and versatile. 
+
+##### Dataset Specifications
+
+- Each `.npz` file should contain a single data sample, with no batch dimension. This data sample will be run through the ONNX model.
+- The `.npz` file should be structured as a dictionary, mapping the input name in the ONNX specification to a numpy array containing the data.
+- All data samples should be stored under the same directory, typically named `data`.
+
+The local file structure should look like the following:
+
+```text
+data
+  -- input1.npz
+  -- input2.npz
+  -- input3.npz
+```
+
+##### Example
+
+For example, if you have a BERT-style model with a sequence length of 128, each `.npz` file should contain a dictionary mapping input names ("input_ids", "attention_mask", "token_type_ids") to numpy arrays of the appropriate size:
+
+```text
+{
+    "input_ids": ndarray(128,), 
+    "attention_mask": ndarray(128,), 
+    "token_type_ids": ndarray(128,)
+}
+```
+
+The dictionary keys should match the names of the inputs in the ONNX model specification, and the shapes of the arrays should match the expected input shapes of the model.
+
+##### Generating NPZ Files
+
+Below is an example script for generating this file structure from a PyTorch module **before the ONNX export**:
+
+```python
+import numpy as np
+import torch
+from torch import Tensor
+
+class NumpyExportWrapper(torch.nn.Module):
+    def __init__(self, model):
+        super(NumpyExportWrapper, self).__init__()
+        self.model = model
+        self.model.eval()  # Set model to evaluation mode
+        self.numpy_data = []
+
+    def forward(self, *args, **kwargs):
+        with torch.no_grad():
+            inputs = {}
+            batch_size = 0
+
+            for index, arg in enumerate(args):
+                if isinstance(arg, Tensor):
+                    inputs[f"input_{index}"] = arg
+                    batch_size = arg.size[0]
+
+            for key, val in kwargs.items():
+                if isinstance(val, Tensor):
+                    inputs[key] = val
+                    batch_size = val.shape[0]
+
+            start_index = len(self.numpy_data)
+            for _ in range(batch_size):
+                self.numpy_data.append({})
+
+            for input_key in iter(inputs):
+              for idx, input in enumerate(inputs[input_key]):
+                  self.numpy_data[start_index+idx][input_key] = input
+
+            return self.model(*args, **kwargs)
+
+    def save(self, path: str = "data"):
+        for index, item in enumerate(self.numpy_data):
+            npz_file_path = f'{path}/input{str(index).zfill(4)}.npz'
+            np.savez(npz_file_path, **item)
+
+        print(f'Saved {len(self.numpy_data)} npz files to {path}')
+
+model = NumpyExportWrapper(YOUR_MODEL)
+for data in YOUR_DATA_LOADER:
+    model(data[0])
+model.save()
+```
+
+Note: Replace YOUR_MODEL and YOUR_DATA_LOADER with your PyTorch model and data loader, respectively.
+
+For full details on Sparsify datasets, read the [Sparsify Datasets Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/datasets-guide.md#sparsify-datasets-guide).
+
+#### OPTIM_LEVEL
+
+When using Sparsify, the optim (sparsification) level is one of the top arguments you should decide on. Specifically, it controls how much sparsification is applied to your model with higher values resulting in faster and more compressed models. At the max range, though, you may see a drop in accuracy.
+
+The optim level can be set anywhere from 0.0 to 1.0, where 0.0 is for no sparsification and 1.0 is for maximum sparsification.
+0.5 is the default optim level and is a good starting point for most use cases.
+
+##### One-Shot Optim Levels
+
+Given that One-Shot is applied in post-training, the sparsity ranges are lowered to avoid accuracy drops as compared with sparse transfer or training aware.
+The specific ranges are the following:
+
+- optim-level == 0.0: no sparsification is applied and the input model is returned as a baseline test case.
+- optim-level < 0.3: INT8 quantization of the model (activations and weights) is applied.
+- optim-level >= 0.3: unstructured pruning (sparsity) is applied to the weights of the model from 40% for 0.3 to 80% for 1.0 with linear scaling between. 
+  Additionally, INT8 quantization of the model is applied.
+
+The default of 0.5 will result in a ~50% sparse model with INT8 quantization.
+
+
+For full details on Sparsify Optim Levels, read the [Sparsify Optim (Sparsification) Levels Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/optim-levels-guide.md).
+
+
+### Example One-Shot Experiment CLI Commands
+
+Here are code examples of One-Shot Experiments you may wish to run; pick your use case and start sparsifying with One-Shot!
 
 #### Running One-Shot Experiments
 
-Computer Vision:
+##### Computer Vision Use Case:
+
+Let's say we have an image classification use case and want to run a One-Shot Experiment on a dense resnet50 model using the imagenette dataset. We want to quickly and cheaply generate a sparse model so that we can build a prototype of the resnet50 model inferencing on a CPU server in the cloud with DeepSparse. Getting a working model that meets our deployment requirements on the imagenette dataset will give us the confidence to continue on our initiative knowing we can hit the metrics required for the business. 
+
+We are targeting a balanced model in terms of wanting to get a 3-5x performance boost in latency while also maintaining the high accuracy of the model so that we can confidently deploy the model in production to solve our business case. 
+
+We can use a Sparsify One-Shot Experiment to try and reach our goal. We have a standard resnet50 model as our dense baseline on imagenette which Sparsify already has as an alias model and npz formatted dataset hosted for us to use out of the box. Since we want to very quickly achieve a 3-5x speedup in latency performance with minimal training costs, a One-Shot Experiment makes the most sense for us for its fast optimization and lower, moderately performant sparsity profile. 
+
+With all of these considerations in mind, we have put together the following One-Shot Experiment command to run in hopes to achieve our goal for this use case: 
 ```bash
 sparsify.run one-shot --use-case image_classification --model resnet50 --data imagenette --optim-level 0.5
 ```
+The output is as follows:
 
-NLP Example:
+MARK
+
+##### NLP Use Case:
+We are working on a text classification use case to help classify text reviews received from our customers through our e-commerce website. We have been having slow inference times using the BERT-base model and want to improve the performance to save costs. 
+
+We want to quickly and cheaply generate a sparse BERT-base model so that we can use it to classify our customer reviews at a lower cost due to the improved performance and speed of the model. We are focused on improving the throughput of the model to process more requests, faster. 
+
+We are targeting a balanced model in terms of wanting to get a 3-5x performance boost in throughput while having a high accuracy so our classifications are actionable. 
+
+We can use a Sparsify One-Shot Experiment to try and reach our goal. We have a standard BERT-base model as our dense baseline on the SST2 dataset which Sparsify already has as an alias model and npz formatted dataset hosted for us to use out of the box. We want to try and reduce our costs by improving the throughput performance of our model and we are limited by our compute spend and team size. A One-Shot Experiment makes the most sense for us for its fast optimization and lower cost pathway as opposed to fully retraining the model to optimize it. 
+
+With all of these considerations in mind, we have put together the following One-Shot Experiment command to run in hopes to achieve our goal for this use case. 
+
 ```bash
 sparsify.run one-shot --use-case text_classification --model bert-base --data sst2 --optim-level 0.5
 ```
+The output is as follows:
+MARK
+
 
 ### One-Shot Cloud Quickstart
 
-You can use the Sparsify Cloud to generate Sparsify One-Shot Experiment commands that you can then copy and paste into your CLI to run the One-Shot Experiment. 
+In addition to manually creating commands, you use the Sparsify Cloud to generate Sparsify One-Shot Experiment commands as well. 
 
-Note: This One-Shot Cloud Quickstart assumes you have:
-1. Created a Sparsify Account and are Signed In
-2.  Installed Sparsify in your local training environment via CLI
-3.  Logged into Sparsify with your API key
+To get started, read the [Sparsify Cloud User Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/cloud-user-guide.md). 
 
-To create a One-Shot Experiment via the Sparsify Cloud, you need to:
-1. Click 'Start Sparsifying' on the Homepage.
-2. Designate the Use Case, select One-Shot, and set Compression Level.
-3. Generate the One-Shot code snippet.
-4. Copy the code snippet, replace the model and dataset with your data, and run it in your local training environment.
+ 
+### Next Steps 
 
+Now that you have successfully run a One-Shot Experiment, check out the [Sparse-Transfer](LINK.com)  and [Training-Aware](LINK.com) Experiments to target different sparsity profiles. 
 
-#### Step 1: Click 'Start Sparsifying'
-
-Once you are on the Sparsify Homepage, click 'Start Sparsifying' on the top right of the screen to begin the sparsification flow.
-
-![Homepage](https://drive.google.com/uc?id=1bm404rtwVV4pNplFysKcuMZ_p480A-Tu)](https://drive.google.com/uc?id=1bm404rtwVV4pNplFysKcuMZ_p480A-Tu)
-
-#### Step 2: Designate the Use Case, select One-Shot, and set Compression Level
-
-You should now be looking at the 'Sparsify a model' modal. 
-
-First, select a Use Case for your model. Note that if your use case is not present in the dropdown, fear not; the use case does not affect the optimization of the model.
-
-Next, select One-Shot as your Experiment Type.
-
-Finally, adjust the Hyperparameter Compression Level slider to designate whether you would like to optimize the model for performance, accuracy, or a balance of both. Note that selecting an extreme on the slider will not completely tank the opposing metric.
-
-![Generate Code Snippetl](https://drive.google.com/uc?id=1Wu628pLt8lGjKzfDMdeDhBJE9dIW2aG7)
-
-
-#### Generate the One-Shot code snippet 
-Click 'Generate Code Snippet' to view the code snipppet generated from your sparsification selections on the next modal. 
-
-#### Copy the code snippet, replace the model and dataset with your data, and run it in your local training environment
-
-Once your code snippet is generated, make sure you have installed Sparsify and are logged in via the CLI. 
-
-Next, copy the code snippet and fill in the paths to your local dense model and/or training dataset as prompted. 
-
-Finally, run the One-Shot Experiment command and wait for your sparse model to complete. You have now completed running a One-Shot Experiment with Sparsify. 
-![Generate Code Snippetl](https://drive.google.com/uc?id=1KXC-j0ztWQt42GSUK45JnsZXijOgZQ7k)
  
 ### Resources
 To learn more about Sparsify and all of the available pathways outside of One-Shot Experiments, refer to the [Sparsify README](https://github.com/neuralmagic/sparsify).

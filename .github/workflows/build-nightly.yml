@@ -45,6 +45,8 @@ jobs:
              echo -e "renamed wheel file to ${linuxWheel310} for sparsify linux build for cp310."
              aws s3 cp dist/${linuxWheel310} s3://nm-github-actions/${{ github.event.repository.name }}/
              echo "INFO: copy ${linuxWheel310} to S3"
+             aws s3 cp dist/*.tar.gz s3://nm-github-actions/${{ github.event.repository.name }}/
+             echo "INFO: copy tar.gz to S3"
              ls dist/
              todaytime=`date +%Y%m%d`
              date '+%Y%m%d-%k:%M:%S' | tee log_${GITHUB_REF_NAME}_nightly_${todaytime}_${GITHUB_SHA:0:7}

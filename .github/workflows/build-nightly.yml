@@ -35,12 +35,17 @@ jobs:
              linuxWheel310=`echo "${wheelFile}" | sed 's/any/manylinux1_x86_64/g' | sed 's/py3-none/cp310-cp310/g'`
              cp dist/${wheelFile} dist/${linuxWheel38}
              echo "INFO: renamed wheel file to ${linuxWheel38} for sparsify linux build for cp38."
+             aws s3 cp dist/${linuxWheel38} s3://nm-github-actions/${{ github.event.repository.name }}/
+             echo "INFO: copy ${linuxWheel38} to S3"
              cp dist/${wheelFile} dist/${linuxWheel39}
              echo "INFO: renamed wheel file to ${linuxWheel39} for sparsify linux build for cp39."
+             aws s3 cp dist/${linuxWheel39} s3://nm-github-actions/${{ github.event.repository.name }}/
+             echo "INFO: copy ${linuxWheel39} to S3"
              mv dist/${wheelFile} dist/${linuxWheel310}
              echo -e "renamed wheel file to ${linuxWheel310} for sparsify linux build for cp310."
+             aws s3 cp dist/${linuxWheel310} s3://nm-github-actions/${{ github.event.repository.name }}/
+             echo "INFO: copy ${linuxWheel310} to S3"
              ls dist/
-             aws s3 cp dist/*nightly*.whl s3://nm-github-actions/${{ github.event.repository.name }}/
              todaytime=`date +%Y%m%d`
              date '+%Y%m%d-%k:%M:%S' | tee log_${GITHUB_REF_NAME}_nightly_${todaytime}_${GITHUB_SHA:0:7}
              aws s3 cp log_${GITHUB_REF_NAME}_nightly_${todaytime}_${GITHUB_SHA:0:7} s3://nm-github-actions/${{ github.event.repository.name }}/

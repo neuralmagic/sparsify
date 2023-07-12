@@ -217,9 +217,7 @@ class Yolov5Runner(TaskRunner):
 
             with open(dataset, "w") as f:
                 yaml.safe_dump(
-                    {**data_file_args, **{"names": classes}},
-                    f,
-                    sort_keys=False
+                    {**data_file_args, **{"names": classes}}, f, sort_keys=False
                 )
 
         return dataset

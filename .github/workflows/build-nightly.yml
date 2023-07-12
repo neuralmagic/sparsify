@@ -27,10 +27,6 @@ jobs:
              virtualenv venv
              source venv/bin/activate
              pip install -e .
-             buildTime=$(date +%Y%m%d)
-             version=$(grep '"version":' package.json | cut -d'"' -f4)
-             sed -i "s/\"version\":.*/\"version\": \"$version\.$buildTime\",/g" package.json
-             echo "INFO: replaced sparsify package.json to $version.$buildTime"
              make -B build
              deactivate
              wheelFile=`cd dist; ls *.whl | grep sparsify`

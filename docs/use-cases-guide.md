@@ -17,8 +17,8 @@ limitations under the License.
 # Sparsify Use Cases Guide
 
 To use Sparsify, you must specify a use case for all experiments to run.
-A use case is the specific task or domain/sub-domain you wish to sparsify a model for such as image classification, object detection, or text classification.
-It is used to enable Sparsify to apply the best sparsification techniques for your use case, to automatically package the model for deployment, and depending on what is run, to load specific pipelines for data loading and training.
+A use case is the specific task or domain/sub-domain you wish to sparsify a model for, such as image classification, object detection, or text classification.
+It is used to enable Sparsify to apply the best sparsification techniques for your use case, to automatically package the model for deployment, and, depending on what is run, to load specific pipelines for data loading and training.
 
 ## Use Cases
 

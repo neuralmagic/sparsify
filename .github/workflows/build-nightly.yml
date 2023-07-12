@@ -51,7 +51,7 @@ jobs:
              aws s3 cp log_${GITHUB_REF_NAME}_nightly_${todaytime}_${GITHUB_SHA:0:7} s3://nm-github-actions/${{ github.event.repository.name }}/
              oldDate=`date --date='-2 month' +%Y%m%d`
              oldWhl=`(aws s3 ls s3://nm-github-actions/${{ github.event.repository.name }}/ | grep nightly | grep "${oldDate}") || echo "notfound"`
-             for oldone in (echo "${oldWhl}")
+             for oldone in $(echo "${oldWhl}")
              do
                  echo "Remove old build ${oldone}"
                  aws s3 rm s3://nm-github-actions/${{ github.event.repository.name }}/${oldone}

@@ -2,8 +2,8 @@ name: build-release
 run-name: ${{ github.workflow }} is to create release wheel file for pypi
 on:
   push:
-    branches:
-      - 'release/[0-9]+.[0-9]+'
+   # branches:
+   #   - 'release/[0-9]+.[0-9]+'
     workflow_dispatch:
       
 jobs:
@@ -29,8 +29,24 @@ jobs:
              sed -i 's/is_release = False/is_release = True/g' src/${{ github.event.repository.name }}/version.py
              make -B build
              deactivate
-             ls dist/
-             aws s3 cp dist/*.whl s3://nm-github-actions/${{ github.event.repository.name }}/
+             wheelFile=`cd dist; ls *.whl | grep sparsify`
+             linuxWheel38=`echo "${wheelFile}" | sed 's/any/manylinux1_x86_64/g' | sed 's/py3-none/cp38-cp38/g'`
+             linuxWheel39=`echo "${wheelFile}" | sed 's/any/manylinux1_x86_64/g' | sed 's/py3-none/cp39-cp39/g'`
+             linuxWheel310=`echo "${wheelFile}" | sed 's/any/manylinux1_x86_64/g' | sed 's/py3-none/cp310-cp310/g'`
+             cp dist/${wheelFile} dist/${linuxWheel38}
+             echo "INFO: renamed wheel file to ${linuxWheel38} for sparsify linux build for cp38."
+             aws s3 cp dist/${linuxWheel38} s3://nm-github-actions/${{ github.event.repository.name }}/
+             echo "INFO: copy ${linuxWheel38} to S3"
+             cp dist/${wheelFile} dist/${linuxWheel39}
+             echo "INFO: renamed wheel file to ${linuxWheel39} for sparsify linux build for cp39."
+             aws s3 cp dist/${linuxWheel39} s3://nm-github-actions/${{ github.event.repository.name }}/
+             echo "INFO: copy ${linuxWheel39} to S3"
+             mv dist/${wheelFile} dist/${linuxWheel310}
+             echo -e "renamed wheel file to ${linuxWheel310} for sparsify linux build for cp310."
+             aws s3 cp dist/${linuxWheel310} s3://nm-github-actions/${{ github.event.repository.name }}/
+             echo "INFO: copy ${linuxWheel310} to S3"
+             aws s3 cp dist/*.tar.gz s3://nm-github-actions/${{ github.event.repository.name }}/
+             echo "INFO: copy tar.gz to S3"
              todaytime=`date +%Y%m%d`
              date '+%Y%m%d-%k:%M:%S' | tee log_${GITHUB_REF_NAME}_release_${todaytime}_${GITHUB_SHA:0:7}
              aws s3 cp log_${GITHUB_REF_NAME}_release_${todaytime}_${GITHUB_SHA:0:7} s3://nm-github-actions/${{ github.event.repository.name }}/

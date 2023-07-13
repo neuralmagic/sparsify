@@ -232,7 +232,6 @@ The optim level can be set anywhere from 0.0 to 1.0, where 0.0 is for no sparsif
 ##### Training-Aware Optim Levels
 
 
-
 Given that Training-Aware is applied while training, the sparsity ranges are increased as compared to one shot since accuracy recovery is easier at higher sparsities.
 
 The specific ranges are the following:
@@ -243,8 +242,6 @@ The specific ranges are the following:
   Additionally, INT8 quantization of the model is applied.
 
 The default of 0.5 will result in a ~70% sparse model with INT8 quantization.
-
-For full details on Sparsify optim levels, read the [Sparsify Optim (Sparsification) Levels Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/optim-levels-guide.md).
 
 
 ### Example Training-Aware Experiment CLI Commands

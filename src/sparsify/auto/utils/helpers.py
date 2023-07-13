@@ -17,6 +17,7 @@ Generic helpers for sparsify.auto
 """
 import logging
 import os
+import re
 from collections import OrderedDict
 from datetime import datetime
 from typing import Any, Dict, List, Tuple, Union
@@ -32,6 +33,7 @@ __all__ = [
     "load_raw_config_history",
     "best_n_trials_from_history",
     "initialize_banner_logger",
+    "create_yolo_data_yaml",
 ]
 
 SAVE_DIR = "{{run_mode}}_{{task}}{:_%Y_%m_%d_%H_%M_%S}".format(datetime.now())
@@ -45,6 +47,101 @@ def initialize_banner_logger():
     handler.setLevel(level)
     handler.setFormatter(_BannerFormatter())
     logger.addHandler(handler)
+
+
+def create_yolo_data_yaml(dataset: str) -> str:
+    """
+    Check if the dataset provided is a data directory. If it is, buid a yolov5 yaml
+    file based on the provided data directory path. An example of the directory
+    structure for the provided directory path is shown below. There must
+    subdirectories in the provided directory named `images`, `labels` and a text
+    file called `classes.txt` which includes the list of the classes for the
+    particular dataset, ordered by class id. The `images` and `labels` folders
+    should contain identically named train, test, and validation data folder.
+    For details on what images and labels should look like, please see the yolov5
+    repository: https://github.com/ultralytics/yolov5/tree/master.
+
+    Example directory structure:
+    - data_for_training/
+        - labels/
+            - train/
+            - val/
+            - test/
+        - images/
+            - train/
+            - val/
+            - test/
+        - classes.txt
+
+    :params dataset: inputted data string arg. Assumed to either be a dataset which
+    can be downloaded publicly or a locally available directory containing
+    data files.
+
+    :returns: path to yaml to download or the newly built yaml. If the data string
+    arg is a yaml for a publicly available dataset, this function will return the
+    same string. Otherwise, the path to the newly generated yaml will be returned.
+    """
+    data_file_args = {}
+    image_dir = "images"
+    class_path = "classes.txt"
+    yaml_path = "data_local.yaml"
+
+    def _check_and_update_file(file_type: str, path: str):
+        if data_file_args.get(file_type, None):
+            data_file_args[file_type].append(path)
+        else:
+            data_file_args[file_type] = [path]
+
+    if not os.path.isdir(dataset):
+        return dataset
+
+    image_path = os.path.join(dataset, image_dir)
+    class_list_path = os.path.join(dataset, class_path)
+
+    if not os.path.exists(image_path):
+        raise ValueError(
+            f"The the provided directory path {dataset} "
+            "does not contain a folder called `images`. A subdirectory must "
+            "exist which contains the data folders."
+        )
+
+    if not os.path.exists(class_list_path):
+        raise ValueError(
+            f"The the provided directory path {dataset} "
+            "does not contain a classes.txt file. A file must be "
+            "present which includes a list of the classes for the dataset."
+        )
+
+    data_file_args["path"] = dataset
+
+    for d in os.listdir(image_path):
+        current_path = os.path.join(image_dir, d)
+        if re.search(r"train", d):
+            _check_and_update_file("train", current_path)
+        elif re.search(r"val", d):
+            _check_and_update_file("val", current_path)
+        elif re.search(r"test", d):
+            _check_and_update_file("test", current_path)
+
+    if not (data_file_args.get("train") and data_file_args.get("val")):
+        raise Exception(
+            "No training or validation folders found. Be sure the "
+            "directory provided to the data arg contains folders "
+            "with the train and val substrings in the filenames."
+        )
+
+    # Store the newly generated yaml in the same directory as the data
+    dataset = os.path.join(dataset, yaml_path)
+
+    with open(class_list_path, "r") as f:
+        class_list = f.readlines()
+
+    classes = {idx: label.strip() for idx, label in enumerate(class_list)}
+
+    with open(dataset, "w") as f:
+        yaml.safe_dump({**data_file_args, "names": classes}, f, sort_keys=False)
+
+    return dataset
 
 
 def create_save_directory(api_args: "APIArgs") -> Tuple[str]:  # noqa: F821

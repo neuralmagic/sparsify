@@ -17,14 +17,14 @@ limitations under the License.
 # Sparsify Datasets Guide
 
 For all Sparsify Experiments, you will need to provide a dataset to create a sparse model.
-Due to the varied ML pipelines and implementations, Sparsify standardizes on a few, popular formats for datasets.
+Due to the varied ML pipelines and implementations, Sparsify standardizes on a few popular formats for datasets.
 You will need to make sure that your data is formatted properly according to the standards listed below.
 
 ## Predefined Use Cases
 
-### Training Aware and Sparse Transfer
+### Training-Aware and Sparse-Transfer
 
-Training Aware and Sparse Transfer utilize specific dataset standards depending on the use case.
+Training-Aware and Sparse-Transfer utilize specific dataset standards depending on the use case.
 Each one is listed below with an example.
 
 #### Image Classification
@@ -40,7 +40,7 @@ This format is fairly simple and intuitive, and it is also widely used in the ma
 - The images should be in a format readable by the Python Imaging Library (PIL), which includes formats such as .jpeg, .png, .bmp, etc.
 - Images do not need to be of the same size.
 
-The PyTorch ImageFolder class automatically assigns numerical class labels to the images based on the lexicographical order of their class directories. 
+The PyTorch ImageFolder class automatically assigns numerical class labels to the images based on the lexicographical order of their class directories.
 Therefore, it is crucial to ensure the directories are properly named to avoid any confusion or mislabeling.
 
 ##### Example
@@ -62,13 +62,13 @@ The exact filenames ('xxx.png', 'xxy.png', etc.) do not matter; what matters is 
 
 By organizing the data in this way, it can be easily read and labeled by the PyTorch ImageFolder class, and thus easily used for training image classification models in Sparsify. 
 
-Please note, the class labels ('dog', 'cat') are case-sensitive and the order of the classes would be sorted lexicographically. 
-Here, 'cat' will be considered class 0 and 'dog' will be class 1, due to alphabetical order.
+Note, the class labels ('dog', 'cat') are case-sensitive and the order of the classes would be sorted lexicographically. 
+Here, 'cat' will be considered class 0, and 'dog' will be class 1, due to alphabetical order.
 
 #### Object Detection / Image Segmentation
 
 For object detection and image segmentation tasks, Sparsify supports the dataset format used by YOLOv5. 
-This format is specifically designed for tasks involving bounding boxes and segmentation masks, and is widely adopted in the community.
+This format is specifically designed for tasks involving bounding boxes and segmentation masks and is widely adopted in the community.
 
 ##### Specifications
 
@@ -123,7 +123,7 @@ Hugging Face datasets can be represented in various file formats including JSON,
 
 ##### Example
 
-Here's an example of how you might structure a dataset for a sentiment analysis task:
+Here is an example of how you might structure a dataset for a sentiment analysis task:
 
 If you're using a JSON lines (.jsonl) format, your file could look like this:
 
@@ -149,11 +149,11 @@ The first row contains the column names, and each subsequent row represents a si
 Whether you choose to use JSON lines or CSV will depend on your specific needs and preferences, but either format will work well with Hugging Face and Sparsify. 
 Make sure your data is formatted correctly according to these specifications to ensure it can be used in your experiments.
 
-### One Shot
+### One-Shot
 
-For one-shot experiments, Sparsify utilizes the `.npz` format for data storage, which is a file format based on the popular NumPy library. 
+For One-Shot Experiments, Sparsify utilizes the `.npz` format for data storage, which is a file format based on the popular NumPy library. 
 This format is efficient and versatile. 
-In the near future, more functionality will be landed such that the definitions given above for Training Aware and Sparse Transfer will work as well.
+In the near future, more functionality will be landed such that the definitions given above for Training-Aware and Sparse-Transfer will work as well.
 
 #### Specifications
 
@@ -238,7 +238,7 @@ for data in YOUR_DATA_LOADER:
 model.save()
 ```
 
-Note: Replace YOUR_MODEL and YOUR_DATA_LOADER with your PyTorch model and data loader, respectively.
+Note: Replace `YOUR_MODEL` and `YOUR_DATA_LOADER` with your PyTorch model and data loader, respectively.
 
 ## Custom Use Cases
 

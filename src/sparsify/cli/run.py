@@ -43,6 +43,8 @@ def one_shot(**kwargs):
     """
     One shot sparsification of ONNX models
     """
+    kwargs["optim_level"] = _validate_optim_level(kwargs.get("optim_level"))
+
     # raises exception if sparsifyml not installed
     from sparsify.one_shot import one_shot
 
@@ -76,6 +78,8 @@ def sparse_transfer(**kwargs):
     """
     Run sparse transfer learning for a use case against a supported task and model
     """
+    kwargs["optim_level"] = _validate_optim_level(kwargs.get("optim_level"))
+
     from sparsify import auto
 
     auto_checks()
@@ -95,6 +99,8 @@ def training_aware(**kwargs):
     """
     Run training aware sparsification for a use case against a supported task and model
     """
+    kwargs["optim_level"] = _validate_optim_level(kwargs.get("optim_level"))
+
     from sparsify import auto
 
     auto_checks()
@@ -129,6 +135,26 @@ def _parse_run_args_to_auto(sparse_transfer: bool, **kwargs):
         kwargs=train_kwargs,
         run_mode="sparse_transfer" if sparse_transfer else "training_aware",
     )
+
+
+def _validate_optim_level(optim_level: float) -> float:
+    """
+    :param optim_level: cli ingested optim_level
+    :return: optim level scaled from 0-1
+    :raises ValueError: for any values that are not float 0-1 or an integer 1-100
+    """
+    # optim level should always be defaulted by the CLI, asserting here for safety
+    assert optim_level is not None
+
+    if 0 <= optim_level <= 1:
+        return optim_level
+    elif (1 < optim_level <= 100) and optim_level == int(optim_level):
+        return optim_level / 100.0
+    else:
+        raise ValueError(
+            "optim-level must be a float value between 0-1 or an integer value "
+            f"between 0-100.  Found {optim_level}"
+        )
 
 
 def _maybe_unwrap_zoo_stub(model_path: str) -> str:

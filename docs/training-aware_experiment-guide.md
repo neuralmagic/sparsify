@@ -44,9 +44,9 @@ Generally, Training-Aware Experiments result in a 6-12x speedup with minimal acc
 
 ### Training-Aware CLI Quickstart
 
-Now that you understand what a Training-Aware Experiment is and the benefits, including the best possible recovery of accuracy for an optimized model, you can now use the CLI to effectively run a Training-Aware Experiment. 
+Now that you understand what a Training-Aware Experiment is and the benefits, including the best possible recovery of accuracy for an optimized model, you can now use the CLI to effectively run a Training-Aware Experiment.
 
-Before you run a Training-Aware Experiment, you need to make sure you are logged into the Sparsify CLI. For instructions on Installation and Setup, review the [Sparsify Install and Setup Section](READMEsection.com) in the Sparsify README. 
+Before you run a Training-Aware Experiment, confirm you are logged into the Sparsify CLI. For instructions on Installation and Setup, review the [Sparsify Install and Setup Section](READMEsection.com) in the Sparsify README.
 
 Training-Aware Experiments use the following general command:
 
@@ -75,7 +75,7 @@ The generally supported use cases for Sparsify are:
 
 Note, other aliases are recognized for these use cases such as image-classification for cv-classification. Sparsify will automatically recognize these aliases and apply the correct use case.
 
-For Training-Aware Experiments, custom use cases are only supported with the APIs for custom integrations. This is because non-custom integrations utilize plug-ins that correspond to the appropriate use case for training pipelines. To utilize this, ensure that you have a training pipeline ready to go and inject the Sparsify API into the training pipeline with the desired use case passed in as an argument. More info on this specific pathway will be available in the near future as Sparsify development progresses.
+For Training-Aware Experiments, custom use cases are only supported with the APIs for custom integrations. This is because non-custom integrations utilize plugins that correspond to the appropriate use case for training pipelines. To utilize this, ensure that you have a training pipeline ready to go and inject the Sparsify API into the training pipeline with the desired use case passed in as an argument. More info on this specific pathway will be available in the near future as Sparsify development progresses.
 
 For full details on Sparsify use cases, read the [Sparsify Use Cases Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/use-cases-guide.md).
 
@@ -88,7 +88,7 @@ The PyTorch model format is the supported model format for Training-Aware Experi
 
 For all Sparsify Experiments, you will need to provide a dataset to create a sparse model.
 Due to the varied ML pipelines and implementations, Sparsify standardizes on a few, popular formats for datasets.
-You will need to make sure that your data is formatted properly according to the standards listed below.
+Confirm that your data is formatted properly according to the standards listed below.
 
 #####  Predefined Use Cases
 
@@ -130,7 +130,7 @@ The exact filenames ('xxx.png', 'xxy.png', etc.) do not matter; what matters is 
 
 By organizing the data in this way, it can be easily read and labeled by the PyTorch ImageFolder class, and thus easily used for training image classification models in Sparsify. 
 
-Please note, the class labels ('dog', 'cat') are case-sensitive and the order of the classes would be sorted lexicographically. 
+Note, the class labels ('dog', 'cat') are case-sensitive and the order of the classes would be sorted lexicographically. 
 Here, 'cat' will be considered class 0, and 'dog' will be class 1, due to alphabetical order.
 
 ##### Object Detection / Image Segmentation
@@ -191,7 +191,7 @@ Hugging Face datasets can be represented in various file formats including JSON,
 
 ##### Natural Language (NLP/NLG) Example
 
-Here's an example of how you might structure a dataset for a sentiment analysis task:
+Here is an example of how you might structure a dataset for a sentiment analysis task:
 
 If you're using a JSON lines (.jsonl) format, your file could look like this:
 
@@ -244,7 +244,7 @@ The specific ranges are the following:
 
 The default of 0.5 will result in a ~70% sparse model with INT8 quantization.
 
-For full details on Sparsify Optim Levels, read the [Sparsify Optim (Sparsification) Levels Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/optim-levels-guide.md).
+For full details on Sparsify optim levels, read the [Sparsify Optim (Sparsification) Levels Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/optim-levels-guide.md).
 
 
 ### Example Training-Aware Experiment CLI Commands
@@ -259,9 +259,9 @@ You have an image classification use case and want to run a Training-Aware Exper
 
 You are targeting a balanced model in terms of wanting to get a 6-12x performance boost in latency while also maintaining the high accuracy of the model so that you can confidently deploy the model in production to solve your business case. 
 
-You can use a Sparsify Training-Aware Experiment to try and reach your goal. Training-Aware Experiments use apply SOTA optimization techniques during training to generate a highly optimized sparse model with very little to no impact on accuracy. Since you want to get the most possible performance speedup in latency and need a high level of accuracy, a Training-Aware Experiment makes the most sense for you for its highly optmized, performant sparsity profile as well as high accuracy profile.  
+You can use a Sparsify Training-Aware Experiment to try and reach your goal. Training-Aware Experiments apply SOTA optimization techniques during training to generate a highly optimized sparse model with very little to no impact on accuracy. Since you want to get the most possible performance speedup in latency and need a high level of accuracy, a Training-Aware Experiment makes the most sense for you for its highly optimized, performant sparsity profile as well as high accuracy profile.  
 
-With all of these considerations in mind, you have put together the following Training-Aware Experiment command to run to achieve your goal for this use case: 
+With all of these considerations in mind, run the following Training-Aware Experiment command to achieve your use case goal: 
 ```bash
 sparsify.run training-aware --use-case image_classification --model resnet50 --data imagenette --optim-level 0.5
 ```
@@ -278,9 +278,9 @@ You are targeting a balanced model, but are targeting a significant 6-12x perfor
 
 You are targeting a balanced model in terms of wanting to get a 6-12x performance boost in throughput while losing little to no accuracy so your classifications are actionable. 
 
-You can use a Sparsify Training-Aware Experiment to try and reach your goal. Since you want to use the SST2 dataset on BERT-base to get the highest performing model with the lowest accuracy hit, a Training-Aware Experiment makes the most sense for you for its highly optmized, performant sparsity profile as well as high accuracy profile.  
+You can use a Sparsify Training-Aware Experiment to try and reach your goal. Since you want to use the SST2 dataset on BERT-base to get the highest performing model with the lowest accuracy hit, a Training-Aware Experiment makes the most sense for you for its highly optimized, performant sparsity profile as well as high accuracy profile.  
 
-With all of these considerations in mind, you have put together the following Training-Aware Experiment command to run to achieve your goal for this use case. 
+With all of these considerations in mind, run the following Training-Aware Experiment command to achieve your use case goal: 
 
 ```bash
 sparsify.run training-aware --use-case text_classification --model bert-base --data sst2 --optim-level 0.5
@@ -291,7 +291,7 @@ MARK
 
 ### Training-Aware Cloud Quickstart
 
-In addition to manually creating commands, you use the Sparsify Cloud to generate Sparsify Training-Aware Experiment commands as well. 
+In addition to manually creating commands, you use Sparsify Cloud to generate Sparsify Training-Aware Experiment commands. 
 
 To get started, read the [Sparsify Cloud User Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/cloud-user-guide.md). 
 

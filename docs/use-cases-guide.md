@@ -38,11 +38,11 @@ Sparsify will automatically recognize these aliases and apply the correct use ca
 ### Custom Use Cases
 
 If you wish to use Sparsify for a use case that is not in the list of currently supported use cases, you can use a custom use case for some pathways in Sparsify.
-The custom use cases will be saved into the Sparsify Cloud for future reuse when run through a supported pathway.
+The custom use cases will be saved in Sparsify Cloud for future reuse when run through a supported pathway.
 The pathways that support custom use cases are listed below.
 
-Note, custom use cases will prevent Sparsify from applying known, domain-specific knowledge for the sparsification of your model.
-Additionally, it will prevent autofill of the pre- and post-processing functions when creating a deployment package.
+Note that custom use cases will prevent Sparsify from applying known, domain-specific knowledge for the sparsification of your model.
+Additionally, it will prevent auto-filling of the pre- and post-processing functions when creating a deployment package.
 
 #### One-Shot
 
@@ -54,4 +54,4 @@ To utilize, run a One-Shot Experiment with `--use-case` set to the desired custo
 For Training-Aware Experiments, custom use cases are only supported with the APIs for custom integrations.
 This is because non-custom integrations utilize plugins that correspond to the appropriate use case for training pipelines.
 To utilize this, ensure that you have a training pipeline ready to go and inject the Sparsify API into the training pipeline with the desired use case passed in as an argument.
-More info on this specific pathway will be available in the near future as Sparsify development progresses.
+More information on this specific pathway will be available in the near future as Sparsify's development progresses.

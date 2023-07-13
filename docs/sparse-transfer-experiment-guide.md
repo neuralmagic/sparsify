@@ -75,22 +75,22 @@ The generally supported use cases for Sparsify are:
 -   NLP - token classification:  `nlp-token_classification`
 -   NLP - named entity recognition:  `nlp-named_entity_recognition`
 
-Note, other aliases are recognized for these use cases such as image-classification for cv-classification. Sparsify will automatically recognize these aliases and apply the correct use case.
+Note that other aliases are recognized for these use cases, such as image-classification for cv-classification. Sparsify will automatically recognize these aliases and apply the correct use case.
 
 For full details on Sparsify use cases, read the [Sparsify Use Cases Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/use-cases-guide.md).
 
 #### MODEL
 
   
-Models are optional for the Sparse-Transfer pathway. If no model is provided, the best model for the given optimization level will be used. 
+Models are optional for the Sparse-Transfer pathway. If no model is provided, the best model for the given optimization level will be used.
 
-If you choose to override the model argument, the PyTorch model format is the supported model format for Sparse-Transfer Experiments. The exact format will depend on the pipeline, and therefore the use case, for the Sparse-Transfer Experiment. 
+If you choose to override the model argument, the PyTorch model format is the supported model format for Sparse-Transfer Experiments. The exact format will depend on the pipeline, and therefore the use case, for the Sparse-Transfer Experiment.
 
 #### DATA
 
 For all Sparsify Experiments, you will need to provide a dataset to create a sparse model.
-Due to the varied ML pipelines and implementations, Sparsify standardizes on a few, popular formats for datasets.
-You will need to make sure that your data is formatted properly according to the standards listed below.
+Due to the varied ML pipelines and implementations, Sparsify standardizes on a few popular formats for datasets.
+Confirm that your data is formatted properly according to the standards listed below.
 
 #####  Predefined Use Cases
 
@@ -132,7 +132,7 @@ The exact filenames ('xxx.png', 'xxy.png', etc.) do not matter; what matters is 
 
 By organizing the data in this way, it can be easily read and labeled by the PyTorch ImageFolder class, and thus easily used for training image classification models in Sparsify. 
 
-Please note, the class labels ('dog', 'cat') are case-sensitive and the order of the classes would be sorted lexicographically. 
+Note that the class labels ('dog', 'cat') are case-sensitive and the order of the classes would be sorted lexicographically. 
 Here, 'cat' will be considered class 0, and 'dog' will be class 1, due to alphabetical order.
 
 ##### Object Detection / Image Segmentation
@@ -254,7 +254,7 @@ Here are code examples of Sparse-Transfer Experiments you may wish to run; pick 
 
 ##### Computer Vision Use Case:
 
-Let's say you have an image classification use case and want to run a Sparse-Transfer Experiment on the imagenette dataset. You don't care about the specific model architecture and just want to leverage SparseZoo's best-optimized model for classification and just apply your dataset to that model to create an accurate, highly performant model to accelerate inference. 
+You have an image classification use case and want to run a Sparse-Transfer Experiment on the imagenette dataset. You don't care about the specific model architecture and just want to leverage SparseZoo's best-optimized model for classification and just apply your dataset to that model to create an accurate, highly performant model to accelerate inference. 
 
 You are targeting a balanced model, but are targeting a pretty drastic 5-10x performance boost in latency while also maintaining the high accuracy of the model so that you can confidently deploy the model in production to solve your business case. 
 
@@ -278,7 +278,7 @@ You are targeting a balanced model in terms of wanting to get a 5-10x performanc
 
 You can use a Sparsify Sparse-Transfer Experiment to try and reach your goal. Since you want to use the SST2 dataset and are model agnostic for this text classification use case, Sparsify will apply your data to a pre-optimized model behind the scenes.   A Sparse-Transfer Experiment makes the most sense for us for a high sparsity profile and model-agnostic approach in transfer learning your data onto a pre-optimized model. 
 
-With all of these considerations in mind, you have put together the following Sparse-Transfer Experiment command to run to achieve your goal for this use case. 
+With all of these considerations in mind, run the following Sparse-Transfer Experiment command to achieve your use case goal:
 
 ```bash
 sparsify.run sparse-transfer --use-case text_classification --data sst2 --optim-level 0.5

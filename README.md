@@ -118,7 +118,7 @@ An account is required to manage your Experiments and API keys.
 Visit the [Neural Magic's Web App Platform](https://account.neuralmagic.com/signup) and create an account by entering your email, name, and unique password. 
 If you already have a Neural Magic Account, [sign in](https://account.neuralmagic.com/signin) with your email.
 
-<img src="https://drive.google.com/uc?id=1RInSrLsfm0PQLEkjJqD1HzaCWA2yDcNi" alt="Sparsify Sign In" style="height: 600px; width:500px;"/>
+<img src="https://drive.google.com/uc?id=1RInSrLsfm0PQLEkjJqD1HzaCWA2yDcNi" alt="Sparsify Sign In" style="height: ; width:400px;"/>
 
 #### 1.3 Install Sparsify
 

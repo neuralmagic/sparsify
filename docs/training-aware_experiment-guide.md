@@ -73,9 +73,9 @@ The generally supported use cases for Sparsify are:
 -   NLP - token classification:  `nlp-token_classification`
 -   NLP - named entity recognition:  `nlp-named_entity_recognition`
 
-Note, other aliases are recognized for these use cases such as image-classification for cv-classification. Sparsify will automatically recognize these aliases and apply the correct use case.
+Note that other aliases are recognized for these use cases, such as image-classification for cv-classification. Sparsify will automatically recognize these aliases and apply the correct use case.
 
-For Training-Aware Experiments, custom use cases are only supported with the APIs for custom integrations. This is because non-custom integrations utilize plugins that correspond to the appropriate use case for training pipelines. To utilize this, ensure that you have a training pipeline ready to go and inject the Sparsify API into the training pipeline with the desired use case passed in as an argument. More info on this specific pathway will be available in the near future as Sparsify development progresses.
+For Training-Aware Experiments, custom use cases are only supported with the APIs for custom integrations. This is because non-custom integrations utilize plugins that correspond to the appropriate use case for training pipelines. To utilize this, ensure that you have a training pipeline ready to go and inject the Sparsify API into the training pipeline with the desired use case passed in as an argument. More information on this specific pathway will be available in the near future as Sparsify's development progresses.
 
 For full details on Sparsify use cases, read the [Sparsify Use Cases Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/use-cases-guide.md).
 
@@ -130,7 +130,7 @@ The exact filenames ('xxx.png', 'xxy.png', etc.) do not matter; what matters is 
 
 By organizing the data in this way, it can be easily read and labeled by the PyTorch ImageFolder class, and thus easily used for training image classification models in Sparsify. 
 
-Note, the class labels ('dog', 'cat') are case-sensitive and the order of the classes would be sorted lexicographically. 
+Note that the class labels ('dog', 'cat') are case-sensitive and the order of the classes would be sorted lexicographically. 
 Here, 'cat' will be considered class 0, and 'dog' will be class 1, due to alphabetical order.
 
 ##### Object Detection / Image Segmentation
@@ -203,7 +203,7 @@ If you're using a JSON lines (.jsonl) format, your file could look like this:
 
 Each line is a separate JSON object, representing a single example.
 
-If you're using a CSV format, your file could look like this:
+If you are using a CSV format, your file could look like this:
 
 ```
 text,label

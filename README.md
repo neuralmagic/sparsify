@@ -86,7 +86,7 @@ We encourage you to explore one for Sparsify's full benefits.
 When you finish the quickstart, sparsifying your models is as easy as:
 
 ```bash
-sparsify.run sparse-transfer --use-case image-classification --data imagenette --optim-level 0.5 --train-kwargs '{"dataset": "imagenette"}'
+sparsify.run sparse-transfer --use-case image-classification --data imagenette --optim-level 0.5
 ```
 
 ### 1. Install and Setup

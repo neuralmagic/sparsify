@@ -175,7 +175,7 @@ For full details on Sparsify datasets, read the [Sparsify Datasets Guide](https:
 
 #### OPTIM_LEVEL
 
-When using Sparsify, the optim (sparsification) level is one of the top arguments you should decide on. Specifically, it controls how much sparsification is applied to your model with higher values resulting in faster and more compressed models. At the max range, though, you may see a drop in accuracy.
+When using Sparsify, the optim (sparsification) level is one of the top arguments you should decide on. Specifically, it controls how much sparsification is applied to your model, with higher values resulting in faster and more compressed models. At the max range, though, you may see a drop in accuracy.
 
 The optim level can be set anywhere from 0.0 to 1.0, where 0.0 is for no sparsification and 1.0 is for maximum sparsification.
 0.5 is the default optim level and is a good starting point for most use cases.

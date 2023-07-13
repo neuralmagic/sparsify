@@ -171,7 +171,7 @@ For `image1.jpg`, if there's a car and a pedestrian in the image, the correspond
 1 0.7 0.8 0.1 0.2
 ```
 
-This would mean that there is an object of class 0 (car) centered at (50% of the image width, 60% of the image height) and having a width of 20% of the image width and height 30% of the image height. 
+This would mean that there is an object of class 0 (car) centered at (50% of the image width, 60% of the image height) and having a width of 20% of the image width and a height 30% of the image height.
 The second line is similar but for an object of class 1 (pedestrian).
 
 For image segmentation, the labels might be more complex, including segmentation masks that indicate which pixels belong to which object category.
@@ -254,13 +254,13 @@ Here are code examples of Sparse-Transfer Experiments you may wish to run; pick 
 
 ##### Computer Vision Use Case:
 
-Let's say you have an image classification use case and want to run a Sparse-Transfer Experiment on the imagenette dataset. You don't care about the specific model architecture and just want to leverage the SparseZoo's best optimized model for classification and just apply your dataset to that model to create an accurate, highly performant model to accelerate inference. 
+Let's say you have an image classification use case and want to run a Sparse-Transfer Experiment on the imagenette dataset. You don't care about the specific model architecture and just want to leverage SparseZoo's best-optimized model for classification and just apply your dataset to that model to create an accurate, highly performant model to accelerate inference. 
 
 You are targeting a balanced model, but are targeting a pretty drastic 5-10x performance boost in latency while also maintaining the high accuracy of the model so that you can confidently deploy the model in production to solve your business case. 
 
-You can use a Sparsify Sparse-Transfer Experiment to try and reach your goal. Sparse-Transfer Experiments use existing optimized models and apply your data to them to easily create fine-tuned optimized models. Since you want to very quickly acheive a 5-10x speedup in latency performance and are model agnostic, a Sparse-Transfer Experiment makes the most sense for you for its highly optmized, performant sparsity profile on your data.  
+You can use a Sparsify Sparse-Transfer Experiment to try and reach your goal. Sparse-Transfer Experiments use existing optimized models and apply your data to them to easily create fine-tuned optimized models. Since you want to very quickly achieve a 5-10x speedup in latency performance and are model agnostic, a Sparse-Transfer Experiment makes the most sense for you for its highly optimized, performant sparsity profile on your data.  
 
-With all of these considerations in mind, you have put together the following Sparse-Transfer Experiment command to run to achieve your goal for this use case: 
+With all of these considerations in mind, run the following Sparse-Transfer Experiment command to achieve your use case goal: 
 ```bash
 sparsify.run sparse-transfer --use-case image_classification --data imagenette --optim-level 0.5
 ```
@@ -276,7 +276,7 @@ You are targeting a balanced model, but are targeting a pretty drastic 5-10x per
 
 You are targeting a balanced model in terms of wanting to get a 5-10x performance boost in throughput while having a high accuracy so your classifications are actionable. 
 
-You can use a Sparsify Sparse-Transfer Experiment to try and reach your goal. Since you want to use the SST2 dataset and are model agnostic for this text classification use case, Sparsify will apply your data to a pre-optmized model behind the scenes.   A Sparse-Transfer Experiment makes the most sense for us for high sparsity profile and model agnostic approach in transfer learning your data onto a pre-optmized model. 
+You can use a Sparsify Sparse-Transfer Experiment to try and reach your goal. Since you want to use the SST2 dataset and are model agnostic for this text classification use case, Sparsify will apply your data to a pre-optimized model behind the scenes.   A Sparse-Transfer Experiment makes the most sense for us for a high sparsity profile and model-agnostic approach in transfer learning your data onto a pre-optimized model. 
 
 With all of these considerations in mind, you have put together the following Sparse-Transfer Experiment command to run to achieve your goal for this use case. 
 
@@ -289,7 +289,7 @@ MARK
 
 ### Sparse-Transfer Cloud Quickstart
 
-In addition to manually creating commands, you use the Sparsify Cloud to generate Sparsify Sparse-Transfer Experiment commands as well. 
+In addition to manually creating commands, you use Sparsify Cloud to generate Sparsify Sparse-Transfer Experiment commands. 
 
 To get started, read the [Sparsify Cloud User Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/cloud-user-guide.md). 
 

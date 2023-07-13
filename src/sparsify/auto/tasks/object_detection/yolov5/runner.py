@@ -20,7 +20,6 @@ from typing import Tuple
 
 import onnx
 import torch
-import yaml
 
 import pandas
 from pydantic import BaseModel
@@ -28,7 +27,7 @@ from sparseml.yolov5.scripts import export as export_hook
 from sparseml.yolov5.scripts import train as train_hook
 from sparsify.auto.tasks.object_detection.yolov5 import Yolov5ExportArgs
 from sparsify.auto.tasks.runner import DDP_ENABLED, TaskRunner
-from sparsify.auto.utils import HardwareSpecs
+from sparsify.auto.utils import HardwareSpecs, create_yolo_data_yaml
 from sparsify.schemas import Metrics, SparsificationTrainingConfig
 from sparsify.utils import TASK_REGISTRY
 from yolov5.models.experimental import attempt_load
@@ -81,7 +80,7 @@ class Yolov5Runner(TaskRunner):
         :param config: training config to generate run for
         :return: tuple of training and export arguments
         """
-        dataset = cls.parse_data_args(config.dataset)
+        dataset = create_yolo_data_yaml(config.dataset)
         train_args = Yolov5TrainArgs(
             weights=config.base_model,
             recipe=config.recipe,
@@ -122,105 +121,6 @@ class Yolov5Runner(TaskRunner):
         )
 
         return train_args, export_args
-
-    @classmethod
-    def parse_data_args(cls, dataset: str) -> str:
-        """
-        Check if the dataset provided is a data directory. If it is, buid a yolov5 yaml
-        file based on the provided data directory path. An example of the directory
-        structure for the provided directory path is shown below. There must
-        subdirectories in the provided directory named `images`, `labels` and a text
-        file called `classes.txt` which includes the list of the classes for the
-        particular dataset, ordered by class id. For details on what images and labels
-        should look like, please see the yolov5 repository:
-        https://github.com/ultralytics/yolov5/tree/master.
-
-        Example directory structure:
-        - data_for_training/
-            - labels/
-                - train/
-                - val/
-                - test/
-            - images/
-                - train/
-                - validation/
-                - test/
-            - classes.txt
-
-        :params dataset: inputted data string arg. Assumed to either be a dataset which
-        can be downloaded publicly or a locally available directory containing
-        data files.
-
-        :returns: path to yaml to download or the newly built yaml. If the data string
-        arg is a yaml for a publicly available dataset, this function will return the
-        same string. Otherwise, the path to the newly generated yaml will be returned.
-        """
-        data_file_args = {}
-        IMAGE_DIR = "images"
-        CLASS_LIST_PATH = "classes.txt"
-        YAML_PATH = "data_local.yaml"
-
-        def _check_and_update_file(file_type: str, path: str):
-            if data_file_args.get(file_type, None):
-                data_file_args[file_type].append(path)
-            else:
-                data_file_args[file_type] = [path]
-
-        if os.path.isdir(dataset):
-            image_path = os.path.join(dataset, IMAGE_DIR)
-            class_list_path = os.path.join(dataset, CLASS_LIST_PATH)
-
-            if not os.path.exists(image_path):
-                raise ValueError(
-                    f"The the provided directory path {dataset} "
-                    "does not contain a folder called `images`. A subdirectory must "
-                    "exist which contains the data folders."
-                )
-
-            if not os.path.exists(class_list_path):
-                raise ValueError(
-                    f"The the provided directory path {dataset} "
-                    "does not contain a classes.txt file. A file must be "
-                    "present which includes a list of the classes for the dataset."
-                )
-
-            data_file_args["path"] = dataset
-
-            for d in os.listdir(image_path):
-                current_path = os.path.join(IMAGE_DIR, d)
-                if re.search(r"train", d):
-                    _check_and_update_file("train", current_path)
-                elif re.search(r"val", d):
-                    _check_and_update_file("val", current_path)
-                elif re.search(r"test", d):
-                    _check_and_update_file("test", current_path)
-
-            if not (
-                data_file_args.get("train", None) and data_file_args.get("val", None)
-            ):
-                raise Exception(
-                    "No training or validation folders found. Be sure the "
-                    "directory provided to the data arg contains folders "
-                    "with the train and val substrings in the filenames."
-                )
-
-        if data_file_args:
-            # Store the newly generated yaml in the same directory as the data
-            dataset = os.path.join(dataset, YAML_PATH)
-
-            with open(class_list_path, "r") as f:
-                class_list = f.readlines()
-
-            classes = {}
-            for class_id in range(len(class_list)):
-                classes[class_id] = class_list[class_id].strip()
-
-            with open(dataset, "w") as f:
-                yaml.safe_dump(
-                    {**data_file_args, **{"names": classes}}, f, sort_keys=False
-                )
-
-        return dataset
 
     def tune_args_for_hardware(self, hardware_specs: HardwareSpecs):
         """

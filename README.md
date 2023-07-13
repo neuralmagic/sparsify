@@ -118,7 +118,7 @@ An account is required to manage your Experiments and API keys.
 Visit the [Neural Magic's Web App Platform](https://account.neuralmagic.com/signup) and create an account by entering your email, name, and unique password. 
 If you already have a Neural Magic Account, [sign in](https://account.neuralmagic.com/signin) with your email.
 
-<img src="TODO" />
+<img src="https://drive.google.com/uc?id=1RInSrLsfm0PQLEkjJqD1HzaCWA2yDcNi" alt="Sparsify Sign In" style="height: 600px; width:500px;"/>
 
 #### 1.3 Install Sparsify
 
@@ -180,7 +180,7 @@ tar -xzf sst2_calibration.tar.gz
 sparsify.run one-shot --use-case text_classification --model "zoo:nlp/sentiment_analysis/bert-base/pytorch/huggingface/sst2/base-none" --data ./sst2_calibration --optim-level 0.5
 ```
 
-To dive deeper into One-Shot Experiments, read through the [One-Shot Experiment Guide](./docs/one-shot_experiment-guide.md).
+To dive deeper into One-Shot Experiments, read through the [One-Shot Experiment Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/one-shot_experiment-guide.md).
 
 <i>
 Note, One-Shot Experiments currently require the model to be in an ONNX format and the dataset to be in a Numpy format.
@@ -210,7 +210,7 @@ Or, to sparse transfer a SparseZoo model to the SST-2 dataset for sentiment anal
 sparsify.run sparse-transfer --use-case text_classification --data sst2 --optim-level 0.5
 ```
 
-To dive deeper into Sparse-Transfer Experiments, read through the [Sparse-Transfer Experiment Guide](./docs/sparse-transfer_experiment-guide.md).
+To dive deeper into Sparse-Transfer Experiments, read through the [Sparse-Transfer Experiment Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/sparse-transfer_experiment-guide.md).
 
 <i>
 Note, Sparse-Transfer Experiments require the model to be saved in a PyTorch format corresponding to the underlying integration such as Ultralytics YOLOv5 or HuggingFace Transformers.
@@ -241,7 +241,7 @@ Or, to sparsify a BERT model on the SST-2 dataset for sentiment analysis, run th
 sparsify.run training-aware --use-case text_classification --model "zoo:nlp/sentiment_analysis/bert-base/pytorch/huggingface/sst2/base-none" --data sst2 --optim-level 0.5
 ```
 
-To dive deeper into Training-Aware Experiments, read through the [Training-Aware Experiment Guide](./docs/training-aware_experiment-guide.md).
+To dive deeper into Training-Aware Experiments, read through the [Training-Aware Experiment Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/training-aware_experiment-guide.md).
 
 <i>
 Note, Training-Aware Experiments require the model to be saved in a PyTorch format corresponding to the underlying integration such as Ultralytics YOLOv5 or HuggingFace Transformers.

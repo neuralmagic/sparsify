@@ -243,8 +243,6 @@ Sparse-Transfer optim_level mappings are unique since they map to models availab
 
 The default of 0.5 will result in a medium-sized sparse model with INT8 quantization.
 
-For full details on Sparsify Optim Levels, read the [Sparsify Optim (Sparsification) Levels Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/optim-levels-guide.md).
-
 
 ### Example Sparse-Transfer Experiment CLI Commands
 

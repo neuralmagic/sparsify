@@ -337,7 +337,10 @@ If you're not ready for deploying, congratulations on completing the quickstart!
 
 ## Companion Guides
 
-- 
+- [Sparsify Cloud User Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/cloud-user-guide.md)
+- [Sparsify Use Cases Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/use-cases-guide.md)
+- [Sparsify Models Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/models-guide.md)
+- [Sparsify Datasets Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/datasets-guide.md)
 
 ## Resources
 

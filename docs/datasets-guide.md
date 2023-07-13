@@ -111,7 +111,7 @@ Make sure the class labels are consistent with what is expected by the YOLOv5 co
 #### Natural Language (NLP/NLG)
 
 For natural language processing (NLP) and natural language generation (NLG) tasks, Sparsify supports the dataset formats used by the Hugging Face library. 
-Hugging Face datasets can be represented in various file formats including JSON, CSV, and JSON lines format (.jsonl).
+Hugging Face datasets can be represented in various file formats including JSON, CSV, and JSON lines format (.json).
 
 ##### Specifications
 
@@ -125,7 +125,7 @@ Hugging Face datasets can be represented in various file formats including JSON,
 
 Here is an example of how you might structure a dataset for a sentiment analysis task:
 
-If you're using a JSON lines (.jsonl) format, your file could look like this:
+If you're using a JSON lines (.json) format, your file could look like this:
 
 ```
 {"text": "I love this movie!", "label": "positive"}

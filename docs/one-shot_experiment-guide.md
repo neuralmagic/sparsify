@@ -18,6 +18,8 @@ limitations under the License.
 
 # Sparsify One-Shot Experiment Guide
 
+If you're just getting started with Sparsify, we recommend you try out this One-Shot Experiment pathway first. We also have Sparse-Transfer and Training-Aware Experiments, which you can explore in the [Next Steps](#next-steps) section of this guide. 
+
 ## Overview
 1. One-Shot Experiment Overview
 2. One-Shot CLI Quickstart

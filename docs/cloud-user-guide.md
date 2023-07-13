@@ -48,7 +48,7 @@ For more details and system/hardware requirements, see the [Installation](https:
 
 You may copy the command from the Sparsify Cloud in Step 1 in the following screenshot and run that in your training environment to install Sparsify. 
 
-![Homepage](https://drive.google.com/uc?id=1bm404rtwVV4pNplFysKcuMZ_p480A-Tu)](https://drive.google.com/uc?id=1bm404rtwVV4pNplFysKcuMZ_p480A-Tu)
+[![Homepage](https://drive.google.com/uc?id=10U3r7lr4fmdKLG_xzRys2avdf2g2GVIN)](https://drive.google.com/uc?id=10U3r7lr4fmdKLG_xzRys2avdf2g2GVIN)
 
 
 ## Log in Utilizing Your API key
@@ -75,7 +75,7 @@ To run an Experiment, use the Sparsify Cloud to generate a code command to run i
 
 1. Click on 'Start Sparsifyng' in the top right corner of the Sparsify Cloud Homepage to bring up the ```Sparsify a model``` modal.
 
-![Sparsify a model](https://drive.google.com/uc?id=1Mjlp_etKkikmTWLrd_vOsRB2856c4U3s)
+![Sparsify a model](https://drive.google.com/uc?id=1FyayVSqq5YtKO_dEgt5iMNSZQNsqaQFq)
 
 3. Select a use case for your model. Note that if your use case is not present in the dropdown, fear not; the use case does not affect the optimization of the model.
 4. Choose the Experiment Type. To learn more about the Experiments, see the [Sparsify README](https://github.com/neuralmagic/sparsify/blob/main/README.md#run-an-experiment).
@@ -85,7 +85,7 @@ To run an Experiment, use the Sparsify Cloud to generate a code command to run i
 7. Once your code snippet is generated, make sure you have installed Sparsify and are logged in via the CLI. 
 8. Copy the code snippet and fill in the paths to your local dense model and/or training dataset as prompted. 
 9. Run the command and wait for your sparse model to complete. You have now completed running an Experiment with Sparsify. 
-![Generate Code Snippetl](https://drive.google.com/uc?id=1KXC-j0ztWQt42GSUK45JnsZXijOgZQ7k)
+![Generate Code Snippetl](https://drive.google.com/uc?id=1xWrla3ps0qeS70P1bzOIYGeIPXWgHfF_)
 
 
 To learn more about the arguments for the `sparsify.run` command, see the [CLI/API Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/cli-api-guide.md).

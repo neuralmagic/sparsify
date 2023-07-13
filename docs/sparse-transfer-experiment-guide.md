@@ -37,18 +37,18 @@ Sparse-Transfer Experiments are the second quickest way to create a faster and s
 Sparse, foundational models are sparsified in a Training-Aware manner on a large dataset such as ImageNet.
 Then, the sparse patterns are transferred to your dataset through a fine-tuning process.
 
-Generally, Sparse-Transfer Experiments result in a 5-10x speedup with minimal accuracy loss.
+Generally, Sparse-Transfer Experiments result in a 5–10x speedup with minimal accuracy loss.
 
 They are ideal when a sparse model already exists for your use case, and you want to quickly utilize it for your dataset.
 
-Note, the model argument is optional for Sparse-Transfer Experiments as Sparsify will select the best one from the SparseZoo for your use case if not supplied.
+Note, the model argument is optional for Sparse-Transfer Experiments, as Sparsify will select the best one from the SparseZoo for your use case if not supplied.
 
 
 ### Sparse-Transfer CLI Quickstart
 
 Now that you understand what a Sparse-Transfer Experiment is and the benefits, including fine-tuning a pre-optimized, sparse model on your data, you can now use the CLI to effectively run a Sparse-Transfer Experiment. 
 
-Before you run a Sparse-Transfer Experiment, you need to make sure you are logged into the Sparsify CLI. For instructions on Installation and Setup, review the [Sparsify Install and Setup Section](READMEsection.com) in the Sparsify README. 
+Before you run a Sparse-Transfer Experiment, confirm you are logged into the Sparsify CLI. For instructions on Installation and Setup, review the [Sparsify Install and Setup Section](READMEsection.com) in the Sparsify README. 
 
 Sparse-Transfer Experiments use the following general command:
 
@@ -171,7 +171,7 @@ For `image1.jpg`, if there's a car and a pedestrian in the image, the correspond
 1 0.7 0.8 0.1 0.2
 ```
 
-This would mean that there is an object of class 0 (car) centered at (50% of the image width, 60% of the image height) and having a width of 20% of the image width and a height 30% of the image height.
+This would mean that there is an object of class 0 (car) centered at (50% of the image width, 60% of the image height) and having a width of 20% of the image width and a height of 30% of the image height.
 The second line is similar but for an object of class 1 (pedestrian).
 
 For image segmentation, the labels might be more complex, including segmentation masks that indicate which pixels belong to which object category.

@@ -52,6 +52,6 @@ To utilize, run a One-Shot Experiment with `--use-case` set to the desired custo
 ### Training-Aware
 
 For Training-Aware Experiments, custom use cases are only supported with the APIs for custom integrations.
-This is because non-custom integrations utilize plug-ins that correspond to the appropriate use case for training pipelines.
+This is because non-custom integrations utilize plugins that correspond to the appropriate use case for training pipelines.
 To utilize this, ensure that you have a training pipeline ready to go and inject the Sparsify API into the training pipeline with the desired use case passed in as an argument.
 More info on this specific pathway will be available in the near future as Sparsify development progresses.

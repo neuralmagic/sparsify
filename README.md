@@ -15,22 +15,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-<!--
-Copyright (c) 2021 - present / Neuralmagic, Inc. All Rights Reserved.
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-   http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing,
-software distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
--->
-
 <h1><img alt="Sparsify tool icon" src="https://neuralmagic.com/wp-content/uploads/2023/03/Sparsify.svg" />&nbsp;&nbsp;Sparsify [Alpha]</h1>
 
 <h3> ML model optimization product to accelerate inference </h3>
@@ -40,285 +24,284 @@ limitations under the License.
         <img alt="Documentation" src="https://img.shields.io/badge/documentation-darkred?&style=for-the-badge&logo=read-the-docs" height=25>
     </a>
     <a href="https://join.slack.com/t/discuss-neuralmagic/shared_invite/zt-q1a1cnvo-YBoICSIw3L1dmQpjBeDurQ/">
-        <img src="https://img.shields.io/badge/slack-purple?style=for-the-badge&logo=slack" height=25>
+        <img src="https://img.shields.io/badge/slack-purple?style=for-the-badge&logo=slack" height=25 />
     </a>
     <a href="https://github.com/neuralmagic/sparsify/issues">
-        <img src="https://img.shields.io/badge/support%20forums-navy?style=for-the-badge&logo=github" height=25>
+        <img src="https://img.shields.io/badge/support%20forums-navy?style=for-the-badge&logo=github" height=25 />
     </a>
     <a href="https://github.com/neuralmagic/sparsify/actions/workflows/quality-check.yaml">
-        <img alt="Main" src="https://img.shields.io/github/workflow/status/neuralmagic/sparsify/Quality%20Checks/main?label=build&style=for-the-badge" height=25>
+        <img alt="Main" src="https://img.shields.io/github/workflow/status/neuralmagic/sparsify/Quality%20Checks/main?label=build&style=for-the-badge" height=25 />
     </a>
     <a href="https://github.com/neuralmagic/sparsify/releases">
-        <img alt="GitHub release" src="https://img.shields.io/github/release/neuralmagic/sparsify.svg?style=for-the-badge" height=25>
+        <img alt="GitHub release" src="https://img.shields.io/github/release/neuralmagic/sparsify.svg?style=for-the-badge" height=25 />
     </a>
     <a href="https://github.com/neuralmagic/sparsify/releases">
         <img alt="Stability" src="https://img.shields.io/badge/stability-alpha-f4d03f.svg" height=25>
     </a>
     <a href="https://github.com/neuralmagic/sparsify/blob/main/LICENSE">
-        <img alt="GitHub" src="https://img.shields.io/github/license/neuralmagic/sparsify.svg?color=lightgray&style=for-the-badge" height=25>
+        <img alt="GitHub" src="https://img.shields.io/github/license/neuralmagic/sparsify.svg?color=lightgray&style=for-the-badge" height=25 />
     </a>
     <a href="https://github.com/neuralmagic/sparsify/blob/main/CODE_OF_CONDUCT.md">
-        <img alt="Contributor Covenant" src="https://img.shields.io/badge/Contributor%20Covenant-v2.1%20adopted-ff69b4.svg?color=yellow&style=for-the-badge" height=25>
+        <img alt="Contributor Covenant" src="https://img.shields.io/badge/Contributor%20Covenant-v2.1%20adopted-ff69b4.svg?color=yellow&style=for-the-badge" height=25 />
     </a>
     <a href="https://www.youtube.com/channel/UCo8dO_WMGYbWCRnj_Dxr4EA">
-        <img src="https://img.shields.io/badge/-YouTube-red?&style=for-the-badge&logo=youtube&logoColor=white" height=25>
+        <img src="https://img.shields.io/badge/-YouTube-red?&style=for-the-badge&logo=youtube&logoColor=white" height=25 />
     </a>
      <a href="https://medium.com/limitlessai">
-        <img src="https://img.shields.io/badge/medium-%2312100E.svg?&style=for-the-badge&logo=medium&logoColor=white" height=25>
+        <img src="https://img.shields.io/badge/medium-%2312100E.svg?&style=for-the-badge&logo=medium&logoColor=white" height=25 />
     </a>
     <a href="https://twitter.com/neuralmagic">
-        <img src="https://img.shields.io/twitter/follow/neuralmagic?color=darkgreen&label=Follow&style=social" height=25>
+        <img src="https://img.shields.io/twitter/follow/neuralmagic?color=darkgreen&label=Follow&style=social" height=25 />
     </a>
 </p>
 
-![Logo](https://drive.google.com/uc?id=1XnlBKpRQdsnLC4IPoiCoihXJNFh8y7OL)
+**🚨 July 2023: Sparsify's next generation is now in alpha as of version 1.6.0!**
 
-# Welcome to the Sparsify Alpha Quick Start
+Sparsify enables you to accelerate inference without sacrificing accuracy by applying state-of-the-art pruning, quantization, and distillation algorithms to neural networks with a simple web application and one-command API calls.
 
-## Introduction
-🚨 **July 2023: Sparsify's next generation is now in alpha as of version 1.6.0!**
+Sparsify empowers you to compress models through two components:
+- **[Sparsify Cloud](https://apps.neuralmagic.com/sparsify/)** - a web application that allows you to create and manage Sparsify Experiments, explore hyperparameters, predict performance, and compare results across both Experiments and deployment scenarios.
+- **Sparsify CLI/API** - a Python package and GitHub repository that allows you to run Sparsify Experiments locally, sync with the Sparsify Cloud, and integrate them into your workflows.
 
-This quick start provides a brief overview of Sparsify and then details several pathways you can work through. We encourage you to explore each for Sparsify's full benefits. As of this update, support for [Sparsify's first generation](https://docs.neuralmagic.com/sparsify) has been deprecated. We highly recommend you try the alpha to get a sneak peek and influence the product's development process.
+## Table of Contents
 
-🚨 **Sparsify Alpha Feedback and Support** 
+- [Quickstart Guide](#quickstart-guide)
+  - [Install and Setup](#1-install-and-setup)
+  - [Run an Experiment](#2-run-an-experiment)
+  - [Compare Results](#3-compare-results)
+  - [Deploy a Model](#4-deploy-a-model)
+- [Companion Guides](#companion-guides)
+- [Resources](#resources)
 
-Report UI issues and CLI errors, submit bug reports, and provide general feedback about the product to the team via the [nm-sparsify Slack Channel](https://join.slack.com/t/discuss-neuralmagic/shared_invite/zt-1xkdlzwv9-2rvS6yQcCs7VDNUcWxctnw), or via [GitHub Issues](https://github.com/neuralmagic/sparsify/issues). Alpha support is provided through those channels.
+## Quickstart Guide
 
-🚨 **Sparsify Alpha Terms and Conditions**
+<i>
+Interested in test-driving our alpha?
+Get a sneak peek and influence the product's development process.
+Thank you in advance for your feedback and interest!
+</i>
 
-Sparsify Alpha is a pre-release version of Sparsify that is still in active development. The product is not yet ready for production use; APIs and UIs are subject to change. There may be bugs in the Alpha version, which we hope to have fixed before Beta and then a general Q3 2023 release. The feedback you provide on quality and usability helps us identify issues, fix them, and make Sparsify even better. This information is used internally by Neural Magic solely for that purpose. It is not shared or used in any other way.
-
-That being said, we are excited to share this release and hear what you think. Thank you in advance for your feedback and interest!
-
-## Overview
-
-Sparsify enables you to accelerate inference without sacrificing accuracy by applying state-of-the-art pruning, quantization, and distillation algorithms to neural networks with a simple web application and one-command API calls. 
-
-Sparsify empowers you to compress models through two components: 
-
-* Sparsify Cloud - a web application that allows you to create and manage Sparsify Experiments, explore hyperparameters, predict performance, and compare results across both Experiments and deployment scenarios.  
-* Sparsify CLI/API - a Python package that allows you to run Sparsify Experiments locally, sync with the Sparsify Cloud, and integrate them into your own workflows.
-
-In this quick start, you will:
-
-1. [Verify prerequisites](#step-1-prerequisites).
-2. [Create an account](#step-2-account-creation) a Neural Magic Account.
-3. [Install](#step-3-installation) Sparsify in your local training environment.
-4. [Log in](#step-4-sparsify-login) utilizing your API key.
-5. [Run an Experiment](#step-5-running-experiments).
-   * [Experiments Overview](#experiments-overview)
-  		* [One-Shot Experiments](#one-shot-experiments)
-  		* [Sparse-Transfer Experiments](#sparse-transfer-experiments)
-  		* [Training-Aware Experiments](#training-aware-experiments)
-	* [Command Syntax and Argument Guides](#command-syntax-and-arguments)
-		* `EXPERIMENT_TYPE`
-		* `USE_CASE` [guide](https://github.com/neuralmagic/sparsify/blob/main/docs/use-cases-guide.md)
-         * `MODEL` [guide](https://github.com/neuralmagic/sparsify/blob/main/docs/models-guide.md)
-        * `DATA`[guide](https://github.com/neuralmagic/sparsify/blob/main/docs/datasets-guide.md)
-        * `OPTIM_LEVEL` [guide](https://github.com/neuralmagic/sparsify/blob/main/docs/optim-levels-guide.md)
-    *  [Example Commands by Experiment Type](#example-commands-by-experiment-type)
-        * [Running One-Shot Experiments](#running-one-shot-experiments)
-        * [Running Sparse-Transfer Experiments](#running-sparse-transfer-experiments)
-        * [Running Training-Aware Experiments](#running-training-aware-experiments)
-7. [Compare](#step-6-comparing-experiment-results) the Experiment results.
-8. [Deploy optimized models](#step-7-deploying-your-model-with-deepsparse) with DeepSpare (optional).
-
-When you finish this quick start, sparsifying your models is as easy as:
+This quickstart details several pathways you can work through. 
+We encourage you to explore one for Sparsify's full benefits. 
+When you finish the quickstart, sparsifying your models is as easy as:
 
 ```bash
-sparsify.run sparse-transfer --use-case image-classification --data imagenette --optim-level 0.5 --train-kwargs '{"dataset": "imagenette"}'
-
+sparsify.run sparse-transfer --use-case image-classification --data imagenette --optim-level 0.5
 ```
-## Step 1: Prerequisites
+
+### 1. Install and Setup
+
+#### 1.1 Verify Prerequisites
+
 First, verify that you have the correct software and hardware to run the Sparsify Alpha.
 
-**Software:** Sparsify is tested on Python 3.8 and 3.10, ONNX 1.5.0-1.12.0, ONNX opset version 11+, and manylinux compliant systems. Sparsify is not supported natively on Windows and MAC OS.
+<details>
+<summary>Software</summary>
 
-**Hardware:** Sparsify requires a GPU with CUDA + CuDNN in order to sparsify neural networks. 
-We recommend you use a Linux system with a GPU that has a minimum of 16GB of GPU Memory, 128GB of RAM, 4 CPU cores, and is CUDA-enabled. If you are sparsifying a very large model, you may need more RAM than the recommended 128GB.
+Sparsify is tested on Python 3.8 and 3.10, ONNX 1.5.0-1.12.0, ONNX opset version 11+, and manylinux compliant systems. 
+Sparsify is not supported natively on Windows and MAC OS.
+</details>
+
+<details>
+<summary>Hardware</summary>
+
+Sparsify requires a GPU with CUDA + CuDNN in order to sparsify neural networks. 
+We recommend you use a Linux system with a GPU that has a minimum of 16GB of GPU Memory, 128GB of RAM, 4 CPU cores, and is CUDA-enabled. 
+If you are sparsifying a very large model, you may need more RAM than the recommended 128GB. 
 If you encounter issues setting up your training environment, [file a GitHub issue](https://github.com/neuralmagic/sparsify/issues).
+</details>
 
-## Step 2: Account Creation
+#### 1.2 Create an Account
 
-Creating a new one-time account is simple and free. An account is required to manage your Experiments and API keys.
-Visit the [Neural Magic's Web App Platform](https://account.neuralmagic.com/signup) and create an account by entering your email, name, and unique password. If you already have a Neural Magic Account, [sign in](https://account.neuralmagic.com/signin) with your email.
+Creating a new one-time account is simple and free. 
+An account is required to manage your Experiments and API keys. 
+Visit the [Neural Magic's Web App Platform](https://account.neuralmagic.com/signup) and create an account by entering your email, name, and unique password. 
+If you already have a Neural Magic Account, [sign in](https://account.neuralmagic.com/signin) with your email.
 
-See the [Sparsify Cloud User Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/cloud-user-guide.md) for more details.
+<img src="https://drive.google.com/uc?id=1RInSrLsfm0PQLEkjJqD1HzaCWA2yDcNi" alt="Sparsify Sign In" style="height: ; width:400px;"/>
 
-## Step 3: Installation
+#### 1.3 Install Sparsify
 
-`pip` is the preferred method for installing Sparsify. It is advised to create a fresh [virtual environment](https://docs.python.org/3/library/venv.html) to avoid dependency issues.
+`pip` is the preferred method for installing Sparsify. 
+It is advised to create a [fresh virtual environment](https://docs.python.org/3/library/venv.html) to avoid dependency issues.
 
 Install with pip using:
-
 ```bash
 pip install sparsify-nightly
 ```
-## Step 4: Sparsify Login
+
+#### 1.4 Login via CLI
 
 Next, with Sparsify installed on your training hardware:
-1. Authorize the local CLI to access your account by running the `sparsify.login` command and providing your API key.
-2. Locate your API key on the homepage of the [Sparsify Cloud](https://apps.neuralmagic.com/sparsify) under the **'Get set up'** modal, and copy the command or the API key itself.
+1. Authorize the local CLI to access your account by running the sparsify.login command and providing your API key.
+2. Locate your API key on the homepage of the [Sparsify Cloud](https://apps.neuralmagic.com/sparsify) under the 'Get set up' modal, and copy the command or the API key itself.
 3. Run the following command:
 
 ```bash
 sparsify.login API_KEY
-````
+```
 
-See the related guides for more details on: 
-* Locating the API_KEY - [Sparsify Cloud User Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/cloud-user-guide.md).
-* Running the `sparsify.login` command - [CLI/API Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/cli-api-guide.md).
+### 2. Run an Experiment
 
-**Note:** Every time you use Sparsify, you will need to log in via the Sparsify CLI so that your local session can sync with your account in the Sparsify Cloud. 
+Experiments are the core of sparsifying a model. 
+They allow you to apply sparsification algorithms to a dataset and model through the three Experiment types detailed below: 
+- [One-Shot](#21-one-shot)
+- [Training-Aware](#22-training-aware)
+- [Sparse-Transfer](#23-sparse-transfer)
 
-## Step 5: Running Experiments
+All Experiments are run locally on your training hardware and can be synced with the cloud for further analysis and comparison, using Sparsify's two components:
+- Sparsify Cloud - explore hyperparameters, predict performance, and generate the desired CLI/API command.
+- Sparsify CLI/API - run an experiment.
 
-In this section, you will learn about Sparsify Experiments and run an Experiment. 
-
-### Experiments Overview
-Experiments are the core of sparsifying a model. They allow you to apply sparsification algorithms to a dataset and model through the three Experiment types detailed below: One-Shot, Training-Aware, or Sparse-Transfer. All Experiments are run locally on your training hardware and can be synced with the cloud for further analysis and comparison, using Sparsify's two components: 
-
-* Sparsify Cloud - explore hyperparameters, predict performance, and generate the desired CLI/API command.
-	*  See the [Sparsify Cloud User Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/cloud-user-guide.md) for more details on generating commands from the Sparsify Cloud.
-	
-* Sparsify CLI/API - run an experiment depending on your use case.
-
-Learn more about the Experiment types and understand which use case might be best for your task.
-
-#### One-Shot Experiments
+#### 2.1 One-Shot
 
 | Sparsity | Sparsification Speed | Accuracy |
 |----------|----------------------|----------|
 | **++**   | **+++++**            | **+++**  |
 
-One-Shot Experiments are the quickest way to create a faster and smaller version of your model.
-The algorithms are applied to the model post-training utilizing a calibration dataset, so they result in no further training time and much faster sparsification times compared with Training-Aware Experiments.
+One-Shot Experiments quickly sparsify your model post-training, providing a 3-5x speedup with minimal accuracy loss, ideal for quick model optimization without retraining your model.
 
-Generally, One-Shot Experiments result in a 3-5x speedup with minimal accuracy loss.
-They are ideal for when you want to quickly sparsify your model and don't have a lot of time to spend on the sparsification process.
+To run a One-Shot Experiment for your model, dataset, and use case, use the following command:
+```bash
+sparsify.run one-shot --use-case USE_CASE --model MODEL --data DATASET --optim-level OPTIM_LEVEL
+```
 
-#### Sparse-Transfer Experiments
+For example, to sparsify a ResNet50 model on the ImageNet dataset for image classification, run the following commands:
+```bash
+wget https://public.neuralmagic.com/datasets/cv/classification/imagenet_calibration.tar.gz
+tar -xzf imagenet_calibration.tar.gz
+sparsify.run one-shot --use-case image_classification --model "zoo:cv/classification/resnet_v1-50/pytorch/sparseml/imagenet/base-none" --data ./imagenet_calibration --optim-level 0.5
+```
+
+Or, to sparsify a BERT model on the SST-2 dataset for sentiment analysis, run the following commands:
+```bash
+wget https://public.neuralmagic.com/datasets/nlp/text_classification/sst2_calibration.tar.gz
+tar -xzf sst2_calibration.tar.gz
+sparsify.run one-shot --use-case text_classification --model "zoo:nlp/sentiment_analysis/bert-base/pytorch/huggingface/sst2/base-none" --data ./sst2_calibration --optim-level 0.5
+```
+
+To dive deeper into One-Shot Experiments, read through the [One-Shot Experiment Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/one-shot_experiment-guide.md).
+
+<i>
+Note, One-Shot Experiments currently require the model to be in an ONNX format and the dataset to be in a Numpy format.
+More details are provided in the One-Shot Experiment Guide.
+</i>
+
+#### 2.2 Sparse-Transfer
 
 | Sparsity | Sparsification Speed | Accuracy  |
 |----------|----------------------|-----------|
 | **++++** | **++++**             | **+++++** |
 
-Sparse-Transfer Experiments are the second quickest way to create a faster and smaller model for your dataset. 
-Sparse, foundational models are sparsified in a Training-Aware manner on a large dataset such as ImageNet.
-Then, the sparse patterns are transferred to your dataset through a fine-tuning process.
+Sparse-Transfer Experiments quickly create a smaller and faster model for your dataset by transferring from a [SparseZoo](https://sparsezoo.neuralmagic.com/) pre-sparsified foundational model o, providing a 5-10x speedup with minimal accuracy loss, ideal for quick model optimization without retraining your model.
 
-Generally, Sparse-Transfer Experiments result in a 5-10x speedup with minimal accuracy loss.
-They are ideal when a sparse model already exists for your use case, and you want to quickly utilize it for your dataset.
-Note, the model argument is optional for Sparse-Transfer Experiments as Sparsify will select the best one from the SparseZoo for your use case if not supplied.
+To run a Sparse-Transfer Experiment for your model (optional), dataset, and use case, run the following command:
+```bash
+sparsify.run sparse-transfer --use-case USE_CASE --model OPTIONAL_MODEL --data DATASET --optim-level OPTIM_LEVEL
+```
 
-#### Training-Aware Experiments
+For example, to sparse transfer a SparseZoo model to the ImageNette dataset for image classification, run the following command:
+```bash
+sparsify.run sparse-transfer --use-case image_classification --data imagenette --optim-level 0.5
+```
+
+Or, to sparse transfer a SparseZoo model to the SST-2 dataset for sentiment analysis, run the following command:
+```bash
+sparsify.run sparse-transfer --use-case text_classification --data sst2 --optim-level 0.5
+```
+
+To dive deeper into Sparse-Transfer Experiments, read through the [Sparse-Transfer Experiment Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/sparse-transfer_experiment-guide.md).
+
+<i>
+Note, Sparse-Transfer Experiments require the model to be saved in a PyTorch format corresponding to the underlying integration such as Ultralytics YOLOv5 or HuggingFace Transformers.
+Datasets must additionally match the expected format of the underlying integration.
+More details and exact formats are provided in the Sparse-Transfer Experiment Guide.
+</i>
+
+#### 2.3 Training-Aware
 
 | Sparsity  | Sparsification Speed  | Accuracy  |
 |-----------|-----------------------|-----------|
 | **+++++** | **++**                | **+++++** |
 
-Training-Aware Experiments are the most accurate way to create a faster and smaller model for your dataset.
-The algorithms are applied to the model during training, so they offer the best possible recovery of accuracy.
-However, they do require additional training time and hyperparameter tuning to achieve the best results.
+Training-aware Experiments sparsify your model during training, providing a 6-12x speedup with minimal accuracy loss, ideal for thorough model optimization when the best performance and accuracy are required.
 
-Generally, Training-Aware Experiments result in a 6-12x speedup with minimal accuracy loss.
-They are ideal when you have the time to train a model, have a custom model, or want to achieve the best possible accuracy.
-Note, the model argument is optional for Sparse-Transfer Experiments, as Sparsify will select the best one from the SparseZoo for your use case if not supplied.
-
-### Command Syntax and Arguments
-Now that you have learned about Experiments and the various types, you are ready to run an Experiment.
-Running Experiments uses the following general command:
-
+To run a Training-Aware Experiment for your model, dataset, and use case, run the following command:
 ```bash
-sparsify.run EXPERIMENT_TYPE --use-case USE_CASE --model MODEL --data DATA --optim-level OPTIM_LEVEL
+sparsify.run training-aware --use-case USE_CASE --model OPTIONAL_MODEL --data DATASET --optim-level OPTIM_LEVEL
 ```
 
-The values for each of the arguments follow these general rules:
-- **`EXPERIMENT_TYPE`**: one of `one-shot`, `training-aware`, or `sparse-transfer`.
-- [[Guide]](https://github.com/neuralmagic/sparsify/blob/main/docs/use-cases-guide.md) **`USE_CASE`**: the use case you're solving for, such as `image-classification`, `object-detection`, `text-classification`, or a custom use case.
-- [[Guide]](https://github.com/neuralmagic/sparsify/blob/main/docs/models-guide.md) **`MODEL`**: the model you want to sparsify which can be a model name such as `resnet50`, a stub from the [SparseZoo](https://sparsezoo.neuralmagic.com), or a path to a local model. For One-Shot, currently, the model must be in an ONNX format. For Training-Aware and Sparse-Transfer, the model must be in a PyTorch format.
-- [[Guide]](https://github.com/neuralmagic/sparsify/blob/main/docs/datasets-guide.md) **`DATA`**: the dataset you want to use to sparsify the model. This can be a dataset name such as `imagenette` or a path to a local dataset. Currently, One-Shot only supports NPZ-formatted datasets. Training-Aware and Sparse-Transfer support PyTorch ImageFolder datasets for image classification, YOLOv5/v8 datasets for object detection and segmentation, and Hugging Face datasets for NLP/NLG.
-- [[Guide]](https://github.com/neuralmagic/sparsify/blob/main/docs/optim-levels-guide.md) **`OPTIM_LEVEL`**: the desired sparsification level from 0 (none) to 1 (max). The general rule is that 0 is the baseline model, <0.3 only quantizes the model, 0.3-1.0 increases the sparsity of the model and applies quantization.
-
-### Example Commands by Experiment Type
-
-Here are examples you may wish to run; pick your use case and see if you can successfully run your first experiment!
-With successful experiments, a `model.onnx` file will be created in your working directory, which will be the optimized model, and you will have no CLI errors.
-
-#### Running One-Shot Experiments
-
-Computer Vision:
+For example, to sparsify a ResNet50 model on the ImageNette dataset for image classification, run the following command:
 ```bash
-sparsify.run one-shot --use-case image_classification --model resnet50 --data imagenette --optim-level 0.5
+sparsify.run training-aware --use-case image_classification --model "zoo:cv/classification/resnet_v1-50/pytorch/sparseml/imagenette/base-none" --data imagenette --optim-level 0.5
 ```
 
-NLP:
+Or, to sparsify a BERT model on the SST-2 dataset for sentiment analysis, run the following command:
 ```bash
-sparsify.run one-shot --use-case text_classification --model bert-base --data sst2 --optim-level 0.5
+sparsify.run training-aware --use-case text_classification --model "zoo:nlp/sentiment_analysis/bert-base/pytorch/huggingface/sst2/base-none" --data sst2 --optim-level 0.5
 ```
 
-#### Running Sparse-Transfer Experiments
+To dive deeper into Training-Aware Experiments, read through the [Training-Aware Experiment Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/training-aware_experiment-guide.md).
 
-Computer Vision:
+<i>
+Note, Training-Aware Experiments require the model to be saved in a PyTorch format corresponding to the underlying integration such as Ultralytics YOLOv5 or HuggingFace Transformers.
+Datasets must additionally match the expected format of the underlying integration.
+More details and exact formats are provided in the Training-Aware Experiment Guide.
+</i>
+
+### 3. Compare Results
+
+Once you have run your Experiment, the results, logs, and deployment files will be saved under the current working directory in the following format:
+```text
+[EXPERIMENT_TYPE]_[USE_CASE]_{DATE_TIME}
+├── deployment
+│   ├── model.onnx
+│   └── *supporting files*
+├── logs
+│   ├── *logs*
+├── training_artifacts
+│   ├── *training artifacts*
+    ├── *metrics and results*
+```
+
+You can compare the accuracy by looking through the metrics printed out to the console and the metrics saved in the experiment directory.
+Additionally, you can use [DeepSparse](https://github.com/neuralmagic/deepsparse) to compare the inference performance on your CPU deployment hardware.
+
+<i>
+Note: In the near future, you will be able to visualize the results in the Cloud, simulate other scenarios and hyperparameters, compare the results to other Experiments, and package for your deployment scenario.
+</i>
+
+To run a benchmark on your deployment hardware, use the `deepsparse.benchmark` command with your original model and the new optimized model.
+This will run a number of inferences to simulate a real-world scenario and print out the results.
+
+It's as simple as running the following command:
 ```bash
-sparsify.run sparse-transfer --use-case image_classification --data imagenette --optim-level 0.5
+deepsparse.benchmark --model MODEL --scenario SCENARIO
 ```
 
-NLP:
+For example, to benchmark a dense ResNet-50 model, run the following command:
 ```bash
-sparsify.run sparse-transfer --use-case text_classification --data sst2 --optim-level 0.5
+deepsparse.benchmark --model "zoo:cv/classification/resnet_v1-50/pytorch/sparseml/imagenette/base-none" --scenario sync
 ```
 
-#### Running Training-Aware Experiments
-
-Computer Vision:
+This can then be compared to the sparsified ResNet-50 model with the following command:
 ```bash
-sparsify.run training-aware --use-case image_classification --model resnet50 --data imagenette --optim-level 0.5
+deepsparse.benchmark --model "zoo:cv/classification/resnet_v1-50/pytorch/sparseml/imagenet/pruned95_quant-none" --scenario sync
 ```
 
-NLP:
-```bash
-sparsify.run training-aware --use-case text_classification --model bert-base --data sst2 --optim-level 0.5
-```
-
-## Step 6: Comparing Experiment Results
-
-Once you have run your Experiment, compare the results printed out to the console using the `deepsparse.benchmark` command. 
-In the near future, you will be able to compare the results in the Cloud, measure other scenarios, and compare the results to other Experiments.
-
-
-To compare the results of your Experiment with the original dense baseline model, use the `deepsparse.benchmark` command with your original model and the new optimized model on your deployment hardware. Models that have been optimized using Sparsify will generally run performantly on DeepSparse, Neural Magic's sparsity-aware CPU inference runtime. 
-
-
-See the [DeepSparse Benchmarking User Guide](https://github.com/neuralmagic/deepsparse/blob/main/docs/user-guide/deepsparse-benchmarking.md) for more information on benchmarking.
-
-Here is an example of a `deepsparse.benchmark`command: 
-
-```
-deepsparse.benchmark zoo:nlp/sentiment_analysis/obert-base/pytorch/huggingface/sst2/pruned90_quant-none --scenario sync
-
-```
-
-The results will look something like this:
-```bash
-2023-06-30 15:20:41 deepsparse.benchmark.benchmark_model INFO     Thread pinning to cores enabled
-downloading...: 100%|████████████████████████| 105M/105M [00:18<00:00, 5.81MB/s]
+The output will look similar to the following:
+```text
 DeepSparse, Copyright 2021-present / Neuralmagic, Inc. version: 1.6.0.20230629 COMMUNITY | (fc8b788a) (release) (optimized) (system=avx512, binary=avx512)
-[7ffba5a84700 >WARN<  operator() ./src/include/wand/utility/warnings.hpp:14] Generating emulated code for quantized (INT8) operations since no VNNI instructions were detected. Set NM_FAST_VNNI_EMULATION=1 to increase performance at the expense of accuracy.
-2023-06-30 15:21:13 deepsparse.benchmark.benchmark_model INFO     deepsparse.engine.Engine:
-	onnx_file_path: /home/rahul/.cache/sparsezoo/neuralmagic/obert-base-sst2_wikipedia_bookcorpus-pruned90_quantized/model.onnx
+deepsparse.benchmark.benchmark_model INFO     deepsparse.engine.Engine:
+	onnx_file_path: ./model.onnx
 	batch_size: 1
-	num_cores: 10
+	num_cores: 1
 	num_streams: 1
 	scheduler: Scheduler.default
 	fraction_of_supported_ops: 0.9981
 	cpu_avx_type: avx512
 	cpu_vnni: False
-2023-06-30 15:21:13 deepsparse.utils.onnx INFO     Generating input 'input_ids', type = int64, shape = [1, 128]
-2023-06-30 15:21:13 deepsparse.utils.onnx INFO     Generating input 'attention_mask', type = int64, shape = [1, 128]
-2023-06-30 15:21:13 deepsparse.utils.onnx INFO     Generating input 'token_type_ids', type = int64, shape = [1, 128]
-2023-06-30 15:21:13 deepsparse.benchmark.benchmark_model INFO     Starting 'singlestream' performance measurements for 10 seconds
-Original Model Path: zoo:nlp/sentiment_analysis/obert-base/pytorch/huggingface/sst2/pruned90_quant-none
+=Original Model Path: ./model.onnx
 Batch Size: 1
 Scenario: sync
 Throughput (items/sec): 134.5611
@@ -328,34 +311,63 @@ Latency Std (ms/batch): 0.0264
 Iterations: 1346
 ```
 
-*Note: performance improvement is not guaranteed across all runtimes and hardware types.*
+See the [DeepSparse Benchmarking User Guide](https://github.com/neuralmagic/deepsparse/blob/main/docs/user-guide/deepsparse-benchmarking.md) for more information on benchmarking.
 
-## Step 7: Deploying Your Model With DeepSparse
+### 4. Deploy a Model
 
-As an optional step to this quick start, now that you have your optimized model, you are ready for inferencing. To get the most inference performance out of your optimized model, we recommend you deploy on Neural Magic's [DeepSparse](https://docs.neuralmagic.com/deepsparse). DeepSparse is built to get the best performance out of optimized models on CPUs.  
+As an optional step to this quickstart, now that you have your optimized model, you are ready for inferencing. 
+To get the most inference performance out of your optimized model, we recommend you deploy on Neural Magic's [DeepSparse](https://docs.neuralmagic.com/deepsparse). 
+DeepSparse is built to get the best performance out of optimized models on CPUs.  
 
 DeepSparse Server takes in a task and a model path and will enable you to serve models and `Pipelines` for deployment in HTTP.
 
-You can deploy any ONNX model using DeepSparse Server by running:
+You can deploy any ONNX model using DeepSparse Server with the following command:
 ```bash
-deepsparse.server \  
-task question_answering \  
---model_path "zoo:nlp/question_answering/bert-base/pytorch/huggingface/squad/12layer_pruned80_quant-none-vnni"`
+deepsparse.server --task USE_CASE --model_path MODEL_PATH
 ```
 
-To run inference on your own model, change the model path to the location of your `model.onnx` file. Consult the [DeepSparse Server Docs](https://docs.neuralmagic.com/user-guides/deploying-deepsparse/deepsparse-server) for more details.
+Where `USE_CASE` is the use case of your Experiment and `MODEL_PATH` is the path to the deployment folder from the Experiment.
 
-If you're not ready for deploying, congratulations on completing the quick start! We welcome your [Sparsify Alpha feedback and support issues](#feedback-and-support) as described at the beginning of this guide.
+For example, to deploy a sparsified ResNet-50 model, run the following command:
+```bash
+deepsparse.server --task image_classification --model_path "zoo:cv/classification/resnet_v1-50/pytorch/sparseml/imagenet/pruned95_quant-none"
+```
 
-# Resources
-Now that you have explored the Sparsify Alpha Quick Start, here are other related resources.
+If you're not ready for deploying, congratulations on completing the quickstart!
 
-## Learning More
+## Companion Guides
+
+- [Sparsify Cloud User Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/cloud-user-guide.md)
+- [Sparsify Use Cases Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/use-cases-guide.md)
+- [Sparsify Models Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/models-guide.md)
+- [Sparsify Datasets Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/datasets-guide.md)
+
+## Resources
+
+Now that you have explored Sparsify [Alpha], here are other related resources.
+
+### Feedback and Support
+
+Report UI issues and CLI errors, submit bug reports, and provide general feedback about the product to the team via the [nm-sparsify Slack Channel](https://join.slack.com/t/discuss-neuralmagic/shared_invite/zt-1xkdlzwv9-2rvS6yQcCs7VDNUcWxctnw), or via [GitHub Issues](https://github.com/neuralmagic/sparsify/issues). Alpha support is provided through those channels.
+
+### Terms and Conditions
+
+Sparsify Alpha is a pre-release version of Sparsify that is still in active development. 
+The product is not yet ready for production use; APIs and UIs are subject to change. 
+There may be bugs in the Alpha version, which we hope to have fixed before Beta and then a general Q3 2023 release. 
+The feedback you provide on quality and usability helps us identify issues, fix them, and make Sparsify even better. 
+This information is used internally by Neural Magic solely for that purpose. 
+It is not shared or used in any other way.
+
+That being said, we are excited to share this release and hear what you think. 
+Thank you in advance for your feedback and interest!
+
+### Learning More
 
 - Documentation: [SparseML,](https://docs.neuralmagic.com/sparseml/) [SparseZoo,](https://docs.neuralmagic.com/sparsezoo/) [Sparsify (1st Generation),](https://docs.neuralmagic.com/sparsify/) [DeepSparse](https://docs.neuralmagic.com/deepsparse/)
 - Neural Magic: [Blog,](https://www.neuralmagic.com/blog/) [Resources](https://www.neuralmagic.com/resources/)
 
-## Release History
+### Release History
 
 Official builds are hosted on PyPI
 
@@ -364,7 +376,7 @@ Official builds are hosted on PyPI
 
 Additionally, more information can be found via [GitHub Releases.](https://github.com/neuralmagic/sparsify/releases)
 
-## License
+### License
 
 The project is licensed under the [Apache License Version 2.0](https://github.com/neuralmagic/sparsify/blob/main/LICENSE).
 
@@ -384,7 +396,8 @@ For more general questions about Neural Magic, please fill out this [form.](http
 
 ### Cite
 
-Find this project useful in your research or other communications? Please consider citing:
+Find this project useful in your research or other communications? 
+Please consider citing:
 
 ```bibtex
 @InProceedings{

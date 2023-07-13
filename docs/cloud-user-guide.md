@@ -82,7 +82,6 @@ To run an Experiment, use the Sparsify Cloud to generate a code command to run i
 5. Adjust the Hyperparameter Compression slider to designate whether you would like to optimize the model for performance, accuracy, or a balance of both. Note that selecting an extreme on the slider will not completely tank the opposing metric.
 6. Click 'Generate Code Snippet' to view the code snippet generated from your sparsification selections on the next modal. 
 ![Generate Code Snippetl](https://drive.google.com/uc?id=14B193hHeYqLeSX8r6C5N1G8beBeXUkYE)
-
 7. Once your code snippet is generated, make sure you have installed Sparsify and are logged in via the CLI. 
 8. Copy the code snippet and fill in the paths to your local dense model and/or training dataset as prompted. 
 9. Run the command and wait for your sparse model to complete. You have now completed running an Experiment with Sparsify. 

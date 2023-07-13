@@ -80,14 +80,13 @@ Sparsify empowers you to compress models through two components:
 - **Sparsify CLI/API** - a Python package and GitHub repository that allows you to run Sparsify Experiments locally, sync with the Sparsify Cloud, and integrate them into your workflows.
 
 ## Table of Contents
-
 - [Quickstart Guide](#quickstart-guide)
-  - [Install and Setup](#1-install-and-setup)
-  - [Run an Experiment](#2-run-an-experiment)
-  - [Compare Results](#3-compare-results)
-  - [Deploy a Model](#4-deploy-a-model)
-- [Companion Guides](#companion-guides)
-- [Resources](#resources)
+   - [1. Install and Setup](#1-install-and-setup)  
+   - [2. Run an Experiment](#2-run-an-experiment)  
+   - [3. Compare Results](#3-compare-results)  
+   - [4. Deploy a Model](#4-deploy-a-model)     
+- [Companion Guides](#companion-guides)  
+- [Resources](#resources)  
 
 ## Quickstart Guide
 
@@ -199,7 +198,7 @@ sparsify.run one-shot --use-case text_classification --model "zoo:nlp/sentiment_
 To dive deeper into One-Shot Experiments, read through the [One-Shot Experiment Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/one-shot_experiment-guide.md).
 
 <i>
-Note, One-Shot Experiments currently require the model to be in an ONNX format and the dataset to be in a Numpy format.
+Note, One-Shot Experiments currently require the model to be in an ONNX format and the dataset to be in a NumPy format.
 More details are provided in the One-Shot Experiment Guide.
 </i>
 
@@ -380,7 +379,7 @@ Thank you in advance for your feedback and interest!
 
 ### Learning More
 
-- Documentation: [SparseML,](https://docs.neuralmagic.com/sparseml/) [SparseZoo,](https://docs.neuralmagic.com/sparsezoo/) [Sparsify](https://docs.neuralmagic.com/sparsify/) [DeepSparse](https://docs.neuralmagic.com/deepsparse/)
+- Documentation: [SparseML](https://docs.neuralmagic.com/sparseml/), [SparseZoo](https://docs.neuralmagic.com/sparsezoo/), [Sparsify](https://docs.neuralmagic.com/sparsify/), [DeepSparse](https://docs.neuralmagic.com/deepsparse/)
 - Neural Magic: [Blog,](https://www.neuralmagic.com/blog/) [Resources](https://www.neuralmagic.com/resources/)
 
 ### Release History

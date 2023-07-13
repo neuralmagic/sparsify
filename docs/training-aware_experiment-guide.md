@@ -39,14 +39,14 @@ Training-Aware Experiments are the most accurate way to create a faster and smal
 The algorithms are applied to the model during training, so they offer the best possible recovery of accuracy.
 However, they do require additional training time and hyperparameter tuning to achieve the best results.
 
-Generally, Training-Aware Experiments result in a 6-12x speedup with minimal accuracy loss. They are ideal when you have the time to train a model, have a custom model, or want to achieve the best possible accuracy.
+Generally, Training-Aware Experiments result in a 6–12x speedup with minimal accuracy loss. They are ideal when you have the time to train a model, have a custom model, or want to achieve the best possible accuracy.
 
 
 ### Training-Aware CLI Quickstart
 
 Now that you understand what a Training-Aware Experiment is and the benefits, including the best possible recovery of accuracy for an optimized model, you can now use the CLI to effectively run a Training-Aware Experiment.
 
-Before you run a Training-Aware Experiment, confirm you are logged into the Sparsify CLI. For instructions on Installation and Setup, review the [Sparsify Install and Setup Section](READMEsection.com) in the Sparsify README.
+Before you run a Training-Aware Experiment, confirm you are logged in to the Sparsify CLI. For instructions on Installation and Setup, review the [Sparsify Install and Setup Section](READMEsection.com) in the Sparsify README.
 
 Training-Aware Experiments use the following general command:
 
@@ -169,7 +169,7 @@ For `image1.jpg`, if there's a car and a pedestrian in the image, the correspond
 1 0.7 0.8 0.1 0.2
 ```
 
-This would mean that there is an object of class 0 (car) centered at (50% of image width, 60% of image height) and having a width of 20% of the image width and height 30% of the image height. 
+This would mean that there is an object of class 0 (car) centered at (50% of the image width, 60% of the image height) and having a width of 20% of the image width and a height of 30% of the image height. 
 The second line is similar but for an object of class 1 (pedestrian).
 
 For image segmentation, the labels might be more complex, including segmentation masks that indicate which pixels belong to which object category.

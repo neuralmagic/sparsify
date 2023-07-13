@@ -36,7 +36,7 @@ One-Shot Experiments are the quickest way to create a faster and smaller version
 The algorithms are applied to the model post-training, utilizing a calibration dataset, so they result in no further training time and much faster sparsification times compared with Training-Aware Experiments.
 
 Generally, One-Shot Experiments result in a 3-5x speedup with minimal accuracy loss.
-They are ideal for when you want to quickly sparsify your model and don't have a lot of time to spend on the sparsification process.
+They are ideal for when you want to quickly sparsify your model and have limited time to spend on the sparsification process.
 
 
 ### One-Shot CLI Quickstart
@@ -70,7 +70,7 @@ The generally supported use cases for Sparsify are:
 -   NLP - token classification:  `nlp-token_classification`
 -   NLP - named entity recognition:  `nlp-named_entity_recognition`
 
-Note, other aliases are recognized for these use cases such as image-classification for cv-classification. Sparsify will automatically recognize these aliases and apply the correct use case.
+Note that other aliases are recognized for these use cases, such as image-classification for cv-classification. Sparsify will automatically recognize these aliases and apply the correct use case.
 
 For One-Shot Experiments, both the CLIs and APIs always support custom use cases. To utilize, run a One-Shot Experiment with `--use-case` set to the desired custom use case. This custom use case can be any string as long as it does not contain ASCII characters. 
 
@@ -182,7 +182,7 @@ The optim level can be set anywhere from 0.0 to 1.0, where 0.0 is for no sparsif
 
 ##### One-Shot Optim Levels
 
-Given that One-Shot is applied in post-training, the sparsity ranges are lowered to avoid accuracy drops as compared with sparse transfer or training aware.
+Given that One-Shot is applied in post-training, the sparsity ranges are lowered to avoid accuracy drops as compared with Sparse-Transfer or Training-Aware.
 The specific ranges are the following:
 
 - optim-level == 0.0: no sparsification is applied and the input model is returned as a baseline test case.

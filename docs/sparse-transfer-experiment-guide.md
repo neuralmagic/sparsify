@@ -219,6 +219,9 @@ The first row contains the column names, and each subsequent row represents a si
 Whether you choose to use JSON lines or CSV will depend on your specific needs and preferences, but either format will work well with Hugging Face and Sparsify. 
 Make sure your data is formatted correctly according to these specifications to ensure it can be used in your experiments.
 
+##### Custom Use Cases
+Currently, custom use cases are not supported for dataset representation and datasets must conform to the definitions above. In the near future, these will be supported through plugin specifications.
+
 For full details on Sparsify datasets, read the [Sparsify Datasets Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/datasets-guide.md#sparsify-datasets-guide).
 
 #### OPTIM_LEVEL

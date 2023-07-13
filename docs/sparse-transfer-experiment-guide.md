@@ -58,7 +58,7 @@ sparsify.run sparse-transfer --use-case USE_CASE --model MODEL --data DATA --opt
 
 The values for each of the arguments follow these general rules:
 - [**`USE_CASE`** ](#use_case)
-- [**`MODEL`**](#model)
+- [**`MODEL`**](#model) (Optional)
 - [**`DATA`**](#data)
 - [**`OPTIM_LEVEL`**](#optim_level)
 
@@ -82,7 +82,9 @@ For full details on Sparsify use cases, read the [Sparsify Use Cases Guide](http
 #### MODEL
 
   
-The PyTorch model format is the supported model format for Sparse-Transfer Experiments. The exact format will depend on the pipeline, and therefore the use case, for the Sparse-Transfer Experiment. 
+Models are optional for the Sparse-Transfer pathway. If no model is provided, the best model for the given optimization level will be used. 
+
+If you choose to override the model argument, the PyTorch model format is the supported model format for Sparse-Transfer Experiments. The exact format will depend on the pipeline, and therefore the use case, for the Sparse-Transfer Experiment. 
 
 #### DATA
 

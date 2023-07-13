@@ -193,9 +193,6 @@ The specific ranges are the following:
 The default of 0.5 will result in a ~50% sparse model with INT8 quantization.
 
 
-For full details on Sparsify optim levels, read the [Sparsify Optim (Sparsification) Levels Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/optim-levels-guide.md).
-
-
 ### Example One-Shot Experiment CLI Commands
 
 Here are code examples of One-Shot Experiments you may wish to run; pick your use case and start sparsifying with One-Shot!

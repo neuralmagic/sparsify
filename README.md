@@ -141,8 +141,6 @@ Next, with Sparsify installed on your training hardware:
 sparsify.login API_KEY
 ```
 
-Note: Every time you use Sparsify, you will need to log in via the Sparsify CLI so that your local session can sync with your account in the Sparsify Cloud.
-
 ### 2. Run an Experiment
 
 Experiments are the core of sparsifying a model. 
@@ -189,34 +187,11 @@ Note, One-Shot Experiments currently require the model to be in an ONNX format a
 More details are provided in the One-Shot Experiment Guide.
 </i>
 
-#### 2.2 Training-Aware
+#### 2.2 Sparse-Transfer
 
-Training-aware Experiments sparsify your model during training, providing a 6-12x speedup with minimal accuracy loss, ideal for thorough model optimization when the best performance and accuracy are required.
-
-To run a Training-Aware Experiment for your model, dataset, and use case, run the following command:
-```bash
-sparsify.run training-aware --use-case USE_CASE --model OPTIONAL_MODEL --data DATASET --optim-level OPTIM_LEVEL
-```
-
-For example, to sparsify a ResNet50 model on the ImageNette dataset for image classification, run the following command:
-```bash
-sparsify.run training-aware --use-case image_classification --model "zoo:cv/classification/resnet_v1-50/pytorch/sparseml/imagenette/base-none" --data imagenette --optim-level 0.5
-```
-
-Or, to sparsify a BERT model on the SST-2 dataset for sentiment analysis, run the following command:
-```bash
-sparsify.run training-aware --use-case text_classification --model "zoo:nlp/sentiment_analysis/bert-base/pytorch/huggingface/sst2/base-none" --data sst2 --optim-level 0.5
-```
-
-To dive deeper into Training-Aware Experiments, read through the [Training-Aware Experiment Guide](./docs/training-aware_experiment-guide.md).
-
-<i>
-Note, Training-Aware Experiments require the model to be saved in a PyTorch format corresponding to the underlying integration such as Ultralytics YOLOv5 or HuggingFace Transformers.
-Datasets must additionally match the expected format of the underlying integration.
-More details and exact formats are provided in the Training-Aware Experiment Guide.
-</i>
-
-#### 2.3 Sparse-Transfer
+| Sparsity | Sparsification Speed | Accuracy  |
+|----------|----------------------|-----------|
+| **++++** | **++++**             | **+++++** |
 
 Sparse-Transfer Experiments quickly create a smaller and faster model for your dataset by transferring from a [SparseZoo](https://sparsezoo.neuralmagic.com/) pre-sparsified foundational model o, providing a 5-10x speedup with minimal accuracy loss, ideal for quick model optimization without retraining your model.
 
@@ -241,6 +216,37 @@ To dive deeper into Sparse-Transfer Experiments, read through the [Sparse-Transf
 Note, Sparse-Transfer Experiments require the model to be saved in a PyTorch format corresponding to the underlying integration such as Ultralytics YOLOv5 or HuggingFace Transformers.
 Datasets must additionally match the expected format of the underlying integration.
 More details and exact formats are provided in the Sparse-Transfer Experiment Guide.
+</i>
+
+#### 2.3 Training-Aware
+
+| Sparsity  | Sparsification Speed  | Accuracy  |
+|-----------|-----------------------|-----------|
+| **+++++** | **++**                | **+++++** |
+
+Training-aware Experiments sparsify your model during training, providing a 6-12x speedup with minimal accuracy loss, ideal for thorough model optimization when the best performance and accuracy are required.
+
+To run a Training-Aware Experiment for your model, dataset, and use case, run the following command:
+```bash
+sparsify.run training-aware --use-case USE_CASE --model OPTIONAL_MODEL --data DATASET --optim-level OPTIM_LEVEL
+```
+
+For example, to sparsify a ResNet50 model on the ImageNette dataset for image classification, run the following command:
+```bash
+sparsify.run training-aware --use-case image_classification --model "zoo:cv/classification/resnet_v1-50/pytorch/sparseml/imagenette/base-none" --data imagenette --optim-level 0.5
+```
+
+Or, to sparsify a BERT model on the SST-2 dataset for sentiment analysis, run the following command:
+```bash
+sparsify.run training-aware --use-case text_classification --model "zoo:nlp/sentiment_analysis/bert-base/pytorch/huggingface/sst2/base-none" --data sst2 --optim-level 0.5
+```
+
+To dive deeper into Training-Aware Experiments, read through the [Training-Aware Experiment Guide](./docs/training-aware_experiment-guide.md).
+
+<i>
+Note, Training-Aware Experiments require the model to be saved in a PyTorch format corresponding to the underlying integration such as Ultralytics YOLOv5 or HuggingFace Transformers.
+Datasets must additionally match the expected format of the underlying integration.
+More details and exact formats are provided in the Training-Aware Experiment Guide.
 </i>
 
 ### 3. Compare Results

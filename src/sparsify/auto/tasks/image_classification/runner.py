@@ -77,6 +77,12 @@ class ImageClassificationRunner(TaskRunner):
         if "dataset" not in config.kwargs:
             # custom datasets are set to imagefolder
             config.kwargs["dataset"] = "imagefolder"
+            if not os.path.exists(config.dataset):
+                raise FileNotFoundError(
+                    f"The custom dataset {config.dataset} "
+                    "does not exist. Please ensure that the path provided is correct."
+                )
+
         if "model_tag" not in config.kwargs:
             config.kwargs["model_tag"] = "sparsify_auto_image_classification"
         train_args = ImageClassificationTrainArgs(

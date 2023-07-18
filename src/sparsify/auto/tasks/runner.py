@@ -412,7 +412,7 @@ class TaskRunner:
         _LOGGER.info("Deleting %s" % origin_directory)
         shutil.rmtree(origin_directory)
 
-        with open(os.path.join(deploy_directory, "readme.txt"), "x") as f:
+        with open(os.path.join(deploy_directory, "README.md"), "x") as f:
             f.write("deployment instructions will go here")
         _LOGGER.info("Deployment directory moved to %s" % deploy_directory)
 

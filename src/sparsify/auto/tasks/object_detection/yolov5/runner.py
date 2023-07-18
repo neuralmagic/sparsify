@@ -187,8 +187,12 @@ class Yolov5Runner(TaskRunner):
         if not os.path.isfile(onnx_file):
             return False
 
+        # Rename the exported model. yolo5 gives the same name during export
+        new_onnx_name = onnx_file.replace("last", "model")
+        os.rename(onnx_file, new_onnx_name)
+
         # Check onnx graph
-        model = onnx.load(onnx_file)
+        model = onnx.load(new_onnx_name)
         try:
             onnx.checker.check_model(model)
         except Exception:

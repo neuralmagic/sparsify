@@ -1,2 +1,3 @@
 recursive-include src/sparsify/ui/ *
 include LICENSE
+include src/sparsify/auto/tasks/deployment_instructions.md

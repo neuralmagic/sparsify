@@ -12,11 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 import gc
 import json
 import logging
 import os
+import pkgutil
 import shutil
 import socket
 import warnings
@@ -153,7 +153,6 @@ class TaskRunner:
         self.dashed_cli_kwargs = False  # True if CLI args require "-" as word separator
 
         self.train_args, self.export_args = self.config_to_args(self.config)
-
         self.hardware_specs = analyze_hardware()
         self.tune_args_for_hardware(self.hardware_specs)
 
@@ -412,8 +411,10 @@ class TaskRunner:
         _LOGGER.info("Deleting %s" % origin_directory)
         shutil.rmtree(origin_directory)
 
-        with open(os.path.join(deploy_directory, "README.md"), "x") as f:
-            f.write("deployment instructions will go here")
+        readme_path = os.path.join(deploy_directory, "README.md")
+        instruc = pkgutil.get_data("sparsify.auto", "tasks/deployment_instructions.md")
+        with open(readme_path, "wb") as f:
+            f.write(instruc)
         _LOGGER.info("Deployment directory moved to %s" % deploy_directory)
 
     @abstractmethod

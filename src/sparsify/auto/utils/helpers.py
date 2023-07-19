@@ -15,6 +15,7 @@
 """
 Generic helpers for sparsify.auto
 """
+import glob
 import logging
 import os
 import re
@@ -51,9 +52,10 @@ def initialize_banner_logger():
 
 def create_yolo_data_yaml(dataset: str) -> str:
     """
-    Check if the dataset provided is a data directory. If it is, buid a yolov5 yaml
-    file based on the provided data directory path. An example of the directory
-    structure for the provided directory path is shown below. There must
+    Check if the dataset provided is a data directory. If it is, check if there is
+    a yaml file within the directory and return the path to the yaml. If not, build
+    a yolov5 yaml file based on the provided data directory path. An example of the
+    directory structure for the provided directory path is shown below. There must
     subdirectories in the provided directory named `images`, `labels` and a text
     file called `classes.txt` which includes the list of the classes for the
     particular dataset, ordered by class id. The `images` and `labels` folders
@@ -92,8 +94,15 @@ def create_yolo_data_yaml(dataset: str) -> str:
         else:
             data_file_args[file_type] = [path]
 
+    # Case where the user provides just a yaml file path
     if not os.path.isdir(dataset):
         return dataset
+
+    # Case where the user provides a data directory with a yaml file
+    # Only one will be returned if multiple are provided
+    yaml_paths = glob.glob(f"{dataset}/*.y*ml")
+    if len(yaml_paths) > 0:
+        return yaml_paths[0]
 
     image_path = os.path.join(dataset, image_dir)
     class_list_path = os.path.join(dataset, class_path)

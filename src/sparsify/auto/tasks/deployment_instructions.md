@@ -81,4 +81,4 @@ To start the server, run the following command with the appropriate arguments:
 deepsparse.server --task TASK --model_path ./deployment
 ```
 ​
-For more information on the `deepsparse.server` command, see the [Server Deployment Guide](zoo:cv/classification/resnet_v1-50/pytorch/sparseml/imagenet/pruned90_quant-none).
+For more information on the `deepsparse.server` command, see the [Server Deployment Guide](https://github.com/neuralmagic/deepsparse/blob/main/docs/user-guide/deepsparse-server.md).

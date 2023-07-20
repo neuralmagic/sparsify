@@ -116,6 +116,8 @@ First, verify that you have the correct software and hardware to run the Sparsif
 
 Sparsify is tested on Python 3.8 and 3.10, ONNX 1.5.0-1.12.0, ONNX opset version 11+, and manylinux compliant systems. 
 Sparsify is not supported natively on Windows and MAC OS.
+
+Additionally, for installation from PyPi, pip 20.3+ is required.
 </details>
 
 <details>
@@ -354,9 +356,11 @@ If you're not ready for deploying, congratulations on completing the quickstart!
 ## Companion Guides
 
 - [Sparsify Cloud User Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/cloud-user-guide.md)
-- [Sparsify Use Cases Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/use-cases-guide.md)
-- [Sparsify Models Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/models-guide.md)
 - [Sparsify Datasets Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/datasets-guide.md)
+- [Sparsify Models Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/models-guide.md)
+- [One-Shot Experiments Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/one-shot-experiment-guide.md)
+- [Sparse-Transfer Experiments Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/sparse-transfer-experiment-guide.md)
+- [Training-Aware Experiments Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/training-aware-experiment-guide.md)
 
 ## Resources
 

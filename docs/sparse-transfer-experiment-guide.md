@@ -1,6 +1,3 @@
-
-
-
 <!--
 Copyright (c) 2021 - present / Neuralmagic, Inc. All Rights Reserved.
 
@@ -19,283 +16,144 @@ limitations under the License.
 
 # Sparsify Sparse-Transfer Experiment Guide
 
-## Overview
-1. Sparse-Transfer Experiment Overview
-2. Sparse-Transfer CLI Quickstart
-3. Sparse-Transfer Cloud Quickstart
-4. Next Steps
-5. Resources
+The Sparsify Sparse-Transfer Experiment Guide is a guide for running Sparse-Transfer Experiments with the Sparsify CLI.
+We also have One-Shot and Training-Aware Experiments, which you can explore in the [Next Steps](#next-steps) section of this guide.
 
+## Table of Contents
 
-#### Sparse-Transfer Experiments
+1. [Experiment Overview](#experiment-overview)
+2. [CLI Quickstart](#cli-quickstart)
+4. [Examples](#examples)
+5. [Next Steps](#next-steps)
+6. [Resources](#resources)
+
+## Experiment Overview
 
 | Sparsity | Sparsification Speed | Accuracy  |
 |----------|----------------------|-----------|
 | **++++** | **++++**             | **+++++** |
 
 Sparse-Transfer Experiments are the second quickest way to create a faster and smaller model for your dataset. 
-Sparse, foundational models are sparsified in a Training-Aware manner on a large dataset such as ImageNet.
-Then, the sparse patterns are transferred to your dataset through a fine-tuning process.
+Sparse, foundational models that have been pre-sparsified on a large, upstream dataset such as ImageNet are transferred to your dataset through fine-tuning keeping the sparse architecture intact.
 
 Generally, Sparse-Transfer Experiments result in a 5–10x speedup with minimal accuracy loss.
-
 They are ideal when a sparse model already exists for your use case, and you want to quickly utilize it for your dataset.
 
-Note, the model argument is optional for Sparse-Transfer Experiments, as Sparsify will select the best one from the SparseZoo for your use case if not supplied.
+The CLI Quickstart below will walk you through the steps to run a Sparse-Transfer Experiment on your model.
+To utilize the cloud pathways for Sparse-Transfer Experiments, review the [Cloud User Guide](./cloud-user-guide.md).
 
+## CLI Quickstart
 
-### Sparse-Transfer CLI Quickstart
+Now that you understand what a Sparse-Transfer Experiment is and the benefits, including fine-tuning a pre-optimized, sparse model on your data, you're ready to use the CLI to effectively run a Sparse-Transfer Experiment. 
 
-Now that you understand what a Sparse-Transfer Experiment is and the benefits, including fine-tuning a pre-optimized, sparse model on your data, you can now use the CLI to effectively run a Sparse-Transfer Experiment. 
-
-Before you run a Sparse-Transfer Experiment, confirm you are logged into the Sparsify CLI. For instructions on Installation and Setup, review the [Sparsify Install and Setup Section](READMEsection.com) in the Sparsify README. 
+Before you run a Sparse-Transfer Experiment, confirm you are logged into the Sparsify CLI. 
+For instructions on Installation and Setup, review the [Sparsify Install and Setup Section](READMEsection.com) in the Sparsify README. 
 
 Sparse-Transfer Experiments use the following general command:
 
 ```bash
-sparsify.run sparse-transfer --use-case USE_CASE --model MODEL --data DATA --optim-level OPTIM_LEVEL
+sparsify.run sparse-transfer --use-case USE_CASE --data DATA --optim-level OPTIM_LEVEL* --model MODEL*
 ```
 
-The values for each of the arguments follow these general rules:
-- [**`USE_CASE`** ](#use_case)
-- [**`MODEL`**](#model) (Optional)
-- [**`DATA`**](#data)
-- [**`OPTIM_LEVEL`**](#optim_level)
+<i>* optional arguments</i>
 
-#### USE_CASE
+The description, rules, and possible values for each of the arguments are described below:
+- [USE_CASE](#use_case)
+- [DATA](#data)
+- [OPTIM_LEVEL](#optim_level) (Optional)
+- [MODEL](#model) (Optional)
+
+### USE_CASE
 
 The generally supported use cases for Sparsify are:
+- `cv-classification`
+- `cv-detection`
+- `cv-segmentation`
+- `nlp-question_answering`
+- `nlp-text_classification`
+- `nlp-sentiment_analysis`
+- `nlp-token_classification`
+- `nlp-named_entity_recognition`
 
--   CV - classification:  `cv-classification`
--   CV - detection:  `cv-detection`
--   CV - segmentation:  `cv-segmentation`
--   NLP - question answering:  `nlp-question_answering`
--   NLP - text classification:  `nlp-text_classification`
--   NLP - sentiment analysis:  `nlp-sentiment_analysis`
--   NLP - token classification:  `nlp-token_classification`
--   NLP - named entity recognition:  `nlp-named_entity_recognition`
+Note that other aliases are recognized for these use cases, such as image-classification for cv-classification. 
+Sparsify will automatically recognize these aliases and apply the correct use case.
 
-Note that other aliases are recognized for these use cases, such as image-classification for cv-classification. Sparsify will automatically recognize these aliases and apply the correct use case.
+Currently, custom use cases are not supported for Sparse-Transfer Experiments.
 
-For full details on Sparsify use cases, read the [Sparsify Use Cases Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/use-cases-guide.md).
-
-#### MODEL
-
-  
-Models are optional for the Sparse-Transfer pathway. If no model is provided, the best model for the given optimization level will be used.
-
-If you choose to override the model argument, the PyTorch model format is the supported model format for Sparse-Transfer Experiments. The exact format will depend on the pipeline, and therefore the use case, for the Sparse-Transfer Experiment.
-
-#### DATA
+### DATA
 
 For all Sparsify Experiments, you will need to provide a dataset to create a sparse model.
 Due to the varied ML pipelines and implementations, Sparsify standardizes on a few popular formats for datasets.
 Confirm that your data is formatted properly according to the standards listed below.
 
-#####  Predefined Use Cases
+Different use cases may require different input formats depending on what is considered standard for that use case.
+Specifically, the following are the supported formats as well as links to specs and guides for creating datasets for each format:
+- `cv-classification`: Image Folder Format
+  - [Image Classification Dataset Guide](./datasets-guide#image-classification)
+  - Example structure: data/{SPLIT}/{CLASS}/{IMAGE.EXT})
+- `cv-detection` - YOLO Format 
+  - [Object Detection Dataset Guide](./datasets-guide#object-detection)
+  - Example structure: data/classes.txt; data/images/{SPLIT}/{IMAGE.EXT}; data/labels/{SPLIT}/{IMAGE.EXT})
+- `cv-segmentation` - YOLO Format
+  - [Image Segmentation Dataset Guide](./datasets-guide#image-segmentation)
+  - Example structure: data/classes.txt; data/images/{SPLIT}/{IMAGE.EXT}; data/annotations/{SPLIT}/{IMAGE.EXT})
+- `nlp-*`: Hugging Face CSV or JSONW Format
+  - [NLP Dataset Guide](./datasets-guide#nlp)
+  - Example structure: data/{SPLIT}.csv or data/{SPLIT}.jsonl or data/{SPLIT}.json
 
-Sparse-Transfer Experiments utilize specific dataset standards depending on the use case.
-Each one is listed below with an example.
+Currently, custom use cases are not supported for dataset representation and datasets must conform to the definitions above. 
+In the near future, these will be supported through plugin specifications.
 
-##### Image Classification
-
-For image classification tasks, Sparsify relies on the dataset format standard used by the PyTorch ImageFolder class. 
-This format is fairly simple and intuitive, and it is also widely used in the machine-learning community.
-
-##### Specifications
-
-- The root folder should contain subdirectories, each representing a single class of images.
-- Images of a particular class/category should be placed inside the corresponding subdirectory.
-- The subdirectory name is used as the class label and should be unique for each class.
-- The images should be in a format readable by the Python Imaging Library (PIL), which includes formats such as .jpeg, .png, .bmp, etc.
-- Images do not need to be of the same size.
-
-The PyTorch ImageFolder class automatically assigns numerical class labels to the images based on the lexicographical order of their class directories. 
-Therefore, it is crucial to ensure the directories are properly named to avoid any confusion or mislabeling.
-
-##### Image Classification Example
-
-For an image classification task involving dogs and cats, the dataset directory should be structured as follows:
-
-```
-root/dog/xxx.png
-root/dog/xxy.png
-root/dog/xxz.png
-
-root/cat/123.png
-root/cat/nsa.png
-root/cat/asd.png
-```
-
-In this example, all images within the 'dog' subdirectory will be labeled as 'dog', and all images within the 'cat' subdirectory will be labeled as 'cat'. 
-The exact filenames ('xxx.png', 'xxy.png', etc.) do not matter; what matters is the directory structure and the directory names. 
-
-By organizing the data in this way, it can be easily read and labeled by the PyTorch ImageFolder class, and thus easily used for training image classification models in Sparsify. 
-
-Note that the class labels ('dog', 'cat') are case-sensitive and the order of the classes would be sorted lexicographically. 
-Here, 'cat' will be considered class 0, and 'dog' will be class 1, due to alphabetical order.
-
-##### Object Detection / Image Segmentation
-
-For object detection and image segmentation tasks, Sparsify supports the dataset format used by YOLOv5. 
-This format is specifically designed for tasks involving bounding boxes and segmentation masks and is widely adopted in the community.
-
-##### Specifications
-
-- Images should be stored in a common directory, generally named `images`.
-- Annotations for the images should be stored in a separate directory, often named `labels`.
-- Images can be in formats readable by OpenCV (e.g. .jpg, .png).
-- Each image should have a corresponding annotation file. The annotation files should be in plain text format (.txt).
-- The name of the annotation file should be the same as the corresponding image file, except with a .txt extension.
-- Annotation files for object detection should contain one line for each object in the image. Each line should be in the format: `<class> <x_center> <y_center> <width> <height>`, where the values are normalized relative to the size of the image.
-- Annotation files for image segmentation should contain information about the segmentation masks.
-
-##### Object Detection / Image Segmentation Example
-
-For an object detection task involving detecting cars and pedestrians, the dataset directory should be structured as follows:
-
-```
-dataset/
-├── images/
-│   ├── image1.jpg
-│   └── image2.jpg
-└── labels/
-    ├── image1.txt
-    └── image2.txt
-```
-
-For `image1.jpg`, if there's a car and a pedestrian in the image, the corresponding `image1.txt` file could look like this:
-
-```
-0 0.5 0.6 0.2 0.3
-1 0.7 0.8 0.1 0.2
-```
-
-This would mean that there is an object of class 0 (car) centered at (50% of the image width, 60% of the image height) and having a width of 20% of the image width and a height of 30% of the image height.
-The second line is similar but for an object of class 1 (pedestrian).
-
-For image segmentation, the labels might be more complex, including segmentation masks that indicate which pixels belong to which object category.
-
-Make sure the class labels are consistent with what is expected by the YOLOv5 configuration you are using, and that the bounding box coordinates are normalized as described above.
-
-##### Natural Language (NLP/NLG)
-
-For natural language processing (NLP) and natural language generation (NLG) tasks, Sparsify supports the dataset formats used by the Hugging Face library. 
-Hugging Face datasets can be represented in various file formats, including JSON, CSV, and JSON lines format (.jsonl).
-
-##### Specifications
-
-- Each row or line in your data file should represent a single example.
-- The data must include the features necessary for your task. For example, a dataset for text classification might include 'text' and 'label' fields.
-- For JSON files, each line should be a separate, self-contained JSON object.
-- For CSV files, the first row should include the column names, and each subsequent row should include the fields for a single example.
-- The file should be UTF-8 encoded to support a wide range of text inputs.
-
-##### Natural Language (NLP/NLG) Example
-
-Here's an example of how you might structure a dataset for a sentiment analysis task:
-
-If you're using a JSON lines (.jsonl) format, your file could look like this:
-
-```
-{"text": "I love this movie!", "label": "positive"}
-{"text": "This movie was awful.", "label": "negative"}
-{"text": "I have mixed feelings about this film.", "label": "neutral"}
-```
-
-Each line is a separate JSON object, representing a single example.
-
-If you're using a CSV format, your file could look like this:
-
-```
-text,label
-"I love this movie!","positive"
-"This movie was awful.","negative"
-"I have mixed feelings about this film.","neutral"
-```
-
-The first row contains the column names, and each subsequent row represents a single example.
-
-Whether you choose to use JSON lines or CSV will depend on your specific needs and preferences, but either format will work well with Hugging Face and Sparsify. 
-Make sure your data is formatted correctly according to these specifications to ensure it can be used in your experiments.
-
-##### Custom Use Cases
-Currently, custom use cases are not supported for dataset representation and datasets must conform to the definitions above. In the near future, these will be supported through plugin specifications.
-
-For full details on Sparsify datasets, read the [Sparsify Datasets Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/datasets-guide.md#sparsify-datasets-guide).
+For full details on Sparsify datasets, read the [Sparsify Datasets Guide](./datasets-guide.md).
 
 #### OPTIM_LEVEL
 
-When using Sparsify, the optim (sparsification) level is one of the top arguments you should decide on. Specifically, it controls how much sparsification is applied to your model with higher values resulting in faster and more compressed models. At the max range, though, you may see a drop in accuracy.
+When using Sparsify, the optim (sparsification) level is one of the top arguments you should decide on. 
+Specifically, it controls how much sparsification is applied to your model with higher values resulting in faster and more compressed models. 
+At the max range, though, you may see a drop in accuracy.
 
-The optim level can be set anywhere from 0.0 to 1.0, where 0.0 is for no sparsification and 1.0 is for maximum sparsification.
-0.5 is the default optim level and is a good starting point for most use cases.
-
-##### Sparse-Transfer Optim Levels
-
-Sparse-Transfer optim_level mappings are unique since they map to models available in the SparseZoo to transfer from. Increasing the optim level will result in smaller and more compressed models. The specific mappings are the following:
-
+Sparse-Transfer optim_level mappings are unique since they map to models available in the SparseZoo to transfer from. 
+Increasing the optim level will result in smaller and more compressed models. 
+The specific mappings are the following:
 -   optim-level == 0.0: the largest model selected from the SparseZoo with no optimizations.
 -   optim-level < 0.25: the largest model selected from the SparseZoo with INT8 quantization applied to the model (activations and weights).
 -   optim-level < 0.5: the largest model selected from the SparseZoo with both unstructured pruning (sparsity) and INT8 quantization applied to the model.
 -   optim-level < 0.75: the medium model selected from the SparseZoo with both unstructured pruning (sparsity) and INT8 quantization applied to the model.
 -   optim-level <= 1.0: the smallest model selected from the SparseZoo with both unstructured pruning (sparsity) and INT8 quantization applied to the model.
 
-The default of 0.5 will result in a medium-sized sparse model with INT8 quantization.
+The default of 0.5 will result in a medium-sized sparse model with INT8 quantization, and is a good default to start with.
 
+#### MODEL
 
-### Example Sparse-Transfer Experiment CLI Commands
+Models are optional for the Sparse-Transfer pathway. 
+If no model is provided, the best pre-sparsified model and recipe from the SparseZoo for the given optimization level will be used.
 
-Here are code examples of Sparse-Transfer Experiments you may wish to run; pick your use case and start sparsifying with Sparse-Transfer!
+If you choose to override the model, it is expected to be a pre-sparsified model and adhere to the following formats depending on the use case:
+- `cv-classification`: SparseML PTH Format
+  - [Image Classification Models Guide](./models-guide#image-classification)
+- `cv-detection` - YOLOv5/YOLOv8 Format 
+  - [Object Detection Models Guide](./models-guide#object-detection)
+  - Example structure: data/classes.txt; data/images/{SPLIT}/{IMAGE.EXT}; data/labels/{SPLIT}/{IMAGE.EXT})
+- `cv-segmentation` - YOLOv5/YOLOv8 Format
+  - [Image Segmentation Models Guide](./models-guide#image-segmentation)
+- `nlp-*`: Hugging Face Format
+  - [NLP Models Guide](./models-guide#nlp)
 
-#### Running Sparse-Transfer Experiments
+Currently, custom use cases are not supported for model representation and models must conform to the definitions above.
+In the near future, these will be supported through plugin specifications.
 
-##### Computer Vision Use Case:
+For full details on Sparsify models, read the [Sparsify Models Guide](./models-guide.md).
 
-You have an image classification use case and want to run a Sparse-Transfer Experiment on the imagenette dataset. You don't care about the specific model architecture and just want to leverage SparseZoo's best-optimized model for classification and just apply your dataset to that model to create an accurate, highly performant model to accelerate inference. 
+## Examples
 
-You are targeting a balanced model, but are targeting a pretty drastic 5-10x performance boost in latency while also maintaining the high accuracy of the model so that you can confidently deploy the model in production to solve your business case. 
+Check back in soon for walkthroughs and examples of One-Shot Experiments applied to various popular models and use cases.
 
-You can use a Sparsify Sparse-Transfer Experiment to try and reach your goal. Sparse-Transfer Experiments use existing optimized models and apply your data to them to easily create fine-tuned optimized models. Since you want to very quickly achieve a 5-10x speedup in latency performance and are model agnostic, a Sparse-Transfer Experiment makes the most sense for you for its highly optimized, performant sparsity profile on your data.  
-
-With all of these considerations in mind, run the following Sparse-Transfer Experiment command to achieve your use case goal: 
-```bash
-sparsify.run sparse-transfer --use-case image_classification --data imagenette --optim-level 0.5
-```
-
-The output is as follows:
-
-MARK
-
-##### NLP Use Case:
-You are working on a text classification use case to help classify text reviews received from your customers through your e-commerce website. You have been having slow inference times using the BERT-base model and want to improve the performance to save cost. 
-
-You are targeting a balanced model, but are targeting a pretty drastic 5-10x performance boost in text classification throughput while also maintaining the high accuracy of the model so that you can confidently deploy the model in production to solve your business case. You are focused on improving the throughput of the model to process more requests, faster. The model itself isn't as important as the performance for this text classification use case. 
-
-You are targeting a balanced model in terms of wanting to get a 5-10x performance boost in throughput while having a high accuracy so your classifications are actionable. 
-
-You can use a Sparsify Sparse-Transfer Experiment to try and reach your goal. Since you want to use the SST2 dataset and are model agnostic for this text classification use case, Sparsify will apply your data to a pre-optimized model behind the scenes.   A Sparse-Transfer Experiment makes the most sense for us for a high sparsity profile and model-agnostic approach in transfer learning your data onto a pre-optimized model. 
-
-With all of these considerations in mind, run the following Sparse-Transfer Experiment command to achieve your use case goal:
-
-```bash
-sparsify.run sparse-transfer --use-case text_classification --data sst2 --optim-level 0.5
-```
-The output is as follows:
-MARK
-
-
-### Sparse-Transfer Cloud Quickstart
-
-In addition to manually creating commands, you use Sparsify Cloud to generate Sparsify Sparse-Transfer Experiment commands. 
-
-To get started, read the [Sparsify Cloud User Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/cloud-user-guide.md). 
-
- 
 ### Next Steps 
 
-Now that you have successfully run a Sparse-Transfer Experiment, check out the [One-Shot](https://github.com/neuralmagic/sparsify/blob/main/docs/one-shot_experiment-guide.md)  and [Training-Aware](https://github.com/neuralmagic/sparsify/blob/main/docs/training-aware_experiment-guide.md) Experiments to target different sparsity profiles. 
-
+Now that you have successfully run a Sparse-Transfer Experiment, check out the following guides to continue your Sparsify journey:
+- [Training Aware Experiment Guide](./training-aware-experiment-guide.md)
+- [One-Shot Experiment Guide](./one-shot-experiment-guide.md)
  
 ### Resources
-To learn more about Sparsify and all of the available pathways outside of Sparse-Transfer Experiments, refer to the [Sparsify README](https://github.com/neuralmagic/sparsify).
+
+To learn more about Sparsify and the available pathways other than Sparse-Transfer Experiments, refer to the [Sparsify README](../README.md).

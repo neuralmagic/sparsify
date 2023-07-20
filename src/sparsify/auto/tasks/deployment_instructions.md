@@ -1,12 +1,12 @@
-# Deployment Guide
+# Sparsify Deployment Guide
 ​
-We recommend deploying with the [DeepSparse](https://github.com/neuralmagic/deepsparse) Engine for the best performance with sparsified models on CPUs.
-The deployment folder contains everything necessary to benchmark and deploy a sparsified model with the DeepSparse Engine.
+Deploying with Neural Magic's inference runtime, [DeepSparse](https://github.com/neuralmagic/deepsparse), is recommended for the best performance with sparsified models on CPUs.
+The deployment folder contains everything necessary to benchmark and deploy a sparsified model with DeepSparse.
 ​
 ## Requirements
 ​
-A Linux-based CPU system with Python versions 3.8-3.10 installed and AVX2 or greater instruction sets is required to run the DeepSparse Engine.
-The DeepSparse Engine is not currently supported on Windows or MacOS.
+A Linux-based CPU system with Python versions 3.8-3.10 installed and AVX2 or greater instruction set is required to run DeepSparse.
+DeepSparse is not currently supported on Windows or MacOS.
 To install DeepSparse, its dependencies, and check your system, run the following commands:
 ​
 ```bash
@@ -16,8 +16,8 @@ deepsparse.check_hardware
 ​
 Other installation options may be needed, depending on your use case.
 For more details and other installation options, see the [Installation Guide](https://github.com/neuralmagic/deepsparse).
-​
-For more information on hardware support and system requirements, see the [Support and Requirements Guide](https://github.com/neuralmagic/deepsparse).
+
+For the latest hardware support and system requirements, see the [Support and Requirements Guide](https://github.com/neuralmagic/deepsparse).
 ​
 ## Benchmarking
 ​

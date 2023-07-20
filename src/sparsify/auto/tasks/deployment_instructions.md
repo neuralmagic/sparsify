@@ -10,7 +10,7 @@ The DeepSparse Engine is not currently supported on Windows or MacOS.
 To install DeepSparse, its dependencies, and check your system, run the following commands:
 ​
 ```bash
-pip install deepsparse
+pip install deepsparse[server]
 deepsparse.check_hardware
 ```
 ​

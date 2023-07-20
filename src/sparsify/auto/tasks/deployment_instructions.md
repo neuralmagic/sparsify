@@ -78,7 +78,7 @@ The server deployment packages up the model inference and any pre- and post-proc
 To start the server, run the following command with the appropriate arguments:
 ​
 ```bash
-deepsparse.server --task TASK --model_path ./deployment
+deepsparse.server --task TASK --model_path ./deployment/model.onnx
 ```
 ​
 For more information on the `deepsparse.server` command, see the [Server Deployment Guide](https://github.com/neuralmagic/deepsparse/blob/main/docs/user-guide/deepsparse-server.md).

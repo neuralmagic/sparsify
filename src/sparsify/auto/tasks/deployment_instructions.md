@@ -64,8 +64,10 @@ custom_pipeline = CustomTaskPipeline(
     process_inputs_fn=preprocess,
 )
 ​
-scores, probs = custom_pipeline("goldfish.jpg")
+scores, probs = custom_pipeline("buddy.jpeg")
 ```
+(Note: Download [buddy.jpeg](https://github.com/neuralmagic/deepsparse/blob/main/tests/deepsparse/pipelines/sample_images/buddy.jpeg))
+
 ​
 For more information on the available pipelines and how to create custom pipelines, see the [Pipeline Deployment Guide](https://github.com/neuralmagic/deepsparse/blob/main/docs/user-guide/deepsparse-benchmarking.md).
 ​

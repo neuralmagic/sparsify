@@ -53,7 +53,7 @@ TASK_REGISTRY: Dict[str, TaskName] = {
     "finetune": TaskName(
         name="finetune",
         aliases=["finetuning", "fine tune"],
-        domain="nlp",
+        domain="llm",
         sub_domain="language_modeling",
     ),
     "image_classification": TaskName(

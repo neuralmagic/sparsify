@@ -1,11 +1,11 @@
-max_seq_len: 128
+max_seq_len: 512
 global_seed: 17
-model_name_or_path: gpt2
+model_name_or_path: t5-small
 model_name: ${model_name_or_path}
 load_path:  # set via bash script to be absolute path to your sparse checkpoint
 precision: amp_bf16
 
-max_duration: 2ep # run for 2 epochs
+max_duration: 1ep # run for 2 epochs
 eval_interval: 1ep
 # eval_subset_num_batches: 3  # use this for quick testing
 eval_first: true
@@ -19,9 +19,9 @@ device_eval_batch_size: 4
 run_name: testing_run
 
 model:
-  name: hf_causal_lm
+  name: hf_t5
   pretrained: true
-  pretrained_model_name_or_path: gpt2
+  pretrained_model_name_or_path: t5-small
   max_seq_len: ${max_seq_len}
 
 # Tokenizer
@@ -95,8 +95,11 @@ fsdp_config:
 
 # Logging
 progress_bar: false
-log_to_console: false
+log_to_console: true
 console_log_interval: 1ba
+
+loggers:
+  tensorboard: {"log_dir": "my_logs"}
 
 # Checkpoint to local filesystem or remote object store
 save_interval: 1ep

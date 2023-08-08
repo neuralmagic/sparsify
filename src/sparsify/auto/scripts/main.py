@@ -17,7 +17,6 @@ from pathlib import Path
 
 import yaml
 
-from sparsify.auto.finetune import LLMFinetuner
 from sparsify.auto.tasks import TaskRunner
 from sparsify.auto.utils import (
     api_request_config,
@@ -36,17 +35,24 @@ _LOGGER = logging.getLogger("auto_banner")
 def main(api_args: APIArgs):
     initialize_banner_logger()
 
-    if api_args.task == "finetune":
-        runner = LLMFinetuner(api_args)
-        runner.fine_tune()
-        return
-
     # Set up directory for saving
     (
         train_directory,
         log_directory,
         deploy_directory,
     ) = create_save_directory(api_args)
+
+    if api_args.task == "finetune":
+        _LOGGER.info(
+            "Running finetuning. "
+            "Currently only arguments passed for use-case and data will be considered"
+        )
+        config = SparsificationTrainingConfig(
+            task=api_args.task, dataset=api_args.dataset, base_model=None, recipe=None
+        )
+        runner = TaskRunner.create(config)
+        runner.train(train_directory=train_directory, log_directory=log_directory)
+        return
 
     _suppress_tensorboard_logs()
 
@@ -60,14 +66,14 @@ def main(api_args: APIArgs):
 
     raw_config = api_request_config(api_args)
     config = SparsificationTrainingConfig(**raw_config)
-    runner = TaskRunner.create(config)
 
+    runner = TaskRunner.create(config)
     # Execute integration run and return metrics
     metrics = runner.train(train_directory=train_directory, log_directory=log_directory)
+
     yaml.safe_dump(
         metrics.dict(), (Path(train_directory).parent / "metrics.yaml").open("w")
     )
-
     runner.export(model_directory=train_directory)
     runner.create_deployment_directory(
         train_directory=train_directory, deploy_directory=deploy_directory

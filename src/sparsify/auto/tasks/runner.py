@@ -55,6 +55,7 @@ SUPPORTED_TASKS = [
         "question_answering",
         "text_classification",
         "token_classification",
+        "finetune",
     ]
 ]
 _TASK_RUNNER_IMPLS = {}
@@ -270,9 +271,17 @@ class TaskRunner:
             "--nproc_per_node",
             "auto",
             f"--master_port={_get_open_port_()}",
-            self.sparseml_train_entrypoint,
         ]
-        ddp_args += self.train_args.serialize_to_cli_string(self.dashed_cli_kwargs)
+        if self._config.task == "finetune":
+            ddp_args += [
+                "finetune",
+                f"{self.train_config}",
+                f"{self.run_directory}",
+                f"{self.log_directory}",
+            ]
+        else:
+            ddp_args += [self.sparseml_train_entrypoint]
+            ddp_args += self.train_args.serialize_to_cli_string(self.dashed_cli_kwargs)
 
         launch_ddp(ddp_args)
 
@@ -505,7 +514,11 @@ def _dynamically_register_integration_runner(task: str):
         from sparsify.auto.tasks.image_classification import (  # noqa F401
             ImageClassificationRunner,
         )
-
+    elif (
+        TASK_REGISTRY[task].domain == "llm"
+        and TASK_REGISTRY[task].sub_domain == "language_modeling"
+    ):
+        from sparsify.auto.tasks.finetune import LLMFinetuner  # noqa F401
     else:
         raise ValueError(
             f"Task {task} is not yet supported. TaskRunner implementation "

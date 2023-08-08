@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import os
+import sys
 from pathlib import Path
 from typing import Dict, Union
 
@@ -21,27 +22,32 @@ from torch.utils.data import DataLoader
 from composer import Trainer
 from composer.core import Evaluator
 from composer.models import HuggingFaceModel
-from composer.utils import dist, reproducibility
+from composer.utils import dist, get_device, reproducibility
 from llmfoundry import (
     COMPOSER_MODEL_REGISTRY,
     build_finetuning_dataloader,
     build_text_denoising_dataloader,
 )
 from llmfoundry.data.text_data import build_text_dataloader
-from llmfoundry.utils.builders import build_optimizer, build_scheduler, build_tokenizer
+from llmfoundry.utils.builders import (
+    build_logger,
+    build_optimizer,
+    build_scheduler,
+    build_tokenizer,
+)
 from omegaconf import DictConfig
 from omegaconf import OmegaConf as om
-from sparsify.schemas import APIArgs
 from transformers import PreTrainedTokenizerBase
 
 
-__all__ = ["LLMFinetuner"]
+__all__ = ["FineTuner"]
 
 TEXT_DENOISING_MODELS = ["hf_prefix_lm", "hf_t5"]
 TEXT_MODELS = ["hf_causal_lm"]
 
 
-class LLMFinetuner:
+class FineTuner:
+
     """
     LLMFinetuner which allows finetuning of LLM Models using llmfoundry. Finetuning is
     heavily dependent on providing a llmfoundary-compliant yaml file which sets up
@@ -51,21 +57,36 @@ class LLMFinetuner:
     https://github.com/mosaicml/llm-foundry/blob/main/scripts/train/finetune_example/
     """
 
-    def __init__(self, api_args: APIArgs) -> None:
-        if os.path.exists(api_args.dataset):
-            if Path(api_args.dataset).suffix not in [".yaml", ".yml"]:
+    def __init__(
+        self,
+        dataset_path: Union[str, Path],
+        train_directory: Union[str, Path],
+        log_dir: Union[str, Path],
+    ) -> None:
+        if os.path.exists(dataset_path):
+            if Path(dataset_path).suffix not in [".yaml", ".yml"]:
                 raise RuntimeError(
                     "LLMFinetuner expects a yaml file compliant with llmfoundry."
                 )
-            with open(api_args.dataset) as yaml_file:
-                self._config = om.load(yaml_file)
+            with open(dataset_path) as yaml_file:
+                self._train_config = om.load(yaml_file)
         else:
             raise FileNotFoundError(
-                f"{api_args.dataset} does not exist. Plase ensure "
+                f"{dataset_path} does not exist. Plase ensure "
                 " the yaml file exists and the path provided is correct."
             )
 
-        self._model_name = self._config["model"]["name"]
+        if self._train_config.get("loggers"):
+            for _, log_config in self._train_config["loggers"].items():
+                if "log_dir" in log_config:
+                    log_config["log_dir"] = os.path.join(log_dir, log_config["log_dir"])
+                else:
+                    log_config["log_dir"] = log_dir
+
+        self._train_config.save_folder = os.path.join(
+            train_directory, Path(self._train_config.save_folder)
+        )
+        self._model_name = self._train_config["model"]["name"]
         self._valdiate_yaml()
 
     @property
@@ -79,14 +100,14 @@ class LLMFinetuner:
         """
         Validate that the provided yaml is compatible with llmfoundry.
         """
-        if not self._config.get("train_loader"):
+        if not self._train_config.get("train_loader"):
             raise ValueError(
                 "the provided config file is missing details on the train_loader"
             )
 
-        data_loaders = [self._config.get("train_loader")]
-        if self._config.get("eval_loader"):
-            data_loaders.append(self._config.get("eval_loader"))
+        data_loaders = [self._train_config.get("train_loader")]
+        if self._train_config.get("eval_loader"):
+            data_loaders.append(self._train_config.get("eval_loader"))
 
         for loader in data_loaders:
             if loader["name"] == "text":
@@ -116,7 +137,9 @@ class LLMFinetuner:
                 "Please ensure the model name provided is one of "
                 f" {list(COMPOSER_MODEL_REGISTRY.keys())}"
             )
-        return COMPOSER_MODEL_REGISTRY[self.model_name](self._config.model, tokenizer)
+        return COMPOSER_MODEL_REGISTRY[self.model_name](
+            self._train_config.model, tokenizer
+        )
 
     def _build_dataloaders(
         self,
@@ -161,7 +184,7 @@ class LLMFinetuner:
 
         :return: fsdp dictionary if number of cuda devices available is > one, else None
         """
-        fsdp_config = self._config.get("fsdp_config", None)
+        fsdp_config = self._train_config.get("fsdp_config", None)
         fsdp_config = (
             om.to_container(fsdp_config, resolve=True) if fsdp_config else None
         )
@@ -178,57 +201,69 @@ class LLMFinetuner:
 
         :return: mosaicml composer Trainer object
         """
-        reproducibility.seed_all(self._config.seed)
+        reproducibility.seed_all(self._train_config.seed)
+        if dist.get_world_size() > 1:
+            dist.initialize_dist(get_device(None))
 
-        tokenizer = build_tokenizer(self._config.tokenizer)
+        tokenizer = build_tokenizer(self._train_config.tokenizer)
         model = self._build_model(tokenizer)
-        optimizer = build_optimizer(self._config.optimizer, model)
-        scheduler = build_scheduler(self._config.scheduler)
+        optimizer = build_optimizer(self._train_config.optimizer, model)
+        scheduler = build_scheduler(self._train_config.scheduler)
+
+        loggers = [
+            build_logger(name, logger_cfg)
+            for name, logger_cfg in (self._train_config.get("loggers") or {}).items()
+        ]
 
         train_loader = self._build_dataloaders(
-            self._config.train_loader,
+            self._train_config.train_loader,
             tokenizer,
-            self._config.device_train_batch_size,
+            self._train_config.device_train_batch_size,
         )
         eval_loader = Evaluator(
             label="eval",
             dataloader=self._build_dataloaders(
-                self._config.eval_loader, tokenizer, self._config.device_eval_batch_size
+                self._train_config.eval_loader,
+                tokenizer,
+                self._train_config.device_eval_batch_size,
             ),
             metric_names=list(model.train_metrics.keys()),
         )
 
         trainer = Trainer(
-            run_name=self._config.run_name,
+            run_name=self._train_config.run_name,
             model=model,
             train_dataloader=train_loader,
             eval_dataloader=[eval_loader],
             optimizers=optimizer,
             schedulers=scheduler,
-            max_duration=self._config.max_duration,
-            eval_interval=self._config.eval_interval,
-            precision=self._config.precision,
+            loggers=loggers,
+            max_duration=self._train_config.max_duration,
+            eval_interval=self._train_config.eval_interval,
+            precision=self._train_config.precision,
             fsdp_config=self._get_fsdp_config(),
-            eval_subset_num_batches=self._config.get("eval_subset_num_batches", -1),
-            log_to_console=self._config.get("log_to_console", False),
-            console_log_interval=self._config.get("console_log_interval", "1ba"),
-            device_train_microbatch_size=self._config.get(
+            save_folder=self._train_config.save_folder,
+            eval_subset_num_batches=self._train_config.get(
+                "eval_subset_num_batches", -1
+            ),
+            log_to_console=self._train_config.get("log_to_console", False),
+            console_log_interval=self._train_config.get("console_log_interval", "1ba"),
+            device_train_microbatch_size=self._train_config.get(
                 "device_train_microbatch_size", "auto"
             ),
-            save_folder=self._config.get("save_folder", None),
-            save_filename=self._config.get(
+            save_filename=self._train_config.get(
                 "save_filename", "ep{epoch}-ba{batch}-rank{rank}.pt"
             ),
-            save_latest_filename=self._config.get(
+            save_latest_filename=self._train_config.get(
                 "save_latest_filename", "latest-rank{rank}.pt"
             ),
-            save_interval=self._config.get("save_interval", "1000ba"),
-            save_num_checkpoints_to_keep=self._config.get(
+            save_interval=self._train_config.get("save_interval", "1000ba"),
+            save_num_checkpoints_to_keep=self._train_config.get(
                 "save_num_checkpoints_to_keep", 1
             ),
-            save_overwrite=self._config.get("save_overwrite", False),
-            autoresume=self._config.get("autoresume", False),
-            dist_timeout=self._config.get("dist_timeout", 600.0),
+            save_overwrite=self._train_config.get("save_overwrite", False),
+            autoresume=self._train_config.get("autoresume", False),
+            dist_timeout=self._train_config.get("dist_timeout", 600.0),
         )
         return trainer
 
@@ -239,3 +274,13 @@ class LLMFinetuner:
         """
         trainer = self._build_trainer()
         trainer.fit()
+
+
+def main():
+    yaml_path, train_directory, log_dir = (
+        sys.argv[1],
+        sys.argv[2],
+        sys.argv[3],
+    )  # hackey; add args eventually
+    finetuner = FineTuner(yaml_path, train_directory, log_dir)
+    finetuner.fine_tune()

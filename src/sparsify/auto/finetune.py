@@ -46,8 +46,8 @@ class LLMFinetuner:
     LLMFinetuner which allows finetuning of LLM Models using llmfoundry. Finetuning is
     heavily dependent on providing a llmfoundary-compliant yaml file which sets up
     the training, including which pretrained model to pull as well as the data that is
-    to be used for finetuning. Please see the example yaml provided or the llmfoundry
-    repo for additional examples:
+    to be used for finetuning. Please see the example yaml under samples or the
+    llmfoundry repo for additional examples:
     https://github.com/mosaicml/llm-foundry/blob/main/scripts/train/finetune_example/
     """
 

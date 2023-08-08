@@ -154,7 +154,7 @@ class ErrorHandler:
             if all(
                 [
                     (
-                        (type(error) == type(first_error))
+                        (type(error) is type(first_error))
                         and (error.args == first_error.args)
                     )
                     for error in self._caught_runtime_errors

@@ -17,6 +17,7 @@ from pathlib import Path
 
 import yaml
 
+from sparsify.auto.finetune import LLMFinetuner
 from sparsify.auto.tasks import TaskRunner
 from sparsify.auto.utils import (
     api_request_config,
@@ -35,6 +36,11 @@ _LOGGER = logging.getLogger("auto_banner")
 def main(api_args: APIArgs):
     initialize_banner_logger()
 
+    if api_args.task == "finetune":
+        runner = LLMFinetuner(api_args)
+        runner.fine_tune()
+        return
+
     # Set up directory for saving
     (
         train_directory,
@@ -51,6 +57,7 @@ def main(api_args: APIArgs):
     _LOGGER.info(f"TensorBoard listening on {url}")
 
     # Request config from api and instantiate runner
+
     raw_config = api_request_config(api_args)
     config = SparsificationTrainingConfig(**raw_config)
     runner = TaskRunner.create(config)

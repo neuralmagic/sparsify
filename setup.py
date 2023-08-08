@@ -56,6 +56,8 @@ _dev_deps = [
     "fastai>=2.7.7",
 ]
 
+_llm_deps = ["llm-foundry==0.2.0"]
+
 
 def _setup_packages() -> List:
     return find_packages(
@@ -72,7 +74,7 @@ def _setup_install_requires() -> List:
 
 
 def _setup_extras() -> Dict:
-    return {"dev": _dev_deps}
+    return {"dev": _dev_deps, "llm": _llm_deps}
 
 
 def _setup_entry_points() -> Dict:

@@ -50,6 +50,12 @@ DEPLOYMENT_SCENARIOS = [
 ]
 
 TASK_REGISTRY: Dict[str, TaskName] = {
+    "finetune": TaskName(
+        name="finetune",
+        aliases=["finetuning", "fine tune"],
+        domain="nlp",
+        sub_domain="language_modeling",
+    ),
     "image_classification": TaskName(
         name="image_classification",
         aliases=["ic", "classification", "cv_classification"],

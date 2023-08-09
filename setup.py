@@ -83,7 +83,7 @@ def _setup_entry_points() -> Dict:
             "sparsify.run=sparsify.cli.run:main",
             "sparsify.login=sparsify.login:main",
             "sparsify.check_environment=sparsify.check_environment.main:main",
-            "finetune=sparsify.auto.tasks.finetune.finetune:main",
+            "finetune=sparsify.auto.tasks.finetune.finetune:parse_args_and_run",
         ]
     }
 

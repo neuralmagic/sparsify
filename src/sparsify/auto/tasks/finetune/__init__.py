@@ -14,4 +14,5 @@
 
 # flake8: noqa
 
+from .finetune import *
 from .runner import *

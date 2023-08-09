@@ -15,6 +15,7 @@
 from typing import Tuple
 
 from pydantic import BaseModel
+from sparsify.auto.tasks.finetune.finetune import main as train_hook
 from sparsify.auto.tasks.runner import TaskRunner
 from sparsify.auto.utils import HardwareSpecs
 from sparsify.schemas import Metrics, SparsificationTrainingConfig
@@ -28,11 +29,17 @@ __all__ = [
 
 @TaskRunner.register_task(task=TASK_REGISTRY["finetune"])
 class LLMFinetuner(TaskRunner):
+    """
+    TaskRunner for LLM finetuning. Currently set-up as a shell to leverage TaskRunner's
+    ddp functionality for finetuning. Function definitions will be completed as
+    functionality is further supported.
+    """
+
+    train_hook = staticmethod(train_hook)
     export_model_kwarg = "None"
 
     def __init__(self, config: SparsificationTrainingConfig):
         super().__init__(config)
-        self.train_config = config.dataset
 
     @classmethod
     def config_to_args(

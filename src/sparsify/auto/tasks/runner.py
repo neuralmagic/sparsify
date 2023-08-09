@@ -275,7 +275,7 @@ class TaskRunner:
         if self._config.task == "finetune":
             ddp_args += [
                 "finetune",
-                f"{self.train_config}",
+                f"{self._config.dataset}",
                 f"{self.run_directory}",
                 f"{self.log_directory}",
             ]
@@ -290,7 +290,13 @@ class TaskRunner:
         """
         Run training through sparseml hook
         """
-        self.train_hook(**self.train_args.dict())
+
+        if self._config.task == "finetune":
+            self.train_hook(
+                self._config.dataset, self.run_directory, self.log_directory
+            )
+        else:
+            self.train_hook(**self.train_args.dict())
 
     def train(self, train_directory: str, log_directory: str) -> Metrics:
         """

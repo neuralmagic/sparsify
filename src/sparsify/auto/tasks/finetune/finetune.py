@@ -276,11 +276,21 @@ class FineTuner:
         trainer.fit()
 
 
-def main():
+# trainhook
+def main(
+    yaml_path: Union[str, Path],
+    train_directory: Union[str, Path],
+    log_dir: Union[str, Path],
+):
+    finetuner = FineTuner(yaml_path, train_directory, log_dir)
+    finetuner.fine_tune()
+
+
+# for ddp training
+def parse_args_and_run():
     yaml_path, train_directory, log_dir = (
         sys.argv[1],
         sys.argv[2],
         sys.argv[3],
     )  # hackey; add args eventually
-    finetuner = FineTuner(yaml_path, train_directory, log_dir)
-    finetuner.fine_tune()
+    main(yaml_path, train_directory, log_dir)

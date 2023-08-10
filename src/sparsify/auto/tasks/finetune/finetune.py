@@ -12,11 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import logging
 import os
 from enum import Enum
 from pathlib import Path
-from typing import Dict, Union
+from typing import Dict, Tuple, Union
 
+import torch
 from torch.utils.data import DataLoader
 
 import click
@@ -38,6 +40,7 @@ from llmfoundry.utils.builders import (
 )
 from omegaconf import DictConfig
 from omegaconf import OmegaConf as om
+from sparsify.auto.tasks.finetune.helpers import MaskPrunedWeights, attach_masks
 from transformers import PreTrainedTokenizerBase
 
 
@@ -45,6 +48,9 @@ __all__ = ["FineTuner"]
 
 TEXT_DENOISING_MODELS = ["hf_prefix_lm", "hf_t5"]
 TEXT_MODELS = ["hf_causal_lm"]
+
+_LOGGER = logging.getLogger(__name__)
+_LOGGER.setLevel(logging.INFO)
 
 
 class LLMDataTypes(Enum):
@@ -154,6 +160,32 @@ class FineTuner:
             self._train_config.model, tokenizer
         )
 
+    def _load_weights_and_attach_masks(
+        self, model: torch.nn.Module
+    ) -> Tuple[torch.nn.Module, Union[None, "MaskPrunedWeights"]]:
+        """
+        If a load_path is provided, attempt to load in weights from the specified
+        location. Because the mask may be sparse, attach masks, masking where the
+        weights have already been pruned.
+
+        :return: tuple including the model with weights loaded from the `load_path`
+        and with buffers attached for pruning masks. Also returns the MaskPrunedWeights
+        algorithm.
+        """
+        try:
+            model.load_state_dict(
+                torch.load(self._train_config.get("load_path"), map_location="cpu")[
+                    "state"
+                ]["model"],
+                strict=True,
+            )
+        except Exception as e:
+            _LOGGER.error(f" Failed to load weights. Returning pretrained model {e}")
+            return model, None
+
+        attach_masks(model)
+        return model, MaskPrunedWeights()
+
     def _build_dataloaders(
         self,
         dataloader_config: DictConfig,
@@ -220,6 +252,14 @@ class FineTuner:
 
         tokenizer = build_tokenizer(self._train_config.tokenizer)
         model = self._build_model(tokenizer)
+        algorithms = []
+
+        # If a load_path is provided, try loading weights from the provided path
+        if self._train_config.get("load_path"):
+            model, algorithm = self._load_weights_and_attach_masks(model)
+            if algorithm:
+                algorithms.append(algorithm)
+
         optimizer = build_optimizer(self._train_config.optimizer, model)
         scheduler = build_scheduler(self._train_config.scheduler)
 
@@ -251,6 +291,7 @@ class FineTuner:
             optimizers=optimizer,
             schedulers=scheduler,
             loggers=loggers,
+            algorithms=algorithms,
             max_duration=self._train_config.max_duration,
             eval_interval=self._train_config.eval_interval,
             precision=self._train_config.precision,

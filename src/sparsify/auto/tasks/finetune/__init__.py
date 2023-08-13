@@ -15,5 +15,9 @@
 # flake8: noqa
 
 from .args import *
-from .finetune import *
-from .runner import *
+
+try:
+    from .finetune import *
+    from .runner import *
+except ImportError:
+    raise ImportError("To use the llm finetuning pathway, please install sparsify[llm]")

@@ -46,7 +46,6 @@ class LLMFinetuner(TaskRunner):
     def config_to_args(
         cls, config: SparsificationTrainingConfig
     ) -> Tuple[BaseModel, BaseModel]:
-
         train_args = FineTuneTrainArgs(yaml=config.dataset)
 
         return train_args, None

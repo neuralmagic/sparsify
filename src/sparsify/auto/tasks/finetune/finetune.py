@@ -182,7 +182,7 @@ class FineTuner:
             )
         except Exception as e:
             _LOGGER.error(f" Failed to load weights. Returning pretrained model {e}")
-            if self._train_config.model.pretrained == False:
+            if self._train_config.model.pretrained is False:
                 self._train_config.model.pretrained = True
                 model = self._build_model(tokenizer)
             return model, None

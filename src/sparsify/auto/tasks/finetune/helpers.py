@@ -34,8 +34,8 @@ class MaskPrunedWeights(Algorithm):
     @torch.no_grad()
     def apply(self, event, state, logger):
         def mask_weights(module):
-            if hasattr(module, "mask"):
-                module.weight *= module.mask
+            if hasattr(module, "constant_pruning_mask"):
+                module.weight *= module.constant_pruning_mask
 
         state.model.apply(mask_weights)
 
@@ -50,11 +50,13 @@ def attach_masks(model: torch.nn.Module):
     """
     for _, module in model.named_children():
         if isinstance(module, torch.nn.Linear):
-            mask = torch.where(
+            constant_pruning_mask = torch.where(
                 module.weight == 0,
                 torch.tensor(0, dtype=torch.uint8),
                 torch.tensor(1, dtype=torch.uint8),
             )
-            module.register_buffer("mask", mask, persistent=False)
+            module.register_buffer(
+                "constant_pruning_mask", constant_pruning_mask, persistent=False
+            )
         else:
             attach_masks(module)

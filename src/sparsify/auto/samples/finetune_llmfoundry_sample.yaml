@@ -1,4 +1,4 @@
-max_seq_len: 128
+max_seq_len: 2048
 global_seed: 17
 model_name_or_path: mosaicml/mpt-7b-instruct
 load_path:  /storage/dsikka/mpt_7b_instruct_oneshot_sp70.pt
@@ -26,7 +26,7 @@ run_name: test_run
 
 model:
   name: hf_causal_lm
-  pretrained: false
+  pretrained: true
   pretrained_model_name_or_path: mosaicml/mpt-7b-instruct
   max_seq_len: ${max_seq_len}
   config_overrides:
@@ -70,7 +70,7 @@ eval_loader:
     max_seq_len: ${max_seq_len}
     allow_pad_trimming: false
     decoder_only_format: true
-    packing_ratio: 20
+    packing_ratio: 13
     shuffle: false
   drop_last: false
   num_workers: 8

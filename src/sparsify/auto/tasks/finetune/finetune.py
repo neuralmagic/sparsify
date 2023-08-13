@@ -161,7 +161,7 @@ class FineTuner:
         )
 
     def _load_weights_and_attach_masks(
-        self, model: torch.nn.Module
+        self, tokenizer: PreTrainedTokenizerBase
     ) -> Tuple[torch.nn.Module, Union[None, "MaskPrunedWeights"]]:
         """
         If a load_path is provided, attempt to load in weights from the specified
@@ -172,6 +172,7 @@ class FineTuner:
         and with buffers attached for pruning masks. Also returns the MaskPrunedWeights
         algorithm.
         """
+        model = self._build_model(tokenizer)
         try:
             model.load_state_dict(
                 torch.load(self._train_config.get("load_path"), map_location="cpu")[
@@ -181,6 +182,9 @@ class FineTuner:
             )
         except Exception as e:
             _LOGGER.error(f" Failed to load weights. Returning pretrained model {e}")
+            if self._train_config.model.pretrained == False:
+                self._train_config.model.pretrained = True
+                model = self._build_model(tokenizer)
             return model, None
 
         attach_masks(model)
@@ -249,16 +253,18 @@ class FineTuner:
         reproducibility.seed_all(self._train_config.seed)
         if dist.get_world_size() > 1:
             dist.initialize_dist(get_device(None))
-
         tokenizer = build_tokenizer(self._train_config.tokenizer)
-        model = self._build_model(tokenizer)
-        algorithms = []
 
+        algorithms = []
         # If a load_path is provided, try loading weights from the provided path
         if self._train_config.get("load_path"):
-            model, algorithm = self._load_weights_and_attach_masks(model)
-            if algorithm:
-                algorithms.append(algorithm)
+            self._train_config.model.pretrained = False
+        else:
+            self._train_config.model.pretrained = True
+
+        model, algorithm = self._load_weights_and_attach_masks(tokenizer)
+        if algorithm:
+            algorithms.append(algorithm)
 
         optimizer = build_optimizer(self._train_config.optimizer, model)
         scheduler = build_scheduler(self._train_config.scheduler)
@@ -301,6 +307,7 @@ class FineTuner:
                 "eval_subset_num_batches", -1
             ),
             log_to_console=self._train_config.get("log_to_console", False),
+            progress_bar=self._train_config.get("progress_bar", True),
             console_log_interval=self._train_config.get("console_log_interval", "1ba"),
             device_train_microbatch_size=self._train_config.get(
                 "device_train_microbatch_size", "auto"

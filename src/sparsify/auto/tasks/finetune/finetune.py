@@ -14,6 +14,7 @@
 
 import os
 import sys
+from enum import Enum
 from pathlib import Path
 from typing import Dict, Union
 
@@ -46,6 +47,12 @@ TEXT_DENOISING_MODELS = ["hf_prefix_lm", "hf_t5"]
 TEXT_MODELS = ["hf_causal_lm"]
 
 
+class Datatypes(Enum):
+    TEXT = "text"
+    TEXT_DENOISING = "text_denoising"
+    FINETUNING = "finetuning"
+
+
 class FineTuner:
 
     """
@@ -63,6 +70,12 @@ class FineTuner:
         train_directory: Union[str, Path],
         log_dir: Union[str, Path],
     ) -> None:
+        """
+        :param dataset_path: path to the llmfoundry compliant yaml file
+        :param train_directory: path to log the checkpoints for the model
+        :paral log_dir: path to store the specified logger (such as tensorboard)
+
+        """
         if os.path.exists(dataset_path):
             if Path(dataset_path).suffix not in [".yaml", ".yml"]:
                 raise RuntimeError(
@@ -87,7 +100,7 @@ class FineTuner:
             train_directory, Path(self._train_config.save_folder)
         )
         self._model_name = self._train_config["model"]["name"]
-        self._valdiate_yaml()
+        self._validate_yaml()
 
     @property
     def model_name(self) -> str:
@@ -96,7 +109,7 @@ class FineTuner:
         """
         return self._model_name
 
-    def _valdiate_yaml(self):
+    def _validate_yaml(self):
         """
         Validate that the provided yaml is compatible with llmfoundry.
         """
@@ -110,14 +123,14 @@ class FineTuner:
             data_loaders.append(self._train_config.get("eval_loader"))
 
         for loader in data_loaders:
-            if loader["name"] == "text":
+            if loader["name"] == Datatypes.TEXT.value:
                 if self.model_name in TEXT_DENOISING_MODELS:
                     raise ValueError(
                         f"Model type {self.model_name} is not supported "
                         " for text dataloaders. Please use the "
                         " text_denoising dataloader."
                     )
-            elif loader["name"] == "text_denoising":
+            elif loader["name"] == Datatypes.TEXT_DENOISING.value:
                 if self.model_name in TEXT_MODELS:
                     raise ValueError(
                         f"Model type {self.model_name} is not supported "
@@ -158,19 +171,19 @@ class FineTuner:
         :param device_batch_size: batch size for the dataloader
         :return: a torch DataLoader
         """
-        if dataloader_config.name == "text":
+        if dataloader_config.name == Datatypes.TEXT.value:
             return build_text_dataloader(
                 dataloader_config,
                 tokenizer,
                 device_batch_size,
             )
-        elif dataloader_config.name == "text_denoising":
+        elif dataloader_config.name == Datatypes.TEXT_DENOISING.value:
             return build_text_denoising_dataloader(
                 dataloader_config,
                 tokenizer,
                 device_batch_size,
             )
-        elif dataloader_config.name == "finetuning":
+        elif dataloader_config.name == Datatypes.FINETUNING.value:
             return build_finetuning_dataloader(
                 dataloader_config,
                 tokenizer,

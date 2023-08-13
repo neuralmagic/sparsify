@@ -30,7 +30,7 @@ from torch.distributed.run import main as launch_ddp
 from pydantic import BaseModel
 from sparsify.auto.utils import ErrorHandler, HardwareSpecs, analyze_hardware
 from sparsify.schemas import Metrics, SparsificationTrainingConfig
-from sparsify.utils import TASK_REGISTRY, TaskName
+from sparsify.utils import TASK_REGISTRY, TaskName, get_task_info
 
 
 __all__ = [
@@ -272,7 +272,7 @@ class TaskRunner:
             "auto",
             f"--master_port={_get_open_port_()}",
         ]
-        if self._config.task == "finetune":
+        if self._config.task in get_task_info("finetune").aliases:
             ddp_args += [
                 "finetune",
                 f"{self._config.dataset}",
@@ -290,8 +290,7 @@ class TaskRunner:
         """
         Run training through sparseml hook
         """
-
-        if self._config.task == "finetune":
+        if self._config.task in get_task_info("finetune").aliases:
             self.train_hook(
                 self._config.dataset, self.run_directory, self.log_directory
             )
@@ -520,10 +519,7 @@ def _dynamically_register_integration_runner(task: str):
         from sparsify.auto.tasks.image_classification import (  # noqa F401
             ImageClassificationRunner,
         )
-    elif (
-        TASK_REGISTRY[task].domain == "llm"
-        and TASK_REGISTRY[task].sub_domain == "language_modeling"
-    ):
+    elif TASK_REGISTRY[task].domain == "llm":
         from sparsify.auto.tasks.finetune import LLMFinetuner  # noqa F401
     else:
         raise ValueError(

@@ -25,6 +25,7 @@ from sparsify.auto.utils import (
 )
 from sparsify.schemas import APIArgs
 from sparsify.schemas.auto_api import SparsificationTrainingConfig
+from sparsify.utils import get_task_info
 from tensorboard.program import TensorBoard
 from tensorboard.util import tb_logging
 
@@ -42,7 +43,7 @@ def main(api_args: APIArgs):
         deploy_directory,
     ) = create_save_directory(api_args)
 
-    if api_args.task == "finetune":
+    if api_args.task in get_task_info("finetune").aliases:
         _LOGGER.info(
             "Running finetuning. "
             "Currently only arguments passed for use-case and data will be considered"

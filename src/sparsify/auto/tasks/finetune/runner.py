@@ -15,6 +15,7 @@
 from typing import Tuple
 
 from pydantic import BaseModel
+from sparsify.auto.tasks.finetune.args import FineTuneTrainArgs
 from sparsify.auto.tasks.finetune.finetune import main as train_hook
 from sparsify.auto.tasks.runner import TaskRunner
 from sparsify.auto.utils import HardwareSpecs
@@ -45,7 +46,10 @@ class LLMFinetuner(TaskRunner):
     def config_to_args(
         cls, config: SparsificationTrainingConfig
     ) -> Tuple[BaseModel, BaseModel]:
-        return None, None
+
+        train_args = FineTuneTrainArgs(yaml=config.dataset)
+
+        return train_args, None
 
     def update_run_directory_args(self):
         pass

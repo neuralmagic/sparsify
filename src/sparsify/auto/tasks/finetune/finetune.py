@@ -13,13 +13,13 @@
 # limitations under the License.
 
 import os
-import sys
 from enum import Enum
 from pathlib import Path
 from typing import Dict, Union
 
 from torch.utils.data import DataLoader
 
+import click
 from composer import Trainer
 from composer.core import Evaluator
 from composer.models import HuggingFaceModel
@@ -289,21 +289,32 @@ class FineTuner:
         trainer.fit()
 
 
-# trainhook
-def main(
-    yaml_path: Union[str, Path],
-    train_directory: Union[str, Path],
-    log_dir: Union[str, Path],
+@click.command()
+@click.option("--yaml", default=None, type=str, help="Path to the training yaml")
+@click.option(
+    "--checkpoints",
+    default=None,
+    type=str,
+    help="Path to directory to store checkpoints",
+)
+@click.option("--logging", default=None, type=str, help="Path to store log")
+def parse_args_and_run(
+    yaml: Union[str, Path],
+    checkpoints: Union[str, Path],
+    logging: Union[str, Path],
 ):
-    finetuner = FineTuner(yaml_path, train_directory, log_dir)
+    """
+    Serves as the entrypoint for ddp LLM finetuning.
+
+    :param yaml: path to the llmfoundry compliant yaml file
+    :param checkpoints: path to log the checkpoints for the model
+    :param logging: path to store the specified logger (such as tensorboard)
+    """
+    finetuner = FineTuner(yaml, checkpoints, logging)
     finetuner.fine_tune()
 
 
-# for ddp training
-def parse_args_and_run():
-    yaml_path, train_directory, log_dir = (
-        sys.argv[1],
-        sys.argv[2],
-        sys.argv[3],
-    )  # hackey; add args eventually
-    main(yaml_path, train_directory, log_dir)
+# train_hook
+def main(**kwargs):
+    finetuner = FineTuner(kwargs["yaml"], kwargs["checkpoints"], kwargs["logging"])
+    finetuner.fine_tune()

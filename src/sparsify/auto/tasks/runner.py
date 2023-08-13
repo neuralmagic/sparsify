@@ -273,16 +273,10 @@ class TaskRunner:
             f"--master_port={_get_open_port_()}",
         ]
         if self._config.task in get_task_info("finetune").aliases:
-            ddp_args += [
-                "finetune",
-                f"{self._config.dataset}",
-                f"{self.run_directory}",
-                f"{self.log_directory}",
-            ]
+            ddp_args += ["finetune"]
         else:
             ddp_args += [self.sparseml_train_entrypoint]
-            ddp_args += self.train_args.serialize_to_cli_string(self.dashed_cli_kwargs)
-
+        ddp_args += self.train_args.serialize_to_cli_string(self.dashed_cli_kwargs)
         launch_ddp(ddp_args)
 
     @retry_stage(stage="train")
@@ -290,12 +284,7 @@ class TaskRunner:
         """
         Run training through sparseml hook
         """
-        if self._config.task in get_task_info("finetune").aliases:
-            self.train_hook(
-                self._config.dataset, self.run_directory, self.log_directory
-            )
-        else:
-            self.train_hook(**self.train_args.dict())
+        self.train_hook(**self.train_args.dict())
 
     def train(self, train_directory: str, log_directory: str) -> Metrics:
         """
@@ -306,6 +295,10 @@ class TaskRunner:
         self.run_directory = train_directory
         self.log_directory = log_directory
         self.update_run_directory_args()
+
+        if self._config.task in get_task_info("finetune").aliases:
+            self.train_args.checkpoints = self.run_directory
+            self.train_args.logging = self.log_directory
 
         if self.use_distributed_training:
             self._train_distributed()

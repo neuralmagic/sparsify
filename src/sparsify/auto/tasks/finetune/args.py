@@ -12,8 +12,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# flake8: noqa
+from pydantic import Field
+from sparsify.auto.tasks import BaseArgs
 
-from .args import *
-from .finetune import *
-from .runner import *
+
+__all__ = ["FineTuneTrainArgs"]
+
+
+class FineTuneTrainArgs(BaseArgs):
+    yaml: str = Field(
+        default=None,
+        description="path to the training yaml",
+    )
+    checkpoints: str = Field(
+        default=None,
+        description="path to the directory to store checkpoints",
+    )
+    logging: str = Field(
+        default=None,
+        description="path to store logs",
+    )

@@ -38,6 +38,7 @@ from llmfoundry.utils.builders import (
     build_scheduler,
     build_tokenizer,
 )
+from llmfoundry.utils.config_utils import update_batch_size_info
 from omegaconf import DictConfig
 from omegaconf import OmegaConf as om
 from sparsify.auto.tasks.finetune.helpers import MaskPrunedWeights, attach_masks
@@ -253,6 +254,9 @@ class FineTuner:
         reproducibility.seed_all(self._train_config.seed)
         if dist.get_world_size() > 1:
             dist.initialize_dist(get_device(None))
+
+        self._train_config = update_batch_size_info(self._train_config)
+
         tokenizer = build_tokenizer(self._train_config.tokenizer)
 
         algorithms = []

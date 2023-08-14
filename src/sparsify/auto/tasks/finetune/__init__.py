@@ -20,5 +20,7 @@ from .args import *
 try:
     from .finetune import *
     from .runner import *
-except ImportError:
-    raise ImportError("To use the llm finetuning pathway, please install sparsify[llm]")
+except ImportError as exception:
+    raise ImportError(
+        "To use the llm finetuning pathway, please install sparsify[llm]"
+    ) from exception

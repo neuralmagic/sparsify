@@ -47,7 +47,7 @@ TEXT_DENOISING_MODELS = ["hf_prefix_lm", "hf_t5"]
 TEXT_MODELS = ["hf_causal_lm"]
 
 
-class Datatypes(Enum):
+class LLMDataTypes(Enum):
     TEXT = "text"
     TEXT_DENOISING = "text_denoising"
     FINETUNING = "finetuning"
@@ -73,7 +73,7 @@ class FineTuner:
         """
         :param dataset_path: path to the llmfoundry compliant yaml file
         :param train_directory: path to log the checkpoints for the model
-        :paral log_dir: path to store the specified logger (such as tensorboard)
+        :param log_dir: path to store the specified logger (such as tensorboard)
 
         """
         if os.path.exists(dataset_path):
@@ -123,14 +123,14 @@ class FineTuner:
             data_loaders.append(self._train_config.get("eval_loader"))
 
         for loader in data_loaders:
-            if loader["name"] == Datatypes.TEXT.value:
+            if loader["name"] == LLMDataTypes.TEXT.value:
                 if self.model_name in TEXT_DENOISING_MODELS:
                     raise ValueError(
                         f"Model type {self.model_name} is not supported "
                         " for text dataloaders. Please use the "
                         " text_denoising dataloader."
                     )
-            elif loader["name"] == Datatypes.TEXT_DENOISING.value:
+            elif loader["name"] == LLMDataTypes.TEXT_DENOISING.value:
                 if self.model_name in TEXT_MODELS:
                     raise ValueError(
                         f"Model type {self.model_name} is not supported "
@@ -145,7 +145,7 @@ class FineTuner:
         :param tokenizer: transformers tokenizer
         :return: HuggingFaceModel from the mosaicml composer library
         """
-        if not COMPOSER_MODEL_REGISTRY.get(self.model_name):
+        if self.model_name not in COMPOSER_MODEL_REGISTRY:
             raise ValueError(
                 "Please ensure the model name provided is one of "
                 f" {list(COMPOSER_MODEL_REGISTRY.keys())}"
@@ -166,24 +166,24 @@ class FineTuner:
         for the dataloader.
 
         :param dataloader_config DictConfig from the omegaconf library, containing
-        details on the dataloader
+            details on the dataloader
         :param tokenizer: transformers tokenizer
         :param device_batch_size: batch size for the dataloader
         :return: a torch DataLoader
         """
-        if dataloader_config.name == Datatypes.TEXT.value:
+        if dataloader_config.name == LLMDataTypes.TEXT.value:
             return build_text_dataloader(
                 dataloader_config,
                 tokenizer,
                 device_batch_size,
             )
-        elif dataloader_config.name == Datatypes.TEXT_DENOISING.value:
+        elif dataloader_config.name == LLMDataTypes.TEXT_DENOISING.value:
             return build_text_denoising_dataloader(
                 dataloader_config,
                 tokenizer,
                 device_batch_size,
             )
-        elif dataloader_config.name == Datatypes.FINETUNING.value:
+        elif dataloader_config.name == LLMDataTypes.FINETUNING.value:
             return build_finetuning_dataloader(
                 dataloader_config,
                 tokenizer,

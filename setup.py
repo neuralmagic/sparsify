@@ -40,7 +40,7 @@ _deps = [
     "onnxruntime-gpu",
     f"{'sparsezoo' if is_release else 'sparsezoo-nightly'}~={version_nm_deps}",
     f"{'deepsparse' if is_release else 'deepsparse-nightly'}~={version_nm_deps}",
-    f"{'sparseml' if is_release else 'sparseml-nightly'}[torchvision,yolov5]~={version_nm_deps}"
+    f"{'sparseml' if is_release else 'sparseml-nightly'}[torchvision,yolov5]~={version_nm_deps}",  # noqa E501
 ]
 
 _nm_deps = [
@@ -58,7 +58,7 @@ _dev_deps = [
 
 _llm_deps = [
     "llm-foundry==0.2.0",
-    f"{'nm-transformers' if is_release else 'nm-transformers-nightly'}"
+    f"{'nm-transformers' if is_release else 'nm-transformers-nightly'}",
 ]
 
 

@@ -58,8 +58,7 @@ _dev_deps = [
 
 _llm_deps = [
     "llm-foundry==0.2.0",
-    f"{'nm-transformers' if is_release else 'nm-transformers-nightly'}",
-    "flash_attn"
+    f"{'nm-transformers' if is_release else 'nm-transformers-nightly'}"
 ]
 
 

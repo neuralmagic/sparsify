@@ -1,32 +1,43 @@
-max_seq_len: 512
+max_seq_len: 2048
 global_seed: 17
-model_name_or_path: t5-small
-model_name: ${model_name_or_path}
-load_path:  # set via bash script to be absolute path to your sparse checkpoint
+model_name_or_path: mosaicml/mpt-7b-instruct
+load_path:  /storage/dsikka/mpt_7b_instruct_oneshot_sp70.pt
 precision: amp_bf16
 
-max_duration: 1ep # run for 2 epochs
+max_duration: 1ep
 eval_interval: 1ep
 # eval_subset_num_batches: 3  # use this for quick testing
 eval_first: true
 seed: ${global_seed}
 
-device_train_microbatch_size: 1 # set to catch potential OOM cuda errors
-device_train_batch_size: 4
-device_eval_batch_size: 4
+global_train_batch_size: 1
+# for mpt-7b dense:
+# 4 x A100_80GB = "device_train_microbatch_size: 12"
+# 8 x A6000_48GB = "device_train_microbatch_size: 6"
+
+# for mpt-7b sparse (with masks):
+# 8 x A6000_48GB = "device_train_microbatch_size: 4"
+device_train_batch_size: 1
+device_train_microbatch_size: 1
+device_eval_batch_size: 1
 
 # Run Name
-run_name: testing_run
+run_name: test_run
 
 model:
-  name: hf_t5
+  name: hf_causal_lm
   pretrained: true
-  pretrained_model_name_or_path: t5-small
+  pretrained_model_name_or_path: mosaicml/mpt-7b-instruct
   max_seq_len: ${max_seq_len}
+  config_overrides:
+    attn_config:
+      attn_impl: torch
+      # Set this to `true` if using `train_loader.dataset.packing_ratio` below
+      attn_uses_sequence_id: true
 
 # Tokenizer
 tokenizer:
-  name: ${model_name}
+  name: EleutherAI/gpt-neox-20b
   kwargs:
     model_max_length: ${max_seq_len}
 
@@ -83,6 +94,14 @@ optimizer:
   eps: 1.0e-8
   weight_decay: 0.0
 
+# we can't use gradient clipping for sparse training runs because we don't have
+# a way to mask gradients of pruned weights, and thus the global gradient norm
+# will be incorrect
+# algorithms:
+#   gradient_clipping:
+#     clipping_type: norm
+#     clipping_threshold: 1.0
+
 # FSDP
 fsdp_config:
   sharding_strategy: FULL_SHARD
@@ -98,8 +117,15 @@ progress_bar: false
 log_to_console: true
 console_log_interval: 1ba
 
+callbacks:
+  speed_monitor:
+    window_size: 10
+  lr_monitor: {}
+  memory_monitor: {}
+  runtime_estimator: {}
+
 loggers:
-  tensorboard: {"log_dir": "my_logs"}
+  tensorboard: {}
 
 # Checkpoint to local filesystem or remote object store
 save_interval: 1ep

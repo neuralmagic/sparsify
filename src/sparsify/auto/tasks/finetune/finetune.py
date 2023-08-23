@@ -12,11 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import logging
 import os
 from enum import Enum
 from pathlib import Path
-from typing import Dict, Union
+from typing import Dict, Tuple, Union
 
+import torch
 from torch.utils.data import DataLoader
 
 import click
@@ -36,8 +38,10 @@ from llmfoundry.utils.builders import (
     build_scheduler,
     build_tokenizer,
 )
+from llmfoundry.utils.config_utils import update_batch_size_info
 from omegaconf import DictConfig
 from omegaconf import OmegaConf as om
+from sparsify.auto.tasks.finetune.helpers import MaskPrunedWeights, attach_masks
 from transformers import PreTrainedTokenizerBase
 
 
@@ -45,6 +49,9 @@ __all__ = ["FineTuner"]
 
 TEXT_DENOISING_MODELS = ["hf_prefix_lm", "hf_t5"]
 TEXT_MODELS = ["hf_causal_lm"]
+
+_LOGGER = logging.getLogger(__name__)
+_LOGGER.setLevel(logging.INFO)
 
 
 class LLMDataTypes(Enum):
@@ -154,6 +161,36 @@ class FineTuner:
             self._train_config.model, tokenizer
         )
 
+    def _load_weights_and_attach_masks(
+        self, tokenizer: PreTrainedTokenizerBase
+    ) -> Tuple[torch.nn.Module, Union[None, "MaskPrunedWeights"]]:
+        """
+        If a load_path is provided, attempt to load in weights from the specified
+        location. Because the mask may be sparse, attach masks, masking where the
+        weights have already been pruned.
+
+        :return: tuple including the model with weights loaded from the `load_path`
+        and with buffers attached for pruning masks. Also returns the MaskPrunedWeights
+        algorithm.
+        """
+        model = self._build_model(tokenizer)
+        try:
+            model.load_state_dict(
+                torch.load(self._train_config.get("load_path"), map_location="cpu")[
+                    "state"
+                ]["model"],
+                strict=True,
+            )
+        except Exception as e:
+            _LOGGER.error(f" Failed to load weights. Returning pretrained model {e}")
+            if self._train_config.model.pretrained is False:
+                self._train_config.model.pretrained = True
+                model = self._build_model(tokenizer)
+            return model, None
+
+        attach_masks(model)
+        return model, MaskPrunedWeights()
+
     def _build_dataloaders(
         self,
         dataloader_config: DictConfig,
@@ -218,8 +255,21 @@ class FineTuner:
         if dist.get_world_size() > 1:
             dist.initialize_dist(get_device(None))
 
+        self._train_config = update_batch_size_info(self._train_config)
+
         tokenizer = build_tokenizer(self._train_config.tokenizer)
-        model = self._build_model(tokenizer)
+
+        algorithms = []
+        # If a load_path is provided, try loading weights from the provided path
+        if self._train_config.get("load_path"):
+            self._train_config.model.pretrained = False
+        else:
+            self._train_config.model.pretrained = True
+
+        model, algorithm = self._load_weights_and_attach_masks(tokenizer)
+        if algorithm:
+            algorithms.append(algorithm)
+
         optimizer = build_optimizer(self._train_config.optimizer, model)
         scheduler = build_scheduler(self._train_config.scheduler)
 
@@ -251,6 +301,7 @@ class FineTuner:
             optimizers=optimizer,
             schedulers=scheduler,
             loggers=loggers,
+            algorithms=algorithms,
             max_duration=self._train_config.max_duration,
             eval_interval=self._train_config.eval_interval,
             precision=self._train_config.precision,
@@ -260,6 +311,7 @@ class FineTuner:
                 "eval_subset_num_batches", -1
             ),
             log_to_console=self._train_config.get("log_to_console", False),
+            progress_bar=self._train_config.get("progress_bar", True),
             console_log_interval=self._train_config.get("console_log_interval", "1ba"),
             device_train_microbatch_size=self._train_config.get(
                 "device_train_microbatch_size", "auto"

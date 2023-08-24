@@ -30,7 +30,7 @@ from torch.distributed.run import main as launch_ddp
 from pydantic import BaseModel
 from sparsify.auto.utils import ErrorHandler, HardwareSpecs, analyze_hardware
 from sparsify.schemas import Metrics, SparsificationTrainingConfig
-from sparsify.utils import TASK_REGISTRY, TaskName
+from sparsify.utils import TASK_REGISTRY, TaskName, get_task_info
 
 
 __all__ = [
@@ -55,6 +55,7 @@ SUPPORTED_TASKS = [
         "question_answering",
         "text_classification",
         "token_classification",
+        "finetune",
     ]
 ]
 _TASK_RUNNER_IMPLS = {}
@@ -270,10 +271,12 @@ class TaskRunner:
             "--nproc_per_node",
             "auto",
             f"--master_port={_get_open_port_()}",
-            self.sparseml_train_entrypoint,
         ]
+        if self._config.task in get_task_info("finetune").aliases:
+            ddp_args += ["finetune"]
+        else:
+            ddp_args += [self.sparseml_train_entrypoint]
         ddp_args += self.train_args.serialize_to_cli_string(self.dashed_cli_kwargs)
-
         launch_ddp(ddp_args)
 
     @retry_stage(stage="train")
@@ -292,6 +295,10 @@ class TaskRunner:
         self.run_directory = train_directory
         self.log_directory = log_directory
         self.update_run_directory_args()
+
+        if self._config.task in get_task_info("finetune").aliases:
+            self.train_args.checkpoints = self.run_directory
+            self.train_args.logging = self.log_directory
 
         if self.use_distributed_training:
             self._train_distributed()
@@ -505,7 +512,8 @@ def _dynamically_register_integration_runner(task: str):
         from sparsify.auto.tasks.image_classification import (  # noqa F401
             ImageClassificationRunner,
         )
-
+    elif TASK_REGISTRY[task].domain == "llm":
+        from sparsify.auto.tasks.finetune import LLMFinetuner  # noqa F401
     else:
         raise ValueError(
             f"Task {task} is not yet supported. TaskRunner implementation "

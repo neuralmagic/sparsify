@@ -26,10 +26,9 @@ version_major_minor = version
 # load and overwrite version and release info from sparseml package
 exec(open(os.path.join("src", "sparsify", "version.py")).read())
 print(f"loaded version {version} from src/sparsify/version.py")
-version_nm_deps = f"{version_major_minor}.0"
+version_nm_deps = f"{version_major_minor}.0.202308"
 
 _PACKAGE_NAME = "sparsify" if is_release else "sparsify-nightly"
-
 
 _deps = [
     "pydantic>=1.8.2,<2.0.0",
@@ -39,13 +38,14 @@ _deps = [
     "setuptools>=56.0.0",
     "optuna>=3.0.2",
     "onnxruntime-gpu",
-]
-_nm_deps = [
     f"{'sparsezoo' if is_release else 'sparsezoo-nightly'}~={version_nm_deps}",
-    f"{'sparseml' if is_release else 'sparseml-nightly'}[torchvision,transformers,yolov5]~={version_nm_deps}",  # noqa E501
     f"{'deepsparse' if is_release else 'deepsparse-nightly'}~={version_nm_deps}",
+    f"{'sparseml' if is_release else 'sparseml-nightly'}[torchvision,yolov5]~={version_nm_deps}",  # noqa E501
 ]
 
+_nm_deps = [
+    f"{'sparseml' if is_release else 'sparseml-nightly'}[transformers]~={version_nm_deps}",  # noqa E501
+]
 
 _dev_deps = [
     "black>=20.8b1",
@@ -54,6 +54,11 @@ _dev_deps = [
     "pytest>=6.0.0",
     "wheel>=0.36.2",
     "fastai>=2.7.7",
+]
+
+_llm_deps = [
+    "llm-foundry==0.2.0",
+    f"{'nm-transformers' if is_release else 'nm-transformers-nightly'}",
 ]
 
 
@@ -68,11 +73,11 @@ def _setup_package_dir() -> Dict:
 
 
 def _setup_install_requires() -> List:
-    return _nm_deps + _deps
+    return _deps
 
 
 def _setup_extras() -> Dict:
-    return {"dev": _dev_deps}
+    return {"dev": _dev_deps, "_nm_deps": _nm_deps, "llm": _llm_deps}
 
 
 def _setup_entry_points() -> Dict:
@@ -81,6 +86,7 @@ def _setup_entry_points() -> Dict:
             "sparsify.run=sparsify.cli.run:main",
             "sparsify.login=sparsify.login:main",
             "sparsify.check_environment=sparsify.check_environment.main:main",
+            "finetune=sparsify.auto.tasks.finetune.finetune:parse_args_and_run",
         ]
     }
 

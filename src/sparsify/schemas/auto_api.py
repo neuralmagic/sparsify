@@ -160,14 +160,14 @@ class SparsificationTrainingConfig(BaseModel):
     dataset: str = Field(
         description="path to the dataset to train the task on",
     )
-    base_model: str = Field(
+    base_model: Optional[str] = Field(
         description="path to the model to be sparsified",
     )
     distill_teacher: str = Field(
         description="optional path to a distillation teacher for training",
         default="auto",
     )
-    recipe: str = Field(
+    recipe: Optional[str] = Field(
         description="file path to or zoo stub of sparsification recipe to be applied",
     )
     recipe_args: Dict[str, Any] = Field(

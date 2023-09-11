@@ -36,7 +36,7 @@ limitations under the License.
 <h3> ML model optimization product to accelerate inference </h3>
 
 <p>
-    <a href="https://docs.neuralmagic.com/archive/sparsify/">
+    <a href="https://docs.neuralmagic.com/sparsify/">
         <img alt="Documentation" src="https://img.shields.io/badge/documentation-darkred?&style=for-the-badge&logo=read-the-docs" height=25>
     </a>
     <a href="https://join.slack.com/t/discuss-neuralmagic/shared_invite/zt-q1a1cnvo-YBoICSIw3L1dmQpjBeDurQ/">

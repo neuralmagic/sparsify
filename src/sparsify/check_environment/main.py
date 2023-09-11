@@ -11,21 +11,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-# flake8: noqa
-# isort: skip_file
+from sparsify.check_environment import check_for_gpu, check_ort_health
 
 
-def _check_nm_install():
-    try:
-        from .runner import *
-    except ImportError as exception:
-        raise ImportError(
-            "Please install sparsify[nm] to use this pathway."
-        ) from exception
+def main():
+    """
+    Check the environment for compatibility with the sparsifyml package
+    """
+    check_for_gpu()
+    check_ort_health()
 
 
-_check_nm_install()
-
-from .args import *
-from .runner import *
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,58 @@
+name: Build and Publish Sparsify Release Docker Images
+
+on:
+  push:
+    branches:
+      - 'main'
+
+jobs:
+  build-and-push-docker-image:
+    name: Build and Push Version Tagged Docker Images to GitHub Container Registry
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Cleanup disk
+        run: |
+            sudo ls -l /usr/local/lib/
+            sudo ls -l /usr/share/
+            sudo du -sh /usr/local/lib/
+            sudo du -sh /usr/share/
+            sudo rm -rf /usr/local/lib/android
+            sudo rm -rf /usr/share/dotnet
+            sudo du -sh /usr/local/lib/
+            sudo du -sh /usr/share/
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v2
+        with:
+          buildkitd-flags: --debug
+
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+
+      - name: Login to Github Packages
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+
+      - name: Build and push sparsify-nightly docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: ./docker
+          build-args: |
+            REF=main
+          push: true
+          tags: |
+            ghcr.io/neuralmagic/sparsify-nightly:latest
+
+      - name: Image digest
+        run: echo ${{ steps.docker_build.outputs.digest }}

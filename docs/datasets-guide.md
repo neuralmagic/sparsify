@@ -17,174 +17,248 @@ limitations under the License.
 # Sparsify Datasets Guide
 
 For all Sparsify Experiments, you will need to provide a dataset to create a sparse model.
-Due to the varied ML pipelines and implementations, Sparsify standardizes on a few, popular formats for datasets.
+Due to the varied ML pipelines and implementations, Sparsify standardizes on a few popular formats for datasets.
 You will need to make sure that your data is formatted properly according to the standards listed below.
 
-## Predefined Use Cases
+## Table of Contents
 
-### Training Aware and Sparse Transfer
+1. [Image Classification](#image-classification)
+2. [Object Detection](#object-detection)
+3. [Image Segmentation](#image-segmentation)
+4. [NLP](#nlp)
+5. [NPZ](#npz)
+6. [Custom](#custom)
 
-Training Aware and Sparse Transfer utilize specific dataset standards depending on the use case.
-Each one is listed below with an example.
+## Image Classification
 
-#### Image Classification
+For image classification tasks, Sparsify relies on the standard `SPLIT/CLASS/IMAGE` format used by the PyTorch ImageFolder class.
 
-For image classification tasks, Sparsify relies on the dataset format standard used by the PyTorch ImageFolder class. 
-This format is fairly simple and intuitive, and it is also widely used in the machine learning community.
-
-##### Specifications
-
-- The root folder should contain subdirectories, each representing a single class of images.
+### Specifications
+- The root folder should contain `train` and `val` subdirectories, each representing the training and validation splits of the dataset.
+- Each split should contain subdirectories, each representing a single class of images.
 - Images of a particular class/category should be placed inside the corresponding subdirectory.
 - The subdirectory name is used as the class label and should be unique for each class.
 - The images should be in a format readable by the Python Imaging Library (PIL), which includes formats such as .jpeg, .png, .bmp, etc.
 - Images do not need to be of the same size.
 
-The PyTorch ImageFolder class automatically assigns numerical class labels to the images based on the lexicographical order of their class directories. 
-Therefore, it is crucial to ensure the directories are properly named to avoid any confusion or mislabeling.
+The root directory containing the splits data samples should be passed to the CLI as the `--data` argument.
 
-##### Example
-
-For an image classification task involving dogs and cats, the dataset directory should be structured as follows:
-
-```
-root/dog/xxx.png
-root/dog/xxy.png
-root/dog/xxz.png
-
-root/cat/123.png
-root/cat/nsa.png
-root/cat/asd.png
-```
-
-In this example, all images within the 'dog' subdirectory will be labeled as 'dog', and all images within the 'cat' subdirectory will be labeled as 'cat'. 
-The exact filenames ('xxx.png', 'xxy.png', etc.) do not matter; what matters is the directory structure and the directory names. 
-
-By organizing the data in this way, it can be easily read and labeled by the PyTorch ImageFolder class, and thus easily used for training image classification models in Sparsify. 
-
-Please note, the class labels ('dog', 'cat') are case-sensitive and the order of the classes would be sorted lexicographically. 
-Here, 'cat' will be considered class 0 and 'dog' will be class 1, due to alphabetical order.
-
-#### Object Detection / Image Segmentation
-
-For object detection and image segmentation tasks, Sparsify supports the dataset format used by YOLOv5. 
-This format is specifically designed for tasks involving bounding boxes and segmentation masks, and is widely adopted in the community.
-
-##### Specifications
-
-- Images should be stored in a common directory, generally named `images`.
-- Annotations for the images should be stored in a separate directory, often named `labels`.
-- Images can be in formats readable by OpenCV (e.g. .jpg, .png).
-- Each image should have a corresponding annotation file. The annotation files should be in plain text format (.txt).
-- The name of the annotation file should be the same as the corresponding image file, except with a .txt extension.
-- Annotation files for object detection should contain one line for each object in the image. Each line should be in the format: `<class> <x_center> <y_center> <width> <height>`, where the values are normalized relative to the size of the image.
-- Annotation files for image segmentation should contain information about the segmentation masks.
-
-##### Example
-
-For an object detection task involving detecting cars and pedestrians, the dataset directory should be structured as follows:
-
-```
-dataset/
-├── images/
-│   ├── image1.jpg
-│   └── image2.jpg
-└── labels/
-    ├── image1.txt
-    └── image2.txt
+### Structure
+```text
+data
+├── train
+│   ├── class_1
+│   │   ├── image_1.png
+│   │   ├── image_2.png
+│   │   └── ...
+│   ├── class_2
+│   │   ├── image_1.png
+│   │   ├── image_2.png
+│   │   └── ...
+│   └── ...
+└── val
+    ├── class_1
+    │   ├── image_1.png
+    │   ├── image_2.png
+    │   └── ...
+    ├── class_2
+    │   ├── image_1.png
+    │   ├── image_2.png
+    │   └── ...
+    └── ...
 ```
 
-For `image1.jpg`, if there's a car and a pedestrian in the image, the corresponding `image1.txt` file could look like this:
+For more details and examples on creating image classification datasets for Sparsify, read the [Sparsify Datasets Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/datasets-guide.md).
 
+### Example
+
+
+
+## Object Detection
+
+For object detection tasks, Sparsify utilizes the YOLO format for datasets.
+This is the same format used by Ultralytics [YOLOv5/YOLOv8](https://docs.ultralytics.com/datasets/detect/)
+The format is made up of a YAML file containing the root dataset location, the classes, and the training and validation split locations.
+
+If a directory is supplied instead and there is no YAML file within the directory, Sparsify will automatically create one for you.
+To auto create a YAML file, the directory structure must be the same as listed below in addition to containing a classes.txt file which contains the class names with one per line.
+
+### Specifications
+- The root folder should contain `labels` and `images` subdirectories.
+- Underneath both the `labels` and `images` directories, there should be `train` and `val` subdirectories, each representing the training and validation splits of the dataset.
+- The split directories under `labels` should contain the YOLO format label files with a single `.txt` file per image. 
+- The text files underneath the `labels` directories should contain a single line per object of the format `class_index x_center y_center width height` where the coordinates are normalized between 0 and 1 and the class numbers are zero-indexed.
+- The split directories under `images` should contain the images of any size in a format readable by the Python Imaging Library (PIL), which includes formats such as .jpeg, .png, .bmp, etc.
+- Each image file must have a corresponding label file with the same name in the `labels` directory.
+- If supplying a directory without a YAML file, the directory must also contain a `classes.txt` file with one class name per line in the same order as the class numbers in the label files.
+
+### Structure
+```text
+data
+├── images
+│   ├── train
+│   │   ├── image_1.png
+│   │   ├── image_2.png
+│   │   └── ...
+│   ├── val
+│   │   ├── image_1.png
+│   │   ├── image_2.png
+│   │   └── ...
+│   └── ...
+├── labels
+│   ├── train
+│   │   ├── image_1.txt
+│   │   ├── image_2.txt
+│   │   └── ...
+│   ├── val
+│   │   ├── image_1.txt
+│   │   ├── image_2.txt
+│   │   └── ...
+│   └── ...
+├── classes.txt
+└── dataset.yaml
 ```
-0 0.5 0.6 0.2 0.3
-1 0.7 0.8 0.1 0.2
+
+For more details and examples on creating object detection datasets for Sparsify, read the [Sparsify Datasets Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/datasets-guide.md).
+
+### Example
+
+
+## Image Segmentation
+
+For image segmentation tasks, Sparsify utilizes the YOLO format for datasets.
+This is the same format used by Ultralytics [YOLOv5/YOLOv8](https://docs.ultralytics.com/datasets/segment/)
+The format is made up of a YAML file containing the root dataset location, the classes, and the training and validation split locations.
+
+If a directory is supplied instead and there is no YAML file within the directory, Sparsify will automatically create one for you.
+To auto create a YAML file, the directory structure must be the same as listed below in addition to containing a classes.txt file which contains the class names with one per line.
+
+### Specifications
+- The root folder should contain `annotations` and `images` subdirectories.
+- Underneath both the `annotations` and `images` directories, there should be `train` and `val` subdirectories, each representing the training and validation splits of the dataset.
+- The split directories under `annotations` should contain the YOLO format annotation files with a single `.txt` file per image.
+- The text files underneath the `annotations` directories should contain a single line per object of the format `class_index x_1 y_1 x_2 y_2 x_3 y_3` where the coordinates that bound the object are normalized between 0 and 1 and the class numbers are zero-indexed.
+- The split directories under `images` should contain the images of any size in a format readable by the Python Imaging Library (PIL), which includes formats such as .jpeg, .png, .bmp, etc.
+- Each image file must have a corresponding annotation file with the same name in the `annotations` directory.
+- If supplying a directory without a YAML file, the directory must also contain a `classes.txt` file with one class name per line in the same order as the class numbers in the annotation files.
+
+### Structure
+```text
+data
+├── images
+│   ├── train
+│   │   ├── image_1.png
+│   │   ├── image_2.png
+│   │   └── ...
+│   ├── val
+│   │   ├── image_1.png
+│   │   ├── image_2.png
+│   │   └── ...
+│   └── ...
+├── annotations
+│   ├── train
+│   │   ├── image_1.txt
+│   │   ├── image_2.txt
+│   │   └── ...
+│   ├── val
+│   │   ├── image_1.txt
+│   │   ├── image_2.txt
+│   │   └── ...
+│   └── ...
+├── classes.txt
+└── dataset.yaml
 ```
 
-This would mean that there is an object of class 0 (car) centered at (50% of image width, 60% of image height) and having a width of 20% of the image width and height 30% of the image height. 
-The second line is similar but for an object of class 1 (pedestrian).
+For more details and examples on creating segmentation datasets for Sparsify, read the [Sparsify Datasets Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/datasets-guide.md).
 
-For image segmentation, the labels might be more complex, including segmentation masks that indicate which pixels belong to which object category.
+### Example
 
-Make sure the class labels are consistent with what is expected by the YOLOv5 configuration you are using, and that the bounding box coordinates are normalized as described above.
 
-#### Natural Language (NLP/NLG)
+## NLP
 
-For natural language processing (NLP) and natural language generation (NLG) tasks, Sparsify supports the dataset formats used by the Hugging Face library. 
-Hugging Face datasets can be represented in various file formats including JSON, CSV, and JSON lines format (.jsonl).
+For NLP tasks, Sparsify utilizes the HuggingFace [Datasets](https://huggingface.co/docs/datasets/) format and expectations.
+Hugging Face datasets can be represented in various file formats, including CSV, and JSON lines format (.jsonl).
 
-##### Specifications
+Specifications:
+- The root folder should contain JSON or CSV files associated with each split of the dataset.
+- The JSON or CSV files must be named such that the training data contains the word `train`, validation data contains the word `val`, and any optional test data contains the word `test`.
+- For JSON files, each line must be a JSON object representing a single data sample.
+- For CSV files, the first row must be a header row containing the column names.
+- The label column must be named `label`.
+- The features column will be dynamically determined based on the column names and the rules below
+  - If both `setence1` and `sentence2` are present, these columns will be taken as the features.
+  - Otherwise the first non label columns will be used for the features with sentence1 being set to the first column and setence2 being set to the second if present.
+- The files should be UTF-8 encoded.
 
-- Each row or line in your data file should represent a single example.
-- The data must include the features necessary for your task. For example, a dataset for text classification might include 'text' and 'label' fields.
-- For JSON files, each line should be a separate, self-contained JSON object.
-- For CSV files, the first row should include the column names, and each subsequent row should include the fields for a single example.
-- The file should be UTF-8 encoded to support a wide range of text inputs.
+### Structure
 
-##### Example
-
-Here's an example of how you might structure a dataset for a sentiment analysis task:
-
-If you're using a JSON lines (.jsonl) format, your file could look like this:
-
+#### JSON
+```text
+data
+├── train.json
+├── val.json
+└── test.json
 ```
+
+Where the contents of each JSON file would look like the following:
+```text
 {"text": "I love this movie!", "label": "positive"}
 {"text": "This movie was awful.", "label": "negative"}
 {"text": "I have mixed feelings about this film.", "label": "neutral"}
 ```
 
-Each line is a separate JSON object, representing a single example.
-
-If you're using a CSV format, your file could look like this:
-
+#### CSV
+```text
+data
+├── train.csv
+├── val.csv
+└── test.csv
 ```
+
+Where the contents of each CSV file would look like the following:
+```text
 text,label
 "I love this movie!","positive"
 "This movie was awful.","negative"
 "I have mixed feelings about this film.","neutral"
 ```
 
-The first row contains the column names, and each subsequent row represents a single example.
+### Example
 
-Whether you choose to use JSON lines or CSV will depend on your specific needs and preferences, but either format will work well with Hugging Face and Sparsify. 
-Make sure your data is formatted correctly according to these specifications to ensure it can be used in your experiments.
 
-### One Shot
 
-For one-shot experiments, Sparsify utilizes the `.npz` format for data storage, which is a file format based on the popular NumPy library. 
-This format is efficient and versatile. 
-In the near future, more functionality will be landed such that the definitions given above for Training Aware and Sparse Transfer will work as well.
+## NPZ
 
-#### Specifications
+For One-Shot Experiments, Sparsify utilizes the `.npz` format for data storage, which is a file format based on the popular NumPy library. 
+In the future, more formats will be added for support with One-Shot Experiments.
 
-- Each `.npz` file should contain a single data sample, with no batch dimension. This data sample will be run through the ONNX model.
+### Specifications
+- Each `.npz` file should contain a single data sample, with no batch dimension.
+  This data sample will be run through the ONNX model.
 - The `.npz` file should be structured as a dictionary, mapping the input name in the ONNX specification to a numpy array containing the data.
-- All data samples should be stored under the same directory, typically named `data`.
+- All data samples should be stored under the same directory, typically named `data`. 
 
-The local file structure should look like the following:
+The root directory containing the data samples should be passed to the CLI as the `--data` argument.
 
+### Structure
 ```text
 data
-  -- input1.npz
-  -- input2.npz
-  -- input3.npz
+├── input1.npz
+├── input2.npz
+├── input3.npz
 ```
 
-#### Example
-
-For example, if you have a BERT-style model with a sequence length of 128, each `.npz` file should contain a dictionary mapping input names ("input_ids", "attention_mask", "token_type_ids") to numpy arrays of the appropriate size:
-
+Where each `input#.npz` file contains a single data sample, and the data sample is structured as a dictionary mapping the input name in the ONNX specification to a numpy array containing the data that matches the input shapes without the batch dimension.
+For example, a BERT-style model running with a sequence length of 128 would have the following data sample:
 ```text
 {
-    "input_ids": ndarray(128,), 
-    "attention_mask": ndarray(128,), 
-    "token_type_ids": ndarray(128,)
+  "input_ids": ndarray(128,), 
+  "attention_mask": ndarray(128,), 
+  "token_type_ids": ndarray(128,)
 }
 ```
 
-The dictionary keys should match the names of the inputs in the ONNX model specification, and the shapes of the arrays should match the expected input shapes of the model.
-
-#### Generating NPZ Files
+### Example
 
 Below is an example script for generating this file structure from a PyTorch module before the ONNX export:
 
@@ -199,37 +273,37 @@ class NumpyExportWrapper(torch.nn.Module):
         self.model = model
         self.model.eval()  # Set model to evaluation mode
         self.numpy_data = []
-    
+
     def forward(self, *args, **kwargs):
         with torch.no_grad():
             inputs = {}
             batch_size = 0
-            
+
             for index, arg in enumerate(args):
                 if isinstance(arg, Tensor):
                     inputs[f"input_{index}"] = arg
                     batch_size = arg.size[0]
-                
+
             for key, val in kwargs.items():
                 if isinstance(val, Tensor):
                     inputs[key] = val
-                    batch_size = arg.size[0]
-                
+                    batch_size = val.shape[0]
+
             start_index = len(self.numpy_data)
             for _ in range(batch_size):
                 self.numpy_data.append({})
-            
-            for index, (input_key, input_batch) in enumerate(inputs):
-                for input_ in input_batch:
-                    self.numpy_data[start_index + index][input_key] = input_
-            
+
+            for input_key in iter(inputs):
+              for idx, input in enumerate(inputs[input_key]):
+                  self.numpy_data[start_index+idx][input_key] = input
+
             return self.model(*args, **kwargs)
 
     def save(self, path: str = "data"):
         for index, item in enumerate(self.numpy_data):
             npz_file_path = f'{path}/input{str(index).zfill(4)}.npz'
             np.savez(npz_file_path, **item)
-            
+
         print(f'Saved {len(self.numpy_data)} npz files to {path}')
 
 model = NumpyExportWrapper(YOUR_MODEL)
@@ -238,9 +312,9 @@ for data in YOUR_DATA_LOADER:
 model.save()
 ```
 
-Note: Replace YOUR_MODEL and YOUR_DATA_LOADER with your PyTorch model and data loader, respectively.
+Note: Replace `YOUR_MODEL` and `YOUR_DATA_LOADER` with your PyTorch model and data loader, respectively.
 
-## Custom Use Cases
+## Custom
 
 Currently, custom use cases are not supported for dataset representation and datasets must conform to the definitions above.
 In the near future, these will be supported through plugin specifications.

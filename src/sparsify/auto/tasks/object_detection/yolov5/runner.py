@@ -27,7 +27,7 @@ from sparseml.yolov5.scripts import export as export_hook
 from sparseml.yolov5.scripts import train as train_hook
 from sparsify.auto.tasks.object_detection.yolov5 import Yolov5ExportArgs
 from sparsify.auto.tasks.runner import DDP_ENABLED, TaskRunner
-from sparsify.auto.utils import HardwareSpecs
+from sparsify.auto.utils import HardwareSpecs, create_yolo_data_yaml
 from sparsify.schemas import Metrics, SparsificationTrainingConfig
 from sparsify.utils import TASK_REGISTRY
 from yolov5.models.experimental import attempt_load
@@ -80,11 +80,12 @@ class Yolov5Runner(TaskRunner):
         :param config: training config to generate run for
         :return: tuple of training and export arguments
         """
+        dataset = create_yolo_data_yaml(config.dataset)
         train_args = Yolov5TrainArgs(
             weights=config.base_model,
             recipe=config.recipe,
             recipe_args=config.recipe_args,
-            data=config.dataset,
+            data=dataset,
             **config.kwargs,
         )
 

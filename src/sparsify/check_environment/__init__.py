@@ -15,17 +15,6 @@
 # flake8: noqa
 # isort: skip_file
 
-
-def _check_nm_install():
-    try:
-        from .runner import *
-    except ImportError as exception:
-        raise ImportError(
-            "Please install sparsify[nm] to use this pathway."
-        ) from exception
-
-
-_check_nm_install()
-
-from .args import *
-from .runner import *
+from .gpu_device import *
+from .ort_health import *
+from .pathway_checks import *

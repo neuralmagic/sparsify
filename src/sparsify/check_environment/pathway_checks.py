@@ -12,20 +12,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# flake8: noqa
-# isort: skip_file
+
+from sparsify.check_environment import check_for_gpu, check_ort_health
 
 
-def _check_nm_install():
-    try:
-        from .runner import *
-    except ImportError as exception:
-        raise ImportError(
-            "Please install sparsify[nm] to use this pathway."
-        ) from exception
+__all__ = ["one_shot_checks", "auto_checks"]
 
 
-_check_nm_install()
+def one_shot_checks():
+    """
+    Check environment for compatibility with one-shot sparsification
+    """
+    check_for_gpu()
+    check_ort_health()
 
-from .args import *
-from .runner import *
+
+def auto_checks():
+    """
+    Check environment for compatibility with training-aware sparsification and
+    sparse-transfer learning
+    """
+    check_for_gpu()

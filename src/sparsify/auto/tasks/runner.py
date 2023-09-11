@@ -12,10 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 import gc
 import json
+import logging
 import os
+import pkgutil
 import shutil
 import socket
 import warnings
@@ -29,7 +30,7 @@ from torch.distributed.run import main as launch_ddp
 from pydantic import BaseModel
 from sparsify.auto.utils import ErrorHandler, HardwareSpecs, analyze_hardware
 from sparsify.schemas import Metrics, SparsificationTrainingConfig
-from sparsify.utils import TASK_REGISTRY, TaskName
+from sparsify.utils import TASK_REGISTRY, TaskName, get_task_info
 
 
 __all__ = [
@@ -41,7 +42,9 @@ __all__ = [
     "TaskRunner",
 ]
 
-DDP_ENABLED = not (os.environ.get("NM_AUTO_DISABLE_DDP", False))
+DDP_ENABLED = (
+    not (os.environ.get("NM_AUTO_DISABLE_DDP", False)) and torch.cuda.is_available()
+)
 MAX_RETRY_ATTEMPTS = os.environ.get("NM_MAX_SCRIPT_RETRY_ATTEMPTS", 3)  # default: 3
 MAX_MEMORY_STEPDOWNS = os.environ.get("NM_MAX_SCRIPT_MEMORY_STEPDOWNS", 10)
 SUPPORTED_TASKS = [
@@ -52,9 +55,12 @@ SUPPORTED_TASKS = [
         "question_answering",
         "text_classification",
         "token_classification",
+        "finetune",
     ]
 ]
 _TASK_RUNNER_IMPLS = {}
+_LOGGER = logging.getLogger(__name__)
+_LOGGER.setLevel(logging.INFO)  # set at top level to modify later
 
 
 def retry_stage(stage: str):
@@ -148,7 +154,6 @@ class TaskRunner:
         self.dashed_cli_kwargs = False  # True if CLI args require "-" as word separator
 
         self.train_args, self.export_args = self.config_to_args(self.config)
-
         self.hardware_specs = analyze_hardware()
         self.tune_args_for_hardware(self.hardware_specs)
 
@@ -266,10 +271,12 @@ class TaskRunner:
             "--nproc_per_node",
             "auto",
             f"--master_port={_get_open_port_()}",
-            self.sparseml_train_entrypoint,
         ]
+        if self._config.task in get_task_info("finetune").aliases:
+            ddp_args += ["finetune"]
+        else:
+            ddp_args += [self.sparseml_train_entrypoint]
         ddp_args += self.train_args.serialize_to_cli_string(self.dashed_cli_kwargs)
-
         launch_ddp(ddp_args)
 
     @retry_stage(stage="train")
@@ -288,6 +295,10 @@ class TaskRunner:
         self.run_directory = train_directory
         self.log_directory = log_directory
         self.update_run_directory_args()
+
+        if self._config.task in get_task_info("finetune").aliases:
+            self.train_args.checkpoints = self.run_directory
+            self.train_args.logging = self.log_directory
 
         if self.use_distributed_training:
             self._train_distributed()
@@ -392,20 +403,26 @@ class TaskRunner:
         """
         Creates and/or moves deployment directory to the deployment directory for the
         mode corresponding to the trial_idx
-
+        :post-condition: The deployment artifacts will be moved from
+            origin_directory to deploy_directory
         :param train_directory: directory to grab the exported files from
         :param deploy_directory: directory to save the deployment files to
         """
         origin_directory = self._get_default_deployment_directory(train_directory)
-
+        _LOGGER.info("Moving %s to %s" % (origin_directory, deploy_directory))
         for filename in os.listdir(origin_directory):
             source_file = os.path.join(origin_directory, filename)
             target_file = os.path.join(deploy_directory, filename)
             shutil.move(source_file, target_file)
+
+        _LOGGER.info("Deleting %s" % origin_directory)
         shutil.rmtree(origin_directory)
 
-        with open(os.path.join(deploy_directory, "readme.txt"), "x") as f:
-            f.write("deployment instructions will go here")
+        readme_path = os.path.join(deploy_directory, "README.md")
+        instruc = pkgutil.get_data("sparsify.auto", "tasks/deployment_instructions.md")
+        with open(readme_path, "wb") as f:
+            f.write(instruc)
+        _LOGGER.info("Deployment directory moved to %s" % deploy_directory)
 
     @abstractmethod
     def _train_completion_check(self) -> bool:
@@ -495,7 +512,8 @@ def _dynamically_register_integration_runner(task: str):
         from sparsify.auto.tasks.image_classification import (  # noqa F401
             ImageClassificationRunner,
         )
-
+    elif TASK_REGISTRY[task].domain == "llm":
+        from sparsify.auto.tasks.finetune import LLMFinetuner  # noqa F401
     else:
         raise ValueError(
             f"Task {task} is not yet supported. TaskRunner implementation "

@@ -12,20 +12,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# flake8: noqa
-# isort: skip_file
+from pydantic import Field
+from sparsify.auto.tasks import BaseArgs
 
 
-def _check_nm_install():
-    try:
-        from .runner import *
-    except ImportError as exception:
-        raise ImportError(
-            "Please install sparsify[nm] to use this pathway."
-        ) from exception
+__all__ = ["FineTuneTrainArgs"]
 
 
-_check_nm_install()
-
-from .args import *
-from .runner import *
+class FineTuneTrainArgs(BaseArgs):
+    yaml: str = Field(
+        default=None,
+        description="path to the training yaml",
+    )
+    checkpoints: str = Field(
+        default=None,
+        description="path to the directory to store checkpoints",
+    )
+    logging: str = Field(
+        default=None,
+        description="path to store logs",
+    )

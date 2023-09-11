@@ -25,7 +25,9 @@ from sparsify.auto.utils import (
 )
 from sparsify.schemas import APIArgs
 from sparsify.schemas.auto_api import SparsificationTrainingConfig
+from sparsify.utils import get_task_info
 from tensorboard.program import TensorBoard
+from tensorboard.util import tb_logging
 
 
 _LOGGER = logging.getLogger("auto_banner")
@@ -41,6 +43,20 @@ def main(api_args: APIArgs):
         deploy_directory,
     ) = create_save_directory(api_args)
 
+    if api_args.task in get_task_info("finetune").aliases:
+        _LOGGER.info(
+            "Running finetuning. "
+            "Currently only arguments passed for use-case and data will be considered"
+        )
+        config = SparsificationTrainingConfig(
+            task=api_args.task, dataset=api_args.dataset, base_model=None, recipe=None
+        )
+        runner = TaskRunner.create(config)
+        runner.train(train_directory=train_directory, log_directory=log_directory)
+        return
+
+    _suppress_tensorboard_logs()
+
     # Launch tensorboard server
     tensorboard_server = TensorBoard()
     tensorboard_server.configure(argv=[None, "--logdir", log_directory])
@@ -48,17 +64,25 @@ def main(api_args: APIArgs):
     _LOGGER.info(f"TensorBoard listening on {url}")
 
     # Request config from api and instantiate runner
+
     raw_config = api_request_config(api_args)
     config = SparsificationTrainingConfig(**raw_config)
-    runner = TaskRunner.create(config)
 
+    runner = TaskRunner.create(config)
     # Execute integration run and return metrics
     metrics = runner.train(train_directory=train_directory, log_directory=log_directory)
+
     yaml.safe_dump(
         metrics.dict(), (Path(train_directory).parent / "metrics.yaml").open("w")
     )
-
     runner.export(model_directory=train_directory)
     runner.create_deployment_directory(
         train_directory=train_directory, deploy_directory=deploy_directory
     )
+
+
+def _suppress_tensorboard_logs():
+    # set tensorboard logger to warning level
+    #  avoids a constant stream of logs from tensorboard
+    tb_logger = tb_logging.get_logger()
+    tb_logger.setLevel(logging.WARNING)

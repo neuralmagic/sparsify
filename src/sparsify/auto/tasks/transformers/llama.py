@@ -19,7 +19,8 @@ from sparseml.transformers.export import export as export_hook
 from sparsify.auto.tasks.transformers import TransformersExportArgs
 
 
-_LOGGER = logging.getLogger(__name__)
+_LOGGER = logging.getLogger()
+_LOGGER.setLevel(logging.INFO)
 
 
 @click.command()
@@ -32,15 +33,15 @@ _LOGGER = logging.getLogger(__name__)
 )
 @click.option(
     "--sequence_length",
-    default=384,
+    default=2048,
     type=int,
-    help="Path to directory to store checkpoints",
+    help="Sequence length to use. Defaults to 2048.",
 )
 @click.option(
     "--onnx_file_name",
     default="model.onnx",
     type=str,
-    help="Name of the exported model",
+    help="Name of the exported model. Defaults to model.onnx",
 )
 def llama_export(model_path: str, sequence_length: int, onnx_file_name: str):
     export_args = TransformersExportArgs(

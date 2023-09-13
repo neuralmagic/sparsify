@@ -20,7 +20,6 @@ from sparsify.auto.tasks.transformers import TransformersExportArgs
 
 
 _LOGGER = logging.getLogger(__name__)
-_LOGGER.setLevel(logging.INFO)
 
 
 @click.command()
@@ -38,7 +37,7 @@ _LOGGER.setLevel(logging.INFO)
     help="Path to directory to store checkpoints",
 )
 @click.option(
-    "--onnx_file_path",
+    "--onnx_file_name",
     default="model.onnx",
     type=str,
     help="Name of the exported model",

@@ -77,7 +77,7 @@ def _setup_install_requires() -> List:
 
 
 def _setup_extras() -> Dict:
-    return {"dev": _dev_deps, "_nm_deps": _nm_deps, "llm": _llm_deps}
+    return {"dev": _dev_deps, "nm": _nm_deps, "llm": _llm_deps}
 
 
 def _setup_entry_points() -> Dict:
@@ -86,7 +86,7 @@ def _setup_entry_points() -> Dict:
             "sparsify.run=sparsify.cli.run:main",
             "sparsify.login=sparsify.login:main",
             "sparsify.check_environment=sparsify.check_environment.main:main",
-            "finetune=sparsify.auto.tasks.finetune.finetune:parse_args_and_run",
+            "sparsify.llm_finetune=sparsify.auto.tasks.finetune.finetune:parse_args_and_run",  # noqa E501
             "sparisfy.llama_export=sparsify.auto.tasks.transformers.llama:llama_export",
         ]
     }

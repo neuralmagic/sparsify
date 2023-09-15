@@ -52,10 +52,6 @@ jobs:
              pip install -e .
              if [[ "${{ inputs.build_type }}" = release ]]; then
                  sed -i 's/is_release = False/is_release = True/g' src/${{ github.event.repository.name }}/version.py
-             else
-                 buildTime=$(date +%Y%m%d)
-                 version=$(grep '"version":' package.json | cut -d'"' -f4)
-                 sed -i "s/\"version\":.*/\"version\": \"$version\.$buildTime\",/g" package.json
              fi
              status=$(make -B build || echo 'FAILED')
              deactivate

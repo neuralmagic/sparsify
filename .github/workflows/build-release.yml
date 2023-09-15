@@ -8,7 +8,7 @@ on:
 
 jobs:
 
-    BUILD-SPARSEZOO_RELEASE:
+    BUILD-SPARSIFY_RELEASE:
 
       uses: ./.github/workflows/util.yml
       with:

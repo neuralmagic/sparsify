@@ -22,8 +22,29 @@ from sparsify.auto.tasks.transformers import TransformersExportArgs
 _LOGGER = logging.getLogger()
 _LOGGER.setLevel(logging.INFO)
 
+"""
+Usage: sparisfy.llama_export [OPTIONS]
 
-@click.command()
+  Exports a LLAMA model given a path to model directory, sequence length, and
+  name of the exported pathway.
+
+  Example:     sparisfy.llama_export --model_path <MODEL_PATH>
+  --sequence_length <INT>
+
+  Output:     Produces a deployment directory with the exported model
+  <ONNX_FILE_NAME>
+
+Options:
+  --model_path TEXT          Path to directory where model files for weights,
+                             config, and tokenizer are stored
+  --sequence_length INTEGER  Sequence length to use.  [default: 2048]
+  --onnx_file_name TEXT      Name of the exported model.  [default:
+                             model.onnx]
+  --help                     Show this message and exit.  [default: False]
+"""
+
+
+@click.command(context_settings={"show_default": True})
 @click.option(
     "--model_path",
     default=None,
@@ -35,15 +56,26 @@ _LOGGER.setLevel(logging.INFO)
     "--sequence_length",
     default=2048,
     type=int,
-    help="Sequence length to use. Defaults to 2048.",
+    help="Sequence length to use.",
 )
 @click.option(
     "--onnx_file_name",
     default="model.onnx",
     type=str,
-    help="Name of the exported model. Defaults to model.onnx",
+    help="Name of the exported model.",
 )
 def llama_export(model_path: str, sequence_length: int, onnx_file_name: str):
+    """
+    Exports a LLAMA model given a path to model directory, sequence length, and name
+    of the exported pathway.
+
+    Example:
+        sparisfy.llama_export --model_path <MODEL_PATH> --sequence_length <INT>
+
+    Output:
+        Produces a deployment directory with the exported model <ONNX_FILE_NAME>
+
+    """
     export_args = TransformersExportArgs(
         task="text-generation",
         model_path=model_path,

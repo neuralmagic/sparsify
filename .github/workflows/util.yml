@@ -66,9 +66,14 @@ jobs:
              else
                  echo "${{ github.event.repository.name }} build success"
              fi
+             echo "Renaming wheel file..."
+             wheelFile=`cd dist; ls *.whl`
+             newWhlName=`echo "${wheelFile}" | sed 's/any/manylinux1_x86_64/g'`
+             mv dist/${wheelFile} dist/${newWhlName}
              echo "=========== Generated build ==========="
              ls dist/
              echo "=========== Copy build to S3 ==========="
+             aws s3 cp dist/*.tar.gz s3://nm-github-actions/${{ github.event.repository.name }}/
              aws s3 cp dist/*.whl s3://nm-github-actions/${{ github.event.repository.name }}/
              if [ $? -eq 0 ]; then
                  echo "ok: copied to s3://nm-github-actions/${{ github.event.repository.name }}/"

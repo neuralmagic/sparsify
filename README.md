@@ -186,7 +186,7 @@ sparsify.run one-shot --use-case USE_CASE --model MODEL --data DATASET --optim-l
 For example, to sparsify a ResNet-50 model on the ImageNet dataset for image classification, run the following commands:
 ```bash
 wget https://public.neuralmagic.com/datasets/cv/classification/imagenet_calibration.tar.gz
-tar -xzf imagenet_calibration.tar.gz
+tar -xzf imagenet_calibration.tar.gz -C ./imagenet_calibration
 sparsify.run one-shot --use-case image_classification --model "zoo:cv/classification/resnet_v1-50/pytorch/sparseml/imagenet/base-none" --data ./imagenet_calibration --optim-level 0.5
 ```
 

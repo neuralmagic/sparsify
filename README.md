@@ -194,7 +194,7 @@ Or, to sparsify a BERT model on the SST2 dataset for sentiment analysis, run the
 ```bash
 wget https://public.neuralmagic.com/datasets/nlp/text_classification/sst2_calibration.tar.gz
 tar -xzf sst2_calibration.tar.gz
-sparsify.run one-shot --use-case text_classification --model "zoo:nlp/sentiment_analysis/bert-base/pytorch/huggingface/sst2/base-none" --data ./sst2_calibration --optim-level 0.5
+sparsify.run one-shot --use-case text_classification --model "zoo:nlp/sentiment_analysis/bert-base/pytorch/huggingface/sst2/base-none" --data --data ./sst2_calibration/sst2.hf --optim-level 0.5
 ```
 
 To dive deeper into One-Shot Experiments, read through the [One-Shot Experiment Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/one-shot-experiment-guide.md).
@@ -293,17 +293,17 @@ This will run a number of inferences to simulate a real-world scenario and print
 
 It's as simple as running the following command:
 ```bash
-deepsparse.benchmark --model MODEL --scenario SCENARIO
+deepsparse.benchmark --model_path MODEL --scenario SCENARIO
 ```
 
 For example, to benchmark a dense ResNet-50 model, run the following command:
 ```bash
-deepsparse.benchmark --model "zoo:cv/classification/resnet_v1-50/pytorch/sparseml/imagenette/base-none" --scenario sync
+deepsparse.benchmark --model_path "zoo:cv/classification/resnet_v1-50/pytorch/sparseml/imagenette/base-none" --scenario sync
 ```
 
 This can then be compared to the sparsified ResNet-50 model with the following command:
 ```bash
-deepsparse.benchmark --model "zoo:cv/classification/resnet_v1-50/pytorch/sparseml/imagenet/pruned95_quant-none" --scenario sync
+deepsparse.benchmark --model_path "zoo:cv/classification/resnet_v1-50/pytorch/sparseml/imagenet/pruned95_quant-none" --scenario sync
 ```
 
 The output will look similar to the following:

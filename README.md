@@ -194,7 +194,7 @@ Or, to sparsify a BERT model on the SST2 dataset for sentiment analysis, run the
 ```bash
 wget https://public.neuralmagic.com/datasets/nlp/text_classification/sst2_bert_calibration.tar.gz
 tar -xzf sst2_bert_calibration.tar.gz
-sparsify.run one-shot --use-case text_classification --model "zoo:nlp/sentiment_analysis/bert-base/pytorch/huggingface/sst2/base-none" --data --data ./sst2_bert_calibration/sst2.hf --optim-level 0.5
+sparsify.run one-shot --use-case text_classification --model "zoo:nlp/sentiment_analysis/bert-base/pytorch/huggingface/sst2/base-none" --data --data ./sst2_bert_calibration --optim-level 0.5
 ```
 
 To dive deeper into One-Shot Experiments, read through the [One-Shot Experiment Guide](https://github.com/neuralmagic/sparsify/blob/main/docs/one-shot-experiment-guide.md).

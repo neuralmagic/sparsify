@@ -95,5 +95,5 @@ You can identify a new performance profile:
 ---
 **Next steps...**
 
-Continue by reviewing your [Loss Profiles](https://docs.neuralmagic.com/sparsify/main/source/userguide/04c-reviewing-loss-profiles.html).
-Then, you will be ready to [Optimize](https://docs.neuralmagic.com/sparsify/main/source/userguide/05-optimize.html).
+Continue by reviewing your [Loss Profiles](https://docs.neuralmagic.com/archive/sparsify/main/source/userguide/04c-reviewing-loss-profiles.html).
+Then, you will be ready to [Optimize](https://docs.neuralmagic.com/archive/sparsify/main/source/userguide/05-optimize.html).

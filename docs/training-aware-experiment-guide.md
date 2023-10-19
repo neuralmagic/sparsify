@@ -48,7 +48,7 @@ To utilize the cloud pathways for Training-Aware Experiments, review the [Cloud 
 Now that you understand what a Training-Aware Experiment is and the benefits, including the best possible recovery of accuracy for an optimized model, you're ready to use the CLI to effectively run a Training-Aware Experiment.
 
 Before you run a Training-Aware Experiment, confirm you are logged in to the Sparsify CLI. 
-For instructions on Installation and Setup, review the [Sparsify Install and Setup Section](READMEsection.com) in the Sparsify README.
+For instructions on Installation and Setup, review the [Sparsify Install and Setup Section](https://github.com/neuralmagic/sparsify#1-install-and-setup) in the Sparsify README.
 
 Training-Aware Experiments use the following general command:
 
@@ -88,14 +88,14 @@ If no model is provided, a performance and accuracy balanced base model for the 
 
 If you choose to override the model, it is expected to be a pre-sparsified model and adhere to the following formats depending on the use case:
 - `cv-classification`: SparseML PTH Format
-  - [Image Classification Models Guide](./models-guide#image-classification)
+  - [Image Classification Models Guide](./models-guide.md#image-classification)
 - `cv-detection` - YOLOv5/YOLOv8 Format 
-  - [Object Detection Models Guide](./models-guide#object-detection)
+  - [Object Detection Models Guide](./models-guide.md#object-detection)
   - Example structure: data/classes.txt; data/images/{SPLIT}/{IMAGE.EXT}; data/labels/{SPLIT}/{IMAGE.EXT})
 - `cv-segmentation` - YOLOv5/YOLOv8 Format
-  - [Image Segmentation Models Guide](./models-guide#image-segmentation)
+  - [Image Segmentation Models Guide](./models-guide.md#image-segmentation)
 - `nlp-*`: Hugging Face Format
-  - [NLP Models Guide](./models-guide#nlp)
+  - [NLP Models Guide](./models-guide.md#nlp)
 
 Currently, custom use cases are not supported for model representation and models must conform to the definitions above.
 In the near future, these will be supported through plugin specifications.
@@ -111,16 +111,16 @@ Confirm that your data is formatted properly according to the standards listed b
 Different use cases may require different input formats depending on what is considered standard for that use case.
 Specifically, the following are the supported formats as well as links to specs and guides for creating datasets for each format:
 - `cv-classification`: Image Folder Format
-  - [Image Classification Dataset Guide](./datasets-guide#image-classification)
+  - [Image Classification Dataset Guide](./datasets-guide.md#image-classification)
   - Example structure: data/{SPLIT}/{CLASS}/{IMAGE.EXT})
 - `cv-detection` - YOLO Format 
-  - [Object Detection Dataset Guide](./datasets-guide#object-detection)
+  - [Object Detection Dataset Guide](./datasets-guide.md#object-detection)
   - Example structure: data/classes.txt; data/images/{SPLIT}/{IMAGE.EXT}; data/labels/{SPLIT}/{IMAGE.EXT})
 - `cv-segmentation` - YOLO Format
-  - [Image Segmentation Dataset Guide](./datasets-guide#image-segmentation)
+  - [Image Segmentation Dataset Guide](./datasets-guide.md#image-segmentation)
   - Example structure: data/classes.txt; data/images/{SPLIT}/{IMAGE.EXT}; data/annotations/{SPLIT}/{IMAGE.EXT})
 - `nlp-*`: Hugging Face CSV or JSONW Format
-  - [NLP Dataset Guide](./datasets-guide#nlp)
+  - [NLP Dataset Guide](./datasets-guide.md#nlp)
   - Example structure: data/{SPLIT}.csv or data/{SPLIT}.jsonl or data/{SPLIT}.json
 
 Currently, custom use cases are not supported for dataset representation and datasets must conform to the definitions above. 

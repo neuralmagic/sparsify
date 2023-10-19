@@ -63,4 +63,4 @@ When a section is active, it changes color. For example:
 ---
 **Next step...**
 
-Begin by [analyzing](https://docs.neuralmagic.com/sparsify/source/userguide/04-analyze.html) your model.
+Begin by [analyzing](https://docs.neuralmagic.com/archive/sparsify/source/userguide/04-analyze.html) your model.

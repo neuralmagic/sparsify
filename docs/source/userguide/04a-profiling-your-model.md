@@ -30,7 +30,7 @@ Profiling is used to determine how optimization will affect performance and loss
 
     You may opt to disable the Performance option if the model is large and will require numerous executions that will take considerable time. In this case, the performance profile will be approximated from the architecture as a FLOPS (floating point operations per second) profile. A FLOPS profile is a theoretical measure of performance.
 
-    If you are just [benchmarking](https://docs.neuralmagic.com/sparsify/main/source/userguide/05a-benchmark.html) the model, you may disable both the Performance and Loss options. In this case, both profiles will be approximated from the architecture.
+    If you are just [benchmarking](https://docs.neuralmagic.com/archive/sparsify/main/source/userguide/05a-benchmark.html) the model, you may disable both the Performance and Loss options. In this case, both profiles will be approximated from the architecture.
 
 2. Enter names for the performance and loss profiles. These names will be referenced throughout Sparsify to quickly identify your profiles.
 
@@ -42,7 +42,7 @@ Profiling is used to determine how optimization will affect performance and loss
 
     You should enter the batch size and core count to which you will deploy. Sparsify will run with this batch size and core count and apply the optimizations to the model to see how the performance is being changed. Batch size and core count can affect how Sparsify runs the model and how fast it is run; therefore, they affect how Sparsify optimizes the model.
 
-    **Note:** Eventually, you might want to run multiple performance profiles by [Adding a New Performance Profile](https://docs.neuralmagic.com/sparsify/main/source/userguide/04b-reviewing-performance-profiles.html#adding-a-new-performance-profile). For example, if you are unsure of how you will deploy, you might want to consider various optimization schemes. Or, you may want multiple performance profiles because you deploy a model in multiple ways (such as a throughput offline and latency online).
+    **Note:** Eventually, you might want to run multiple performance profiles by [Adding a New Performance Profile](https://docs.neuralmagic.com/archive/sparsify/main/source/userguide/04b-reviewing-performance-profiles.html#adding-a-new-performance-profile). For example, if you are unsure of how you will deploy, you might want to consider various optimization schemes. Or, you may want multiple performance profiles because you deploy a model in multiple ways (such as a throughput offline and latency online).
 
 4. Click **RUN** and a message will indicate that the system is profiling the performance and/or loss.
 
@@ -52,10 +52,10 @@ Profiling is used to determine how optimization will affect performance and loss
 
     <kbd><img src="images/image_13.jpg" alt="(Setup grayed out and option to click complete)" width="300" height="240" /></kbd>
 
-5. Click **COMPLETE**. The performance profile will be displayed, as described in [Reviewing Performance Profiles](https://docs.neuralmagic.com/sparsify/main/source/userguide/04b-reviewing-performance-profiles.html).
+5. Click **COMPLETE**. The performance profile will be displayed, as described in [Reviewing Performance Profiles](https://docs.neuralmagic.com/archive/sparsify/main/source/userguide/04b-reviewing-performance-profiles.html).
 
 ---
 **Next steps...**
 
-Continue by reviewing your [Performance Profiles](https://docs.neuralmagic.com/sparsify/main/source/userguide/04b-reviewing-performance-profiles.html) and [Loss Profiles](https://docs.neuralmagic.com/sparsify/main/source/userguide/04c-reviewing-loss-profiles.html).
-Then, you will be ready to [Optimize](https://docs.neuralmagic.com/sparsify/main/source/userguide/05-optimize.html).
+Continue by reviewing your [Performance Profiles](https://docs.neuralmagic.com/archive/sparsify/main/source/userguide/04b-reviewing-performance-profiles.html) and [Loss Profiles](https://docs.neuralmagic.com/archive/sparsify/main/source/userguide/04c-reviewing-loss-profiles.html).
+Then, you will be ready to [Optimize](https://docs.neuralmagic.com/archive/sparsify/main/source/userguide/05-optimize.html).

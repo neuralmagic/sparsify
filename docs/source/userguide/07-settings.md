@@ -33,4 +33,4 @@ Settings for a saved project can be accessed from your project's left navigation
 ---
 **Next step...**
 
-Review general [Key Concepts, Features, and Terms](https://docs.neuralmagic.com/sparsify/main/source/userguide/08-key-terms.html) mentioned throughout Sparsify.
+Review general [Key Concepts, Features, and Terms](https://docs.neuralmagic.com/archive/sparsify/main/source/userguide/08-key-terms.html) mentioned throughout Sparsify.

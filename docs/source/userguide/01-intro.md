@@ -47,4 +47,4 @@ Submit bugs and feature requests. Check existing issues to avoid duplication.
 ---
 **Next step...**
 
-Begin by [installing Sparsify.](https://docs.neuralmagic.com/sparsify/main/source/userguide/02-install-sparsify.html)
+Begin by [installing Sparsify.](https://docs.neuralmagic.com/archive/sparsify/main/source/userguide/02-install-sparsify.html)

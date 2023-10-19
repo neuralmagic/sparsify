@@ -99,4 +99,4 @@ Click the <kbd><img src="images/image_58.jpg" alt="(Menu icon)" width="4" height
 ---
 **Next step...**
 
-Depending on the results of your benchmarks, you may want to [Optimize](https://docs.neuralmagic.com/sparsify/main/source/userguide/05-optimize.html) again or [Integrate](https://docs.neuralmagic.com/sparsify/main/source/userguide/06-integrate.html).
+Depending on the results of your benchmarks, you may want to [Optimize](https://docs.neuralmagic.com/archive/sparsify/main/source/userguide/05-optimize.html) again or [Integrate](https://docs.neuralmagic.com/archive/sparsify/main/source/userguide/06-integrate.html).

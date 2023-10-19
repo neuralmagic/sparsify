@@ -31,4 +31,4 @@ After exporting, you would integrate the configuration file into your training f
 ---
 **Next step...**
 
-Explore your project's [Settings](https://docs.neuralmagic.com/sparsify/main/source/userguide/07-settings.html) or review general [Key Concepts, Features, and Terms](https://docs.neuralmagic.com/sparsify/main/source/userguide/08-key-terms.html) mentioned throughout Sparsify.
+Explore your project's [Settings](https://docs.neuralmagic.com/archive/sparsify/main/source/userguide/07-settings.html) or review general [Key Concepts, Features, and Terms](https://docs.neuralmagic.com/archive/sparsify/main/source/userguide/08-key-terms.html) mentioned throughout Sparsify.

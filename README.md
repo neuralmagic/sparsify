@@ -71,6 +71,12 @@ limitations under the License.
     </a>
 </p>
 
+**🚨 October 2023: Important Sparsify Announcement**
+
+Given our new focus on enabling sparse large language models (LLMs) to run competitively on CPUs, Sparsify Alpha is undergoing upgrades to focus on fine-tuning and optimizing LLMs. This means that we will no longer be providing bug fixes, prioritizing support, or building new features and integrations for non-LLM flows including the CV and NLP Sparsify Pathways.
+
+Neural Magic is super excited about these new efforts in building Sparsify into the best LLM fine-tuning and optimization tool on the market over the coming months and we cannot wait to share more soon. Thanks for your continued support! 
+
 **🚨 July 2023: Sparsify's next generation is now in alpha as of version 1.6.0!**
 
 Sparsify enables you to accelerate inference without sacrificing accuracy by applying state-of-the-art pruning, quantization, and distillation algorithms to neural networks with a simple web application and one-command API calls.

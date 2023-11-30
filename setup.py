@@ -39,7 +39,7 @@ _deps = [
     "tensorboard>=2.0.0",
     "setuptools>=56.0.0",
     "optuna>=3.0.2",
-    "onnxruntime",
+    "onnxruntime-gpu",
 ]
 
 _nm_deps = [

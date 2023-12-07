@@ -26,9 +26,6 @@ version_major_minor = version
 # load and overwrite version and release info from sparseml package
 exec(open(os.path.join("src", "sparsify", "version.py")).read())
 print(f"loaded version {version} from src/sparsify/version.py")
-version_nm_deps = (
-    version_major_minor if is_release else f"{version_major_minor}.0.202308"
-)
 
 _PACKAGE_NAME = "sparsify" if is_release else "sparsify-nightly"
 
@@ -43,9 +40,9 @@ _deps = [
 ]
 
 _nm_deps = [
-    f"{'sparsezoo' if is_release else 'sparsezoo-nightly'}~={version_nm_deps}",
-    f"{'deepsparse' if is_release else 'deepsparse-nightly'}~={version_nm_deps}",
-    f"{'sparseml' if is_release else 'sparseml-nightly'}[torchvision,yolov5]~={version_nm_deps}",  # noqa E501
+    f"{'sparsezoo' if is_release else 'sparsezoo-nightly'}~={version_major_minor}",
+    f"{'deepsparse' if is_release else 'deepsparse-nightly'}~={version_major_minor}",
+    f"{'sparseml' if is_release else 'sparseml-nightly'}[torchvision,yolov5]~={version_major_minor}",  # noqa E501
 ]
 
 _dev_deps = [

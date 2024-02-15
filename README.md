@@ -71,6 +71,10 @@ limitations under the License.
     </a>
 </p>
 
+**🚨 February 2024: Important Sparsify Update**
+
+The Neural Magic team is pausing the Sparsify Alpha at this time. We are refocusing efforts around a new exciting project to be announced in the coming months. Thank you for your continued support and stay tuned!
+
 **🚨 October 2023: Important Sparsify Announcement**
 
 Given our new focus on enabling sparse large language models (LLMs) to run competitively on CPUs, Sparsify Alpha is undergoing upgrades to focus on fine-tuning and optimizing LLMs. This means that we will no longer be providing bug fixes, prioritizing support, or building new features and integrations for non-LLM flows including the CV and NLP Sparsify Pathways.

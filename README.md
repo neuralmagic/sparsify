@@ -39,7 +39,7 @@ limitations under the License.
     <a href="https://docs.neuralmagic.com/archive/sparsify/">
         <img alt="Documentation" src="https://img.shields.io/badge/documentation-darkred?&style=for-the-badge&logo=read-the-docs" height=25>
     </a>
-    <a href="https://join.slack.com/t/discuss-neuralmagic/shared_invite/zt-q1a1cnvo-YBoICSIw3L1dmQpjBeDurQ/">
+    <a href="https://neuralmagic.com/community/">
         <img src="https://img.shields.io/badge/slack-purple?style=for-the-badge&logo=slack" height=25 />
     </a>
     <a href="https://github.com/neuralmagic/sparsify/issues">
@@ -73,7 +73,7 @@ limitations under the License.
 
 **🚨 February 2024: Important Sparsify Update**
 
-The Neural Magic team is pausing the Sparsify Alpha at this time. We are refocusing efforts around a new exciting project to be announced in the coming months. Thank you for your continued support and stay tuned!
+**The Neural Magic team is pausing the Sparsify Alpha at this time. We are refocusing efforts around a new exciting project to be announced in the coming months. Thank you for your continued support and stay tuned**
 
 **🚨 October 2023: Important Sparsify Announcement**
 
@@ -377,7 +377,7 @@ Now that you have explored Sparsify [Alpha], here are other related resources.
 
 ### Feedback and Support
 
-Report UI issues and CLI errors, submit bug reports, and provide general feedback about the product to the Sparsify team via the [nm-sparsify Slack Channel](https://join.slack.com/t/discuss-neuralmagic/shared_invite/zt-1xkdlzwv9-2rvS6yQcCs7VDNUcWxctnw), or via [GitHub Issues](https://github.com/neuralmagic/sparsify/issues). Alpha support is provided through those channels.
+Report UI issues and CLI errors, submit bug reports, and provide general feedback about the product to the Sparsify team via the [nm-sparsify Slack Channel](https://neuralmagic.com/community/, or via [GitHub Issues](https://github.com/neuralmagic/sparsify/issues). Alpha support is provided through those channels.
 
 ### Terms and Conditions
 
@@ -417,7 +417,7 @@ We appreciate contributions to the code, examples, integrations, and documentati
 
 ### Join
 
-For user help or questions about Sparsify, sign up or log in to our [**Neural Magic Community Slack**](https://join.slack.com/t/discuss-neuralmagic/shared_invite/zt-q1a1cnvo-YBoICSIw3L1dmQpjBeDurQ). We are growing the community member by member and happy to see you there. Bugs, feature requests, or additional questions can also be posted to our [GitHub Issue Queue.](https://github.com/neuralmagic/sparsify/issues)
+For user help or questions about Sparsify, sign up or log in to our [**Neural Magic Community Slack**](https://neuralmagic.com/community/). We are growing the community member by member and happy to see you there. Bugs, feature requests, or additional questions can also be posted to our [GitHub Issue Queue.](https://github.com/neuralmagic/sparsify/issues)
 
 You can get the latest news, webinar and event invites, research papers, and other ML Performance tidbits by [subscribing](https://neuralmagic.com/subscribe/) to the Neural Magic community.
 

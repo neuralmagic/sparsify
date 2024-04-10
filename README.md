@@ -377,7 +377,7 @@ Now that you have explored Sparsify [Alpha], here are other related resources.
 
 ### Feedback and Support
 
-Report UI issues and CLI errors, submit bug reports, and provide general feedback about the product to the Sparsify team via the [nm-sparsify Slack Channel](https://neuralmagic.com/community/, or via [GitHub Issues](https://github.com/neuralmagic/sparsify/issues). Alpha support is provided through those channels.
+Report UI issues and CLI errors, submit bug reports, and provide general feedback about the product to the Sparsify team via the [Neural Magic Slack Channel](https://neuralmagic.com/community/), or via [GitHub Issues](https://github.com/neuralmagic/sparsify/issues). Alpha support is provided through those channels.
 
 ### Terms and Conditions
 

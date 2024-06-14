@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from pathlib import Path
-from typing import List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
 
 from pydantic import Field
 from sparsify.auto.tasks import BaseArgs
@@ -86,6 +86,10 @@ class _Yolov5BaseTrainArgs(BaseArgs):
         default=None,
         description="Path to a sparsification recipe, "
         "see https://github.com/neuralmagic/sparseml for more information",
+    )
+    recipe_args: Optional[Dict[str, Any]] = Field(
+        default_factory=dict,
+        description="Recipe arguments to be overwritten",
     )
     upload_dataset: bool = Field(
         default=False, description='W&B: Upload data, "val" option'

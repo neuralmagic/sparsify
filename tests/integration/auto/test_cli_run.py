@@ -27,7 +27,7 @@ from sparsify.utils import TASK_REGISTRY
 _OUTPUT_DIRECTORY = "sparsify_training_temp_integration_test"
 _SPARSIFYML_INSTALLED: bool = importlib.util.find_spec("sparsifyml") is not None
 _EXTENSIVE_TESTING_ENABLED = os.environ.get(
-    "SPARSIFY_EXTENSIVE_INTEGRATION_TEST", True  # TODO: remove
+    "SPARSIFY_EXTENSIVE_INTEGRATION_TEST", False
 )
 
 
@@ -140,9 +140,11 @@ _EXTENSIVE_TESTING_ENABLED = os.environ.get(
                 "--data",
                 "coco128.yaml",
                 "--model",
-                "yolov5s.pt",
+                "yolov5n.pt",
                 "--train-kwargs",
-                "{'max_steps': 10}",
+                "{'max_steps': 10, 'batch_size': 1, 'imgsz': 160}",
+                "--recipe-args",
+                "{'num_epochs': 2, 'num_qat_epochs': 1, 'num_qat_finetuning_epochs': 0, 'num_pruning_active_epochs': 1, 'num_pruning_finetuning_epochs': 0}",  # noqa: E501
             ],
             False,
         ),
@@ -155,7 +157,7 @@ _EXTENSIVE_TESTING_ENABLED = os.environ.get(
                 "--data",
                 "imagenette",
                 "--train-kwargs",
-                "{'max_train_steps': 5,'max_eval_steps': 5}",
+                "{'max_train_steps': 5,'max_eval_steps': 5, 'train_batch_size': 4, 'test_batch_size': 4}",  # noqa: E501
             ],
             False,
         ),
@@ -179,7 +181,7 @@ _EXTENSIVE_TESTING_ENABLED = os.environ.get(
 @pytest.mark.skipif(
     not _SPARSIFYML_INSTALLED, reason="`sparsifyml` needed to run local tests"
 )
-def test_output(task, command, extensive):
+def test_integration_output(task, command, extensive):
     if extensive and not _EXTENSIVE_TESTING_ENABLED:
         pytest.skip(
             "To enable all integration tests, set "

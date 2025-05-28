@@ -1,6 +1,5 @@
-NOTICE: 'sparsify' has reached end-of-life and is no longer supported as of June 2025.
-See the README for more details: https://github.com/neuralmagic/sparsify/blob/main/README.md
-NOTICE remains for informational purposes only.
+This repo has reached end-of-life and is no longer supported as of June 2025.
+See the repo's README for more details; NOTICE remains for informational purposes only.
 
 Sparsify
 Copyright 2021 - 2025 / Neuralmagic, Inc. All Rights Reserved.

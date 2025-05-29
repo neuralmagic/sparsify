@@ -1,4 +1,1 @@
-recursive-include src/sparsify/ui/ *
 include LICENSE
-include src/sparsify/auto/tasks/deployment_instructions.md
-include src/sparsify/auto/samples/finetune_llmfoundry_sample.yaml

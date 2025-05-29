@@ -29,7 +29,7 @@ As part of this transition, we ceased development and deprecated the community v
 
 From day one, our mission was to democratize AI through efficient, accessible tools. We’ve learned so much from your feedback, creativity, and collaboration—watching these tools become vital parts of your ML journeys has meant the world to us.
 
-Though we’re winding down the community editions, we remain committed to our original values. Now as part of Red Hat, we’re excited to evolve our work around vLLM and deliver even more powerful solutions to the ML community.
+Though we’ve wound down the community editions, we remain committed to our original values. Now as part of Red Hat, we’re excited to evolve our work around vLLM and deliver even more powerful solutions to the ML community.
 
 To learn more about our next chapter, visit [ai.redhat.com](ai.redhat.com). Thank you for being part of this incredible journey.
 
